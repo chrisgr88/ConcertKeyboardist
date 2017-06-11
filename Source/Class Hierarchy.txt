@@ -1,0 +1,15 @@
+PPApplication: 							Main.cpp
+	MainWindow: 						MainWindow.h, MainWindow.cpp 
+		CommandManager
+		MidiProcessor: 					MidiProcessor.h, MidiProcessor.cpp
+			Sequence: 					Sequence.h, Sequence.cpp
+		MainComponent: 					MainComponent.h, MainComponent.cpp
+		    ViewerFrame: 				ViewerFrame.h, ViewerFrame.cpp
+		    	Toolbar:				Toolbar.h, Toolbar.cpp
+		    	CkToolbarItemFactory
+    		ScrollingNoteViewer: 		ScrollingNoteViewer.h, ScrollingNoteViewer.cpp
+    NoteWithOffTime						NoteWithOffTime.h, NoteWithOffTime.cpp
+
+
+
+		

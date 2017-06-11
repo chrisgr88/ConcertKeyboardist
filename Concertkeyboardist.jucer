@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="IilE7R" name="ConcertKeyboardist" projectType="guiapp" version="1.0.0"
+              bundleIdentifier="com.yourcompany.ConcertKeyboardist" includeBinaryInAppConfig="1"
+              jucerVersion="5.0.2" displaySplashScreen="0" reportAppUsage="0"
+              splashScreenColour="Dark">
+  <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">
+    <GROUP id="{D43238F0-992F-BC5A-F1AA-31BBBD3D17B0}" name="Source">
+      <FILE id="INUVi4" name="SettingsWindow.h" compile="0" resource="0"
+            file="Source/SettingsWindow.h"/>
+      <FILE id="GcQUY3" name="TracksComponent.h" compile="0" resource="0"
+            file="Source/TracksComponent.h"/>
+      <GROUP id="{EC8297D7-1F95-3949-37E8-625A410B096D}" name="Resources">
+        <FILE id="fnqSRM" name="cello.wav" compile="0" resource="1" file="Resources/cello.wav"/>
+        <FILE id="DwpJZv" name="demo table data.xml" compile="0" resource="1"
+              file="Resources/demo table data.xml"/>
+        <FILE id="NfcAew" name="icons.zip" compile="0" resource="1" file="Resources/icons.zip"/>
+        <FILE id="ukIV0j" name="juce_icon.png" compile="0" resource="1" file="Resources/juce_icon.png"/>
+        <FILE id="OuTkJX" name="juce_module_info" compile="0" resource="1"
+              file="Resources/juce_module_info"/>
+        <FILE id="ejBKwE" name="portmeirion.jpg" compile="0" resource="1" file="Resources/portmeirion.jpg"/>
+        <FILE id="U0teee" name="teapot.obj" compile="0" resource="1" file="Resources/teapot.obj"/>
+        <FILE id="JaA0ts" name="tile_background.png" compile="0" resource="1"
+              file="Resources/tile_background.png"/>
+        <FILE id="tXFuxD" name="treedemo.xml" compile="0" resource="1" file="Resources/treedemo.xml"/>
+      </GROUP>
+      <FILE id="lDdepD" name="MainWindow.cpp" compile="1" resource="0" file="Source/MainWindow.cpp"/>
+      <FILE id="agV9kV" name="MainWindow.h" compile="0" resource="0" file="Source/MainWindow.h"/>
+      <FILE id="nEvVyc" name="Sequence.cpp" compile="1" resource="0" file="Source/Sequence.cpp"/>
+      <FILE id="TkGgv0" name="Sequence.h" compile="0" resource="0" file="Source/Sequence.h"/>
+      <FILE id="uRxR7V" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="GOVj6u" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+      <FILE id="UgOrHf" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="E7aBF1" name="NoteWithOffTime.h" compile="0" resource="0"
+            file="Source/NoteWithOffTime.h"/>
+      <FILE id="LEgWsX" name="MIDIProcessor.cpp" compile="1" resource="0"
+            file="Source/MIDIProcessor.cpp"/>
+      <FILE id="Wr3jE4" name="MIDIProcessor.h" compile="0" resource="0" file="Source/MIDIProcessor.h"/>
+      <FILE id="STJg4F" name="ScrollingNoteViewer.cpp" compile="1" resource="0"
+            file="Source/ScrollingNoteViewer.cpp"/>
+      <FILE id="iepolh" name="ScrollingNoteViewer.h" compile="0" resource="0"
+            file="Source/ScrollingNoteViewer.h"/>
+      <FILE id="q93JVX" name="ViewerFrame.cpp" compile="1" resource="0" file="Source/ViewerFrame.cpp"/>
+      <FILE id="s2kUFF" name="ViewerFrame.h" compile="0" resource="0" file="Source/ViewerFrame.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="10.10 SDK" osxArchitecture="default"
+                       isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>
+        <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="10.10 SDK"
+                       osxArchitecture="default" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="juce/modules/juce_core"/>
+        <MODULEPATH id="juce_events" path="juce/modules/juce_events"/>
+        <MODULEPATH id="juce_graphics" path="juce/modules/juce_graphics"/>
+        <MODULEPATH id="juce_data_structures" path="juce/modules/juce_data_structures"/>
+        <MODULEPATH id="juce_gui_basics" path="juce/modules/juce_gui_basics"/>
+        <MODULEPATH id="juce_gui_extra" path="juce/modules/juce_gui_extra"/>
+        <MODULEPATH id="juce_video" path="juce/modules/juce_video"/>
+        <MODULEPATH id="juce_opengl" path="juce/modules/juce_opengl"/>
+        <MODULEPATH id="juce_audio_basics" path="juce/modules/juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_devices" path="juce/modules/juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_formats" path="juce/modules/juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_processors" path="juce/modules/juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_utils" path="juce/modules/juce_audio_utils"/>
+        <MODULEPATH id="juce_cryptography" path="juce/modules"/>
+        <MODULEPATH id="SFZero" path="SFZero"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="portraitlandscape">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="SFZero" path="SFZero"/>
+        <MODULEPATH id="juce_video" path="juce/modules/juce_video"/>
+        <MODULEPATH id="juce_opengl" path="juce/modules/juce_opengl"/>
+        <MODULEPATH id="juce_gui_extra" path="juce/modules/juce_gui_extra"/>
+        <MODULEPATH id="juce_gui_basics" path="juce/modules/juce_gui_basics"/>
+        <MODULEPATH id="juce_graphics" path="juce/modules/juce_graphics"/>
+        <MODULEPATH id="juce_events" path="juce/modules/juce_events"/>
+        <MODULEPATH id="juce_data_structures" path="juce/modules/juce_data_structures"/>
+        <MODULEPATH id="juce_cryptography" path="juce/modules"/>
+        <MODULEPATH id="juce_core" path="juce/modules/juce_core"/>
+        <MODULEPATH id="juce_audio_utils" path="juce/modules/juce_audio_utils"/>
+        <MODULEPATH id="juce_audio_processors" path="juce/modules/juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_formats" path="juce/modules/juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_devices" path="juce/modules/juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_basics" path="juce/modules"/>
+      </MODULEPATHS>
+    </XCODE_IPHONE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_core" showAllCode="1" useLocalCopy="1"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_events" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_video" showAllCode="1" useLocalCopy="1"/>
+    <MODULE id="SFZero" showAllCode="1" useLocalCopy="1"/>
+  </MODULES>
+  <JUCEOPTIONS/>
+  <LIVE_SETTINGS>
+    <OSX enableCxx11="1"/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>

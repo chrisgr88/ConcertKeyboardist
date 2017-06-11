@@ -1,0 +1,137 @@
+ToDo
+----
+- Ability to play a track or tracks as accompaniment
+- Ability to easily listen to a section 
+- Ability to set some notes as muted
+- Metronome, Option for number of measures to count metronome in.  When playing blink ztl line handle in sync with beats.
+
+- Properties not saved during simple app quit?
+- By default bookmarks are unnamed but they can be named by clicking on them
+- Better keyboard shortcuts & Ability to map them to be executed by midi messages
+- Shortcuts for more actions
+- User editable keyboard shortcuts & make assignable to MIDI messages mappable to MIDI notes for external control
+- Undo/Redo of user's edit actions
+- Other commands?
+- Toolbar
+    - Access to properties dialogs
+    - Tempo control/display
+    - More editing tools 
+        - set groups of notes as target/nontarget notes
+        - multiple chaining interval segments in file
+        - adjust note velocities/timing?
+        - adnust note pitches?
+        - mute/add/remove notes?       
+App Properties Dialog
+Score Properties Dialog
+    - Master chaining interval
+    - Selection of which tracks to play, to mute or to play as accompaniment
+    - Setting of method of note velocity control
+    - Channel remappings
+    - Controllers to autoplay from original file (sustain, soft, other?)
+    - Tempo options: fixed, as in original file, fully dynamic (edit parameters on degree of control)
+    - Position of zero-time line in window
+Better direct editing
+    - Easier to click short note bars
+    - Pinch to zoom
+More external controller features
+    - Input of controllers
+    - Others?
+Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
+VST/AU host
+Windows version
+iOS version
+    - Design the iOS UI. See nanoStudio.
+Android version
+Bugs:
+- Problem with openGL on Hayden variations for four hands? Goes blank? Intermittent.
+- Occasional hang on startup in audio init - timing related
+
+Ability to loop.  Partly working.
+    - Loop point specified in ticks is varying in position in score.  Need to specity it in terms of seq step.
+    - Find a way to mark looped notes as unplayed
+    - Ensure held notes beyond a loop end are handled properly.
+    - Create UI to specify loop points.
+    - Cause rewind to go to start of loop point?
+    - Save loop point in file.
+
+- Move notePlayWindow ... leadLagAdjustmentFactor to be properties of Sequence object
+
+Done
+----
+- DONE Set chained note velocities based on their original velocity and the user-played velocity of the chain trigger. 
+- DONE Selection of which tracks to play, to mute or to play as accompaniment
+- DONE Option to not start transport until first note-on is received
+- DONE Better tempo display/control (e.g. show original BPM, scaled BPM and real-time BPM)
+- NOT FOR NOW Remove empty measures from front of a loaded score
+- DONE Ability to detect notes from computer keyboard vs external controller and choose the appropriate velocity source setting
+- DONE Save and restore zoom level in score file
+- DONE Save and load bookmarks in score file
+- DONE Pedal symbols
+- DONE Loudness graph
+- DONE Step time back/forward through target notes (forward/back arrow)
+- DONE Step time back/forward through bars (forward/back arrow)
+- DONE Add note number to note bar hover information
+- DONE Click on ZTL handle when it's not at the current playing time and not on bookmark does a catchup. If at current playing time a bookmark is added. If there is a bookmark it is removed. Down arrow does similar things. Downarrow when ZTL not at current playing time does a catchup. Downarrow when at current times toggles the presence of a bookmark. 
+- DONE Command forward/back arrow moves between bookmarks 
+- DONE Fixed bug where the tempo speed multiplier was being reset 1.0 when a file was saved, and some related bug
+- DONE Renamed PluginProcessor to MIDIProcessor
+- DONE This now instantiated as instance variable "midiProcessor" in MainComponent
+- DONE midiProcessor.loadSequence() is called in the constructor of MainComponent
+- DONE MainComponent is defined and instantiated as instance variable, "viewerFrame" in MainComponent 
+- DONE viewerFrame is passed a pointer to midiProcessor in the constructor of MainComponent using viewerFrame.setProcessor()
+- DONE ScrollingNoteViewer is defined and instantiated as instance variable noteViewer in viewerFrame.
+- DONE noteViewer is passed a pointer to midiProcessor in the procedure setProcessor(p) in ViewerFrame
+- DONE Uses of the variable "processor" in ViewerFrame and ScrollingNoteViewer have been uncommented.
+- DONE App builds and calls makeKeyboard but hangs when calling timeSigChanges.size().  Need to investigate
+- DONE Pass a pointer to midiProcessor to "viewer"
+- DONE Use this reference to re-enable creation of keyboard and note bars in viewer
+- DONE Set up MainComponent using definition of keyboard and other parameters to create non-openGL parts of view
+- DONE Re-work pulse and time management parts to midiProcessor
+- DONE Add UI to start and stop transport
+- DONE Add midi output
+- DONE Add use of computer keyboard for midi input
+- DONE Setting position by clicking on top bar does not correctly set the position.
+- DONE Find a way to have MidiProcessor send midi messages by calling sendMidiMessageToSynth(msg) in MainComponent
+- DONE Create internal synth 
+    - Look into getting sfZero to build as a plugin (in separate project)
+    - Merge sfZero into PerfectPlayer (big job?)
+    - Enable passing midi to internal synth
+        - Only need to so this when running an internal synth.  Otherwise they can be sent immediately to midi output.
+        - Put them in a MidiBuffer and pass to a method in MainComponent that adds them to a MidiInputCollector (i.e. sync with audio)
+        - audioDeviceIOCallback will remove them and pass to internal synth
+        - Be sure to reset the MidiInputCollector as appropriate.
+        - See MPETest for more details.
+        - Enable a way to choose midi output to go out midi port or to internal synth
+
+DONE Add basic ability to click on note bars to toggle them between being target or nontarget notes.
+
+DONE Add struct for a "chainingRange" descriptor. i.e. startStep, endStep, interval
+DONE Define an array of theses structs called chainDescriptors
+DONE For now cause the setting of chaining interval to create one element in the array with the 0, maxStep and interval as the values
+DONE Create a loop to save a sysex record for each element of the chain entries
+DONE Then add ability to load a file and extract the properties - in a simple way
+DONE Refactor so all score properties are kept in the Score object and fetched by other objects as needed
+DONE Midi Import
+DONE File Management
+    - Midi files can be loaded but not saved
+    - ckf files can be saved and loaded
+    - File menu
+DONE Reimplement setTempo() and getTempo() to use originalFirstTempo & tempoMultiplier. Design is in Sequence.h: 
+    - Actual tempo is the midi file multiplied by tempoMultiplier
+    - autoTempo: Tempo starts at originalFirstTempo*tempoMultiplier and then tracks user
+    - fixedTempo: Tempo is steady at originalFirstTempo*tempoMultiplier
+    - proportionalToOriginalTempo: Tempo is instantaneous tempo from file * tempoMultiplier (does not track user)
+DONE In short sequences it's too easy to see the end of the black/white highlights. Widened the bars by 10 times.
+DONE Track settings were not being cleared before loading a new sequence.
+DONE Before saving a file get values for a sequence as sysex records
+DONE On loading clear sequence property set and get values from sysex records into property set
+DONE Enable marking a file dirty if changed and prompting to save if it will be lost
+    - On exit
+    - On loading a new file
+DONE If a ppf file has been loaded changes should be automatically saved on exit and restored on reopening app
+DONE If a midi file and will be lost we should offer to save a ckf file as in file saveAs
+DONE Create ability to save app settings
+    - On app open the complete view state should be restored
+    - Most recent file (but not if it was an uncnanged midi file?)
+    - Window size, position
+

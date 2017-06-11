@@ -1,0 +1,42 @@
+Parameters
+
+ppq			480   			(pulses per quarter note)
+tempo		60    			(BPM)
+beatsPerBar   	4   		(beats)  [one note == one beat]
+noteType					(in terms of number of ppq?)
+	- quarter	480 
+	- eighth	240
+	- sixteenth 120
+	- quartertriplet 	160
+	- eighthtriplet	80
+	- thirtysecond		120
+	- thirtysecondtriplet 40
+
+qreal pulseCount 
+
+Given the time, bpm and noteType, how many ticks are we at?
+	bpm = beats per minute
+	ticksPerBeat = ticks in noteType
+	tpm = Ticks per minute = bpm * ticksInBeat
+	tps = Ticks per second = tpm / 60 = (bpm * ticksPerBeat) / 60
+	elapsedTicks = timeInSeconds * (bpm * ticksPerBeat) / 60
+	elapsedBars = elapsedTicks / (ticksPerBeat * beatsPerBar) = (timeInSeconds * (bpm * noteType) / 60) ) / (noteType * beatsPerBar)
+				= (timeInSeconds * bpm) / (60 * beatsPerBar)  [integral part]
+
+	displayedBeat = [remainder from above] / noteType
+
+	displayed16th = [remainder from above] / 120		
+
+	e.g. 
+	bpm 		= 100
+	noteType 	= 480
+	beatsPerBar	= 4
+
+	time 		= 10 sec
+
+	ticks per second 	= 10 * 480 / 60 = 800
+	elapsed ticks 		= 8000
+	elapsedBars 		= 8000  / (480 * 4) = 4, remainder 320
+	displayed beat 		= 320 / 480 = 0, remainder 320
+	displayed 16th 		= 320 / 120 = 2
+
