@@ -6,23 +6,12 @@
               splashScreenColour="Dark">
   <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">
     <GROUP id="{D43238F0-992F-BC5A-F1AA-31BBBD3D17B0}" name="Source">
-      <FILE id="INUVi4" name="SettingsWindow.h" compile="0" resource="0"
-            file="Source/SettingsWindow.h"/>
       <FILE id="GcQUY3" name="TracksComponent.h" compile="0" resource="0"
             file="Source/TracksComponent.h"/>
       <GROUP id="{EC8297D7-1F95-3949-37E8-625A410B096D}" name="Resources">
-        <FILE id="fnqSRM" name="cello.wav" compile="0" resource="1" file="Resources/cello.wav"/>
-        <FILE id="DwpJZv" name="demo table data.xml" compile="0" resource="1"
-              file="Resources/demo table data.xml"/>
         <FILE id="NfcAew" name="icons.zip" compile="0" resource="1" file="Resources/icons.zip"/>
-        <FILE id="ukIV0j" name="juce_icon.png" compile="0" resource="1" file="Resources/juce_icon.png"/>
         <FILE id="OuTkJX" name="juce_module_info" compile="0" resource="1"
               file="Resources/juce_module_info"/>
-        <FILE id="ejBKwE" name="portmeirion.jpg" compile="0" resource="1" file="Resources/portmeirion.jpg"/>
-        <FILE id="U0teee" name="teapot.obj" compile="0" resource="1" file="Resources/teapot.obj"/>
-        <FILE id="JaA0ts" name="tile_background.png" compile="0" resource="1"
-              file="Resources/tile_background.png"/>
-        <FILE id="tXFuxD" name="treedemo.xml" compile="0" resource="1" file="Resources/treedemo.xml"/>
       </GROUP>
       <FILE id="lDdepD" name="MainWindow.cpp" compile="1" resource="0" file="Source/MainWindow.cpp"/>
       <FILE id="agV9kV" name="MainWindow.h" compile="0" resource="0" file="Source/MainWindow.h"/>

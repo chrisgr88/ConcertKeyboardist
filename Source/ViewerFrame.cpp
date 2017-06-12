@@ -145,10 +145,10 @@ void ViewerFrame::timerCallback()
         repaint();
         processor->sequenceObject.propertiesChanged = false;
     }
-    static juce::Value selectedId;
-    if (selectedId != pCCB->comboBox.getSelectedId())
-        std::cout << "getSelectedId" <<pCCB->comboBox.getSelectedId()<<"\n";
-    selectedId = pCCB->comboBox.getSelectedId();
+//    static juce::Value selectedId;
+//    if (selectedId != pCCB->comboBox.getSelectedId())
+//        std::cout << "getSelectedId" <<pCCB->comboBox.getSelectedId()<<"\n";
+//    selectedId = pCCB->comboBox.getSelectedId();
 //    scaledTempo.setText(String(processor->getTempo(),1), dontSendNotification);
 //    realtimeTempo.setText(String(processor->getRealTimeTempo(),1), dontSendNotification);
 }

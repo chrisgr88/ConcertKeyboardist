@@ -177,15 +177,21 @@ private:
         // are the ones we'll use in this demo.
         enum DemoToolbarItemIds
         {
-            doc_new         = 1,
-            doc_open        = 2,
-            doc_save        = 3,
-            doc_saveAs      = 4,
-            edit_copy       = 5,
-            edit_cut        = 6,
-            edit_paste      = 7,
-            juceLogoButton  = 8,
-            customComboBox  = 9
+            doc_open        = 1,
+            doc_save        = 2,
+            doc_saveAs      = 3,
+            edit_undo       = 4,
+            edit_redo       = 5,
+            _makeActive     = 6,
+            _makeInactive    = 7,
+            _chain          = 8,
+            _play           = 9,
+            _stop           = 10,
+            _playPause      = 11,
+            _rewind         = 12,
+            _listen         = 13,
+            _rePlay         = 14,
+            customComboBox  = 15
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -200,18 +206,20 @@ private:
             // go in our toolbar. Any items you might want to add must be listed here. The
             // order in which they are listed will be used by the toolbar customisation panel.
             
-//            ids.add (doc_new);
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
-//            ids.add (edit_copy);
-//            ids.add (edit_cut);
-//            ids.add (edit_paste);
-            ids.add (juceLogoButton);
-            ids.add (customComboBox);
-            
-            // If you're going to use separators, then they must also be added explicitly
-            // to the list.
+            ids.add (edit_undo);
+            ids.add (edit_redo);
+            ids.add (_makeActive);
+            ids.add (_makeInactive);
+            ids.add (_chain);
+            ids.add (_play);
+            ids.add (_stop);
+            ids.add (_rewind);
+            ids.add (_playPause);
+            ids.add (_listen);
+            ids.add (_rePlay);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -226,32 +234,58 @@ private:
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
+            ids.add (separatorBarId);
+            ids.add (edit_undo);
+            ids.add (edit_redo);
+            ids.add (separatorBarId);
+            ids.add (_makeActive);
+            ids.add (_makeInactive);
+            ids.add (_chain);
+            ids.add (separatorBarId);
+            ids.add (_rewind);
+            ids.add (_play);
+            ids.add (_stop);
+            ids.add (_listen);
+            ids.add (_rePlay);
+            ids.add (separatorBarId);
             ids.add (spacerId);
-            ids.add (separatorBarId);
-//            ids.add (edit_copy);
-//            ids.add (edit_cut);
-//            ids.add (edit_paste);
-            ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
-            ids.add (customComboBox);
-            ids.add (flexibleSpacerId);
-            ids.add (separatorBarId);
-            ids.add (juceLogoButton);
         }
+        
+//        doc_open        = 1,
+//        doc_save        = 2,
+//        doc_saveAs      = 3,
+//        edit_undo       = 4,
+//        edit_redo       = 5,
+//        _makeActive     = 6,
+//        _makeInactive    = 7,
+//        _chain          = 8,
+//        _playPause      = 9,
+//        _rewind         = 10,
+//        _listen         = 11,
+//        _rePlay         = 12,
         
         ToolbarItemComponent* createItem (int itemId) override
         {
             switch (itemId)
             {
-//                case doc_new:           return createButtonFromZipFileSVG (itemId, "new", "document-new.svg");
-                case doc_open:          return createButtonFromZipFileSVG (itemId, "open", "document-open.svg");
-                case doc_save:          return createButtonFromZipFileSVG (itemId, "save", "document-save.svg");
-                case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "save as", "document-save-as.svg");
-//                case edit_copy:         return createButtonFromZipFileSVG (itemId, "copy", "edit-copy.svg");
-//                case edit_cut:          return createButtonFromZipFileSVG (itemId, "cut", "edit-cut.svg");
-//                case edit_paste:        return createButtonFromZipFileSVG (itemId, "paste", "edit-paste.svg");
-                case juceLogoButton:    return new ToolbarButton (itemId, "juce!",
-                            Drawable::createFromImageData (BinaryData::juce_icon_png, BinaryData::juce_icon_pngSize), 0);
+                case doc_open:      return createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
+                case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
+                case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
+                case edit_undo:         return createButtonFromZipFileSVG (itemId, "Undo", "edit-undo.svg");
+                case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
+                    
+                case _makeActive:        return createButtonFromZipFileSVG (itemId, "Make Active", "makeActive.svg");
+                case _makeInactive:        return createButtonFromZipFileSVG (itemId, "Make Inactive.svg", "makeInactive.svg");
+                    
+                case _chain:        return createButtonFromZipFileSVG (itemId, "Chain", "chain.svg");
+                case _play:        return createButtonFromZipFileSVG (itemId, "Play", "media-playback-start.svg");
+                case _stop:        return createButtonFromZipFileSVG (itemId, "Stop", "media-playback-stop.svg");
+                    
+                case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
+                case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "ear.svg");
+                case _rePlay:        return createButtonFromZipFileSVG (itemId, "Play Again", "edit-undo.svg");
+                    
                 case customComboBox:
                 {
                     CustomToolbarComboBox *ccb = new CustomToolbarComboBox (itemId);
