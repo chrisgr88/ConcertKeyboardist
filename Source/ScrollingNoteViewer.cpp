@@ -33,7 +33,7 @@ maxNote(84),
 minNote(59),
 compressNotes(false),
 octaveNumForMiddleC (3),
-toolbarHeight(40),
+toolbarHeight(30),
 topMargin(15),
 leftMargin(24),
 noteBarWidthRatio(1.f) //As fraction of note track width

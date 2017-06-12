@@ -231,9 +231,16 @@ private:
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
 //            ids.add (doc_new);
+            ids.add (spacerId);
+            ids.add (spacerId);
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
+            ids.add (separatorBarId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
@@ -242,6 +249,8 @@ private:
             ids.add (_makeInactive);
             ids.add (_chain);
             ids.add (separatorBarId);
+            ids.add (flexibleSpacerId);
+            ids.add (separatorBarId);
             ids.add (_rewind);
             ids.add (_play);
             ids.add (_stop);
@@ -249,21 +258,18 @@ private:
             ids.add (_rePlay);
             ids.add (separatorBarId);
             ids.add (spacerId);
-            ids.add (flexibleSpacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
         }
-        
-//        doc_open        = 1,
-//        doc_save        = 2,
-//        doc_saveAs      = 3,
-//        edit_undo       = 4,
-//        edit_redo       = 5,
-//        _makeActive     = 6,
-//        _makeInactive    = 7,
-//        _chain          = 8,
-//        _playPause      = 9,
-//        _rewind         = 10,
-//        _listen         = 11,
-//        _rePlay         = 12,
         
         ToolbarItemComponent* createItem (int itemId) override
         {
@@ -283,8 +289,8 @@ private:
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop", "media-playback-stop.svg");
                     
                 case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
-                case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "ear.svg");
-                case _rePlay:        return createButtonFromZipFileSVG (itemId, "Play Again", "edit-undo.svg");
+                case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
+                case _rePlay:        return createButtonFromZipFileSVG (itemId, "Play Again", "replay.svg");
                     
                 case customComboBox:
                 {
