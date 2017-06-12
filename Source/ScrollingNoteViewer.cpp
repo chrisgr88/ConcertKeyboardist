@@ -268,9 +268,10 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
 //            std::cout << "mouseMove found step " << step <<"\n";
             hoveringOver = HOVER_NOTEBAR;
             String note = MidiMessage::getMidiNoteName (nn, true, true, 3)
-                + " nn" + String::String(nn) + "/" + String::String(sequence->at(i).getChannel())
-                + " v" + String((int)sequence->at(i).getVelocity());
-            hoverInfo = String::String(hoverStep) + " " + note + " " + String(sequence->at(i).getTimeStamp());
+                + " nn:" + String::String(nn) + " ch:" + String::String(sequence->at(i).getChannel())
+                + " vel:" + String((int)sequence->at(i).getVelocity());
+            hoverInfo = note+" step:"+String::String(hoverStep) + " tick:" + String(sequence->at(i).getTimeStamp())
+                + " dur:" + String((sequence->at(i).offTime-sequence->at(i).getTimeStamp()));
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
         sendChangeMessage();  //This is NOT being sent to MidiProcessor

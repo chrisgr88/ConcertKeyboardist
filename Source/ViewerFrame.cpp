@@ -81,9 +81,9 @@ factory(this)
 //    commandLabel.setColour (Label::textColourId, Colours::white);
     
     addAndMakeVisible (hoverStepInfo);
-    hoverStepInfo.setFont (Font (12.00f, Font::plain));
+    hoverStepInfo.setFont (Font (18.00f, Font::plain));
     hoverStepInfo.setJustificationType (Justification::left);
-    hoverStepInfo.setColour (Label::textColourId, Colours::white);
+    hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
 //    addAndMakeVisible (fileNameLabel);
 //    fileNameLabel.setFont (Font (12.00f, Font::plain));
@@ -182,19 +182,52 @@ void ViewerFrame::buttonClicked (Button* button)
     
     int id = toolbar.getItemId(i);
     
+//    _play           = 9,
+//    _stop           = 10,
+//    _playPause      = 11,
+//    _rewind         = 12,
+//    _listen         = 13,
+//    _rePlay         = 14,
+    
+//    CommandIDs::fileOpen - doc_open
+//    CommandIDs::fileSave - doc_save
+//    CommandIDs::fileSaveAs - doc_saveAs
+//    CommandIDs::editUndo - edit_undo
+//    CommandIDs::editRedo -edit_redo
+    
+//    CommandIDs::playPause _play, _stop
+//    CommandIDs::playFromCurrentPlayhead,
+//    CommandIDs::playFromPreviousStart - _rePlay
+//    CommandIDs::listenToSelection - _listen
+//    CommandIDs::increaseTempo,
+//    CommandIDs::decreaseTempo,
+
+    
+//    CommandIDs::toggleSelectedNotesActive - _makeActive __makeInactive ****
+//    CommandIDs::chainSelectedNotes - _chain
+//    CommandIDs::velHumanizeSelection,
+//    CommandIDs::timeHumanizeSelection,
+//    CommandIDs::rewind - _rewind
+    
+//    CommandIDs::toggleBookmark,
+//    CommandIDs::previousBookmark,
+//    CommandIDs::nextBookmark
+    
     if (DemoToolbarItemFactory::DemoToolbarItemIds::doc_open == id)
-    {
-        std::cout << "open " << "\n";
-//        CommandIDs::fileOpen;
-    }
+        sendActionMessage("fileOpen");
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::doc_save == id)
-    {
-        std::cout << "save " << "\n";
-    }
+        sendActionMessage("fileSave");
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::doc_saveAs == id)
-    {
-        std::cout << "saveAs " << "\n";
-    }
+        sendActionMessage("fileSaveAs");
+    
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::edit_undo == id)
+        sendActionMessage("editUndo");
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::edit_redo == id)
+        sendActionMessage("editRedo");
+    
+    
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::doc_saveAs == id)
+        sendActionMessage("doc_saveAs");
     
     
 //    if (button == &rewindButton)
@@ -370,6 +403,6 @@ void ViewerFrame::resized()
 //    realtimeTempo.setBounds(425, 1, 40, noteViewer.getToolbarHeight()-1);
 //    commandLabel.setBounds(464,1,50,13);
 //    textEditor->setBounds (510,1,150, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(getWidth()-350, 0, 180, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(getWidth()-380, 0, 340, noteViewer.getToolbarHeight()-1);
 //    fileNameLabel.setBounds(getWidth()-250, 0, 280, noteViewer.getToolbarHeight()-1);
 }

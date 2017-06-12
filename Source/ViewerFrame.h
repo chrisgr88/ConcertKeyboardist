@@ -28,7 +28,8 @@ private Timer,
 private Button::Listener,
 private Slider::Listener,
 private TextEditor::Listener,
-public FileBrowserListener
+public FileBrowserListener,
+public ActionBroadcaster
 {
 public:
     ViewerFrame (MIDIProcessor *p);
@@ -241,6 +242,22 @@ private:
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
@@ -257,6 +274,21 @@ private:
             ids.add (_listen);
             ids.add (_rePlay);
             ids.add (separatorBarId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);

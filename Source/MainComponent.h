@@ -29,7 +29,6 @@
 #include "ViewerFrame.h"
 #include "MIDIProcessor.h"
 
-
 class MainComponent :
     public Component,
     private AudioIODeviceCallback,
