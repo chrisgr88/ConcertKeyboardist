@@ -141,6 +141,7 @@ void ViewerFrame::timerCallback()
 //        std::cout << "Properties changed" <<"\n";
         String txt = processor->sequenceObject.getScoreFileName();
 //        fileNameLabel.setText(processor->sequenceObject.getScoreFileName(), dontSendNotification);
+        getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName());
 //        tempoSlider.setValue(processor->sequenceObject.getTempoMultiplier(), dontSendNotification);
         repaint();
         processor->sequenceObject.propertiesChanged = false;

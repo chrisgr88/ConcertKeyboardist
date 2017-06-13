@@ -16,13 +16,10 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "NoteWithOffTime.h"
 #include "Sequence.h"
-//#include "MainComponent.h"
 #include <iostream>
 #include <deque>
 
 #define TIMER_STOPLISTEN 0
-
-class MainComponent;
 
 //==============================================================================
 /**
@@ -90,6 +87,7 @@ public:
             {
                 String fn = file.getFullPathName();
                 sequenceObject.setScoreFile(file);
+                
                 sequenceObject.loadDocument(File(fn));//This is not "loadSequence" but triggers loading it with loadSequence
             }
         }
