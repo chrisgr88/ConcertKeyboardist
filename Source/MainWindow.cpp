@@ -96,6 +96,11 @@ ApplicationProperties& getAppProperties();
             perform (CommandIDs::setSelectedNotesActive);
         else if (message == "setSelectedNotesInactive")
             perform (CommandIDs::setSelectedNotesInactive);
+        else if (message.upToFirstOccurrenceOf(":",false,true) == "chain")
+        {
+            midiProcessor.sequenceObject.currentChainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
+            perform (CommandIDs::chainSelectedNotes);
+        }
     }
     
     bool MainWindow::keyPressed (const KeyPress& key, Component* originatingComponent)

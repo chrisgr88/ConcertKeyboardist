@@ -193,7 +193,8 @@ private:
             _listen         = 13,
             _rePlay         = 14,
             customComboBox  = 15,
-            customIncDecBox = 16
+            customIncDecBox = 16,
+            tempoSlider     = 17
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -217,6 +218,7 @@ private:
             ids.add (_makeInactive);
             ids.add (_chain);
             ids.add (customIncDecBox);
+            ids.add (tempoSlider);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_rewind);
@@ -281,6 +283,8 @@ private:
             ids.add (_listen);
             ids.add (_rePlay);
             ids.add (separatorBarId);
+            ids.add (tempoSlider);
+            ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
@@ -342,6 +346,12 @@ private:
                     CustomIncDecBox *incDec = new CustomIncDecBox (itemId);
                     return incDec;
                 }
+                    
+                case tempoSlider:
+                {
+                    TempoSlider *tempoSlider = new TempoSlider (itemId);
+                    return tempoSlider;
+                }
                 default:                break;
             }
             
@@ -380,6 +390,7 @@ private:
         }
        
     public:
+        //=======================================================
         class CustomToolbarComboBox : public ToolbarItemComponent
         {
         public:
@@ -419,39 +430,68 @@ private:
                 
                 comboBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
             }
-            
         ComboBox comboBox;
         private:
-//            ComboBox comboBox;
-//            ViewerFrame *pViewerFrame;
         };
         
-//        Slider* createSlider (bool isSnapping)
-//        {
-//            Slider* s = isSnapping ? new SnappingSlider() : new Slider();
-//            sliders.add (s);
-//            addAndMakeVisible (s);
-//            s->setRange (0.0, 100.0, 0.1);
-//            s->setPopupMenuEnabled (true);
-//            s->setValue (Random::getSystemRandom().nextDouble() * 100.0, dontSendNotification);
-//            return s;
-//        }
         
+        //=================================================
+        class TempoSlider : public ToolbarItemComponent
+        {
+        public:
+            TempoSlider (const int toolbarItemId)
+            : ToolbarItemComponent (toolbarItemId, "Tempo Slider", false)//,
+            //comboBox ("demo toolbar combo box")
+            {
+                ToolbarItemComponent::addAndMakeVisible (threeValueSlider);
+                threeValueSlider.setSliderStyle (Slider::ThreeValueHorizontal);
+                threeValueSlider.setRange (20, 300, 1);
+                threeValueSlider.setMinValue(50);
+                threeValueSlider.setMaxValue(200);
+                threeValueSlider.setValue (120, dontSendNotification);
+                threeValueSlider.setBounds (180, 40, 70, 20);
+                threeValueSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 30, 20);
+            }
+            
+            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+                                      int& preferredSize, int& minSize, int& maxSize) override
+            {
+                if (isVertical)
+                    return false;
+                
+                preferredSize = 180;
+                minSize = 120;
+                maxSize =220;
+                return true;
+            }
+            
+            void paintButtonArea (Graphics&, int, int, bool, bool) override
+            {
+            }
+            
+            void contentAreaChanged (const Rectangle<int>& newArea) override
+            {
+                threeValueSlider.setSize (newArea.getWidth() - 2,
+                                  jmin (newArea.getHeight() - 2, 22));
+                
+                threeValueSlider.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+            }
+            Slider threeValueSlider;
+        };
+        //=================================================
         class CustomIncDecBox : public ToolbarItemComponent
         {
         public:
             CustomIncDecBox (const int toolbarItemId)
-            : ToolbarItemComponent (toolbarItemId, "Custom Toolbar Item", false)//,
-            //comboBox ("demo toolbar combo box")
+            : ToolbarItemComponent (toolbarItemId, "Chaining Interval", false)
             {
                 ToolbarItemComponent::addAndMakeVisible (incDecBox);
-
+                
                 incDecBox.setRange (0, 600.0, 1);
                 incDecBox.setValue (12, dontSendNotification);
                 incDecBox.setSliderStyle (Slider::IncDecButtons);
-                incDecBox.setTextBoxStyle (Slider::TextBoxLeft, false, 30, 20);
                 incDecBox.setBounds (180, 40, 20, 20);
-                incDecBox.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 30, 20);
+                incDecBox.setTextBoxStyle(Slider::TextBoxLeft, false, 30, 20);
             }
             
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
@@ -473,22 +513,22 @@ private:
             void contentAreaChanged (const Rectangle<int>& newArea) override
             {
                 incDecBox.setSize (newArea.getWidth() - 2,
-                                  jmin (newArea.getHeight() - 2, 22));
+                                   jmin (newArea.getHeight() - 2, 22));
                 
                 incDecBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
             }
-//            ComboBox comboBox;
             Slider incDecBox;
-        private:
-            //            ComboBox comboBox;
-            //            ViewerFrame *pViewerFrame;
         };
+        
         ViewerFrame *pViewerFrame;
     };
 
     DemoToolbarItemFactory factory;
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
-    DemoToolbarItemFactory::CustomToolbarComboBox *pIncDecBox;
+    DemoToolbarItemFactory::CustomIncDecBox *pIncDecBox;
+    DemoToolbarItemFactory::TempoSlider *pTempoSlider;
+    
+    double chainAmount = -1;
     
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
 };

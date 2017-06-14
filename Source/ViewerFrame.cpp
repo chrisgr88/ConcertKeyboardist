@@ -38,8 +38,10 @@ factory(this)
     {
         std::cout <<i<< "Listener " << toolbar.getItemComponent(i) <<"\n";
         int id = toolbar.getItemId(i);
-        if (id == DemoToolbarItemFactory::DemoToolbarItemIds::customComboBox)
-            pCCB = (DemoToolbarItemFactory::CustomToolbarComboBox *) toolbar.getItemComponent(i);
+        if (id == DemoToolbarItemFactory::DemoToolbarItemIds::customIncDecBox)
+            pIncDecBox = (DemoToolbarItemFactory::CustomIncDecBox *) toolbar.getItemComponent(i);
+        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoSlider)
+            pTempoSlider = (DemoToolbarItemFactory::TempoSlider *) toolbar.getItemComponent(i);
         else
             toolbar.getItemComponent(i)->addListener(this);
     }
@@ -138,20 +140,28 @@ void ViewerFrame::timerCallback()
 {
     if(processor->sequenceObject.propertiesChanged)
     {
-//        std::cout << "Properties changed" <<"\n";
         String txt = processor->sequenceObject.getScoreFileName();
-//        fileNameLabel.setText(processor->sequenceObject.getScoreFileName(), dontSendNotification);
         getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName());
 //        tempoSlider.setValue(processor->sequenceObject.getTempoMultiplier(), dontSendNotification);
         repaint();
         processor->sequenceObject.propertiesChanged = false;
     }
-//    static juce::Value selectedId;
-//    if (selectedId != pCCB->comboBox.getSelectedId())
-//        std::cout << "getSelectedId" <<pCCB->comboBox.getSelectedId()<<"\n";
-//    selectedId = pCCB->comboBox.getSelectedId();
+    
+    if (chainAmount != (double) pIncDecBox->incDecBox.getValueObject().getValue())
+    {
+        std::cout << "chainAmount" <<(double)pIncDecBox->incDecBox.getValueObject().getValue()<<"\n";
+        chainAmount = pIncDecBox->incDecBox.getValueObject().getValue();
+        sendActionMessage("chain:"+String(chainAmount));
+    }
+    
+    static juce::Value prevValue;
+    if (prevValue != pTempoSlider->threeValueSlider.getValueObject())
+        std::cout << "getIncDevValue" <<(double)pTempoSlider->threeValueSlider.getValueObject().getValue()<<"\n";
+    prevValue = pTempoSlider->threeValueSlider.getValueObject().getValue();
+    pTempoSlider->threeValueSlider.setValue(processor->getRealTimeTempo());
+    
 //    scaledTempo.setText(String(processor->getTempo(),1), dontSendNotification);
-//    realtimeTempo.setText(String(processor->getRealTimeTempo(),1), dontSendNotification);
+    realtimeTempo.setText(String(processor->getRealTimeTempo(),1), dontSendNotification);
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -243,6 +253,12 @@ void ViewerFrame::buttonClicked (Button* button)
         sendActionMessage("setSelectedNotesActive");
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeInactive == id)
         sendActionMessage("setSelectedNotesInactive");
+    
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_chain == id)
+    {
+        if (chainAmount!=-1)
+            sendActionMessage("chain:"+String(chainAmount));
+    }
     
     
 //    if (button == &rewindButton)
