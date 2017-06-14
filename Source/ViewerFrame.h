@@ -192,7 +192,8 @@ private:
             _rewind         = 12,
             _listen         = 13,
             _rePlay         = 14,
-            customComboBox  = 15
+            customComboBox  = 15,
+            customIncDecBox = 16
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -215,6 +216,7 @@ private:
             ids.add (_makeActive);
             ids.add (_makeInactive);
             ids.add (_chain);
+            ids.add (customIncDecBox);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_rewind);
@@ -258,13 +260,18 @@ private:
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
             ids.add (separatorBarId);
             ids.add (_makeActive);
             ids.add (_makeInactive);
+            ids.add (separatorBarId);
             ids.add (_chain);
+            ids.add (customIncDecBox);
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
             ids.add (separatorBarId);
@@ -327,8 +334,13 @@ private:
                 case customComboBox:
                 {
                     CustomToolbarComboBox *ccb = new CustomToolbarComboBox (itemId);
-//                    ccb->addListener(pViewerFrame);
                     return ccb;
+                }
+                    
+                case customIncDecBox:
+                {
+                    CustomIncDecBox *incDec = new CustomIncDecBox (itemId);
+                    return incDec;
                 }
                 default:                break;
             }
@@ -413,11 +425,70 @@ private:
 //            ComboBox comboBox;
 //            ViewerFrame *pViewerFrame;
         };
+        
+//        Slider* createSlider (bool isSnapping)
+//        {
+//            Slider* s = isSnapping ? new SnappingSlider() : new Slider();
+//            sliders.add (s);
+//            addAndMakeVisible (s);
+//            s->setRange (0.0, 100.0, 0.1);
+//            s->setPopupMenuEnabled (true);
+//            s->setValue (Random::getSystemRandom().nextDouble() * 100.0, dontSendNotification);
+//            return s;
+//        }
+        
+        class CustomIncDecBox : public ToolbarItemComponent
+        {
+        public:
+            CustomIncDecBox (const int toolbarItemId)
+            : ToolbarItemComponent (toolbarItemId, "Custom Toolbar Item", false)//,
+            //comboBox ("demo toolbar combo box")
+            {
+                ToolbarItemComponent::addAndMakeVisible (incDecBox);
+
+                incDecBox.setRange (0, 600.0, 1);
+                incDecBox.setValue (12, dontSendNotification);
+                incDecBox.setSliderStyle (Slider::IncDecButtons);
+                incDecBox.setTextBoxStyle (Slider::TextBoxLeft, false, 30, 20);
+                incDecBox.setBounds (180, 40, 20, 20);
+                incDecBox.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 30, 20);
+            }
+            
+            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+                                      int& preferredSize, int& minSize, int& maxSize) override
+            {
+                if (isVertical)
+                    return false;
+                
+                preferredSize = 90;
+                minSize = 90;
+                maxSize =90;
+                return true;
+            }
+            
+            void paintButtonArea (Graphics&, int, int, bool, bool) override
+            {
+            }
+            
+            void contentAreaChanged (const Rectangle<int>& newArea) override
+            {
+                incDecBox.setSize (newArea.getWidth() - 2,
+                                  jmin (newArea.getHeight() - 2, 22));
+                
+                incDecBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+            }
+//            ComboBox comboBox;
+            Slider incDecBox;
+        private:
+            //            ComboBox comboBox;
+            //            ViewerFrame *pViewerFrame;
+        };
         ViewerFrame *pViewerFrame;
     };
 
     DemoToolbarItemFactory factory;
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
+    DemoToolbarItemFactory::CustomToolbarComboBox *pIncDecBox;
     
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
 };
