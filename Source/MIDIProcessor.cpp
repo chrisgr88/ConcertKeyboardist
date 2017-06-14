@@ -296,7 +296,8 @@ void MIDIProcessor::listenToSelection()
     {
         if (copyOfSelectedNotes.size()==0)
         {
-            startListenTime =  sequenceObject.theSequence.front().getTimeStamp();
+            catchUp();
+            startListenTime = sequenceObject.theSequence[currentSeqStep+1].getTimeStamp();
             endListenTime =  sequenceObject.theSequence.back().getTimeStamp();
         }
         else
