@@ -81,6 +81,21 @@ ApplicationProperties& getAppProperties();
         
         else if (message == "editRedo")
             perform (CommandIDs::editRedo);
+        
+        else if (message == "play")
+            perform (CommandIDs::playFromPreviousStart);
+        else if (message == "pause")
+            perform (CommandIDs::pause);
+        
+        else if (message == "listenToSelection")
+            perform (CommandIDs::listenToSelection);
+        else if (message == "playFromPreviousStart")
+            perform (CommandIDs::playFromPreviousStart);
+        
+        else if (message == "setSelectedNotesActive")
+            perform (CommandIDs::setSelectedNotesActive);
+        else if (message == "setSelectedNotesInactive")
+            perform (CommandIDs::setSelectedNotesInactive);
     }
     
     bool MainWindow::keyPressed (const KeyPress& key, Component* originatingComponent)
@@ -179,6 +194,10 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("PlayFromLastPlayed", "Play From Last Played", category, 0);
                 result.defaultKeypresses.add (KeyPress (' ', ModifierKeys::shiftModifier, 0));
                 break;
+            case CommandIDs::pause:
+                result.setInfo ("Pause", "Pause", category, 0);
+                result.defaultKeypresses.add (KeyPress (' ', ModifierKeys::noModifiers, 0));
+                break;
             case CommandIDs::playFromPreviousStart:
                 result.setInfo ("playFromPreviousPlayStart", "playFromPreviousPlayStart", category, 0);
                 result.defaultKeypresses.add (KeyPress ('-', ModifierKeys::noModifiers, 0));
@@ -217,8 +236,15 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::toggleSelectedNotesActive:
                 result.setInfo ("toggleSelectedNotesActive", "toggleSelectedNotesActive", category, 0);
-                result.addDefaultKeypress ('a', ModifierKeys::noModifiers);
                 result.addDefaultKeypress ('t', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::setSelectedNotesActive:
+                result.setInfo ("setSelectedNotesActive", "setSelectedNotesActive", category, 0);
+                result.addDefaultKeypress ('a', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::setSelectedNotesInactive:
+                result.setInfo ("setSelectedNotesInactive", "setSelectedNotesInactive", category, 0);
+                result.addDefaultKeypress ('i', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::chainSelectedNotes:
                 result.setInfo ("chainSelectedNotes", "chainSelectedNotes", category, 0);
@@ -300,6 +326,7 @@ ApplicationProperties& getAppProperties();
             //            menu.addCommandItem (&getCommandManager(), CommandIDs::setPlayheadToHere);
             menu.addCommandItem (&getCommandManager(), CommandIDs::playPause);
             menu.addCommandItem (&getCommandManager(), CommandIDs::playFromCurrentPlayhead);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::pause);
             menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
             menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }
@@ -345,6 +372,7 @@ ApplicationProperties& getAppProperties();
             CommandIDs::fileSaveAs,
             CommandIDs::playPause,
             CommandIDs::playFromCurrentPlayhead,
+            CommandIDs::pause,
             CommandIDs::playFromPreviousStart,
             CommandIDs::listenToSelection,
             CommandIDs::increaseTempo,
@@ -354,6 +382,8 @@ ApplicationProperties& getAppProperties();
             CommandIDs::editRedo,
             CommandIDs::clearSelection,
             CommandIDs::toggleSelectedNotesActive,
+            CommandIDs::setSelectedNotesActive,
+            CommandIDs::setSelectedNotesInactive,
             CommandIDs::chainSelectedNotes,
             CommandIDs::velHumanizeSelection,
             CommandIDs::timeHumanizeSelection,
@@ -420,6 +450,9 @@ ApplicationProperties& getAppProperties();
             case CommandIDs::playFromCurrentPlayhead:
                 midiProcessor.play(true,"currentPlayhead");
                 break;
+            case CommandIDs::pause:
+                midiProcessor.play(false,"ZTL");
+                break;
             case CommandIDs::playFromPreviousStart:
                 if (midiProcessor.isPlaying)
                     midiProcessor.play(false,"ZTL");
@@ -479,7 +512,6 @@ ApplicationProperties& getAppProperties();
                 break;
                 
             case CommandIDs::toggleSelectedNotesActive:
-                std::cout <<"toggleSelectedNotesActive\n";
                 if (!midiProcessor.isPlaying)
                 {
                     if (midiProcessor.copyOfSelectedNotes.size()>0)
@@ -488,6 +520,34 @@ ApplicationProperties& getAppProperties();
                         MIDIProcessor::ActionSetNoteActivity* action;
                         const bool setActive = !midiProcessor.getNoteActivity(midiProcessor.copyOfSelectedNotes[0]);
                         action = new MIDIProcessor::ActionSetNoteActivity(midiProcessor, setActive,
+                                                                          midiProcessor.copyOfSelectedNotes);
+                        midiProcessor.undoMgr->perform(action);
+                    }
+                }
+                break;
+                
+            case CommandIDs::setSelectedNotesActive:
+                if (!midiProcessor.isPlaying)
+                {
+                    if (midiProcessor.copyOfSelectedNotes.size()>0)
+                    {
+                        midiProcessor.undoMgr->beginNewTransaction();
+                        MIDIProcessor::ActionSetNoteActivity* action;
+                        action = new MIDIProcessor::ActionSetNoteActivity(midiProcessor, true,
+                                                                          midiProcessor.copyOfSelectedNotes);
+                        midiProcessor.undoMgr->perform(action);
+                    }
+                }
+                break;
+                
+            case CommandIDs::setSelectedNotesInactive:
+                if (!midiProcessor.isPlaying)
+                {
+                    if (midiProcessor.copyOfSelectedNotes.size()>0)
+                    {
+                        midiProcessor.undoMgr->beginNewTransaction();
+                        MIDIProcessor::ActionSetNoteActivity* action;
+                        action = new MIDIProcessor::ActionSetNoteActivity(midiProcessor, false,
                                                                           midiProcessor.copyOfSelectedNotes);
                         midiProcessor.undoMgr->perform(action);
                     }

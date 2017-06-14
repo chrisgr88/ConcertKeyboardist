@@ -204,7 +204,9 @@ void ViewerFrame::buttonClicked (Button* button)
 //    CommandIDs::decreaseTempo,
 
     
-//    CommandIDs::toggleSelectedNotesActive - _makeActive __makeInactive ****
+//    CommandIDs::toggleSelectedNotesActive
+//    CommandIDs::setSelectedNotesActive
+//    CommandIDs::setSelectedNotesInactive
 //    CommandIDs::chainSelectedNotes - _chain
 //    CommandIDs::velHumanizeSelection,
 //    CommandIDs::timeHumanizeSelection,
@@ -227,8 +229,20 @@ void ViewerFrame::buttonClicked (Button* button)
         sendActionMessage("editRedo");
     
     
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::doc_saveAs == id)
-        sendActionMessage("doc_saveAs");
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_play == id)
+        sendActionMessage("play");
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_stop == id)
+        sendActionMessage("pause");
+    
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_listen == id)
+        sendActionMessage("listenToSelection");
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_rePlay == id)
+        sendActionMessage("playFromPreviousStart");
+    
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeActive == id)
+        sendActionMessage("setSelectedNotesActive");
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeInactive == id)
+        sendActionMessage("setSelectedNotesInactive");
     
     
 //    if (button == &rewindButton)

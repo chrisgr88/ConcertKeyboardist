@@ -30,6 +30,8 @@ namespace CommandIDs
     static const int editRedo                   = 0x40020;
     static const int clearSelection             = 0x40030;
     static const int toggleSelectedNotesActive  = 0x41000;
+    static const int setSelectedNotesActive     = 0x41001;
+    static const int setSelectedNotesInactive   = 0x41002;
     static const int chainSelectedNotes         = 0x41020; //Needs a chaining interval argument
     static const int velHumanizeSelection       = 0x41030; //Needs a vel profile argument (currently use default one)
     static const int timeHumanizeSelection      = 0x41040; //Needs a time argument
@@ -37,8 +39,9 @@ namespace CommandIDs
 //    static const int setPlayheadToHere          = 0x50000;
     static const int playPause                  = 0x50001;
     static const int playFromCurrentPlayhead   = 0x50002;
-    static const int playFromPreviousStart      = 0x50003;
-    static const int listenToSelection          = 0x50005;
+    static const int pause                      = 0x50003;
+    static const int playFromPreviousStart      = 0x50005;
+    static const int listenToSelection          = 0x50006;
     static const int rewind                     = 0x50010;
     static const int increaseTempo              = 0x50020;
     static const int decreaseTempo              = 0x50030;
