@@ -193,7 +193,7 @@ private:
             _listen         = 13,
             _rePlay         = 14,
             customComboBox  = 15,
-            customIncDecBox = 16,
+            customTextBox   = 16,
             tempoSlider     = 17
         };
         
@@ -217,7 +217,7 @@ private:
             ids.add (_makeActive);
             ids.add (_makeInactive);
             ids.add (_chain);
-            ids.add (customIncDecBox);
+            ids.add (customTextBox);
             ids.add (tempoSlider);
             ids.add (_play);
             ids.add (_stop);
@@ -273,7 +273,7 @@ private:
             ids.add (_makeInactive);
             ids.add (separatorBarId);
             ids.add (_chain);
-            ids.add (customIncDecBox);
+            ids.add (customTextBox);
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
             ids.add (separatorBarId);
@@ -341,10 +341,10 @@ private:
                     return ccb;
                 }
                     
-                case customIncDecBox:
+                case customTextBox:
                 {
-                    CustomIncDecBox *incDec = new CustomIncDecBox (itemId);
-                    return incDec;
+                    CustomTextBox *txtBox = new CustomTextBox (itemId);
+                    return txtBox;
                 }
                     
                 case tempoSlider:
@@ -399,35 +399,28 @@ private:
             comboBox ("demo toolbar combo box")
             {
                 ToolbarItemComponent::addAndMakeVisible (comboBox);
-
                 for (int i = 1; i < 20; ++i)
                     comboBox.addItem ("Toolbar ComboBox item " + String (i), i);
 
                 comboBox.setSelectedId (1);
                 comboBox.setEditableText (true);
             }
-
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
             {
                 if (isVertical)
                     return false;
-
                 preferredSize = 250;
                 minSize = 80;
                 maxSize = 300;
                 return true;
             }
-
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-
             void contentAreaChanged (const Rectangle<int>& newArea) override
             {
-                comboBox.setSize (newArea.getWidth() - 2,
-                                  jmin (newArea.getHeight() - 2, 22));
-                
+                comboBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
                 comboBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
             }
         ComboBox comboBox;
@@ -452,7 +445,6 @@ private:
                 threeValueSlider.setBounds (180, 40, 70, 20);
                 threeValueSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 30, 20);
             }
-            
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
             {
@@ -464,20 +456,68 @@ private:
                 maxSize =220;
                 return true;
             }
-            
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            
             void contentAreaChanged (const Rectangle<int>& newArea) override
             {
-                threeValueSlider.setSize (newArea.getWidth() - 2,
-                                  jmin (newArea.getHeight() - 2, 22));
-                
+                threeValueSlider.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
                 threeValueSlider.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
             }
             Slider threeValueSlider;
         };
+        //=================================================
+        class CustomTextBox : public ToolbarItemComponent, private TextEditorListener
+        {
+        public:
+            CustomTextBox (const int toolbarItemId)
+            : ToolbarItemComponent (toolbarItemId, "Chaining Interval", false)
+            {
+                ToolbarItemComponent::addAndMakeVisible (textBox);
+                textBox.setMultiLine (false);
+                textBox.setReturnKeyStartsNewLine (false);
+                textBox.setReadOnly (false);
+                textBox.setScrollbarsShown (false);
+                textBox.setCaretVisible (true);
+//                textBox.setFont (Font (11));
+                textBox.setPopupMenuEnabled (true);
+                textBox.setText("12");
+                textBox.addListener (this);
+                textBox.setBounds (180, 40, 20, 20);
+            }
+            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+                                      int& preferredSize, int& minSize, int& maxSize) override
+            {
+                if (isVertical)
+                    return false;
+                
+                preferredSize = 30;
+                minSize = 30;
+                maxSize =30;
+                return true;
+            }
+            void paintButtonArea (Graphics&, int, int, bool, bool) override
+            {
+            }
+            void textEditorTextChanged(TextEditor&) override
+            {
+                std::cout << "Entering text\n";
+                returnPressed = false;
+            }
+            void textEditorReturnKeyPressed (TextEditor&) override
+            {
+                std::cout << "Return pressed\n";
+                returnPressed = true;
+            }
+            void contentAreaChanged (const Rectangle<int>& newArea) override
+            {
+                textBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
+                textBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+            }
+            TextEditor textBox;
+            bool returnPressed = false;
+        };
+        
         //=================================================
         class CustomIncDecBox : public ToolbarItemComponent
         {
@@ -493,7 +533,6 @@ private:
                 incDecBox.setBounds (180, 40, 20, 20);
                 incDecBox.setTextBoxStyle(Slider::TextBoxLeft, false, 30, 20);
             }
-            
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
             {
@@ -505,16 +544,12 @@ private:
                 maxSize =90;
                 return true;
             }
-            
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            
             void contentAreaChanged (const Rectangle<int>& newArea) override
             {
-                incDecBox.setSize (newArea.getWidth() - 2,
-                                   jmin (newArea.getHeight() - 2, 22));
-                
+                incDecBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
                 incDecBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
             }
             Slider incDecBox;
@@ -525,7 +560,7 @@ private:
 
     DemoToolbarItemFactory factory;
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
-    DemoToolbarItemFactory::CustomIncDecBox *pIncDecBox;
+    DemoToolbarItemFactory::CustomTextBox *pTextBox;
     DemoToolbarItemFactory::TempoSlider *pTempoSlider;
     
     double chainAmount = -1;

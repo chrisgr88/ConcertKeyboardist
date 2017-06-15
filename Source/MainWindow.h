@@ -64,11 +64,17 @@ public DocumentWindow,
 public MenuBarModel,
 public ApplicationCommandTarget,
 public KeyListener,
-public ActionListener
+public ActionListener//,
+//public Timer
 {
 public:
     MainWindow (String name);
     ~MainWindow ();
+    
+//    void timerCallback() override
+//    {
+//        std::cout << "MainWindow " << isActiveWindow() << "\n";
+//    }
     
     void actionListenerCallback (const String& message) override;
     

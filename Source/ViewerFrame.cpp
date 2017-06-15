@@ -38,8 +38,8 @@ factory(this)
     {
         std::cout <<i<< "Listener " << toolbar.getItemComponent(i) <<"\n";
         int id = toolbar.getItemId(i);
-        if (id == DemoToolbarItemFactory::DemoToolbarItemIds::customIncDecBox)
-            pIncDecBox = (DemoToolbarItemFactory::CustomIncDecBox *) toolbar.getItemComponent(i);
+        if (id == DemoToolbarItemFactory::DemoToolbarItemIds::customTextBox)
+            pTextBox = (DemoToolbarItemFactory::CustomTextBox *) toolbar.getItemComponent(i);
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoSlider)
             pTempoSlider = (DemoToolbarItemFactory::TempoSlider *) toolbar.getItemComponent(i);
         else
@@ -147,11 +147,12 @@ void ViewerFrame::timerCallback()
         processor->sequenceObject.propertiesChanged = false;
     }
     
-    if (chainAmount != (double) pIncDecBox->incDecBox.getValueObject().getValue())
+    if (pTextBox->returnPressed)
     {
-        std::cout << "chainAmount" <<(double)pIncDecBox->incDecBox.getValueObject().getValue()<<"\n";
-        chainAmount = pIncDecBox->incDecBox.getValueObject().getValue();
+        std::cout << "chainAmount" <<pTextBox->textBox.getText().getDoubleValue()<<"\n";
+        chainAmount = pTextBox->textBox.getText().getDoubleValue();
         sendActionMessage("chain:"+String(chainAmount));
+        pTextBox->returnPressed = false;
     }
     
     static juce::Value prevValue;
