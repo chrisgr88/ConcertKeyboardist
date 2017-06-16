@@ -38,10 +38,12 @@ factory(this)
     {
         std::cout <<i<< "Listener " << toolbar.getItemComponent(i) <<"\n";
         int id = toolbar.getItemId(i);
-        if (id == DemoToolbarItemFactory::DemoToolbarItemIds::customTextBox)
-            pTextBox = (DemoToolbarItemFactory::CustomTextBox *) toolbar.getItemComponent(i);
-        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoSlider)
-            pTempoSlider = (DemoToolbarItemFactory::TempoSlider *) toolbar.getItemComponent(i);
+        if (id == DemoToolbarItemFactory::DemoToolbarItemIds::chainAmountBox)
+            pTextBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+//        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoSlider)
+//            pTempoSlider = (DemoToolbarItemFactory::TempoSlider *) toolbar.getItemComponent(i);
+        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoBox)
+            pTempoBox = (DemoToolbarItemFactory::TempoBox *) toolbar.getItemComponent(i);
         else
             toolbar.getItemComponent(i)->addListener(this);
     }
@@ -155,14 +157,38 @@ void ViewerFrame::timerCallback()
         pTextBox->returnPressed = false;
     }
     
-    static juce::Value prevValue;
-    if (prevValue != pTempoSlider->threeValueSlider.getValueObject())
-        std::cout << "getIncDevValue" <<(double)pTempoSlider->threeValueSlider.getValueObject().getValue()<<"\n";
-    prevValue = pTempoSlider->threeValueSlider.getValueObject().getValue();
-    pTempoSlider->threeValueSlider.setValue(processor->getRealTimeTempo());
+    if (pTempoBox->changed)
+    {
+        std::cout << "tempoChanged " <<pTempoBox->numberBox.getText().getDoubleValue()<<"\n";
+        double prevTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
+        double tempoMult = pTempoBox->numberBox.getText().getDoubleValue()/prevTempo;
+        processor->sequenceObject.setTempoMultiplier(tempoMult, true);
+        pTempoBox->changed = false;
+    }
     
-//    scaledTempo.setText(String(processor->getTempo(),1), dontSendNotification);
-    realtimeTempo.setText(String(processor->getRealTimeTempo(),1), dontSendNotification);
+//    std::cout << "timerCallback " <<processor->sequenceObject.lowerTempoLimit*processor->getTempo()
+//    <<" "<<processor->sequenceObject.upperTempoLimit*processor->getTempo()
+//    <<" "<<processor->getRealTimeTempo()<<"\n";
+
+//    pTempoSlider->tempoSlider.setRange(processor->sequenceObject.lowerTempoLimit, processor->sequenceObject.upperTempoLimit,0.01);
+//    if (pTempoSlider->changed)
+//    {
+//        std::cout << "tempoSlider in Timer " <<(double)pTempoSlider->tempoSlider.getValueObject().getValue()<<"\n";
+//        const double val = pTempoSlider->tempoSlider.getValueObject().getValue();
+////        const double prevTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
+//        processor->sequenceObject.setTempoMultiplier(val, true);
+//        pTempoSlider->changed = false;
+//    }
+//    else
+//    {
+//        pTempoSlider->tempoSlider.setValue(processor->sequenceObject.getTempoMultiplier());
+//        
+////        scaledTempo.setText(String(processor->getRealTimeTempo()), dontSendNotification);
+////        pTempoSlider->tempoSlider.setRange(processor->sequenceObject.lowerTempoLimit*processor->getTempo(),
+////                                           processor->sequenceObject.upperTempoLimit*processor->getTempo(),1);
+////        realtimeTempo.setText(String(processor->getRealTimeTempo(),1), dontSendNotification);
+//    }
+//    scaledTempo.setText(String(processor->getRealTimeTempo()), dontSendNotification);
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -257,8 +283,8 @@ void ViewerFrame::buttonClicked (Button* button)
     
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_chain == id)
     {
-        if (chainAmount!=-1)
-            sendActionMessage("chain:"+String(chainAmount));
+//        if (chainAmount!=-1)
+        sendActionMessage("chain:"+String(chainAmount));
     }
     
     

@@ -150,7 +150,7 @@ private:
     
     TextButton playStopButton;
     TextButton rewindButton;
-    Slider tempoSlider;
+//    Slider tempoSlider;
     Label scaledTempo;
     Label realtimeTempo;
     Label commandLabel;
@@ -193,8 +193,8 @@ private:
             _listen         = 13,
             _rePlay         = 14,
             customComboBox  = 15,
-            customTextBox   = 16,
-            tempoSlider     = 17
+            chainAmountBox   = 16,
+            tempoBox        = 17
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -217,8 +217,8 @@ private:
             ids.add (_makeActive);
             ids.add (_makeInactive);
             ids.add (_chain);
-            ids.add (customTextBox);
-            ids.add (tempoSlider);
+            ids.add (chainAmountBox);
+            ids.add (tempoBox);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_rewind);
@@ -242,15 +242,15 @@ private:
             ids.add (doc_save);
             ids.add (doc_saveAs);
             ids.add (separatorBarId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
@@ -273,7 +273,7 @@ private:
             ids.add (_makeInactive);
             ids.add (separatorBarId);
             ids.add (_chain);
-            ids.add (customTextBox);
+            ids.add (chainAmountBox);
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
             ids.add (separatorBarId);
@@ -283,7 +283,7 @@ private:
             ids.add (_listen);
             ids.add (_rePlay);
             ids.add (separatorBarId);
-            ids.add (tempoSlider);
+            ids.add (tempoBox);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (spacerId);
@@ -341,16 +341,16 @@ private:
                     return ccb;
                 }
                     
-                case customTextBox:
+                case chainAmountBox:
                 {
-                    CustomTextBox *txtBox = new CustomTextBox (itemId);
+                    ChainAmountBox *txtBox = new ChainAmountBox (itemId);
                     return txtBox;
                 }
                     
-                case tempoSlider:
+                case tempoBox:
                 {
-                    TempoSlider *tempoSlider = new TempoSlider (itemId);
-                    return tempoSlider;
+                    TempoBox *tempoBox = new TempoBox (itemId);
+                    return tempoBox;
                 }
                 default:                break;
             }
@@ -428,49 +428,57 @@ private:
         };
         
         
+//        //=================================================
+//        class TempoSlider : public ToolbarItemComponent, private Slider::Listener
+//        {
+//        public:
+//            TempoSlider (const int toolbarItemId)
+//            : ToolbarItemComponent (toolbarItemId, "Tempo Slider", false)//,
+//            //comboBox ("demo toolbar combo box")
+//            {
+//                ToolbarItemComponent::addAndMakeVisible (tempoSlider);
+//                tempoSlider.setSliderStyle (Slider::LinearHorizontal);
+//                tempoSlider.setRange (20, 300, 1);
+////                tempoSlider.setMinValue(50);
+////                tempoSlider.setMaxValue(200);
+//                tempoSlider.setValue (120, dontSendNotification);
+//                tempoSlider.setBounds (180, 40, 70, 20);
+//                tempoSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 40, 20);
+//                tempoSlider.addListener(this);
+//            }
+//            void sliderValueChanged (Slider* sliderThatWasMoved) override
+//            {
+////                double value = tempoSlider.getValue();
+//                changed = true;
+////                std::cout << "Temposlider " << value <<"\n";
+//            }
+//            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+//                                      int& preferredSize, int& minSize, int& maxSize) override
+//            {
+//                if (isVertical)
+//                    return false;
+//                
+//                preferredSize = 180;
+//                minSize = 120;
+//                maxSize =220;
+//                return true;
+//            }
+//            void paintButtonArea (Graphics&, int, int, bool, bool) override
+//            {
+//            }
+//            void contentAreaChanged (const Rectangle<int>& newArea) override
+//            {
+//                tempoSlider.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
+//                tempoSlider.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+//            }
+//            Slider tempoSlider;
+//            bool changed;
+//        };
         //=================================================
-        class TempoSlider : public ToolbarItemComponent
+        class ChainAmountBox : public ToolbarItemComponent, private TextEditorListener
         {
         public:
-            TempoSlider (const int toolbarItemId)
-            : ToolbarItemComponent (toolbarItemId, "Tempo Slider", false)//,
-            //comboBox ("demo toolbar combo box")
-            {
-                ToolbarItemComponent::addAndMakeVisible (threeValueSlider);
-                threeValueSlider.setSliderStyle (Slider::ThreeValueHorizontal);
-                threeValueSlider.setRange (20, 300, 1);
-                threeValueSlider.setMinValue(50);
-                threeValueSlider.setMaxValue(200);
-                threeValueSlider.setValue (120, dontSendNotification);
-                threeValueSlider.setBounds (180, 40, 70, 20);
-                threeValueSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 30, 20);
-            }
-            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
-                                      int& preferredSize, int& minSize, int& maxSize) override
-            {
-                if (isVertical)
-                    return false;
-                
-                preferredSize = 180;
-                minSize = 120;
-                maxSize =220;
-                return true;
-            }
-            void paintButtonArea (Graphics&, int, int, bool, bool) override
-            {
-            }
-            void contentAreaChanged (const Rectangle<int>& newArea) override
-            {
-                threeValueSlider.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
-                threeValueSlider.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
-            }
-            Slider threeValueSlider;
-        };
-        //=================================================
-        class CustomTextBox : public ToolbarItemComponent, private TextEditorListener
-        {
-        public:
-            CustomTextBox (const int toolbarItemId)
+            ChainAmountBox (const int toolbarItemId)
             : ToolbarItemComponent (toolbarItemId, "Chaining Interval", false)
             {
                 ToolbarItemComponent::addAndMakeVisible (textBox);
@@ -481,8 +489,8 @@ private:
                 textBox.setCaretVisible (true);
 //                textBox.setFont (Font (11));
                 textBox.setPopupMenuEnabled (true);
-                textBox.setText("12");
                 textBox.addListener (this);
+                textBox.setText("2");
                 textBox.setBounds (180, 40, 20, 20);
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
@@ -491,9 +499,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 30;
-                minSize = 30;
-                maxSize =30;
+                preferredSize = 38;
+                minSize = 38;
+                maxSize = 38;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
@@ -516,6 +524,85 @@ private:
             }
             TextEditor textBox;
             bool returnPressed = false;
+        };
+        
+        class DraggableNumberBox : public TextEditor, public ChangeBroadcaster
+        {
+        public:
+            DraggableNumberBox ()
+            {}
+            void mouseDown (const MouseEvent& e) override
+            {
+                startValue = getText().getDoubleValue();
+            }
+            void mouseDrag (const MouseEvent& e) override
+            {
+                double newVal = startValue-e.getDistanceFromDragStartY()/2;
+                if (newVal<40) newVal=40;
+                if (newVal>300) newVal=300;
+                setText(String(newVal));
+                sendChangeMessage();
+            }
+            double startValue;
+        };
+
+        
+        //=================================================
+        class TempoBox : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
+        {
+        public:
+            TempoBox (const int toolbarItemId)
+            : ToolbarItemComponent (toolbarItemId, "Chaining Interval", false)
+            {
+                ToolbarItemComponent::addAndMakeVisible (numberBox);
+                numberBox.setMultiLine (false);
+                numberBox.setReturnKeyStartsNewLine (false);
+                numberBox.setReadOnly (false);
+                numberBox.setScrollbarsShown (false);
+                numberBox.setCaretVisible (true);
+                //                textBox.setFont (Font (11));
+                numberBox.setPopupMenuEnabled (true);
+                numberBox.addListener (this);
+                numberBox.setText("100");
+                numberBox.setBounds (180, 45, 20, 20);
+            }
+            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+                                      int& preferredSize, int& minSize, int& maxSize) override
+            {
+                if (isVertical)
+                    return false;
+                
+                preferredSize = 38;
+                minSize = 38;
+                maxSize = 38;
+                numberBox.addChangeListener(this);
+                return true;
+            }
+            void paintButtonArea (Graphics&, int, int, bool, bool) override
+            {
+            }
+            void textEditorTextChanged(TextEditor&) override
+            {
+//                std::cout << "Entering text\n";
+                changed = false;
+            }
+            void changeListenerCallback (ChangeBroadcaster* source) override
+            {
+//                std::cout << "CHANGE\n";
+                changed = true;
+            }
+            void textEditorReturnKeyPressed (TextEditor&) override
+            {
+//                std::cout << "Return pressed\n";
+                changed = true;
+            }
+            void contentAreaChanged (const Rectangle<int>& newArea) override
+            {
+                numberBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
+                numberBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+            }
+            DraggableNumberBox numberBox;
+            bool changed = false;
         };
         
         //=================================================
@@ -560,10 +647,11 @@ private:
 
     DemoToolbarItemFactory factory;
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
-    DemoToolbarItemFactory::CustomTextBox *pTextBox;
-    DemoToolbarItemFactory::TempoSlider *pTempoSlider;
+    DemoToolbarItemFactory::ChainAmountBox *pTextBox;
+//    DemoToolbarItemFactory::TempoSlider *pTempoSlider;
+    DemoToolbarItemFactory::TempoBox *pTempoBox;
     
-    double chainAmount = -1;
+    double chainAmount;
     
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
 };

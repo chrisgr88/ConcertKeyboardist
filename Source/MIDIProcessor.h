@@ -56,7 +56,10 @@ public:
         if (timeInTicks<=0)
             return 60;
         else
+        {
+            std::cout<< "getRealTimeTempo "<< timeInTicks << " "<<sequenceObject.getTempo(timeInTicks) <<"\n";
             return sequenceObject.tempoMultiplier * sequenceObject.getTempo(timeInTicks) * variableTempoRatio;
+        }
     }
     
     void processBlock ();
