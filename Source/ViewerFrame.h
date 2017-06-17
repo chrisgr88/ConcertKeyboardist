@@ -551,6 +551,7 @@ private:
                 textBox.setReadOnly (false);
                 textBox.setScrollbarsShown (false);
                 textBox.setCaretVisible (false);
+                textBox.setMouseClickGrabsKeyboardFocus(false);
                 //                textBox.setFont (Font (11));
                 textBox.setPopupMenuEnabled (false);
                 textBox.setText("");

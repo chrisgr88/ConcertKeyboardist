@@ -852,8 +852,7 @@ void ScrollingNoteViewer::makeNoteBars()
     addRectangle(seqDurationInTicks*pixelsPerTick-1.0f,0.f,2.0f,initialHeight, Colour(0xFFC0C0C0));
     
     //Velocity graph
-    double height = 300-topMargin;  //300 is the original window height set in MainComponent.cpp
-    const double graphHeight = height-getTopMargin();
+    const double graphHeight = 300.0-getTopMargin()-toolbarHeight; //300 is the original window height set in MainComponent.cpp
     double prevY = graphHeight * sequence->at(0).highestVelocityInChain/127.0;
     double prevX = -1;
     for (int index = 0;index<static_cast<int>(sequence->size());index++)
@@ -861,16 +860,16 @@ void ScrollingNoteViewer::makeNoteBars()
         const NoteWithOffTime msg = sequence->at(index);
         const double startPixel = msg.getTimeStamp()*pixelsPerTick;
         double x = startPixel;
-        double height = 300-topMargin;  //300 is the original window height set in MainComponent.cpp
-        const double graphHeight = height-getTopMargin();
         if (msg.triggeredBy==-1)
         {
             int velocityOfTargetNote = msg.getVelocity();
             
             const double scaledVelocity = graphHeight * velocityOfTargetNote/127.0;
-            const double thisY = scaledVelocity+topMargin;
+            const double thisY = scaledVelocity;
             if (prevX != -1)
             {
+//                if (30<index&&index<50)
+//                    std::cout << index<<" prevY graphHeight "<<prevY <<" "<<graphHeight<<" "<<topMargin<<"\n";
                 addLine (prevX, prevY, x, thisY, 1.0f, Colour(0xFFF0F0FF));
                 prevY = thisY;
             }

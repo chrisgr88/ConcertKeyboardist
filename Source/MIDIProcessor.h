@@ -293,38 +293,40 @@ public:
         Array<Sequence::StepActivity> stepActivityList;
         if (setNotesActive==true)
         {
-            for (int stp=0;stp<steps.size();stp++)
+            for (int i=0;i<steps.size();i++)
             {
-                const double ts = sequenceObject.theSequence.at(steps[stp]).getTimeStamp();
+                const double ts = sequenceObject.theSequence.at(steps[i]).getTimeStamp();
                 const int index = sequenceObject.targetNoteTimes.indexOf(ts);
                 if (index>=0)
                 {
-                    const Sequence::StepActivity act = {steps[stp], true};
+                    const Sequence::StepActivity act = {steps[i], true};
                     stepActivityList.add(act);
                 }
                 else
                 {
-                    sequenceObject.targetNoteTimes.add(ts);
-                    const Sequence::StepActivity act = {steps[stp], false};
+                    if (sequenceObject.theSequence.at(steps[i]).chordTopStep==-1)
+                        sequenceObject.targetNoteTimes.add(ts);
+                    const Sequence::StepActivity act = {steps[i], false};
                     stepActivityList.add(act);
                 }
             }
         }
         else //set Notes inActive
         {
-            for (int stp=0;stp<steps.size();stp++)
+            for (int i=0;i<steps.size();i++)
             {
-                const double ts = sequenceObject.theSequence.at(steps[stp]).getTimeStamp();
+                const double ts = sequenceObject.theSequence.at(steps[i]).getTimeStamp();
                 const int index = sequenceObject.targetNoteTimes.indexOf(ts);
                 if (index>=0)
                 {
-                    sequenceObject.targetNoteTimes.remove(index);
-                    const Sequence::StepActivity act = {steps[stp], true};
+                    if (sequenceObject.theSequence.at(steps[i]).chordTopStep==-1)
+                        sequenceObject.targetNoteTimes.remove(index);
+                    const Sequence::StepActivity act = {steps[i], true};
                     stepActivityList.add(act);
                 }
                 else
                 {
-                    const Sequence::StepActivity act = {steps[stp], false};
+                    const Sequence::StepActivity act = {steps[i], false};
                     stepActivityList.add(act);
                 }
             }

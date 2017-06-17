@@ -606,7 +606,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         {
             sequenceProps.setValue("waitForFirstNote", var(true));
             sequenceProps.setValue("tempoMultiplier", var(1.0));
-            sequenceProps.setValue("chordTimeHumanize", var(2.0));
+            sequenceProps.setValue("chordTimeHumanize", var(0.0));
             sequenceProps.setValue("chordVelocityHumanize", var(1.0));
             sequenceProps.setValue("horizontalScale", var(1.0));
             sequenceProps.setValue("autoPlaySustains", var(true));
