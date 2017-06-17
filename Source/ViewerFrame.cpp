@@ -40,92 +40,34 @@ factory(this)
         int id = toolbar.getItemId(i);
         if (id == DemoToolbarItemFactory::DemoToolbarItemIds::chainAmountBox)
             pTextBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
-//        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoSlider)
-//            pTempoSlider = (DemoToolbarItemFactory::TempoSlider *) toolbar.getItemComponent(i);
-        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoBox)
-            pTempoBox = (DemoToolbarItemFactory::TempoBox *) toolbar.getItemComponent(i);
+        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoMultiplier)
+            pTempoMultiplier = (DemoToolbarItemFactory::TempoMultiplier *) toolbar.getItemComponent(i);
+        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::realTimeTempo)
+            pRealTimeTempo = (DemoToolbarItemFactory::RealTimeTempo *) toolbar.getItemComponent(i);
+        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::scoreTempo)
+            pScoreTempo = (DemoToolbarItemFactory::ScoreTempo *) toolbar.getItemComponent(i);
         else
             toolbar.getItemComponent(i)->addListener(this);
     }
-    
-    //button1Info = new ToolbarButton
-//    ToolbarItemComponent comp = toolbar.getItemComponent(0);
-    
-//    addAndMakeVisible (tempoSlider);
-//    tempoSlider.setRange (0.1, 3.0, 0.01);
-//    tempoSlider.setSliderStyle (Slider::LinearBar);
-//    //    tempoSlider.setTextBoxStyle (Slider::NoTextBox, true, 80, 14);
-//    tempoSlider.setTextBoxIsEditable(false);
-//    tempoSlider.addListener (this);
-//    
-//    addAndMakeVisible (scaledTempo);
-//    scaledTempo.setFont (Font (12.00f, Font::plain));
-//    scaledTempo.setJustificationType (Justification::centredRight);
-//    scaledTempo.setColour (Label::textColourId, Colours::white);
-//    
-//    addAndMakeVisible (realtimeTempo);
-//    realtimeTempo.setFont (Font (12.00f, Font::plain));
-//    realtimeTempo.setJustificationType (Justification::centredRight);
-//    realtimeTempo.setColour (Label::textColourId, Colours::white);
-//    
-//    rewindButton.setButtonText ("Rewind");
-//    rewindButton.setTriggeredOnMouseDown (false);
-//    rewindButton.addListener (this);
-//    addAndMakeVisible (rewindButton);
-//    
-//    playStopButton.setButtonText ("Play");
-//    playStopButton.setTriggeredOnMouseDown (false);
-//    playStopButton.addListener (this);
-//    addAndMakeVisible (playStopButton);
-//    
-//    addAndMakeVisible (commandLabel);
-//    //    commandLabel.setText ("Command:", dontSendNotification);
-//    commandLabel.setFont (Font (12.00f, Font::plain));
-//    commandLabel.setJustificationType (Justification::centredRight);
-//    commandLabel.setColour (Label::textColourId, Colours::white);
     
     addAndMakeVisible (hoverStepInfo);
     hoverStepInfo.setFont (Font (18.00f, Font::plain));
     hoverStepInfo.setJustificationType (Justification::left);
     hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
-//    addAndMakeVisible (fileNameLabel);
-//    fileNameLabel.setFont (Font (12.00f, Font::plain));
-//    fileNameLabel.setJustificationType (Justification::horizontallyCentred);
-//    fileNameLabel.setColour (Label::textColourId, Colours::white);
-    
-//    addAndMakeVisible (textEditor = new TextEditor ("new text editor"));
-//    textEditor->setMultiLine (false);
-//    textEditor->setReturnKeyStartsNewLine (false);
-//    textEditor->setReadOnly (false);
-//    textEditor->setScrollbarsShown (false);
-//    textEditor->setCaretVisible (true);
-//    textEditor->setFont (Font (11));
-//    textEditor->setPopupMenuEnabled (true);
-//    textEditor->setText (String());
-//    textEditor->addListener (this);
-//    textEditor->setBorder((BorderSize<int>) 1);
-//    textEditor->setColour(TextEditor::outlineColourId, Colours::black);
-    
     playableKeys = "qwertyuiopasdfghjklzxcvbnm;',./[]";
-    
-//    playingKeys = "kl";
-    
+
     for (int i=0;i<playableKeys
          .length();i++)
 keysThatAreDown.add(false);
     
-//    setSize (1000,300);
 //    std::cout << "ViewerComponent isBroughtToFrontOnMouseClick " << isBroughtToFrontOnMouseClick()  <<"\n";
     startTimer(100);
 }
 
 ViewerFrame::~ViewerFrame()
 {
-//    rewindButton.removeListener (this);
-//    playStopButton.removeListener (this);
-//    tempoSlider.removeListener(this);
-//    textEditor = nullptr;
+
 }
 
 void focusGained (ScrollingNoteViewer::FocusChangeType cause)
@@ -144,7 +86,6 @@ void ViewerFrame::timerCallback()
     {
         String txt = processor->sequenceObject.getScoreFileName();
         getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName());
-//        tempoSlider.setValue(processor->sequenceObject.getTempoMultiplier(), dontSendNotification);
         repaint();
         processor->sequenceObject.propertiesChanged = false;
     }
@@ -154,41 +95,21 @@ void ViewerFrame::timerCallback()
         std::cout << "chainAmount" <<pTextBox->textBox.getText().getDoubleValue()<<"\n";
         chainAmount = pTextBox->textBox.getText().getDoubleValue();
         sendActionMessage("chain:"+String(chainAmount));
+        grabKeyboardFocus();
         pTextBox->returnPressed = false;
     }
     
-    if (pTempoBox->changed)
+    if (pTempoMultiplier->changed)
     {
-        std::cout << "tempoChanged " <<pTempoBox->numberBox.getText().getDoubleValue()<<"\n";
-        double prevTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
-        double tempoMult = pTempoBox->numberBox.getText().getDoubleValue()/prevTempo;
-        processor->sequenceObject.setTempoMultiplier(tempoMult, true);
-        pTempoBox->changed = false;
+        std::cout << "tempoChanged " <<pTempoMultiplier->numberBox.getText().getDoubleValue()<<"\n";
+        processor->sequenceObject.setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue(), true);
+        pTempoMultiplier->changed = false;
+        grabKeyboardFocus();
     }
-    
-//    std::cout << "timerCallback " <<processor->sequenceObject.lowerTempoLimit*processor->getTempo()
-//    <<" "<<processor->sequenceObject.upperTempoLimit*processor->getTempo()
-//    <<" "<<processor->getRealTimeTempo()<<"\n";
-
-//    pTempoSlider->tempoSlider.setRange(processor->sequenceObject.lowerTempoLimit, processor->sequenceObject.upperTempoLimit,0.01);
-//    if (pTempoSlider->changed)
-//    {
-//        std::cout << "tempoSlider in Timer " <<(double)pTempoSlider->tempoSlider.getValueObject().getValue()<<"\n";
-//        const double val = pTempoSlider->tempoSlider.getValueObject().getValue();
-////        const double prevTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
-//        processor->sequenceObject.setTempoMultiplier(val, true);
-//        pTempoSlider->changed = false;
-//    }
-//    else
-//    {
-//        pTempoSlider->tempoSlider.setValue(processor->sequenceObject.getTempoMultiplier());
-//        
-////        scaledTempo.setText(String(processor->getRealTimeTempo()), dontSendNotification);
-////        pTempoSlider->tempoSlider.setRange(processor->sequenceObject.lowerTempoLimit*processor->getTempo(),
-////                                           processor->sequenceObject.upperTempoLimit*processor->getTempo(),1);
-////        realtimeTempo.setText(String(processor->getRealTimeTempo(),1), dontSendNotification);
-//    }
-//    scaledTempo.setText(String(processor->getRealTimeTempo()), dontSendNotification);
+    double rtt = std::round(processor->getRealTimeTempo());
+//    std::cout << "rtt " <<rtt<<"\n";
+    pRealTimeTempo->setValue(rtt);
+    pScoreTempo->textBox.setText(String(std::round(processor->sequenceObject.getTempo(processor->getTimeInTicks()))));
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -435,13 +356,11 @@ void ViewerFrame::textEditorReturnKeyPressed (TextEditor& editor)
 //==============================================================================
 void ViewerFrame::paint (Graphics& g)
 {
-//    g.setColour(Colours::grey);
     g.setColour(Colours::purple);
     g.fillRect(0,0,getWidth(),noteViewer.getToolbarHeight()); //Command bar
     g.drawImageAt(noteViewer.getKeysImage(), 0, noteViewer.getToolbarHeight()); //Keyboard
     RecentlyOpenedFilesList recentFiles;
     recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
-//    fileNameLabel.setText(recentFiles.getFile(0).getFileName(), juce::NotificationType::dontSendNotification);
 }
 
 void ViewerFrame::resized()
@@ -453,14 +372,5 @@ void ViewerFrame::resized()
     
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight());
-
-//    rewindButton.setBounds(62, 0, 60, noteViewer.getToolbarHeight()-1);
-//    playStopButton.setBounds(124, 0, 60, noteViewer.getToolbarHeight()-1);
-//    tempoSlider.setBounds(186, 0, 200, noteViewer.getToolbarHeight()-1);
-//    scaledTempo.setBounds(385, 1, 40, noteViewer.getToolbarHeight()-1);
-//    realtimeTempo.setBounds(425, 1, 40, noteViewer.getToolbarHeight()-1);
-//    commandLabel.setBounds(464,1,50,13);
-//    textEditor->setBounds (510,1,150, noteViewer.getToolbarHeight()-1);
     hoverStepInfo.setBounds(getWidth()-380, 0, 340, noteViewer.getToolbarHeight()-1);
-//    fileNameLabel.setBounds(getWidth()-250, 0, 280, noteViewer.getToolbarHeight()-1);
 }

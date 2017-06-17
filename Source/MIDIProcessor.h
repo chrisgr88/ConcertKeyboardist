@@ -54,10 +54,10 @@ public:
     double getRealTimeTempo ()
     {
         if (timeInTicks<=0)
-            return 60;
+            return sequenceObject.tempoMultiplier * sequenceObject.getTempo(0) * variableTempoRatio;
         else
         {
-            std::cout<< "getRealTimeTempo "<< timeInTicks << " "<<sequenceObject.getTempo(timeInTicks) <<"\n";
+//            std::cout<< "getRealTimeTempo "<< timeInTicks << " "<<sequenceObject.getTempo(timeInTicks) <<"\n";
             return sequenceObject.tempoMultiplier * sequenceObject.getTempo(timeInTicks) * variableTempoRatio;
         }
     }

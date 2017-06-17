@@ -194,7 +194,9 @@ private:
             _rePlay         = 14,
             customComboBox  = 15,
             chainAmountBox   = 16,
-            tempoBox        = 17
+            scoreTempo      = 17,
+            tempoMultiplier  = 18,
+            realTimeTempo   = 19
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -218,7 +220,9 @@ private:
             ids.add (_makeInactive);
             ids.add (_chain);
             ids.add (chainAmountBox);
-            ids.add (tempoBox);
+            ids.add (scoreTempo);
+            ids.add (tempoMultiplier);
+            ids.add (realTimeTempo);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_rewind);
@@ -260,11 +264,6 @@ private:
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
@@ -277,13 +276,15 @@ private:
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
             ids.add (separatorBarId);
+            ids.add (scoreTempo);
+            ids.add (tempoMultiplier);
+            ids.add (realTimeTempo);
+            ids.add (separatorBarId);
             ids.add (_rewind);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_listen);
             ids.add (_rePlay);
-            ids.add (separatorBarId);
-            ids.add (tempoBox);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (spacerId);
@@ -346,11 +347,22 @@ private:
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
                     return txtBox;
                 }
-                    
-                case tempoBox:
+                
+                case scoreTempo:
                 {
-                    TempoBox *tempoBox = new TempoBox (itemId);
-                    return tempoBox;
+                    ScoreTempo *txtBox = new ScoreTempo (itemId);
+                    return txtBox;
+                }
+                    
+                case tempoMultiplier:
+                {
+                    TempoMultiplier *tempoMultiplier = new TempoMultiplier (itemId);
+                    return tempoMultiplier;
+                }
+                case realTimeTempo:
+                {
+                    RealTimeTempo *realTimeTempo = new RealTimeTempo (itemId);
+                    return realTimeTempo;
                 }
                 default:                break;
             }
@@ -499,9 +511,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 38;
-                minSize = 38;
-                maxSize = 38;
+                preferredSize = 45;
+                minSize = 45;
+                maxSize = 45;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
@@ -526,6 +538,47 @@ private:
             bool returnPressed = false;
         };
         
+        //=================================================
+        class ScoreTempo : public ToolbarItemComponent
+        {
+        public:
+            ScoreTempo (const int toolbarItemId)
+            : ToolbarItemComponent (toolbarItemId, "Score Tempo", false)
+            {
+                ToolbarItemComponent::addAndMakeVisible (textBox);
+                textBox.setMultiLine (false);
+                textBox.setReturnKeyStartsNewLine (false);
+                textBox.setReadOnly (false);
+                textBox.setScrollbarsShown (false);
+                textBox.setCaretVisible (false);
+                //                textBox.setFont (Font (11));
+                textBox.setPopupMenuEnabled (false);
+                textBox.setText("");
+                textBox.setBounds (180, 40, 20, 20);
+            }
+            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+                                      int& preferredSize, int& minSize, int& maxSize) override
+            {
+                if (isVertical)
+                    return false;
+                
+                preferredSize = 45;
+                minSize = 45;
+                maxSize = 45;
+                return true;
+            }
+            void paintButtonArea (Graphics&, int, int, bool, bool) override
+            {
+            }
+            void contentAreaChanged (const Rectangle<int>& newArea) override
+            {
+                textBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
+                textBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+            }
+            TextEditor textBox;
+//            bool returnPressed = false;
+        };
+        
         class DraggableNumberBox : public TextEditor, public ChangeBroadcaster
         {
         public:
@@ -537,34 +590,39 @@ private:
             }
             void mouseDrag (const MouseEvent& e) override
             {
-                double newVal = startValue-e.getDistanceFromDragStartY()/2;
-                if (newVal<40) newVal=40;
-                if (newVal>300) newVal=300;
-                setText(String(newVal));
+                double newVal = startValue-e.getDistanceFromDragStartY()/200.0;
+                if (newVal<0.6) newVal=0.6;
+                if (newVal>1.4) newVal=1.4;
+                setText(String(newVal,2));
                 sendChangeMessage();
             }
             double startValue;
         };
-
         
         //=================================================
-        class TempoBox : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
+        class TempoMultiplier : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
         {
         public:
-            TempoBox (const int toolbarItemId)
-            : ToolbarItemComponent (toolbarItemId, "Chaining Interval", false)
+            TempoMultiplier (const int toolbarItemId)
+            : ToolbarItemComponent (toolbarItemId, "Tempo Multiplier", false)
             {
                 ToolbarItemComponent::addAndMakeVisible (numberBox);
                 numberBox.setMultiLine (false);
                 numberBox.setReturnKeyStartsNewLine (false);
                 numberBox.setReadOnly (false);
                 numberBox.setScrollbarsShown (false);
+//                numberBox.setMouseClickGrabsKeyboardFocus(false);
                 numberBox.setCaretVisible (true);
                 //                textBox.setFont (Font (11));
                 numberBox.setPopupMenuEnabled (true);
                 numberBox.addListener (this);
-                numberBox.setText("100");
+                numberBox.setText("1.000");
                 numberBox.setBounds (180, 45, 20, 20);
+                numberBox.setSelectAllWhenFocused(true);
+            }
+            void setValue(double val)
+            {
+                numberBox.setText(String(val,3));
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
@@ -572,9 +630,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 38;
-                minSize = 38;
-                maxSize = 38;
+                preferredSize = 50;
+                minSize = 50;
+                maxSize = 50;
                 numberBox.addChangeListener(this);
                 return true;
             }
@@ -593,7 +651,81 @@ private:
             }
             void textEditorReturnKeyPressed (TextEditor&) override
             {
-//                std::cout << "Return pressed\n";
+                double newVal = numberBox.getText().getDoubleValue();
+                if (newVal<0.6) newVal=0.6;
+                if (newVal>1.4) newVal=1.4;
+                numberBox.setText(String(newVal,2));
+                changed = true;
+            }
+            void contentAreaChanged (const Rectangle<int>& newArea) override
+            {
+                numberBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
+                numberBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+            }
+            DraggableNumberBox numberBox;
+            bool changed = false;
+        };
+
+        //=================================================
+        class RealTimeTempo : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
+        {
+        public:
+            RealTimeTempo (const int toolbarItemId)
+            : ToolbarItemComponent (toolbarItemId, "Real Time Tempo", false)
+            {
+                ToolbarItemComponent::addAndMakeVisible (numberBox);
+                numberBox.setMultiLine (false);
+                numberBox.setReturnKeyStartsNewLine (false);
+                numberBox.setReadOnly (true);
+                numberBox.setScrollbarsShown (false);
+                numberBox.setCaretVisible (true);
+                numberBox.setMouseClickGrabsKeyboardFocus(false);
+                //                textBox.setFont (Font (11));
+                numberBox.setPopupMenuEnabled (true);
+                numberBox.addListener (this);
+                numberBox.setText("100");
+                numberBox.setBounds (180, 45, 20, 20);
+            }
+            
+            void setWidth(int width)
+            {
+                
+            }
+            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+                                      int& preferredSize, int& minSize, int& maxSize) override
+            {
+                if (isVertical)
+                    return false;
+                
+                preferredSize = 50;
+                minSize = 50;
+                maxSize = 50;
+                numberBox.addChangeListener(this);
+                return true;
+            }
+            void paintButtonArea (Graphics&, int, int, bool, bool) override
+            {
+            }
+            void textEditorTextChanged(TextEditor&) override
+            {
+                //                std::cout << "Entering text\n";
+                changed = false;
+            }
+            void changeListenerCallback (ChangeBroadcaster* source) override
+            {
+                //                std::cout << "CHANGE\n";
+                changed = true;
+            }
+            void setValue(double val)
+            {
+                numberBox.setText(String(val,0));
+            }
+            void textEditorReturnKeyPressed (TextEditor&) override
+            {
+                double newVal = numberBox.getText().getDoubleValue();
+//                if (newVal<0.6) newVal=0.6;
+//                if (newVal>1.4) newVal=1.4;
+                numberBox.setText(String(newVal,0));
                 changed = true;
             }
             void contentAreaChanged (const Rectangle<int>& newArea) override
@@ -648,8 +780,10 @@ private:
     DemoToolbarItemFactory factory;
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
     DemoToolbarItemFactory::ChainAmountBox *pTextBox;
+    DemoToolbarItemFactory::ScoreTempo *pScoreTempo;
 //    DemoToolbarItemFactory::TempoSlider *pTempoSlider;
-    DemoToolbarItemFactory::TempoBox *pTempoBox;
+    DemoToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
+    DemoToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     
     double chainAmount;
     
