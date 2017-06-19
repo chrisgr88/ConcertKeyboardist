@@ -316,7 +316,7 @@ public:
             for (int i=0;i<steps.size();i++)
             {
                 const double ts = sequenceObject.theSequence.at(steps[i]).getTimeStamp();
-                const int index = sequenceObject.targetNoteTimes.indexOf(ts);
+                const int index = sequenceObject.targetNoteTimes.indexOf (ts);
                 if (index>=0)
                 {
                     if (sequenceObject.theSequence.at(steps[i]).chordTopStep==-1)

@@ -13,13 +13,13 @@ ToDo
 - Undo/Redo of user's edit actions
 - Other commands?
 - Toolbar
-    - Access to properties dialogs
+    - Access to properties dialogs 
     - Tempo control/display
     - More editing tools 
         - set groups of notes as target/nontarget notes
         - multiple chaining interval segments in file
         - adjust note velocities/timing?
-        - adnust note pitches?
+        - adjust note pitches?
         - mute/add/remove notes?       
 App Properties Dialog
 Score Properties Dialog

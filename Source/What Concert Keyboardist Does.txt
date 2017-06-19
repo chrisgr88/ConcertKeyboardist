@@ -1,0 +1,40 @@
+
+With Concert Keyboardist:
+------------------------
+- Play a midi file as though it were a musical instrument that knows exactly what notes to play and their relationship in time.
+- Play using a midi keyboard, pad controller, iOS touch device or your computer keyboard.
+- Trigger notes in real time, controlling velocities, durations, articulation, and tempo.
+- In real time use controllers such as a sustain pedal.
+
+How Concert Keyboardist Works
+-----------------------------
+- As you play it merges the note times and velocities from your midi controller with the note pitches in the midi file.
+- Each note you play a note (it does not matter which note) it always plays the next "Target Note" from the midi file.
+- The on/off timing and velocity of your played note is applies to the triggered Target Note.
+- Playing a Target Note may trigger additional Chained notes.  Chained notes are played with their original timing and velocity relative to the Target Note, adjusted for your note's timing and velocity.
+- A chord is represented as Chained notes that are near-simultaneous to their triggering note.  
+- Chained notes may also extend over a period forming a short passage such a trill, grace note sequence, or any other passage you choose to define as autoplayed.
+
+The Real Time Display
+---------------------
+- In playing music where the notes are predetermined, it's important to be able to anticipate where you are in the score.  
+- You need to know the upcoming notes, when to play them, their durations and velocities.
+- Concert Keyboardist includes a horizontal piano roll showing the notes, durations, and velocities as defined in the original midi file.  Is also shows the Target Notes.  You can think of it as sort of a score 
+- The piano roll scrolls to the left at a rate based on the tempo showing notes already played, notes currently sounding.
+- You can also see if you are leading or lagging the tempo defined in the midi file. Playing ahead of behind the current tempo makes the rate of scrolling gradually increase increase or decrease.
+- Although you are free to override any of this as you play.)
+
+More Details
+------------
+
+- When Concert Keyboardist loads a midi file it determines a reasonable set of Target Notes.
+- The viewer also includes tools for editing which notes are target notes and which are chained
+
+Demonstrate
+-----------
+- Simplifying timing: mendel_op30_1_format0[ck].mid
+- Grace notes & trills: mendel_op62_5[ck].mid
+- Irregular timing: grieg_nocturne[ck].mid  
+- Rolled chords: ty_mai[ck].mid
+- Midi file from live recording: ravel_pavanne_(c)oguri[ck].mid
+- Swing vs Straight: 7_SHOULD[ck].mid

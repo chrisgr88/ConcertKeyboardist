@@ -432,7 +432,22 @@ ApplicationProperties& getAppProperties();
             {
                 File file = midiProcessor.sequenceObject.getLastDocumentOpened();
                 if (!file.getFullPathName().endsWith("[ck].mid"))
+                {
                     midiProcessor.sequenceObject.saveAs(File(), true, true, true);
+
+                    
+                    RecentlyOpenedFilesList recentFiles;
+                    recentFiles.restoreFromString (getAppProperties().getUserSettings()
+                                                   ->getValue ("recentConcertKeyboardistFiles"));
+                    int num1 = recentFiles.getNumFiles();
+                    recentFiles.removeFile(file);
+                    getAppProperties().getUserSettings()
+                    ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
+                    int num2 = recentFiles.getNumFiles();                    
+                    
+
+                    std::cout <<"N files before, after"<<num1<<" "<<num2<<"\n";
+                }
                 else
                     midiProcessor.sequenceObject.saveDocument(midiProcessor.sequenceObject.getLastDocumentOpened());
                 Component::toFront(true);
@@ -566,14 +581,15 @@ ApplicationProperties& getAppProperties();
                 {
                     midiProcessor.undoMgr->beginNewTransaction();
                     MIDIProcessor::ActionChain* action;
-                    if (midiProcessor.copyOfSelectedNotes.size()>0)
-                    {
+//                    if (midiProcessor.copyOfSelectedNotes.size()>0)
+//                    {
                         action = new MIDIProcessor::ActionChain(midiProcessor, -1, midiProcessor.copyOfSelectedNotes);
                         midiProcessor.undoMgr->perform(action);
                         midiProcessor.sequenceObject.setChangedFlag(true);
                         midiProcessor.catchUp();
-                        midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
-                    }
+                        midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
+                                                        Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+//                    }
                 }
             }
                 break;

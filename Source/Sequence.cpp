@@ -25,8 +25,8 @@ Sequence::Sequence()
     setNotePlayWindow(200);
     setLatePlayAdjustmentWindow(100);
     setLeadLagAdjustmentFactor(1.0);
-    setKX(0.0000002);
-    setKV(0.000015);
+    setKX(0.00000016);
+    setKV(0.000011);
     setLowerTempoLimit(0.6);
     setUpperTempoLimit(1.4);
     majorVersionSavingFile = 0;

@@ -277,7 +277,7 @@ private:
             ids.add (flexibleSpacerId);
             ids.add (separatorBarId);
             ids.add (scoreTempo);
-            ids.add (tempoMultiplier);
+//            ids.add (tempoMultiplier);
             ids.add (realTimeTempo);
             ids.add (separatorBarId);
             ids.add (_rewind);
@@ -585,19 +585,27 @@ private:
         public:
             DraggableNumberBox ()
             {}
+            void setRange (double mn=1.0, double mx=100.0, int dp=2)
+            {
+                max=mx;
+                min=mn;
+                decimalPlaces=dp;
+            }
             void mouseDown (const MouseEvent& e) override
             {
                 startValue = getText().getDoubleValue();
             }
             void mouseDrag (const MouseEvent& e) override
             {
-                double newVal = startValue-e.getDistanceFromDragStartY()/200.0;
-                if (newVal<0.6) newVal=0.6;
-                if (newVal>1.4) newVal=1.4;
-                setText(String(newVal,2));
+                double newVal = startValue-e.getDistanceFromDragStartY();
+                if (newVal<min) newVal=min;
+                if (newVal>max) newVal=max;
+                setText(String(newVal,decimalPlaces));
                 sendChangeMessage();
             }
             double startValue;
+            double max, min;
+            int decimalPlaces;
         };
         
         //=================================================
@@ -619,6 +627,7 @@ private:
                 numberBox.addListener (this);
                 numberBox.setText("1.000");
                 numberBox.setBounds (180, 45, 20, 20);
+                numberBox.setRange(0.3, 2.0, 2);
                 numberBox.setSelectAllWhenFocused(true);
             }
             void setValue(double val)
@@ -655,7 +664,7 @@ private:
                 double newVal = numberBox.getText().getDoubleValue();
                 if (newVal<0.6) newVal=0.6;
                 if (newVal>1.4) newVal=1.4;
-                numberBox.setText(String(newVal,2));
+                numberBox.setText(String(newVal,numberBox.decimalPlaces));
                 changed = true;
             }
             void contentAreaChanged (const Rectangle<int>& newArea) override
@@ -665,7 +674,7 @@ private:
             }
             DraggableNumberBox numberBox;
             bool changed = false;
-        };
+        }; //TempoMultiplier
 
         //=================================================
         class RealTimeTempo : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
@@ -684,8 +693,9 @@ private:
                 //                textBox.setFont (Font (11));
                 numberBox.setPopupMenuEnabled (true);
                 numberBox.addListener (this);
-                numberBox.setText("100");
+                numberBox.setText("");
                 numberBox.setBounds (180, 45, 20, 20);
+                numberBox.setRange (30.0,300.0,0);
             }
             
             void setWidth(int width)
@@ -697,7 +707,6 @@ private:
             {
                 if (isVertical)
                     return false;
-                
                 preferredSize = 50;
                 minSize = 50;
                 maxSize = 50;
@@ -719,13 +728,13 @@ private:
             }
             void setValue(double val)
             {
-                numberBox.setText(String(val,0));
+                numberBox.setText(String(val,numberBox.decimalPlaces));
             }
             void textEditorReturnKeyPressed (TextEditor&) override
             {
                 double newVal = numberBox.getText().getDoubleValue();
-//                if (newVal<0.6) newVal=0.6;
-//                if (newVal>1.4) newVal=1.4;
+                if (newVal<numberBox.min) newVal=newVal<numberBox.min;
+                if (newVal>newVal<numberBox.max) newVal=newVal<numberBox.max;
                 numberBox.setText(String(newVal,0));
                 changed = true;
             }
@@ -736,7 +745,7 @@ private:
             }
             DraggableNumberBox numberBox;
             bool changed = false;
-        };
+        }; //RealTimeTempo
         
         //=================================================
         class CustomIncDecBox : public ToolbarItemComponent
@@ -776,7 +785,7 @@ private:
         };
         
         ViewerFrame *pViewerFrame;
-    };
+    }; //CustomIncDecBox
 
     DemoToolbarItemFactory factory;
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;

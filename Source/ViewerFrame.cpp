@@ -99,17 +99,37 @@ void ViewerFrame::timerCallback()
         pTextBox->returnPressed = false;
     }
     
-    if (pTempoMultiplier->changed)
+//    if (pTempoMultiplier->changed)
+//    {
+//        std::cout << "tempoChanged " <<pTempoMultiplier->numberBox.getText().getDoubleValue()<<"\n";
+//        processor->sequenceObject.setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue(), true);
+//        pTempoMultiplier->changed = false;
+//        grabKeyboardFocus();
+//    }
+    double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
+    if (pRealTimeTempo->changed)
     {
-        std::cout << "tempoChanged " <<pTempoMultiplier->numberBox.getText().getDoubleValue()<<"\n";
-        processor->sequenceObject.setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue(), true);
-        pTempoMultiplier->changed = false;
+        processor->sequenceObject.setTempoMultiplier(pRealTimeTempo->numberBox.getText().getDoubleValue()/scoreTempo, true);
+//        std::cout << "tempoChanged " <<pRealTimeTempo->numberBox.getText().getDoubleValue()
+//        << " setMult "<<pRealTimeTempo->numberBox.getText().getDoubleValue()/scoreTempo<<"\n";
+
+        pRealTimeTempo->changed = false;
         grabKeyboardFocus();
     }
-    double rtt = std::round(processor->getRealTimeTempo());
+    else
+    {
+//        if (!processor->playing())
+//            pRealTimeTempo->setValue(std::round(processor->getRealTimeTempo()));
+        pRealTimeTempo->setValue(std::round(scoreTempo*processor->sequenceObject.getTempoMultiplier()));
+    }
+//    double rtt = std::round(processor->getRealTimeTempo());
 //    std::cout << "rtt " <<rtt<<"\n";
-    pRealTimeTempo->setValue(rtt);
-    pScoreTempo->textBox.setText(String(std::round(processor->sequenceObject.getTempo(processor->getTimeInTicks()))));
+//    pRealTimeTempo->setValue(rtt);
+//    pTempoMultiplier->setValue(processor->sequenceObject.getTempoMultiplier());
+//    std::cout << "TempoMultiplier " <<processor->sequenceObject.getTempoMultiplier()<<"\n";
+//    if (!processor->playing())
+//        pRealTimeTempo->setValue(std::round(processor->getRealTimeTempo()));
+    pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -359,8 +379,8 @@ void ViewerFrame::paint (Graphics& g)
     g.setColour(Colours::purple);
     g.fillRect(0,0,getWidth(),noteViewer.getToolbarHeight()); //Command bar
     g.drawImageAt(noteViewer.getKeysImage(), 0, noteViewer.getToolbarHeight()); //Keyboard
-    RecentlyOpenedFilesList recentFiles;
-    recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
+//    RecentlyOpenedFilesList recentFiles;
+//    recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
 }
 
 void ViewerFrame::resized()
