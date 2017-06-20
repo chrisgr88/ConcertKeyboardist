@@ -1188,6 +1188,8 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             {
                 makeKeyboard ();
                 makeNoteBars ();
+                selectedNotes.clear();
+                displayedSelection.clear();
                 sequenceChanged = true;
             }
             else

@@ -1,0 +1,31 @@
+I'm a software developer who after retiring got into collecting synths.  Years ago I played classical piano but due to wrist tendonitis I've been unable to practise enough get my chops to a level where playing is fun.  
+
+I created a software solution, an application that allows you to play any midi file in real time as though it were a musical instrument, like an instrument that never plays wrong notes but lets you add your own expression.  It's fun to play.
+
+I call it Concert Keyboardist:
+
+https://www.youtube.com/watch?v=xb66fzwdDS4
+
+I haven't decided whether to make it into a product. Is it something any of you would find useful?
+
+- Chris
+
+
+I've almost finished some software that allows midi files to be performed in real time. It's like an instrument that never plays wrong notes and lets you add your own expression. It started out as a fun research project but it's turned out to be very useful, and fun to play.  I wonder if it may be of interest to members of your Forum.
+
+I call it Concert Keyboardist:
+
+https://www.youtube.com/watch?v=xb66fzwdDS4
+
+This example is Mendelssohn opus. 30 no. 1. The score was created by loading into Concert Keyboardist a midi file downloaded from the Internet. Notice the increased expressiveness vs the normal playback of a midi file.
+
+This is how Concert Keyboardist works:
+- Playing ANY note on the midi controller triggers the next note(s) from the midi file.
+- Notice I alternate between playing just two different notes on the controller.
+- Note on/off times and velocities from the controller are merged with note pitches from the midi file. 
+- The scrolling piano roll shows already played, currently sounding and upcoming notes
+- Varying your playing tempo automatically adjusts the scrolling rate of the note display
+
+I haven't decided whether to make it into a product.  Is it something you would find useful?
+
+- Chris
