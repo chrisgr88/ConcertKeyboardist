@@ -856,6 +856,7 @@ void MIDIProcessor::processBlock ()
             double sumPrimaryVel = 0;
             int noteIndex;
             double mostRecentNoteTime;
+
 //                std::cout << "noteOn " << exprEvents[exprEventIndex].getNoteNumber() << "\n";
             //Add next "firstInChain" note to availableNotes
             for (noteIndex=currentSeqStep+1;noteIndex<theSequence->size();noteIndex++)
@@ -960,8 +961,8 @@ void MIDIProcessor::processBlock ()
                                 variableTimeIncrement = variableTimeIncrement + timeDelta;
                             }
                             variableTempoRatio = variableTimeIncrement/timeIncrement;
+//                            std::cout << "RTT " << getRealTimeTempo() << "\n" ;
                         }
-
                     }
 //                sequenceObject.suppressSpeedAdjustment = autoPlaying; //The next note after autoplaying should not cause speed adjustment
                     prevTimeInTicks = timeInTicks;
@@ -1046,6 +1047,7 @@ void MIDIProcessor::processBlock ()
                 }
                 scheduledNotes.push_back(step);
             }
+            
         }
         //------------------------------------------------------------------
         else if (exprEvents[exprEventIndex].isNoteOff())
