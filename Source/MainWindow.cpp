@@ -15,7 +15,7 @@ ApplicationProperties& getAppProperties();
     MainWindow::MainWindow (String name)
     : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
-//        startTimer(1000);
+        startTimer(1000);
         //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", 99);
         setUsingNativeTitleBar (true);
         mainComponent = new MainComponent(&midiProcessor);

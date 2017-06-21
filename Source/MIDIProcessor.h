@@ -20,6 +20,7 @@
 #include <deque>
 
 #define TIMER_STOPLISTEN 0
+#define TIMER_APP_ACTIVE 1
 
 //==============================================================================
 /**
@@ -445,6 +446,8 @@ public:
 //            << "\n";
     }
     double variableTempoRatio; // variableTempoRatio = variableTimeIncrement/curTimeIncrement
+    
+    bool appIsActive = true;
     
 private:
     //==============================================================================

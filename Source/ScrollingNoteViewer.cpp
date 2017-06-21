@@ -33,7 +33,7 @@ maxNote(84),
 minNote(59),
 compressNotes(false),
 octaveNumForMiddleC (3),
-toolbarHeight(0),
+toolbarHeight(30),
 topMargin(15),
 leftMargin(2),
 noteBarWidthRatio(1.f) //As fraction of note track width
@@ -529,8 +529,8 @@ void ScrollingNoteViewer::renderOpenGL()
 //    }
 //    std::cout << "render" << "\n";
     const ScopedLock myScopedLock (glRenderLock);
-//    if (processor->sequenceObject.getSize() == 0)
-//        return;
+    if (!processor->appIsActive)
+        return;
     ++frameCounter;
     jassert (OpenGLHelpers::isContextActive());
     

@@ -64,17 +64,19 @@ public DocumentWindow,
 public MenuBarModel,
 public ApplicationCommandTarget,
 public KeyListener,
-public ActionListener//,
-//public Timer
+public ActionListener,
+public ActionBroadcaster,
+public Timer
 {
 public:
     MainWindow (String name);
     ~MainWindow ();
     
-//    void timerCallback() override
-//    {
+    void timerCallback() override
+    {
 //        std::cout << "MainWindow " << isActiveWindow() << "\n";
-//    }
+        midiProcessor.appIsActive = isActiveWindow();
+    }
     
     void actionListenerCallback (const String& message) override;
     

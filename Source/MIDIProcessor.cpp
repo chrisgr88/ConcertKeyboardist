@@ -26,6 +26,8 @@ MIDIProcessor::MIDIProcessor() :
     panic = false;
     midiOutput = MidiOutput::createNewDevice("ConcertKeyboardist");
     notesEditable=true;
+    MultiTimer::startTimer(TIMER_APP_ACTIVE, 1000);
+//    addActionListener(Main);
 }
 
 MIDIProcessor::~MIDIProcessor()
@@ -60,6 +62,14 @@ void MIDIProcessor::timerCallback (int timerID)
         endListen();
         play(false,"current");
         MultiTimer::stopTimer(TIMER_STOPLISTEN);
+    }
+    if (timerID == TIMER_APP_ACTIVE)
+    {
+        std::cout << "Active flag in MIDIProcessor " << appIsActive <<"\n";
+        if (appIsActive)
+            HighResolutionTimer::startTimer(timerIntervalInMS);
+        else
+            HighResolutionTimer::startTimer(100);
     }
 }
 void MIDIProcessor::play (bool ply, String fromWhere)
