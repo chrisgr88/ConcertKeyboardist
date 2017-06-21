@@ -33,9 +33,9 @@ maxNote(84),
 minNote(59),
 compressNotes(false),
 octaveNumForMiddleC (3),
-toolbarHeight(30),
+toolbarHeight(0),
 topMargin(15),
-leftMargin(24),
+leftMargin(2),
 noteBarWidthRatio(1.f) //As fraction of note track width
 {
     processor->initialWindowHeight = 88;
@@ -665,7 +665,7 @@ void ScrollingNoteViewer::renderOpenGL()
             const float width = 4.0f;// (sequence->at(step+1).getTimeStamp()-timeStamp)*pixelsPerTick;
     //      const float height = 13.0f * sequence->at(step).getFloatVelocity();
     //      setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 2.0f+(13.0-height), width, height);
-            setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 2.f, width, 13.f);
+            setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 0.0f, width, 15.f);
         }
     }
     else
@@ -742,7 +742,8 @@ void ScrollingNoteViewer::createShaders()
 
 //==============================================================================
 //<#makeKeyboard#>
-void ScrollingNoteViewer::makeKeyboard() {
+void ScrollingNoteViewer::makeKeyboard()
+{
     ticksPerQuarter = processor->sequenceObject.getPPQ();
     timeSigChanges = processor->sequenceObject.getTimeSigInfo();
     timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
@@ -764,10 +765,11 @@ void ScrollingNoteViewer::makeKeyboard() {
         trackVerticalSize = 1;
     
     //left margin
-    keysGr.setColour(Colours::grey);
+    keysGr.setColour(Colours::black);
     keysGr.fillRect(0,0,roundToInt(leftMargin),roundToInt(getHeight()));
+    keysGr.setColour(Colours::grey);
     //topMargin
-    keysGr.setColour(Colours::black.brighter().brighter());
+    keysGr.setColour(Colours::green.brighter().brighter());
     keysGr.fillRect(0, 0, roundToInt(wKbd+leftMargin), getTopMargin());
     
 //    keysGr.setColour (Colours::black);
@@ -830,7 +832,7 @@ void ScrollingNoteViewer::makeNoteBars()
     
     //Top margin
     addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(Colours::grey));
-    addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, 2.0f, Colour(0xFFC0C0C0));
+//    addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, 2.0f, Colour(0xFFC0C0C0));
     
     //Black & white note track highlighting
     for (int note = minNote;note<=maxNote;note++)
@@ -1098,12 +1100,12 @@ void ScrollingNoteViewer::makeNoteBars()
     for (int i=0;i<processor->sequenceObject.bookmarkTimes.size();i++)
     {
         const double x = processor->sequenceObject.bookmarkTimes[i]*pixelsPerTick;
-        addRectangle(x-1.95, 2,     4, (topMargin-2), juce::Colour(Colours::red));
+        addRectangle(x-1.95, 0.0f,     4, (topMargin), juce::Colour(Colours::red));
     }
     
     //Position of next note to play
     const double x = processor->sequenceObject.theSequence[processor->lastPlayedSeqStep+1].getTimeStamp()*pixelsPerTick;
-    nextNoteRect = addRectangle(x-1.95, 2,     4, (topMargin-2),Colours::green);
+    nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
 }
 
 void ScrollingNoteViewer::updatePlayedNotes()
@@ -1134,7 +1136,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
     g.fillRect(Rectangle<float>(sequenceStartPixel-1.f,topMargin*verticalScale, 2.0, getHeight()-topMargin*verticalScale));
     //Handle at top of line
     g.setColour (Colour((uint8)190,(uint8)220,(uint8)0xff,(uint8)127));
-    g.fillRect(Rectangle<float>(sequenceStartPixel-3.f,2.f*verticalScale, 6.0, (topMargin-2)*verticalScale));
+    g.fillRect(Rectangle<float>(sequenceStartPixel-3.f,0.0, 6.0, (topMargin)*verticalScale));
     
     const int meas = processor->getMeasure(horizontalShift);
     Font f = Font (11.0*verticalScale);

@@ -379,8 +379,7 @@ void ViewerFrame::paint (Graphics& g)
     g.setColour(Colours::purple);
     g.fillRect(0,0,getWidth(),noteViewer.getToolbarHeight()); //Command bar
     g.drawImageAt(noteViewer.getKeysImage(), 0, noteViewer.getToolbarHeight()); //Keyboard
-//    RecentlyOpenedFilesList recentFiles;
-//    recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
+    std::cout <<"Heights: window, keys, toolbar " << getHeight()<<" "<<noteViewer.getKeysImage().getHeight()<<" "<<noteViewer.getToolbarHeight() << "\n";
 }
 
 void ViewerFrame::resized()
@@ -392,5 +391,7 @@ void ViewerFrame::resized()
     
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight());
+    std::cout <<"Vwr bounds: top, ht " << noteViewer.getToolbarHeight()<<" "<<getHeight()-noteViewer.getToolbarHeight() << "\n";
+    
     hoverStepInfo.setBounds(getWidth()-380, 0, 340, noteViewer.getToolbarHeight()-1);
 }
