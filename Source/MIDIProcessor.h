@@ -448,6 +448,16 @@ public:
     double variableTempoRatio; // variableTempoRatio = variableTimeIncrement/curTimeIncrement
     
     bool appIsActive = true;
+    double getStartTimeOfNextStep()
+    {
+        int step;
+        for (step=currentSeqStep;step<sequenceObject.theSequence.size();step++)
+        {
+            if (sequenceObject.theSequence[step].triggeredBy==-1)
+                break;
+        }
+        return sequenceObject.theSequence[step].getTimeStamp();
+    }
     
 private:
     //==============================================================================
@@ -473,7 +483,7 @@ private:
     bool metronomeLighted;
 //    double accompTimeInTicks;
     bool singleStep = false; //Indicates whether time advanced by timer or single step to next note
-    int sequenceReadHead = 0;  //One tick past the most recently played sequence note.  Or zero at start.
+    int sequenceReadHead = 0;
     int currentSeqStep;
     
     int nextSustainStep;

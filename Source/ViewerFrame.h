@@ -191,12 +191,11 @@ private:
             _playPause      = 11,
             _rewind         = 12,
             _listen         = 13,
-            _rePlay         = 14,
-            customComboBox  = 15,
-            chainAmountBox   = 16,
-            scoreTempo      = 17,
-            tempoMultiplier  = 18,
-            realTimeTempo   = 19
+            customComboBox  = 14,
+            chainAmountBox   = 15,
+            scoreTempo      = 16,
+            tempoMultiplier  = 17,
+            realTimeTempo   = 18
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -228,7 +227,6 @@ private:
             ids.add (_rewind);
             ids.add (_playPause);
             ids.add (_listen);
-            ids.add (_rePlay);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -284,7 +282,6 @@ private:
             ids.add (_play);
             ids.add (_stop);
             ids.add (_listen);
-            ids.add (_rePlay);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (spacerId);
@@ -334,7 +331,6 @@ private:
                     
                 case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
                 case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
-                case _rePlay:        return createButtonFromZipFileSVG (itemId, "Play Again", "replay.svg");
                     
                 case customComboBox:
                 {

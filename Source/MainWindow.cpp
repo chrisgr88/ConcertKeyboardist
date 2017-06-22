@@ -83,14 +83,16 @@ ApplicationProperties& getAppProperties();
             perform (CommandIDs::editRedo);
         
         else if (message == "play")
-            perform (CommandIDs::playFromPreviousStart);
+            perform (CommandIDs::playPause);
         else if (message == "pause")
             perform (CommandIDs::pause);
+        else if (message == "rewind")
+            perform (CommandIDs::rewind);
         
         else if (message == "listenToSelection")
             perform (CommandIDs::listenToSelection);
-        else if (message == "playFromPreviousStart")
-            perform (CommandIDs::playFromPreviousStart);
+//        else if (message == "playFromPreviousStart")
+//            perform (CommandIDs::playFromPreviousStart);
         
         else if (message == "setSelectedNotesActive")
             perform (CommandIDs::setSelectedNotesActive);
@@ -195,18 +197,18 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("playPause", "playPause", category, 0);
                 result.defaultKeypresses.add (KeyPress (' ', ModifierKeys::noModifiers, 0));
                 break;
-            case CommandIDs::playFromCurrentPlayhead:
-                result.setInfo ("PlayFromLastPlayed", "Play From Last Played", category, 0);
-                result.defaultKeypresses.add (KeyPress (' ', ModifierKeys::shiftModifier, 0));
-                break;
+//            case CommandIDs::playFromCurrentPlayhead:
+//                result.setInfo ("PlayFromLastPlayed", "Play From Last Played", category, 0);
+//                result.defaultKeypresses.add (KeyPress (' ', ModifierKeys::shiftModifier, 0));
+//                break;
             case CommandIDs::pause:
                 result.setInfo ("Pause", "Pause", category, 0);
                 result.defaultKeypresses.add (KeyPress (' ', ModifierKeys::noModifiers, 0));
                 break;
-            case CommandIDs::playFromPreviousStart:
-                result.setInfo ("playFromPreviousPlayStart", "playFromPreviousPlayStart", category, 0);
-                result.defaultKeypresses.add (KeyPress ('-', ModifierKeys::noModifiers, 0));
-                break;
+//            case CommandIDs::playFromPreviousStart:
+//                result.setInfo ("playFromPreviousPlayStart", "playFromPreviousPlayStart", category, 0);
+//                result.defaultKeypresses.add (KeyPress ('-', ModifierKeys::noModifiers, 0));
+//                break;
             case CommandIDs::listenToSelection:
                 result.setInfo ("listenToSelection", "listenToSelection", category, 0);
                 result.defaultKeypresses.add (KeyPress ('=', ModifierKeys::noModifiers, 0));
@@ -330,9 +332,9 @@ ApplicationProperties& getAppProperties();
             menu.addCommandItem (&getCommandManager(), CommandIDs::editRedo);
             //            menu.addCommandItem (&getCommandManager(), CommandIDs::setPlayheadToHere);
             menu.addCommandItem (&getCommandManager(), CommandIDs::playPause);
-            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromCurrentPlayhead);
+//            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromCurrentPlayhead);
             menu.addCommandItem (&getCommandManager(), CommandIDs::pause);
-            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
+//            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
             menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }
         return menu;
@@ -376,9 +378,9 @@ ApplicationProperties& getAppProperties();
             CommandIDs::fileSave,
             CommandIDs::fileSaveAs,
             CommandIDs::playPause,
-            CommandIDs::playFromCurrentPlayhead,
+//            CommandIDs::playFromCurrentPlayhead,
             CommandIDs::pause,
-            CommandIDs::playFromPreviousStart,
+//            CommandIDs::playFromPreviousStart,
             CommandIDs::listenToSelection,
             CommandIDs::increaseTempo,
             CommandIDs::decreaseTempo,
@@ -460,53 +462,68 @@ ApplicationProperties& getAppProperties();
                 Component::toFront(true);
                 break;
             }
-                //            case CommandIDs::setPlayheadToHere:
-                //                pViewerFrame->setPlayheadToHere();
-                //                break;
                 
             case CommandIDs::playPause:
-                midiProcessor.play(!midiProcessor.playing(),"ZTL");
-                break;
-            case CommandIDs::playFromCurrentPlayhead:
-                midiProcessor.play(true,"currentPlayhead");
+                if (midiProcessor.playing())
+                {
+                    if (midiProcessor.isListening)
+                    {
+                        midiProcessor.play(false,"ZTL");
+                    }
+                    else
+                    {
+                        const double nxtTick = midiProcessor.getStartTimeOfNextStep();
+                        midiProcessor.play(false,"currentPlayhead");
+                        midiProcessor.tweenMove(nxtTick, 200);
+                    }
+                }
+                else
+                {
+                    midiProcessor.catchUp();
+                    midiProcessor.play(!midiProcessor.playing(),"ZTL");
+                }
                 break;
             case CommandIDs::pause:
                 midiProcessor.play(false,"ZTL");
                 break;
-            case CommandIDs::playFromPreviousStart:
-                if (midiProcessor.isPlaying)
-                    midiProcessor.play(false,"ZTL");
-                midiProcessor.play(true,"previousStart");
-                break;
-                
             case CommandIDs::listenToSelection:
                 if (midiProcessor.isPlaying)
+                {
                     midiProcessor.play(false,"ZTL");
-                midiProcessor.listenToSelection();
+                }
+                else
+                {
+                    midiProcessor.listenToSelection();
+                }
                 break;
-                
             case CommandIDs::rewind:
                 std::cout <<"Rewind\n";
-                if (!midiProcessor.isPlaying)
-                    midiProcessor.rewind(0.0);
+                if (midiProcessor.isListening)
+                {
+                    midiProcessor.play(false,"ZTL");
+                }
+                else
+                {
+                    if (midiProcessor.isPlaying)
+                        midiProcessor.play(false,"currentPlayhead");
+                    if (midiProcessor.getTimeInTicks()==midiProcessor.lastStartTime)
+                        midiProcessor.tweenMove(0, 200);
+                    else
+                        midiProcessor.tweenMove(midiProcessor.lastStartTime, 200);
+                }
                 break;
-                
             case CommandIDs::increaseTempo:
                 midiProcessor.sequenceObject.increaseTempo(1.03);
                 std::cout <<"increaseTempo\n";
                 break;
-                
             case CommandIDs::decreaseTempo:
-                //                pViewerFrame->spaceKeyPressed();
                 midiProcessor.sequenceObject.decreaseTempo(0.97);
                 std::cout <<"decreaseTempo\n";
                 break;
-                
             case CommandIDs::scoreSettings:
                 showScoreSettings();
                 std::cout <<"scoreSettings\n";
                 break;
-                
             case CommandIDs::editUndo:
                 std::cout <<"editUndo\n";
                 if(midiProcessor.undoMgr->canUndo())
@@ -514,13 +531,11 @@ ApplicationProperties& getAppProperties();
                     midiProcessor.undoMgr->undo();
                 }
                 break;
-                
             case CommandIDs::editRedo:
                 std::cout <<"editRedo\n";
                 if(midiProcessor.undoMgr->canRedo())
                     midiProcessor.undoMgr->redo();
                 break;
-                
             case CommandIDs::clearSelection:
                 std::cout <<"clearSelection\n";
                 if (!midiProcessor.isPlaying)
@@ -530,7 +545,6 @@ ApplicationProperties& getAppProperties();
                     
                 }
                 break;
-                
             case CommandIDs::toggleSelectedNotesActive:
                 if (!midiProcessor.isPlaying)
                 {
@@ -545,7 +559,6 @@ ApplicationProperties& getAppProperties();
                     }
                 }
                 break;
-                
             case CommandIDs::setSelectedNotesActive:
                 if (!midiProcessor.isPlaying)
                 {
@@ -559,7 +572,6 @@ ApplicationProperties& getAppProperties();
                     }
                 }
                 break;
-                
             case CommandIDs::setSelectedNotesInactive:
                 if (!midiProcessor.isPlaying)
                 {
@@ -573,7 +585,6 @@ ApplicationProperties& getAppProperties();
                     }
                 }
                 break;
-                
             case CommandIDs::chainSelectedNotes:
             {
                 std::cout <<"chainSelectedNotes\n";
@@ -593,21 +604,17 @@ ApplicationProperties& getAppProperties();
                 }
             }
                 break;
-                
             case CommandIDs::velHumanizeSelection:
                 std::cout <<"velHumanizeSelection\n";
                 break;
-                
             case CommandIDs::timeHumanizeSelection:
                 std::cout <<"timeHumanizeSelection\n";
                 break;
-                
             case CommandIDs::toggleBookmark:
                 midiProcessor.catchUp();
                 midiProcessor.addRemoveBookmark (BOOKMARK_TOGGLE);
                 std::cout <<"toggleBookmark\n";
                 break;
-                
                 /////////////////////////
             case CommandIDs::previousTargetNote:
                 //                std::cout <<"previousTargetNote\n";
@@ -615,28 +622,24 @@ ApplicationProperties& getAppProperties();
                     midiProcessor.catchUp();
                 midiProcessor.playableStepForwardBack(false);
                 break;
-                
             case CommandIDs::previousMeasure:
                 //                std::cout <<"previousMeasure\n";
                 if (!midiProcessor.atZTL())
                     midiProcessor.catchUp();
                 midiProcessor.measureForwardBack(false);
                 break;
-                
             case CommandIDs::nextTargetNote:
                 //                std::cout <<"nextTargetNote\n";
                 if (!midiProcessor.atZTL())
                     midiProcessor.catchUp();
                 midiProcessor.playableStepForwardBack(true);
                 break;
-                
             case CommandIDs::nextMeasure:
                 //                std::cout <<"NextMeasure\n";
                 if (!midiProcessor.atZTL())
                     midiProcessor.catchUp();
                 midiProcessor.measureForwardBack(true);
                 break;
-                
             case CommandIDs::previousBookmark:
             {
                 //                std::cout <<"PreviousBookmark\n";

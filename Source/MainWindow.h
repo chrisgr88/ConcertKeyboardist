@@ -38,9 +38,9 @@ namespace CommandIDs
     static const int toggleBookmark             = 0x49000;
 //    static const int setPlayheadToHere          = 0x50000;
     static const int playPause                  = 0x50001;
-    static const int playFromCurrentPlayhead   = 0x50002;
+//    static const int playFromCurrentPlayhead   = 0x50002;
     static const int pause                      = 0x50003;
-    static const int playFromPreviousStart      = 0x50005;
+//    static const int playFromPreviousStart      = 0x50005;
     static const int listenToSelection          = 0x50006;
     static const int rewind                     = 0x50010;
     static const int increaseTempo              = 0x50020;

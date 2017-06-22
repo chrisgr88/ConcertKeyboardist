@@ -97,7 +97,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
         else
             now = 0;
         rewind(now);
-        lastStartTime = now;
+//        lastStartTime = now;
         
 //        std::cout << "First note, timeStamp " << currentSeqStep+1 << " " << now<< "\n";
         setTimeInTicks(now);
@@ -304,17 +304,17 @@ void MIDIProcessor::listenToSelection()
 //    MIDIProcessor::ActionChain* action;
     if (copyOfSelectedNotes.size()>=0)
     {
-        if (copyOfSelectedNotes.size()==0)
-        {
+//        if (copyOfSelectedNotes.size()==0)
+//        {
             catchUp();
             startListenTime = sequenceObject.theSequence[currentSeqStep+1].getTimeStamp();
             endListenTime =  sequenceObject.theSequence.back().getTimeStamp();
-        }
-        else
-        {
-            startListenTime =  sequenceObject.theSequence[copyOfSelectedNotes[0]].getTimeStamp();
-            endListenTime =  sequenceObject.theSequence[copyOfSelectedNotes.getLast()].getTimeStamp();
-        }
+//        }
+//        else
+//        {
+//            startListenTime =  sequenceObject.theSequence[copyOfSelectedNotes[0]].getTimeStamp();
+//            endListenTime =  sequenceObject.theSequence[copyOfSelectedNotes.getLast()].getTimeStamp();
+//        }
         setListenSequence(startListenTime, endListenTime, Array<int>());
 //        rewind(startListenTime);
         lastStartTime = startListenTime;
@@ -859,7 +859,11 @@ void MIDIProcessor::processBlock ()
 //                std::cout
 //                << timeInTicks << " Received a note on"
 //                <<" "<<exprEvents[exprEventIndex].getNoteNumber()<<"\n";
-            waitingForFirstNote = false;
+            if (waitingForFirstNote)
+            {
+                lastStartTime = timeInTicks;
+                waitingForFirstNote = false;
+            }
             //Process noteOns
             Array<int> availableNotes;
             double nPrimaryNotes = 0;

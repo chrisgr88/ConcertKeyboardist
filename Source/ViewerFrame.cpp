@@ -166,7 +166,6 @@ void ViewerFrame::buttonClicked (Button* button)
 //    _playPause      = 11,
 //    _rewind         = 12,
 //    _listen         = 13,
-//    _rePlay         = 14,
     
 //    CommandIDs::fileOpen - doc_open
 //    CommandIDs::fileSave - doc_save
@@ -176,7 +175,6 @@ void ViewerFrame::buttonClicked (Button* button)
     
 //    CommandIDs::playPause _play, _stop
 //    CommandIDs::playFromCurrentPlayhead,
-//    CommandIDs::playFromPreviousStart - _rePlay
 //    CommandIDs::listenToSelection - _listen
 //    CommandIDs::increaseTempo,
 //    CommandIDs::decreaseTempo,
@@ -211,11 +209,11 @@ void ViewerFrame::buttonClicked (Button* button)
         sendActionMessage("play");
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_stop == id)
         sendActionMessage("pause");
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_rewind == id)
+        sendActionMessage("rewind");
     
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_listen == id)
         sendActionMessage("listenToSelection");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_rePlay == id)
-        sendActionMessage("playFromPreviousStart");
     
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeActive == id)
         sendActionMessage("setSelectedNotesActive");
