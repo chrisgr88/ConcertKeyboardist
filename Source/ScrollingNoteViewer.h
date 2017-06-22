@@ -200,6 +200,7 @@ public:
     {
         selectedNotes.clear();
         displayedSelection.clear();
+        newlySelectedNotes.clear();
         processor->setCopyOfSelectedNotes(selectedNotes);
         repaint();
     }

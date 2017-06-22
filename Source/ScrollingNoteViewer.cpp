@@ -126,8 +126,8 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         if (!event.source.hasMouseMovedSignificantlySincePressed())
         {
             clearSelectedNotes();
-            newlySelectedNotes.clear();
-            displayedSelection.clear();
+//            newlySelectedNotes.clear();
+//            displayedSelection.clear();
         }
         else
         {
@@ -769,10 +769,8 @@ void ScrollingNoteViewer::makeKeyboard()
     keysGr.fillRect(0,0,roundToInt(leftMargin),roundToInt(getHeight()));
     keysGr.setColour(Colours::grey);
     //topMargin
-    keysGr.setColour(Colours::green.brighter().brighter());
     keysGr.fillRect(0, 0, roundToInt(wKbd+leftMargin), getTopMargin());
     
-//    keysGr.setColour (Colours::black);
     for (int note = maxNote; note >= minNote; note--) //Draw keys
     {
         const float noteY = (maxNote-note) * trackVerticalSize;
@@ -794,9 +792,12 @@ void ScrollingNoteViewer::makeKeyboard()
         }
         if (trackVerticalSize>6)
         {
-            keysGr.setColour(Colours::white);
             keysGr.setFont (Font (fontHeight).withHorizontalScale (0.95f));
-            keysGr.drawText (text,2, roundToInt(noteY+2.f+getTopMargin()), (int)wKbd-4,(int)trackVerticalSize-4,
+            if (processor->sequenceObject.isBlackNote(note))
+                keysGr.setColour(Colours::white);
+            else
+                keysGr.setColour(Colours::black);
+            keysGr.drawText (text,3, roundToInt(noteY+2.f+getTopMargin()), (int)wKbd-4,(int)trackVerticalSize-4,
                              Justification::centredLeft, false);
         }
     }
@@ -1186,12 +1187,11 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
 //        std::cout << " ViewerCallback:  " <<  processor->changeMessageType <<"\n";
         if (processor->changeMessageType == CHANGE_MESSAGE_REWIND)
         {
-            if (processor->sequenceObject.fileToLoad != prevFileLoaded)
+            if (processor->sequenceObject.fileToLoad != prevFileLoaded || processor->getTimeInTicks()==0)
             {
                 makeKeyboard ();
                 makeNoteBars ();
-                selectedNotes.clear();
-                displayedSelection.clear();
+                clearSelectedNotes();
                 sequenceChanged = true;
             }
             else
