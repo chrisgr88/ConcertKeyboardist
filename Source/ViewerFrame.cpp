@@ -219,12 +219,12 @@ void ViewerFrame::buttonClicked (Button* button)
         sendActionMessage("setSelectedNotesActive");
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeInactive == id)
         sendActionMessage("setSelectedNotesInactive");
-    
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_chain == id)
-    {
-//        if (chainAmount!=-1)
         sendActionMessage("chain:"+String(chainAmount));
-    }
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_humanizeTime == id)
+        sendActionMessage("humanizeTime:"+String(chainAmount));
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_humanizeVel == id)
+        sendActionMessage("humanizeVel:"+String(chainAmount));
     
     
 //    if (button == &rewindButton)

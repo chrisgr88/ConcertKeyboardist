@@ -186,16 +186,18 @@ private:
             _makeActive     = 6,
             _makeInactive    = 7,
             _chain          = 8,
-            _play           = 9,
-            _stop           = 10,
-            _playPause      = 11,
-            _rewind         = 12,
-            _listen         = 13,
-            customComboBox  = 14,
-            chainAmountBox   = 15,
-            scoreTempo      = 16,
-            tempoMultiplier  = 17,
-            realTimeTempo   = 18
+            _humanizeTime   = 9,
+            _humanizeVel    = 10,
+            _play           = 11,
+            _stop           = 12,
+            _playPause      = 13,
+            _rewind         = 14,
+            _listen         = 15,
+            customComboBox  = 16,
+            chainAmountBox  = 17,
+            scoreTempo      = 18,
+            tempoMultiplier = 19,
+            realTimeTempo   = 20
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -218,6 +220,8 @@ private:
             ids.add (_makeActive);
             ids.add (_makeInactive);
             ids.add (_chain);
+            ids.add (_humanizeVel);
+            ids.add (_humanizeTime);
             ids.add (chainAmountBox);
             ids.add (scoreTempo);
             ids.add (tempoMultiplier);
@@ -271,6 +275,8 @@ private:
             ids.add (separatorBarId);
             ids.add (_chain);
             ids.add (chainAmountBox);
+            ids.add (_humanizeVel);
+            ids.add (_humanizeTime);
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
             ids.add (separatorBarId);
@@ -326,6 +332,9 @@ private:
                 case _makeInactive:        return createButtonFromZipFileSVG (itemId, "Make Inactive.svg", "makeInactive.svg");
                     
                 case _chain:        return createButtonFromZipFileSVG (itemId, "Chain", "chain.svg");
+                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "HumanizeStartTimes", "humanizeStartTimes.svg");
+                case _humanizeVel: return createButtonFromZipFileSVG (itemId, "HumanizeVelocities.svg", "humanizeVelocities.svg");
+                    
                 case _play:        return createButtonFromZipFileSVG (itemId, "Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop", "media-playback-stop.svg");
                     
@@ -391,6 +400,8 @@ private:
                     }
                 }
             }
+//            for (int i=0;i<iconNames.size();i++)
+//                std::cout << "iconNames " << iconNames[i] << "\n";
             
             Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
             ToolbarButton * tb = new ToolbarButton (itemId, text, image, 0);
