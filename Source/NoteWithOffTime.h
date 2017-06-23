@@ -54,7 +54,8 @@ public:
     selected(false),
     chordTopStep(-1),
     muted(false),
-    head(Rectangle<float>())
+    head(Rectangle<float>()),
+    timetoNextNote(-1)
     {
     }
     
@@ -82,7 +83,8 @@ public:
     selected(false),
     chordTopStep(-1),
     muted(false),
-    head(Rectangle<float>())
+    head(Rectangle<float>()),
+    timetoNextNote(-1)
     {
     }
     
@@ -110,7 +112,8 @@ public:
     selected(note.selected),
     chordTopStep(note.chordTopStep),
     muted(note.muted),
-    head(note.head)
+    head(note.head),
+    timetoNextNote(note.timetoNextNote)
     {
     }
     
@@ -138,7 +141,8 @@ public:
     selected(false),
     chordTopStep(-1),
     muted(false),
-    head(Rectangle<float>())
+    head(Rectangle<float>()),
+    timetoNextNote(-1)
     {
     }
     
@@ -210,5 +214,6 @@ public:
     int chordTopStep; //Step of other than highest note in a group of simultaneous notes. For highest is -1, and if not in chord.
     bool muted;
     Rectangle<float> head;
+    double timetoNextNote;
 };
 #endif  // NOTEWITHOFFTIME_H_INCLUDED

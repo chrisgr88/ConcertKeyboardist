@@ -633,6 +633,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         sendChangeMessage(); //Is this needed?
         setChangedFlag (false);
     }
+    
+    
     //End of reloading file ####################################################################################
     //Transfer all tracks to "theSequence"
     theSequence.clear();

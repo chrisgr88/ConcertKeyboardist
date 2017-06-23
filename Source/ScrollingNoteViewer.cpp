@@ -928,9 +928,12 @@ void ScrollingNoteViewer::makeNoteBars()
         const float y = noteYs[noteNumber]*rescaleHeight + trackGutter + topMargin;
         int indexOfNextSameNote = -1;
         long size = sequence->size();
+        const double minSpacing = 1.0;
+        float headWidth = 6.0f;
         for (int nxtNoteIndex=index+1;nxtNoteIndex<size-2;nxtNoteIndex++)
         {
-            if (sequence->at(nxtNoteIndex).getTimeStamp() > thisEndTime)
+            const double spacing = (sequence->at(nxtNoteIndex).getTimeStamp() - thisEndTime)*pixelsPerTick;
+            if (spacing > headWidth)
                 break;
             if (sequence->at(nxtNoteIndex).getNoteNumber()==noteNumber && sequence->at(nxtNoteIndex).chainTrigger==nxtNoteIndex)
             {
@@ -947,10 +950,11 @@ void ScrollingNoteViewer::makeNoteBars()
             startPixelOfNextSameNote = sequence->at(indexOfNextSameNote).getTimeStamp()*pixelsPerTick;
         const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
         const float headHeight =  h * headToBarHeightRatio;
-        float headWidth = 6.0f;
-        const double minSpacing = 1.0;
+        
         if (headWidth > startPixelOfNextSameNote-x)
+        {
             headWidth = std::max(minSpacing,startPixelOfNextSameNote-x-minSpacing);
+        }
         const float vel = msg.getFloatVelocity();
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
         sequence->at(index).head = Rectangle<float>(x, y,headWidth,headHeight);
