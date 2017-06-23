@@ -36,16 +36,20 @@ factory(this)
     
     for (int i=0; i<toolbar.getNumItems(); i++)
     {
-        std::cout <<i<< "Listener " << toolbar.getItemComponent(i) <<"\n";
+//        std::cout <<i<< "Listener " << toolbar.getItemComponent(i) <<"\n";
         int id = toolbar.getItemId(i);
         if (id == DemoToolbarItemFactory::DemoToolbarItemIds::chainAmountBox)
-            pTextBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+            pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoMultiplier)
             pTempoMultiplier = (DemoToolbarItemFactory::TempoMultiplier *) toolbar.getItemComponent(i);
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::realTimeTempo)
             pRealTimeTempo = (DemoToolbarItemFactory::RealTimeTempo *) toolbar.getItemComponent(i);
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::scoreTempo)
             pScoreTempo = (DemoToolbarItemFactory::ScoreTempo *) toolbar.getItemComponent(i);
+        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::humTimeBox)
+            pHumanizeStartTime = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::humVelocityBox)
+            pHumanizeVelocity = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
         else
             toolbar.getItemComponent(i)->addListener(this);
     }
@@ -90,22 +94,32 @@ void ViewerFrame::timerCallback()
         processor->sequenceObject.propertiesChanged = false;
     }
     
-    if (pTextBox->returnPressed)
+    if (pChainAmountBox->returnPressed)
     {
-        std::cout << "chainAmount" <<pTextBox->textBox.getText().getDoubleValue()<<"\n";
-        chainAmount = pTextBox->textBox.getText().getDoubleValue();
+        std::cout << "chainAmount" <<pChainAmountBox->textBox.getText().getDoubleValue()<<"\n";
+        chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
         sendActionMessage("chain:"+String(chainAmount));
         grabKeyboardFocus();
-        pTextBox->returnPressed = false;
+        pChainAmountBox->returnPressed = false;
     }
     
-//    if (pTempoMultiplier->changed)
-//    {
-//        std::cout << "tempoChanged " <<pTempoMultiplier->numberBox.getText().getDoubleValue()<<"\n";
-//        processor->sequenceObject.setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue(), true);
-//        pTempoMultiplier->changed = false;
-//        grabKeyboardFocus();
-//    }
+    if (pHumanizeVelocity->returnPressed)
+    {
+        std::cout << "HumanizeVelocity " <<pHumanizeVelocity->textBox.getText().getDoubleValue()<<"\n";
+        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
+        sendActionMessage("humanizeVelocity:"+String(humanizeVelocityAmount));
+        grabKeyboardFocus();
+        pHumanizeVelocity->returnPressed = false;
+    }
+    
+    if (pHumanizeStartTime->returnPressed)
+    {
+        std::cout << "HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
+        humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+        sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+        grabKeyboardFocus();
+        pHumanizeStartTime->returnPressed = false;
+    }
     double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
     if (pRealTimeTempo->changed)
     {

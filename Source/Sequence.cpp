@@ -782,9 +782,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     timeToNextNote = theSequence[step+1].getTimeStamp()-thisChordTimeStamp;
                 else
                     timeToNextNote = DBL_MAX;
-//                double localFuzz = std::min(std::min(timeToNextNote-thisChainingInterval,chordTimeHumanize),thisChainingInterval);
                 double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
-//                double localVelFuzz = chordVelocityHumanize;
                 
 //                if (print)
 //                    std::cout<<step<< " localFuzz "<< localFuzz<< "\n";

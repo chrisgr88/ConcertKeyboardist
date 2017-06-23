@@ -65,7 +65,7 @@ void MIDIProcessor::timerCallback (int timerID)
     }
     if (timerID == TIMER_APP_ACTIVE)
     {
-        std::cout << "Active flag in MIDIProcessor " << appIsActive <<"\n";
+//        std::cout << "Active flag in MIDIProcessor " << appIsActive <<"\n";
         if (appIsActive)
             HighResolutionTimer::startTimer(timerIntervalInMS);
         else

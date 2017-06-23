@@ -197,7 +197,9 @@ private:
             chainAmountBox  = 17,
             scoreTempo      = 18,
             tempoMultiplier = 19,
-            realTimeTempo   = 20
+            realTimeTempo   = 20,
+            humVelocityBox  = 21,
+            humTimeBox      = 22
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -223,6 +225,8 @@ private:
             ids.add (_humanizeVel);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
+            ids.add (humVelocityBox);
+            ids.add (humTimeBox);
             ids.add (scoreTempo);
             ids.add (tempoMultiplier);
             ids.add (realTimeTempo);
@@ -275,8 +279,12 @@ private:
             ids.add (separatorBarId);
             ids.add (_chain);
             ids.add (chainAmountBox);
+            ids.add (separatorBarId);
             ids.add (_humanizeVel);
+            ids.add (humVelocityBox);
+            ids.add (separatorBarId);
             ids.add (_humanizeTime);
+            ids.add (humTimeBox);
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
             ids.add (separatorBarId);
@@ -289,6 +297,7 @@ private:
             ids.add (_stop);
             ids.add (_listen);
             ids.add (separatorBarId);
+            ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
@@ -352,6 +361,18 @@ private:
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
                     return txtBox;
                 }
+                    
+                case humVelocityBox:
+                {
+                    ChainAmountBox *txtBox = new ChainAmountBox (itemId);
+                    return txtBox;
+                }
+                    
+                case humTimeBox:
+                {
+                    ChainAmountBox *txtBox = new ChainAmountBox (itemId);
+                    return txtBox;
+                }
                 
                 case scoreTempo:
                 {
@@ -400,8 +421,6 @@ private:
                     }
                 }
             }
-//            for (int i=0;i<iconNames.size();i++)
-//                std::cout << "iconNames " << iconNames[i] << "\n";
             
             Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
             ToolbarButton * tb = new ToolbarButton (itemId, text, image, 0);
@@ -528,12 +547,12 @@ private:
             }
             void textEditorTextChanged(TextEditor&) override
             {
-                std::cout << "Entering text\n";
+//                std::cout << "Entering text\n";
                 returnPressed = false;
             }
             void textEditorReturnKeyPressed (TextEditor&) override
             {
-                std::cout << "Return pressed\n";
+//                std::cout << "Return pressed\n";
                 returnPressed = true;
             }
             void contentAreaChanged (const Rectangle<int>& newArea) override
@@ -796,13 +815,17 @@ private:
 
     DemoToolbarItemFactory factory;
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
-    DemoToolbarItemFactory::ChainAmountBox *pTextBox;
+    DemoToolbarItemFactory::ChainAmountBox *pChainAmountBox;
     DemoToolbarItemFactory::ScoreTempo *pScoreTempo;
 //    DemoToolbarItemFactory::TempoSlider *pTempoSlider;
     DemoToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
     DemoToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
+    DemoToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
+    DemoToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     
     double chainAmount;
+    double humanizeVelocityAmount;
+    double humanizeTimeAmount;
     
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
 };

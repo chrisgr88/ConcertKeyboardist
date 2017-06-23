@@ -103,6 +103,24 @@ ApplicationProperties& getAppProperties();
             midiProcessor.sequenceObject.currentChainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
             perform (CommandIDs::chainSelectedNotes);
         }
+        else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVelocity")
+        {
+            const double hV = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
+            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
+            if (0 <= hV && hV <= 1.0)
+                midiProcessor.sequenceObject.setChordVelocityHumanize(hV, false);
+            midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
+        }
+        else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeTime")
+        {
+            const double hT = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
+            std::cout << "Performing HumanizeStartTime " <<hT<<"\n";
+            if (0 <= hT)
+            {
+                midiProcessor.sequenceObject.setChordTimeHumanize(hT, true);
+                midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
+            }
+        }
     }
     
     bool MainWindow::keyPressed (const KeyPress& key, Component* originatingComponent)
