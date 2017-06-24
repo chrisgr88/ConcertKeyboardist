@@ -832,8 +832,8 @@ void ScrollingNoteViewer::makeNoteBars()
     const float noteBarVerticalSize = trackVerticalSize*noteBarWidthRatio;
     
     //Top margin
-    addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(Colours::grey));
-//    addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, 2.0f, Colour(0xFFC0C0C0));
+    addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(0xFF404040));
+    addRectangle(-sequenceWidthPixels, topMargin-1.0f, sequenceWidthPixels*30, 1.0f, Colour(0xFFB0B0B0).darker());
     
     //Black & white note track highlighting
     for (int note = minNote;note<=maxNote;note++)

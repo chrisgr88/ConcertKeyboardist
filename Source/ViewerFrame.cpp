@@ -32,6 +32,7 @@ factory(this)
 //    resizeLimits.setSizeLimits (150, 300, 1600, 1000);
     addAndMakeVisible(toolbar);
     toolbar.addDefaultItems (factory);
+    toolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
     factory.addChangeListener(this);
     
     for (int i=0; i<toolbar.getNumItems(); i++)

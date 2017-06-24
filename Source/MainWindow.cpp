@@ -25,6 +25,7 @@ ApplicationProperties& getAppProperties();
         setResizable(true, false);
         //        centreWithSize (getWidth(), getHeight());
         restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
+//        setUsingNativeTitleBar(false);
         setVisible (true);
         
         RecentlyOpenedFilesList recentFiles;

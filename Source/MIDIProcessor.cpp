@@ -610,9 +610,9 @@ void MIDIProcessor::processBlock ()
 //                ;//std::cout << "NoteOff " << (int)msg.getNoteNumber() <<" "<<(int)msg.getVelocity()<<" "<<msg.getChannel()<< "\n";
 //        }
 //    }
-    const int64 tis = playHeadInfo.timeInSamples;
-    if (tis==0 && prevTis!=0)
-        rewind(0);
+//    const int64 tis = playHeadInfo.timeInSamples;
+//    if (tis==0 && prevTis!=0)
+//        rewind(0);
     //------------------------------------------------------------------
     //Put expression control events in expr array
     if (midiMessages.getNumEvents() > 0)
