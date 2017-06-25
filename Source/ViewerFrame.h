@@ -801,7 +801,6 @@ private:
     DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
     DemoToolbarItemFactory::ChainAmountBox *pChainAmountBox;
     DemoToolbarItemFactory::ScoreTempo *pScoreTempo;
-//    DemoToolbarItemFactory::TempoSlider *pTempoSlider;
     DemoToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
     DemoToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     DemoToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;

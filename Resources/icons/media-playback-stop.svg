@@ -2,17 +2,17 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="100%" height="100%" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:square;stroke-linejoin:round;">
     <g id="Layer-1">
-        <g id="path2815" transform="matrix(0.952554,0,0,0.902802,0.660605,2.41786)">
+        <g id="path2815" transform="matrix(1.09544,0,0,1.08481,-2.8403,-1.41712)">
             <rect x="14.004" y="12.829" width="20.996" height="22.153" style="fill:none;stroke:url(#_Linear1);stroke-width:2px;"/>
         </g>
-        <g id="path2827" transform="matrix(0.952554,0,0,0.902802,0.660605,2.41786)">
+        <g id="path2827" transform="matrix(1.09544,0,0,1.08481,-2.8403,-1.41712)">
             <rect x="14.5" y="13.406" width="20" height="21" style="fill:url(#_Radial2);"/>
         </g>
-        <g id="path2762" transform="matrix(0.952554,0,0,0.902802,0.660605,2.41786)">
+        <g id="path2762" transform="matrix(1.09544,0,0,1.08481,-2.8403,-1.41712)">
             <rect x="14.497" y="13.408" width="19.991" height="21.092" style="fill:none;stroke:url(#_Linear3);stroke-width:1px;"/>
         </g>
-        <g id="path2811" transform="matrix(0.952554,0,0,0.902802,0.660605,2.39748)">
-            <rect x="15.499" y="14.406" width="18.001" height="19" style="fill:rgb(175,91,91);stroke:url(#_Linear4);stroke-width:1px;stroke-linejoin:miter;"/>
+        <g id="path2811" transform="matrix(1.09544,0,0,1.08481,-2.8403,-1.44162)">
+            <rect x="15.499" y="14.406" width="18.001" height="19" style="fill:rgb(144,135,135);stroke:url(#_Linear4);stroke-width:1px;stroke-linejoin:miter;"/>
         </g>
     </g>
     <defs>
