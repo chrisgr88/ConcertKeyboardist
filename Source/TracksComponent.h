@@ -104,7 +104,7 @@ public:
     Component* refreshComponentForCell (int rowNum, int columnId, bool /*isRowSelected*/,
                                         Component* existingComponentToUpdate) override
     {
-        if (columnId != 10)
+        if (columnId != 10 || sequence->trackDetails[rowNum].nNotes==0)
         {
             jassert (existingComponentToUpdate == nullptr);
             return nullptr;
@@ -255,11 +255,11 @@ private:
     public:
         PlayabilityColumnCustomComponent (TracksComponent& td, int playability)  : owner (td), activeButton("")
         {
-            addAndMakeVisible (activeButton);
             activeButton.setButtonText ("");
             activeButton.changeWidthToFitText();
             activeButton.addListener (this);
             activeButton.setWantsKeyboardFocus (false);
+            addAndMakeVisible (activeButton);
         }
         
         void resized() override
