@@ -30,7 +30,10 @@ factory(this)
     {
         int id = toolbar.getItemId(i);
         if (id == DemoToolbarItemFactory::DemoToolbarItemIds::chainAmountBox)
+        {
             pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+            pChainAmountBox->textBox.setText("12");
+        }
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoMultiplier)
             pTempoMultiplier = (DemoToolbarItemFactory::TempoMultiplier *) toolbar.getItemComponent(i);
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::realTimeTempo)
@@ -38,9 +41,15 @@ factory(this)
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::scoreTempo)
             pScoreTempo = (DemoToolbarItemFactory::ScoreTempo *) toolbar.getItemComponent(i);
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::humTimeBox)
+        {
             pHumanizeStartTime = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+            pHumanizeStartTime->textBox.setText("3");
+        }
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::humVelocityBox)
+        {
             pHumanizeVelocity = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+            pHumanizeVelocity->textBox.setText("1.0");
+        }
         else
             toolbar.getItemComponent(i)->addListener(this);
     }
@@ -229,53 +238,25 @@ void ViewerFrame::buttonClicked (Button* button)
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeInactive == id)
         sendActionMessage("setSelectedNotesInactive");
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_chain == id)
+    {
+        chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
         sendActionMessage("chain:"+String(chainAmount));
+    }
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_humanizeTime == id)
-        sendActionMessage("humanizeTime:"+String(chainAmount));
+    {
+        humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+        sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+    }
     else if(DemoToolbarItemFactory::DemoToolbarItemIds::_humanizeVel == id)
-        sendActionMessage("humanizeVel:"+String(chainAmount));
-    
-    
-//    if (button == &rewindButton)
-//    {
-//        processor->rewind(0);
-//    }
-//    else if (button == &playStopButton)
-//    {
-//        if (processor->playing())
-//        {
-////            noteViewer.setEditable(true);
-//            processor->play(false,"current");
-//        }
-//        else
-//        {
-////            noteViewer.setEditable(false);
-//            processor->play(true,"current");
-//        }
-//    }
+    {
+        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
+        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
+    }
     unfocusAllComponents();
 }
 
-//void ViewerFrame::valueChanged (Value& value)
-//{
-//    std::cout << "valueChanged " << "\n";
-//}
-
 void ViewerFrame::sliderValueChanged (Slider* sliderThatWasMoved)
 {
-    //TODO Change handling of tempo to use a "tempoMultiplier" property of Sequence that adjusts the instantaneous fixed tempo in the sequence file
-    //Have tempoMultiplier be what the tempo slider adjusts
-    //Decide how this relates to timeIncrement and variableTimeIncrement and code that behaviour
-    //Enable use of all tempo adjustments in the original score file?
-//    if (sliderThatWasMoved == &tempoSlider)
-//    {
-////        Component *comp = getCurrentlyFocusedComponent();
-////        std::cout <<"Focus Component " << comp << "\n";
-//        processor->sequenceObject.setTempoMultiplier(tempoSlider.getValue(), true);
-////        processor->setTimeIncrement(processor->sequenceObject.timeIncrement); //Transfers time increment to processor
-//        
-//    }
-//    unfocusAllComponents();
 }
 
 /** Callback when the user selects a different file in the browser. */
@@ -303,82 +284,82 @@ void ViewerFrame::fileDoubleClicked (const File& file) {
 
 void ViewerFrame::browserRootChanged (const File& newRoot) {}; /** Callback when the browser's root folder changes. */
 
-void ViewerFrame::textEditorReturnKeyPressed (TextEditor& editor)
-{
-    processor->play(false, "");
-    StringArray cmd;
-    cmd.addTokens(editor.getTextValue().toString(), false);
-    if (cmd.size()>0)
-    {
-        if (cmd[0]=="c") //Chain
-        {
-            std::cout << "nMeasures " << processor->sequenceObject.measureTimes.size() << "\n";
-            double interval;
-            if (cmd.size()>1)
-                interval = cmd[1].getDoubleValue();
-
-            processor->undoMgr->beginNewTransaction();
-            MIDIProcessor::ActionChain* action;
-//            if (processor->copyOfSelectedNotes.size()>0)
+//void ViewerFrame::textEditorReturnKeyPressed (TextEditor& editor)
+//{
+//    processor->play(false, "");
+//    StringArray cmd;
+//    cmd.addTokens(editor.getTextValue().toString(), false);
+//    if (cmd.size()>0)
+//    {
+//        if (cmd[0]=="c") //Chain
+//        {
+//            std::cout << "nMeasures " << processor->sequenceObject.measureTimes.size() << "\n";
+//            double interval;
+//            if (cmd.size()>1)
+//                interval = cmd[1].getDoubleValue();
+//
+//            processor->undoMgr->beginNewTransaction();
+//            MIDIProcessor::ActionChain* action;
+////            if (processor->copyOfSelectedNotes.size()>0)
+////            {
+//                action = new MIDIProcessor::ActionChain(*processor,interval,processor->copyOfSelectedNotes);
+//                processor->undoMgr->perform(action);
+//                processor->sequenceObject.setChangedFlag(true);
+//                processor->catchUp();
+//                processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+////            }
+//            
+////            processor->sequenceObject.chain(processor->copyOfSelectedNotes, interval);
+////            processor->sequenceObject.setChangedFlag(true);
+////            processor->catchUp();
+////            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+//        }
+//        if (cmd[0]=="ht") //Set chord note time humanize
+//        {
+//            const String amount = cmd.size()>1?cmd[1]:"";
+//            const double humT = amount.getFloatValue();
+//            if (0 <= humT)
 //            {
-                action = new MIDIProcessor::ActionChain(*processor,interval,processor->copyOfSelectedNotes);
-                processor->undoMgr->perform(action);
-                processor->sequenceObject.setChangedFlag(true);
-                processor->catchUp();
-                processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+//                processor->sequenceObject.setChordTimeHumanize(humT, true);
+//                processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
 //            }
-            
-//            processor->sequenceObject.chain(processor->copyOfSelectedNotes, interval);
-//            processor->sequenceObject.setChangedFlag(true);
-//            processor->catchUp();
-//            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
-        }
-        if (cmd[0]=="ht") //Set chord note time humanize
-        {
-            const String amount = cmd.size()>1?cmd[1]:"";
-            const double humT = amount.getFloatValue();
-            if (0 <= humT)
-            {
-                processor->sequenceObject.setChordTimeHumanize(humT, true);
-                processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
-            }
-        }
-        if (cmd[0]=="hv") //Set chord note velocity humanize
-        {
-            const String amount = cmd.size()>1?cmd[1]:"";
-            const double humV = amount.getFloatValue();
-            if (0 <= humV && humV <= 1.0)
-                processor->sequenceObject.setChordVelocityHumanize(humV, false);
-            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
-        }
-        else if (cmd[0]=="vr") //Velocity ratio.  Sets exprVelToScoreVelRatio
-        {
-            if (cmd.size()==2)
-            {
-                double ratio = cmd[1].getFloatValue();
-                if (ratio<=0.0)
-                    ratio = 0.0;
-                else if (ratio>1.0)
-                    ratio = 1.0;
-                processor->sequenceObject.setExprVelToOriginalValRatio(ratio, true);
-            }
-        }
-        else if (cmd[0]=="d") //Dump data on some number of steps to console
-        {
-            int first = 0;
-            int last = cmd[2].getIntValue();
-            int nn = -1;
-            if (cmd.size()>1)
-                first = cmd[1].getIntValue();
-            if (cmd.size()>2)
-                last = cmd[2].getIntValue();
-            if (cmd.size()>3)
-                nn = cmd[3].getIntValue();
-            processor->sequenceObject.dumpData(first, last, nn);
-        }
-    }
-    unfocusAllComponents();
-}
+//        }
+//        if (cmd[0]=="hv") //Set chord note velocity humanize
+//        {
+//            const String amount = cmd.size()>1?cmd[1]:"";
+//            const double humV = amount.getFloatValue();
+//            if (0 <= humV && humV <= 1.0)
+//                processor->sequenceObject.setChordVelocityHumanize(humV, false);
+//            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+//        }
+//        else if (cmd[0]=="vr") //Velocity ratio.  Sets exprVelToScoreVelRatio
+//        {
+//            if (cmd.size()==2)
+//            {
+//                double ratio = cmd[1].getFloatValue();
+//                if (ratio<=0.0)
+//                    ratio = 0.0;
+//                else if (ratio>1.0)
+//                    ratio = 1.0;
+//                processor->sequenceObject.setExprVelToOriginalValRatio(ratio, true);
+//            }
+//        }
+//        else if (cmd[0]=="d") //Dump data on some number of steps to console
+//        {
+//            int first = 0;
+//            int last = cmd[2].getIntValue();
+//            int nn = -1;
+//            if (cmd.size()>1)
+//                first = cmd[1].getIntValue();
+//            if (cmd.size()>2)
+//                last = cmd[2].getIntValue();
+//            if (cmd.size()>3)
+//                nn = cmd[3].getIntValue();
+//            processor->sequenceObject.dumpData(first, last, nn);
+//        }
+//    }
+//    unfocusAllComponents();
+//}
 
 //==============================================================================
 void ViewerFrame::paint (Graphics& g)

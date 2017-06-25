@@ -124,7 +124,7 @@ public:
     virtual void fileDoubleClicked (const File& file) override;
     /** Callback when the browser's root folder changes. */
     virtual void browserRootChanged (const File& newRoot) override;
-    virtual void textEditorReturnKeyPressed (TextEditor&) override;
+//    virtual void textEditorReturnKeyPressed (TextEditor&) override;
     
 //    void setProcessor(MIDIProcessor *p)
 //    {
@@ -506,8 +506,8 @@ private:
 //                textBox.setFont (Font (11));
                 textBox.setPopupMenuEnabled (true);
                 textBox.addListener (this);
-                textBox.setText("2");
-                textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey).brighter());
+                textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey));
+                textBox.setColour (TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
                 textBox.setBounds (180, 40, 20, 20);
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
@@ -516,9 +516,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 38;
-                minSize = 38;
-                maxSize = 38;
+                preferredSize = 28;
+                minSize = 28;
+                maxSize = 28;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
@@ -557,10 +557,10 @@ private:
                 textBox.setScrollbarsShown (false);
                 textBox.setCaretVisible (false);
                 textBox.setMouseClickGrabsKeyboardFocus(false);
-                //                textBox.setFont (Font (11));
                 textBox.setPopupMenuEnabled (false);
-                textBox.setText("");
-                textBox.setBounds (180, 40, 20, 20);
+                textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey));
+                textBox.setColour (TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
+                textBox.setBounds (180, 30, 20, 10);
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
@@ -568,9 +568,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 45;
-                minSize = 45;
-                maxSize = 45;
+                preferredSize = 30;
+                minSize = 30;
+                maxSize = 30;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
