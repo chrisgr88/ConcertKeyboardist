@@ -43,8 +43,8 @@ public:
         
         table.getHeader().addColumn ("Sustains", 7,  57,50,70,   TableHeaderComponent::defaultFlags);
         table.getHeader().addColumn ("Softs", 8,   35,35,40,   TableHeaderComponent::defaultFlags);
-        table.getHeader().addColumn ("Usage", 9,   100,100,-1,   TableHeaderComponent::defaultFlags);
-        table.getHeader().addColumn ("Channel", 10,   57,50,70,   TableHeaderComponent::defaultFlags);
+        table.getHeader().addColumn ("Channel", 9,   57,50,70,   TableHeaderComponent::defaultFlags);
+        table.getHeader().addColumn ("Active", 10,   60,60,65,   TableHeaderComponent::defaultFlags);
         table.setMultipleSelectionEnabled (false);
     }
     
@@ -90,7 +90,7 @@ public:
             g.drawText (String(sequence->trackDetails[rowNum].nSustains), 2, 0, width - 4, height, Justification::centred, true);
         else if (columnId==8)
             g.drawText (String(sequence->trackDetails[rowNum].nSofts), 2, 0, width - 4, height, Justification::centred, true);
-        else if (columnId==10)
+        else if (columnId==9)
         {
             String chan = sequence->trackDetails[rowNum].originalChannel>=0?String(sequence->trackDetails[rowNum].originalChannel):"";
             g.drawText (chan, 2, 0, width - 4, height, Justification::centred, true);
@@ -104,7 +104,7 @@ public:
     Component* refreshComponentForCell (int rowNum, int columnId, bool /*isRowSelected*/,
                                         Component* existingComponentToUpdate) override
     {
-        if (columnId != 9)
+        if (columnId != 10)
         {
             jassert (existingComponentToUpdate == nullptr);
             return nullptr;
@@ -202,48 +202,90 @@ private:
     };
     
     
+//    //==============================================================================
+//    class PlayabilityColumnCustomComponent    : public Component,
+//    private ComboBoxListener
+//    {
+//    public:
+//        PlayabilityColumnCustomComponent (TracksComponent& td, int playability)  : owner (td)
+//        {
+//            addAndMakeVisible (comboBox);
+//            if (playability==Sequence::Track_Play || playability==Sequence::Track_Autoplay || playability==Sequence::Track_Mute)
+//            {
+//                comboBox.addItem ("Play", Sequence::Track_Play);
+//                comboBox.addItem ("Mute", Sequence::Track_Mute);
+////                comboBox.addItem ("Autoplay", Sequence::Track_Autoplay);
+//                comboBox.setSelectedId(2);
+//            }
+//            else
+//                comboBox.addItem ("Other", Sequence::Track_Other);
+//            comboBox.addListener (this);
+//            comboBox.setWantsKeyboardFocus (false);
+//        }
+//        
+//        void resized() override
+//        {
+//            comboBox.setBoundsInset (BorderSize<int> (2));
+//        }
+//        
+//        void setRowAndColumn (int newRow, int newColumn, int setting)
+//        {
+//            row = newRow;
+//            columnId = newColumn;
+//            comboBox.setSelectedId (setting, dontSendNotification);
+//        }
+//        
+//        void comboBoxChanged (ComboBox*) override
+//        {
+////            std::cout << "Selected ID " << comboBox.getSelectedId() <<"\n";
+//            owner.setPlayability (row, comboBox.getSelectedId());
+//        }
+//        
+//    private:
+//        TracksComponent& owner;
+//        ComboBox comboBox;
+//        int row, columnId;
+//    };
+    
     //==============================================================================
-    class PlayabilityColumnCustomComponent    : public Component,
-    private ComboBoxListener
+    class PlayabilityColumnCustomComponent    :
+    public Component,
+    public Button::Listener
     {
     public:
-        PlayabilityColumnCustomComponent (TracksComponent& td, int playability)  : owner (td)
+        PlayabilityColumnCustomComponent (TracksComponent& td, int playability)  : owner (td), activeButton("")
         {
-            addAndMakeVisible (comboBox);
-            if (playability==Sequence::Track_Play || playability==Sequence::Track_Autoplay || playability==Sequence::Track_Mute)
-            {
-                comboBox.addItem ("Play", Sequence::Track_Play);
-                comboBox.addItem ("Mute", Sequence::Track_Mute);
-                comboBox.addItem ("Autoplay", Sequence::Track_Autoplay);
-                comboBox.setSelectedId(2);
-            }
-            else
-                comboBox.addItem ("Other", Sequence::Track_Other);
-            comboBox.addListener (this);
-            comboBox.setWantsKeyboardFocus (false);
+            addAndMakeVisible (activeButton);
+            activeButton.setButtonText ("");
+            activeButton.changeWidthToFitText();
+            activeButton.addListener (this);
+            activeButton.setWantsKeyboardFocus (false);
         }
         
         void resized() override
         {
-            comboBox.setBoundsInset (BorderSize<int> (2));
+            BorderSize<int> bs =  BorderSize<int> (0,14,0,0);
+            activeButton.setBoundsInset (bs);
         }
         
         void setRowAndColumn (int newRow, int newColumn, int setting)
         {
             row = newRow;
             columnId = newColumn;
-            comboBox.setSelectedId (setting, dontSendNotification);
+            if (setting==1)
+                activeButton.setToggleState(true, dontSendNotification);
+            else
+                activeButton.setToggleState(false, dontSendNotification);
         }
-        
-        void comboBoxChanged (ComboBox*) override
+
+        void buttonClicked (Button*) override
         {
-//            std::cout << "Selected ID " << comboBox.getSelectedId() <<"\n";
-            owner.setPlayability (row, comboBox.getSelectedId());
-        }
+            owner.setPlayability (row, activeButton.getToggleState());
+        };
         
     private:
         TracksComponent& owner;
-        ComboBox comboBox;
+        ToggleButton activeButton;
         int row, columnId;
     };
     

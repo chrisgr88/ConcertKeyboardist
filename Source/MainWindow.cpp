@@ -160,14 +160,14 @@ ApplicationProperties& getAppProperties();
         //TODO Add call of this and make it contain the TracksComponent
         //    ScopedPointer<DialogWindow> settingsWindow;
         TracksComponent tracksComponent(&midiProcessor);
-        tracksComponent.setSize (1000, 200);
+        tracksComponent.setSize (897, 200);
         DialogWindow::LaunchOptions o;
         o.content.setNonOwned (&tracksComponent);
         o.dialogTitle                   = "Score Settings";
         o.componentToCentreAround       = this;
         o.dialogBackgroundColour        = Colours::azure;
         o.escapeKeyTriggersCloseButton  = true;
-        o.useNativeTitleBar             = false;
+        o.useNativeTitleBar             = true;
         o.resizable                     = true;
         o.runModal();
     }
