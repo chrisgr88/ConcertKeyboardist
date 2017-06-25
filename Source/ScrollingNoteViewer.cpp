@@ -1144,11 +1144,15 @@ void ScrollingNoteViewer::paint (Graphics& g)
     g.fillRect(Rectangle<float>(sequenceStartPixel-3.f,0.0, 6.0, (topMargin)*verticalScale));
     
     const int meas = processor->getMeasure(horizontalShift);
+    const int totalMeas = processor->sequenceObject.measureTimes.size();
     Font f = Font (11.0*verticalScale);
     f.setStyleFlags(Font::FontStyleFlags::bold);
     g.setFont(f);
     g.setColour (Colours::white);
-    g.drawText(String(meas), sequenceStartPixel+6, 5.5*verticalScale, 50, 9*verticalScale, juce::Justification::centredLeft);
+    const String measTxt = String(meas)+"/"+String(totalMeas-1);
+    if (processor->sequenceObject.measureTimes.size()>0)
+        g.drawText(String(meas)+"/"+String(totalMeas-1), sequenceStartPixel+6, 5.5*verticalScale, 100,
+                   9*verticalScale, juce::Justification::centredLeft);
     
     if (!processor->isPlaying)
     {
