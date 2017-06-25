@@ -16,20 +16,11 @@ noteViewer(p),
 processor(p),
 factory(this)
 {
-//    std::cout << "ViewerComponent isBroughtToFrontOnMouseClick " << isBroughtToFrontOnMouseClick()  <<"\n";
-//    addKeyListener(this);
     noteViewer.addChangeListener(this);
     p->addChangeListener(this);
-//    p->sequenceObject.addChangeListener(this);
     addAndMakeVisible(noteViewer);
     noteViewer.setOpaque(true);
-//    std::cout << "ViewerComponent hasKeyboardFocus " <<  hasKeyboardFocus(true) <<"\n";
     setWantsKeyboardFocus (true);
-//    std::cout << "ViewerComponent hasKeyboardFocus " <<  hasKeyboardFocus(true) <<"\n";
-//    grabKeyboardFocus();
-    
-//    addAndMakeVisible (resizer = new ResizableCornerComponent (this, &resizeLimits));
-//    resizeLimits.setSizeLimits (150, 300, 1600, 1000);
     addAndMakeVisible(toolbar);
     toolbar.addDefaultItems (factory);
     toolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
@@ -37,7 +28,6 @@ factory(this)
     
     for (int i=0; i<toolbar.getNumItems(); i++)
     {
-//        std::cout <<i<< "Listener " << toolbar.getItemComponent(i) <<"\n";
         int id = toolbar.getItemId(i);
         if (id == DemoToolbarItemFactory::DemoToolbarItemIds::chainAmountBox)
             pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
@@ -54,6 +44,11 @@ factory(this)
         else
             toolbar.getItemComponent(i)->addListener(this);
     }
+    
+    addAndMakeVisible (scoreTempoInfo);
+    scoreTempoInfo.setFont (Font (20.00f, Font::bold));
+    scoreTempoInfo.setJustificationType (Justification::left);
+    scoreTempoInfo.setColour (Label::textColourId, Colours::grey);
     
     addAndMakeVisible (hoverStepInfo);
     hoverStepInfo.setFont (Font (18.00f, Font::plain));
@@ -127,14 +122,11 @@ void ViewerFrame::timerCallback()
         processor->sequenceObject.setTempoMultiplier(pRealTimeTempo->numberBox.getText().getDoubleValue()/scoreTempo, true);
 //        std::cout << "tempoChanged " <<pRealTimeTempo->numberBox.getText().getDoubleValue()
 //        << " setMult "<<pRealTimeTempo->numberBox.getText().getDoubleValue()/scoreTempo<<"\n";
-
         pRealTimeTempo->changed = false;
         grabKeyboardFocus();
     }
     else
     {
-//        if (!processor->playing())
-//            pRealTimeTempo->setValue(std::round(processor->getRealTimeTempo()));
         pRealTimeTempo->setValue(std::round(scoreTempo*processor->sequenceObject.getTempoMultiplier()));
     }
 //    double rtt = std::round(processor->getRealTimeTempo());
@@ -144,7 +136,9 @@ void ViewerFrame::timerCallback()
 //    std::cout << "TempoMultiplier " <<processor->sequenceObject.getTempoMultiplier()<<"\n";
 //    if (!processor->playing())
 //        pRealTimeTempo->setValue(std::round(processor->getRealTimeTempo()));
-    pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
+//    pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
+    scoreTempoInfo.setText(String(std::round(scoreTempo)), dontSendNotification);
+    
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -403,6 +397,6 @@ void ViewerFrame::resized()
     
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight());
-    
-    hoverStepInfo.setBounds(getWidth()-380, 0, 340, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(95, 0, 340, noteViewer.getToolbarHeight()-1);
+    scoreTempoInfo.setBounds(95+340+16, 1, 40, noteViewer.getToolbarHeight()-1);
 }

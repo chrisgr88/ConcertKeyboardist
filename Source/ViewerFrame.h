@@ -156,6 +156,7 @@ private:
     Label commandLabel;
     Label scoreNameLabel;
     Label fileNameLabel;
+    Label scoreTempoInfo;
     Label hoverStepInfo;
 //    ScopedPointer<ResizableCornerComponent> resizer;
     ComponentBoundsConstrainer resizeLimits;
@@ -245,22 +246,10 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
-//            ids.add (doc_new);
-            ids.add (spacerId);
-            ids.add (spacerId);
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
             ids.add (separatorBarId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
@@ -269,6 +258,33 @@ private:
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (spacerId);
+            
+            ids.add (separatorBarId);
+            ids.add (spacerId);
+            ids.add (spacerId);            
+            ids.add (realTimeTempo);
+            ids.add (separatorBarId);
+            ids.add (_rewind);
+            ids.add (_play);
+            ids.add (_stop);
+            ids.add (_listen);
+            ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
@@ -287,44 +303,6 @@ private:
             ids.add (humTimeBox);
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
-            ids.add (separatorBarId);
-            ids.add (scoreTempo);
-//            ids.add (tempoMultiplier);
-            ids.add (realTimeTempo);
-            ids.add (separatorBarId);
-            ids.add (_rewind);
-            ids.add (_play);
-            ids.add (_stop);
-            ids.add (_listen);
-            ids.add (separatorBarId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
         }
         
         ToolbarItemComponent* createItem (int itemId) override
@@ -529,6 +507,7 @@ private:
                 textBox.setPopupMenuEnabled (true);
                 textBox.addListener (this);
                 textBox.setText("2");
+                textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey).brighter());
                 textBox.setBounds (180, 40, 20, 20);
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
@@ -537,9 +516,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 45;
-                minSize = 45;
-                maxSize = 45;
+                preferredSize = 38;
+                minSize = 38;
+                maxSize = 38;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
@@ -720,8 +699,13 @@ private:
                 numberBox.setPopupMenuEnabled (true);
                 numberBox.addListener (this);
                 numberBox.setText("");
-                numberBox.setBounds (180, 45, 20, 20);
+                numberBox.setBounds (180, 45, 20, 18);
                 numberBox.setRange (30.0,300.0,0);
+                numberBox.setFont (Font (19.00f, Font::plain));
+                numberBox.setColour (TextEditor::ColourIds::textColourId, Colours::darkgrey);
+                numberBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey).brighter());
+                
+//                numberBox.setColour (Label::backgroundColourId, Colours::red);
             }
             
             void setWidth(int width)

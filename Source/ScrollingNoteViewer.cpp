@@ -274,7 +274,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
                 + " dur:" + String((sequence->at(i).offTime-sequence->at(i).getTimeStamp()));
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
-        sendChangeMessage();  //This is NOT being sent to MidiProcessor
+        sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
     }
     else if (!selecting && fabs(sequenceStartPixel-x)<=4)
     {
