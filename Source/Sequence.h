@@ -77,11 +77,11 @@ public:
     File getSuggestedSaveAsFile	(	const File & 	defaultFile	) override
     {
         File newFile;
-        if (defaultFile.getFullPathName().endsWith("[ck]"))
+        if (defaultFile.getFullPathName().endsWith("[ck].mid"))
             newFile = defaultFile;
         else
-            newFile = File(defaultFile.getFullPathName()+"[ck]");
-        return newFile.withFileExtension(".mid");
+            newFile = File(defaultFile.getFullPathName()+"[ck].mid");
+        return newFile;
     }
     
     /** This is used for dialog boxes to make them open at the last folder you

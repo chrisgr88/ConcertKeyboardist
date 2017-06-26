@@ -34,6 +34,7 @@ factory(this)
             pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
             pChainAmountBox->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pChainAmountBox->textBox.setText("12");
+            chainAmount = 12.0;
         }
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoMultiplier)
             pTempoMultiplier = (DemoToolbarItemFactory::TempoMultiplier *) toolbar.getItemComponent(i);
@@ -50,12 +51,14 @@ factory(this)
             pHumanizeStartTime = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("3");
+            humanizeTimeAmount = 3.0;
         }
         else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::humVelocityBox)
         {
             pHumanizeVelocity = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
             pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeVelocity->textBox.setText("1.0");
+            humanizeVelocityAmount = 1.0;
         }
         else
             toolbar.getItemComponent(i)->addListener(this);
