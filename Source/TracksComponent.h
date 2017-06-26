@@ -104,7 +104,7 @@ public:
     Component* refreshComponentForCell (int rowNum, int columnId, bool /*isRowSelected*/,
                                         Component* existingComponentToUpdate) override
     {
-        if (columnId != 10 || sequence->trackDetails[rowNum].nNotes==0)
+        if (columnId != 10)
         {
             jassert (existingComponentToUpdate == nullptr);
             return nullptr;
@@ -112,14 +112,18 @@ public:
         
         PlayabilityColumnCustomComponent* playabilityBox = static_cast<PlayabilityColumnCustomComponent*> (existingComponentToUpdate);
         if (playabilityBox == nullptr)
-            playabilityBox = new PlayabilityColumnCustomComponent (*this, sequence->trackDetails[rowNum].playability);
+        {
+            if (sequence->trackDetails[rowNum].nNotes>0)
+                playabilityBox = new PlayabilityColumnCustomComponent (*this,false);
+        }
         else
         {
             delete playabilityBox;
-            playabilityBox = new PlayabilityColumnCustomComponent (*this, sequence->trackDetails[rowNum].playability);
+            if (sequence->trackDetails[rowNum].nNotes>0)
+                playabilityBox = new PlayabilityColumnCustomComponent (*this, false);
         }
-
-        playabilityBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].playability);
+        if (sequence->trackDetails[rowNum].nNotes>0)
+            playabilityBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].playability);
         return playabilityBox;
     }
     
