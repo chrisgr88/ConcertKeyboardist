@@ -127,7 +127,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         {
             clearSelectedNotes();
 //            newlySelectedNotes.clear();
-//            displayedSelection.clear();
+//            displayedSelection.clear();   
         }
         else
         {
@@ -822,7 +822,6 @@ void ScrollingNoteViewer::makeNoteBars()
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
     nKeys = maxNote-minNote+1;
     const float h = trackVerticalSize*noteBarWidthRatio; //Note bar height
-    const float trackGutter = (trackVerticalSize-h)/2.f;
     const int seqSize = static_cast<int>(sequence->size());
     if (seqSize==0)
         return;
@@ -835,9 +834,13 @@ void ScrollingNoteViewer::makeNoteBars()
     addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(0xFF404040));
     addRectangle(-sequenceWidthPixels, topMargin-1.0f, sequenceWidthPixels*30, 1.0f, Colour(0xFFB0B0B0).darker());
     
+    noteTracks.ensureStorageAllocated(128);
+    for (int note = 0;note<=127;note++)
+        noteTracks.add(Rectangle<float>());
     //Black & white note track highlighting
     for (int note = minNote;note<=maxNote;note++)
     {
+        noteTracks[note] = Rectangle<float> (-sequenceWidthPixels, noteYs[note]*rescaleHeight+topMargin, sequenceWidthPixels*30, trackVerticalSize);
         if (processor->sequenceObject.isBlackNote(note))
             addRectangle(-sequenceWidthPixels, noteYs[note]*rescaleHeight+topMargin, sequenceWidthPixels*30, trackVerticalSize, Colours::black);
         else
@@ -894,7 +897,7 @@ void ScrollingNoteViewer::makeNoteBars()
         const double startPixel = msg.getTimeStamp()*pixelsPerTick;
         double endPixel = msg.offTime*pixelsPerTick;
         const int noteNumber = msg.getNoteNumber();
-        const float y = noteYs[noteNumber]*rescaleHeight + trackGutter + topMargin;
+        const float y = noteYs[noteNumber]*rescaleHeight + topMargin;
         float x = startPixel;
         float w = endPixel - startPixel;
         const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
@@ -905,7 +908,7 @@ void ScrollingNoteViewer::makeNoteBars()
                                                             0.2f + 0.6f*vel,
                                                             0.3f + 0.7f*vel,
                                                             1.0f);
-        sequence->at(index).head = Rectangle<float>(x, y,headWidth,headHeight);
+        sequence->at(index).head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
         if (sequence->at(index).chordTopStep==-1 && (processor->getNotesEditable()||sequence->at(index).getTimeStamp()>=readHead))
             sequence->at(index).rectBar = addNote(false,x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                   colourInactiveNoteHead, vBasedPrimaryNoteBar);
@@ -925,7 +928,7 @@ void ScrollingNoteViewer::makeNoteBars()
         double endPixel = msg.offTime*pixelsPerTick;
         const int noteNumber = msg.getNoteNumber();
         const double thisEndTime = msg.offTime;
-        const float y = noteYs[noteNumber]*rescaleHeight + trackGutter + topMargin;
+        const float y = noteYs[noteNumber]*rescaleHeight + topMargin;
         int indexOfNextSameNote = -1;
         long size = sequence->size();
         const double minSpacing = 1.0;
@@ -957,7 +960,7 @@ void ScrollingNoteViewer::makeNoteBars()
         }
         const float vel = msg.getFloatVelocity();
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
-        sequence->at(index).head = Rectangle<float>(x, y,headWidth,headHeight);
+        sequence->at(index).head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
         if (processor->getNotesEditable() || sequence->at(index).getTimeStamp()>=readHead)
             sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                     colourActiveNoteHead, vBasedNoteBar);
@@ -1151,7 +1154,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
     g.setColour (Colours::white);
     const String measTxt = String(meas)+"/"+String(totalMeas-1);
     if (processor->sequenceObject.measureTimes.size()>0)
-        g.drawText(String(meas)+"/"+String(totalMeas-1), sequenceStartPixel+6, 5.5*verticalScale, 100,
+        g.drawText(String(meas)+"/"+String(totalMeas-1), sequenceStartPixel+6, 3.0*verticalScale, 100,
                    9*verticalScale, juce::Justification::centredLeft);
     
     if (!processor->isPlaying)
@@ -1199,7 +1202,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             {
                 makeKeyboard ();
                 makeNoteBars ();
-                clearSelectedNotes();
+//                clearSelectedNotes();
                 sequenceChanged = true;
             }
             else

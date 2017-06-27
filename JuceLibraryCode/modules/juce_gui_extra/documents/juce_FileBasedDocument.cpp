@@ -232,15 +232,14 @@ FileBasedDocument::SaveResult FileBasedDocument::saveAsInteractive (const bool w
     if (legalFilename.isEmpty())
         legalFilename = "unnamed";
 
-    File f2;
     if (f.existsAsFile() || f.getParentDirectory().isDirectory())
-        f2 = f.getSiblingFile (legalFilename);
+        f = f.getSiblingFile (legalFilename);
     else
-        f2 = File::getSpecialLocation (File::userDocumentsDirectory).getChildFile (legalFilename);
+        f = File::getSpecialLocation (File::userDocumentsDirectory).getChildFile (legalFilename);
 
-    File f3 = getSuggestedSaveAsFile (f2);
+    f = getSuggestedSaveAsFile (f);
 
-    FileChooser fc (saveFileDialogTitle, f3, fileWildcard);
+    FileChooser fc (saveFileDialogTitle, f, fileWildcard);
 
     if (fc.browseForFileToSave (warnAboutOverwritingExistingFiles))
     {
