@@ -227,6 +227,8 @@ private:
     int initialMeasuresAcrossWindow;
     int initialWidth;
     int initialHeight;
+    Array<Rectangle<float>> noteTracks;
+    
     bool zoomDragStarting;
     bool zoomOrScrollDragging;
     bool selecting;
