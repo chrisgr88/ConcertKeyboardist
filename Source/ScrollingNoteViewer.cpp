@@ -834,13 +834,9 @@ void ScrollingNoteViewer::makeNoteBars()
     addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(0xFF404040));
     addRectangle(-sequenceWidthPixels, topMargin-1.0f, sequenceWidthPixels*30, 1.0f, Colour(0xFFB0B0B0).darker());
     
-    noteTracks.ensureStorageAllocated(128);
-    for (int note = 0;note<=127;note++)
-        noteTracks.add(Rectangle<float>());
     //Black & white note track highlighting
     for (int note = minNote;note<=maxNote;note++)
     {
-        noteTracks[note] = Rectangle<float> (-sequenceWidthPixels, noteYs[note]*rescaleHeight+topMargin, sequenceWidthPixels*30, trackVerticalSize);
         if (processor->sequenceObject.isBlackNote(note))
             addRectangle(-sequenceWidthPixels, noteYs[note]*rescaleHeight+topMargin, sequenceWidthPixels*30, trackVerticalSize, Colours::black);
         else
