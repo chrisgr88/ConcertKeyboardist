@@ -506,13 +506,13 @@ ApplicationProperties& getAppProperties();
                 midiProcessor.play(false,"ZTL");
                 break;
             case CommandIDs::listenToSelection:
-                if (midiProcessor.isPlaying)
+                if (!midiProcessor.isPlaying || midiProcessor.waitingForFirstNote)
                 {
-                    midiProcessor.play(false,"ZTL");
+                    midiProcessor.listenToSelection();
                 }
                 else
                 {
-                    midiProcessor.listenToSelection();
+                    midiProcessor.play(false,"ZTL");
                 }
                 break;
             case CommandIDs::rewind:

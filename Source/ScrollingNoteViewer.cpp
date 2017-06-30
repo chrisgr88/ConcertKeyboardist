@@ -880,46 +880,10 @@ void ScrollingNoteViewer::makeNoteBars()
     }
     
     const double readHead = processor->getSequenceReadHead();
-//    std::cout
-//    << " In makeNoteBars  sequenceReadHead = " << readHead
-//    << " editable = " << editable
-//    << "\n";
-    //Note bars but not target notes
+    //Note Bars
     for (int index = 0;index<static_cast<int>(sequence->size());index++)
     {
         const NoteWithOffTime msg = sequence->at(index);
-        if (msg.chainTrigger==index)
-            continue; //If it's a target note
-        const double startPixel = msg.getTimeStamp()*pixelsPerTick;
-        double endPixel = msg.offTime*pixelsPerTick;
-        const int noteNumber = msg.getNoteNumber();
-        const float y = noteYs[noteNumber]*rescaleHeight + topMargin;
-        float x = startPixel;
-        float w = endPixel - startPixel;
-        const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
-        const float headHeight =  h * headToBarHeightRatio;
-        float headWidth = 6.0f;
-        const float vel = msg.getFloatVelocity(); //Cyan
-        Colour vBasedPrimaryNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel,
-                                                            0.2f + 0.6f*vel,
-                                                            0.3f + 0.7f*vel,
-                                                            1.0f);
-        sequence->at(index).head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
-        if (sequence->at(index).chordTopStep==-1 && (processor->getNotesEditable()||sequence->at(index).getTimeStamp()>=readHead))
-            sequence->at(index).rectBar = addNote(false,x, y, w, noteBarVerticalSize, headWidth, headHeight,
-                                                  colourInactiveNoteHead, vBasedPrimaryNoteBar);
-        else
-            sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
-                                                      vBasedPrimaryNoteBar, vBasedPrimaryNoteBar);
-        sequence->at(index).rectHead = sequence->at(index).rectBar + 1;
-    }
-    //Target Notes
-//    std::cout<< "MNB editable, readHead "<< processor->getNotesEditable() <<" "<< readHead << "\n";
-    for (int index = 0;index<static_cast<int>(sequence->size());index++)
-    {
-        const NoteWithOffTime msg = sequence->at(index);
-        if (msg.chainTrigger!=index) //If it's not an active (target) note
-            continue;
         const double startPixel = msg.getTimeStamp()*pixelsPerTick;
         double endPixel = msg.offTime*pixelsPerTick;
         const int noteNumber = msg.getNoteNumber();
@@ -929,40 +893,58 @@ void ScrollingNoteViewer::makeNoteBars()
         long size = sequence->size();
         const double minSpacing = 1.0;
         float headWidth = 6.0f;
+        
         for (int nxtNoteIndex=index+1;nxtNoteIndex<size-2;nxtNoteIndex++)
         {
             const double spacing = (sequence->at(nxtNoteIndex).getTimeStamp() - thisEndTime)*pixelsPerTick;
             if (spacing > headWidth)
                 break;
-            if (sequence->at(nxtNoteIndex).getNoteNumber()==noteNumber && sequence->at(nxtNoteIndex).chainTrigger==nxtNoteIndex)
+            if (sequence->at(nxtNoteIndex).getNoteNumber()==noteNumber)// && sequence->at(nxtNoteIndex).chainTrigger==nxtNoteIndex)
             {
                 indexOfNextSameNote = nxtNoteIndex;
+//                std::cout<< "index,  indexOfNextSameNote "<< index<<" "<<indexOfNextSameNote<< "\n";
                 break;
             }
         }
         const float x = startPixel;
         const float w = endPixel - startPixel;
         double startPixelOfNextSameNote;
+        
         if (indexOfNextSameNote == -1)
             startPixelOfNextSameNote = DBL_MAX;
         else
             startPixelOfNextSameNote = sequence->at(indexOfNextSameNote).getTimeStamp()*pixelsPerTick;
+        
         const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
         const float headHeight =  h * headToBarHeightRatio;
         
         if (headWidth > startPixelOfNextSameNote-x)
-        {
             headWidth = std::max(minSpacing,startPixelOfNextSameNote-x-minSpacing);
-        }
+
         const float vel = msg.getFloatVelocity();
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
+        
         sequence->at(index).head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
-        if (processor->getNotesEditable() || sequence->at(index).getTimeStamp()>=readHead)
-            sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
-                                                    colourActiveNoteHead, vBasedNoteBar);
+        
+        if (msg.chainTrigger==index) //If it's a target note
+        {
+                if (processor->getNotesEditable() || sequence->at(index).getTimeStamp()>=readHead)
+                sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                                                        colourActiveNoteHead, vBasedNoteBar);
+            else
+                sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                                                      colourInactiveNoteHead, vBasedNoteBar);
+        }
         else
-            sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
-                                                  colourInactiveNoteHead, vBasedNoteBar);
+        {
+            if (sequence->at(index).chordTopStep==-1 && (processor->getNotesEditable()||sequence->at(index).getTimeStamp()>=readHead))
+                sequence->at(index).rectBar = addNote(false,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                                                      colourInactiveNoteHead, vBasedNoteBar);
+            else
+                sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                                                      vBasedNoteBar, vBasedNoteBar);
+        }
+        
         sequence->at(index).rectHead = sequence->at(index).rectBar + 1;
     }
     
