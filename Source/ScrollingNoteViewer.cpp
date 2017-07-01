@@ -539,7 +539,9 @@ void ScrollingNoteViewer::renderOpenGL()
     
     if (glBufferUpdateCountdown > 0)
         glBufferUpdateCountdown--;
-    if  (sequenceChanged && glBufferUpdateCountdown == 0)
+    if (vertices.size()==0)
+        std::cout << "No vertices" << "\n";
+    if  (sequenceChanged && glBufferUpdateCountdown == 0 && vertices.size()>0)
     {
         glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
         resized();

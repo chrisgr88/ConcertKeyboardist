@@ -256,7 +256,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     if (retainEdits == doNotRetainEdits)
     {
         targetNoteTimes.clear();
-        currentChainingInterval = 2.0;
+        currentChainingInterval = 12.0;
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
     }

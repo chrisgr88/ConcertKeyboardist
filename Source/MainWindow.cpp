@@ -66,6 +66,7 @@ ApplicationProperties& getAppProperties();
 #endif
     }
 
+    // This is sent actions from viewerFrame where the toolbar is implemented
     void MainWindow::actionListenerCallback (const String& message)
     {
         std::cout <<"actionListenerCallback"<< message << "\n";
@@ -611,23 +612,23 @@ ApplicationProperties& getAppProperties();
                 {
                     midiProcessor.undoMgr->beginNewTransaction();
                     MIDIProcessor::ActionChain* action;
-//                    if (midiProcessor.copyOfSelectedNotes.size()>0)
-//                    {
-                        action = new MIDIProcessor::ActionChain(midiProcessor, -1, midiProcessor.copyOfSelectedNotes);
-                        midiProcessor.undoMgr->perform(action);
-                        midiProcessor.sequenceObject.setChangedFlag(true);
-                        midiProcessor.catchUp();
-                        midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
-                                                        Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
-//                    }
+                    // Passing -1 causes the chain command to use the interval from the toolbar
+                    action = new MIDIProcessor::ActionChain(midiProcessor, -1, midiProcessor.copyOfSelectedNotes);
+                    midiProcessor.undoMgr->perform(action);
+                    midiProcessor.sequenceObject.setChangedFlag(true);
+                    midiProcessor.catchUp();
+                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
+                                                    Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
                 }
             }
                 break;
             case CommandIDs::velHumanizeSelection:
                 std::cout <<"velHumanizeSelection\n";
+                //Command is currently performed in MainWindow::actionListenerCallback
                 break;
             case CommandIDs::timeHumanizeSelection:
                 std::cout <<"timeHumanizeSelection\n";
+                //Command is currently performed in MainWindow::actionListenerCallback
                 break;
             case CommandIDs::toggleBookmark:
                 midiProcessor.catchUp();
