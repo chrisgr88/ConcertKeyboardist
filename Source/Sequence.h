@@ -205,7 +205,7 @@ public:
     enum LoadType {loadFile, reAnalyzeOnly};
     void loadSequence(LoadType justRebuildSequence, Retain retainEdits);
     Array<StepActivity> chain(Array<int> selection, double interval);
-    double currentChainingInterval;
+    double chainingInterval;
     
     void setScoreFile(File file)
     {
@@ -447,8 +447,6 @@ public:
     double chordVelocityHumanize;
     double exprVelToScoreVelRatio;
     Array<double> chordVoicing;
-    
-//    int chainingInterval; //Maximum time in ticks separating the start times of steps in a chain.  If the separation is more the chain ends.
     
     double triggeredNoteLimit; //Maximum duration from a chainTrigger's start that a triggeredNote can start
     

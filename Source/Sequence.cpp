@@ -85,13 +85,19 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     
     for (int i=0;i<props.size();i++)
     {
-        String propertyStr = keys[i]+":"+props[keys[i]];
-        int len = propertyStr.length();
-        char buffer[128];
-        propertyStr.copyToUTF8(buffer,128);
-        MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-        seq.addEvent(sysex);
+        if (keys[i] != "chainSeg")
+        {
+            String propertyStr = keys[i]+":"+props[keys[i]];
+            int len = propertyStr.length();
+            char buffer[128];
+            propertyStr.copyToUTF8(buffer,128);
+            MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+            std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+            seq.addEvent(sysex);
+        }
+        else
+            std::cout << " Don't Write sysex property - "<< keys[i] << "\n";
+            
     }
     
     for (int i=0;i<targetNoteTimes.size();i++)
@@ -108,7 +114,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     
     for (int i=0;i<bookmarkTimes.size();i++)
     {
-        //Property "bookmark" - Write one record for each chainingSegment
+        //Property "bookmark"
         double bm = bookmarkTimes[i];
         String propertyStr = String("bookmark:")+String(bm);
         int len = propertyStr.length();
@@ -120,7 +126,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     }
     for (int track=0;track<trackDetails.size();track++)
     {
-        //Property "trackDetails" - Write one record for each chainingSegment
+        //Property "trackDetails"
         String propertyStr = String("trackDetails:")+String(track)
                                             +" "+String(trackDetails[track].playability)
                                             +" "+String(trackDetails[track].assignedChannel);
@@ -256,7 +262,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     if (retainEdits == doNotRetainEdits)
     {
         targetNoteTimes.clear();
-        currentChainingInterval = 12.0;
+        chainingInterval = 12.0;
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
     }
@@ -315,15 +321,6 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         lastTempoChg.setTimeStamp(9999999999);
         tempoChanges.push_back(lastTempoChg);
         
-//        double firstTempo;
-//        if (tempoChangeEvents.getNumEvents()>0)
-//        {
-//            const MidiMessage msg = tempoChanges[0];
-//            double secPerQtr = msg.getTempoSecondsPerQuarterNote();
-//            firstTempo = (1.0/secPerQtr)*(60.0);
-//        }
-//        else
-//            firstTempo = 60.0;
         tempoChangeEvents.clear();
         
         MidiMessageSequence timesigChangeEvents;
@@ -593,7 +590,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     trackDetails.set(track, trkDet);
 //                    std::cout << "loadedTrack " <<track <<" playability "<<playability <<" assignedChannel "<<assignedChannel <<"\n";
                 }
-                else if (key == "tnt")
+                else if (key == "tnt") //targetNoteTimes
                 {
                     //                    std::cout <<"read forced nontarget note "<< value <<"\n";
                     targetNoteTimes.add(value.getDoubleValue());
@@ -873,7 +870,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         }
         else
         {
-            chain(Array<int>(),currentChainingInterval);
+            chain(Array<int>(),chainingInterval);
         }
     
         

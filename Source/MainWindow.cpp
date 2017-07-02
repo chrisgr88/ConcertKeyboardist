@@ -102,7 +102,7 @@ ApplicationProperties& getAppProperties();
             perform (CommandIDs::setSelectedNotesInactive);
         else if (message.upToFirstOccurrenceOf(":",false,true) == "chain")
         {
-            midiProcessor.sequenceObject.currentChainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
+            midiProcessor.sequenceObject.chainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
             perform (CommandIDs::chainSelectedNotes);
         }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVelocity")

@@ -349,6 +349,7 @@ public:
     
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval)
     {
+        std::cout << "chainCommand: interval = " <<inverval<<"\n";
         Array<Sequence::StepActivity> stepActivity = sequenceObject.chain(selection, inverval);
         if (undoMgr->inUndo || undoMgr->inRedo)
             setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0]).getTimeStamp());
@@ -357,7 +358,6 @@ public:
             sequenceObject.setChangedFlag(true);
             catchUp();
         }
-//        inUndoRedo = true;
         changeMessageType = CHANGE_MESSAGE_UNDO;
         sequenceObject.undoneOrRedoneSteps = selection;
         sendSynchronousChangeMessage(); //To midiProcessor
@@ -589,10 +589,10 @@ public:
             if (_interval>0)
             {
                 inverval = _interval;
-                proc.sequenceObject.currentChainingInterval = _interval;
+                proc.sequenceObject.chainingInterval = _interval;
             }
             else
-                inverval = proc.sequenceObject.currentChainingInterval;
+                inverval = proc.sequenceObject.chainingInterval;
             selection = _selection;
         }
         ~ActionChain()
