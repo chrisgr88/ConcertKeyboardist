@@ -261,6 +261,12 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
         {
             hoveringOver = HOVER_NOTETRACK;
             String note = MidiMessage::getMidiNoteName (nn, true, true, 3);
+            if (selectedNotes.size()>=2)
+            {
+                const double time1 = sequence->at(selectedNotes[0]).getTimeStamp();
+                const double time2 = sequence->at(selectedNotes.getLast()).getTimeStamp();
+                note = note + " Selection width:" + String (std::abs(time1-time2));
+            }
             hoverInfo = note;
         }
         else if (step)
