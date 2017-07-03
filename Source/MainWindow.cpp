@@ -492,15 +492,17 @@ ApplicationProperties& getAppProperties();
                     }
                     else
                     {
-                        const double nxtTick = midiProcessor.getStartTimeOfNextStep();
+//                        const double nxtTick = midiProcessor.getStartTimeOfNextStep();
                         midiProcessor.play(false,"currentPlayhead");
-                        midiProcessor.tweenMove(nxtTick, 200);
+//                        midiProcessor.tweenMove(nxtTick, 200);
                     }
                 }
                 else
                 {
-                    midiProcessor.catchUp();
-                    midiProcessor.play(!midiProcessor.playing(),"ZTL");
+//                    midiProcessor.catchUp();
+//                    const double nxtTick = midiProcessor.getStartTimeOfNextStep();
+//                    midiProcessor.tweenMove(nxtTick, 2000);
+                    midiProcessor.play(true,"ZTL");
                 }
                 break;
             case CommandIDs::pause:

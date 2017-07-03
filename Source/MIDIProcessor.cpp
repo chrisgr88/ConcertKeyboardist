@@ -882,11 +882,8 @@ void MIDIProcessor::processBlock ()
                     const NoteWithOffTime note = theSequence->at(noteIndex);
                     earliness = note.getTimeStamp()-timeInTicks;
                     const int stepPlayed = theSequence->at(currentSeqStep+1).firstInChain;
+                    lastUserPlayedSeqStep = stepPlayed;
                     const double noteTimeStamp = theSequence->at(stepPlayed).getTimeStamp();
-//                    leadLag = noteTimeStamp - timeInTicks;
-//                    std::cout
-//                    << " leadLag " << leadLag
-//                    <<"\n";
                     changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
                     sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
                     double howEarlyIsAllowed;
@@ -989,10 +986,7 @@ void MIDIProcessor::processBlock ()
 
             currentSeqStep = availableNotes[availableNotes.size()-1];
             lastPlayedSeqStep = currentSeqStep;
-//            std::cout
-//            << "While playing: "
-//            << " lastPlayedSeqStep " << lastPlayedSeqStep
-//            << "\n";
+
             //------------------------------------------------------------------------------
             //Schedule note-ons of the all notes in availableNotes
             for (int noteToStart = 0;noteToStart < availableNotes.size();noteToStart++)
