@@ -109,6 +109,8 @@ public:
     {
         pauseGLRendering = true;
         HighResolutionTimer::stopTimer();
+        if (type==Sequence::loadFile)
+            lastUserPlayedSeqStep=-1;
         sequenceObject.loadSequence(type, retainEdits);
         HighResolutionTimer::startTimer(timerIntervalInMS);
         rewind(time);  //Note that rewind now does a sendChangeMessage
@@ -273,7 +275,9 @@ public:
     {
         return notesEditable;
     }
-    int lastPlayedSeqStep;
+    
+    int lastPlayedSeqStep = -1;
+    int lastUserPlayedSeqStep = -1;
     void setLastPlayedSeqStep()  //Set step to next active step after this time
     {
         int i;
@@ -286,9 +290,18 @@ public:
         }
         lastPlayedSeqStep = i-1;
     }
+    double getLastUserPlayedStepTime()
+    {
+        double time;
+        if (lastUserPlayedSeqStep==-1)
+            time = -1.0;
+        else
+        {
+            time = sequenceObject.theSequence[lastUserPlayedSeqStep].getTimeStamp();
+        }
+        return time;
+    }
     
-    
-
     Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps) //Used only by Perform in undo
     {
         Array<Sequence::StepActivity> stepActivityList;

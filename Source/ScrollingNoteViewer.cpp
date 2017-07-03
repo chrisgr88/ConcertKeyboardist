@@ -1117,6 +1117,16 @@ void ScrollingNoteViewer::paint (Graphics& g)
         g.setColour (colourNoteOn);
         g.fillRect(Rectangle<float>(hLinePos,topMargin*verticalScale, 1.1, getHeight()-topMargin*verticalScale));
     }
+    else
+    {
+        if (processor->getLastUserPlayedStepTime()>=0.0)
+        {
+            const double lastTime = processor->getLastUserPlayedStepTime() - processor->getTimeInTicks();
+            const double hLinePos = 2.8 * horizontalScale + sequenceStartPixel + lastTime * pixelsPerTick * horizontalScale + horizontalShift;
+            g.setColour (colourNoteOn);
+            g.fillRect(Rectangle<float>(hLinePos,topMargin*verticalScale, 1.1, getHeight()-topMargin*verticalScale));
+        }
+    }
     if (processor->isPlaying)
     {
         //ZTL
