@@ -1,0 +1,199 @@
+            for (noteIndex=currentSeqStep+1;noteIndex<theSequence->size();noteIndex++)
+            {
+                if (theSequence->at(noteIndex).isNoteOn() &&
+                    theSequence->at(noteIndex).getTimeStamp()>=sequenceReadHead &&
+                    theSequence->at(noteIndex).firstInChain == noteIndex)
+                {
+                    const NoteWithOffTime note = theSequence->at(noteIndex);
+                    earliness = note.getTimeStamp()-timeInTicks;
+                    const int stepPlayed = theSequence->at(currentSeqStep+1).firstInChain;
+                    lastUserPlayedSeqStep = stepPlayed;
+                    const double noteTimeStamp = theSequence->at(stepPlayed).getTimeStamp();
+                    changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
+                    sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
+                    double howEarlyIsAllowed;
+                    if (autoPlaying)
+                        howEarlyIsAllowed = 1000;//sequenceObject.notePlayWindowAutoplaying;
+                    else
+                        howEarlyIsAllowed = 9999999;
+                        
+                    if (earliness < howEarlyIsAllowed)
+                    {
+                        leadLag = noteTimeStamp - timeInTicks;
+                        availableNotes.add(noteIndex); //This is the triggering note
+                        mostRecentNoteTime = theSequence->at(noteIndex).getTimeStamp();
+                        const double vel = theSequence->at(noteIndex).getVelocity();
+                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex).track))
+                        {
+                            nPrimaryNotes++;
+                            sumPrimaryVel += vel;
+                        }
+                    }
+                    else
+                        skipProcessingTheseEvents = true;//std::cout << "Ignore noteOn" << "\n";
+                    break;
+                }
+            }
+            if (skipProcessingTheseEvents)
+                break;
+            
+            //Add the chain of notes that are autoTriggered by this note to availableNotes
+            if (availableNotes.size()>0) //We added a note so there may be more
+            {
+                int triggeredStep = theSequence->at(noteIndex).triggers;
+                while (triggeredStep < theSequence->size() && (triggeredStep != -1))
+                {
+                    availableNotes.add(triggeredStep);
+                    if (sequenceObject.isPrimaryTrack(theSequence->at(triggeredStep).track))
+                    {
+                        nPrimaryNotes++;
+                        sumPrimaryVel += theSequence->at(triggeredStep).getVelocity();
+                    }
+                    triggeredStep = theSequence->at(triggeredStep).triggers;
+                }
+            }
+
+            //Set sequenceReadHead to time stamp of next note to be played
+            //----------------------------------------------------------------------
+            if (theSequence->size()>noteIndex)
+            {
+                if (availableNotes.size()>0)
+                {
+                    sequenceReadHead = theSequence->at(noteIndex).getTimeStamp()+1;
+                    const double noteOnLag = mostRecentNoteTime-timeInTicks;
+                    const double deltaNoteOnLag = noteOnLag - prevNoteOnLag;
+                    prevNoteOnLag = noteOnLag;
+//                    int latePlayAdjustmentWindow = 100; //To prevent big speed jumps if the user plays far too early
+                    if (!autoPlaying)// && /*!sequenceObject.suppressSpeedAdjustment &&*/ (-noteOnLag)<sequenceObject.latePlayAdjustmentWindow)
+                    {
+                        float timeDelta = sequenceObject.kV*deltaNoteOnLag + (timeInTicks-prevTimeInTicks)*noteOnLag*sequenceObject.kX;
+//                        std::cout
+//                        << "noteOnLag " <<noteOnLag
+//                        << " leadTimeInTicks " <<leadTimeInTicks
+//                        << " timeDelta "<<timeDelta
+//                        << " variableTimeIncrement "<<variableTimeIncrement
+//                        << " speedCorrection "<<(variableTempoRatio-1)*0.05
+//                        << " newDelta " << timeDelta-(variableTempoRatio-1)*0.05
+//                        <<"\n";
+//                        std::cout
+//                        << "leadTimeInTicks " <<leadTimeInTicks
+//                        << " noteOnLag " <<noteOnLag
+//                        <<" deltaNoteOnLag "<<deltaNoteOnLag
+//                        <<" timeDelta "<<timeDelta
+//                        <<"\n";
+                        
+//                        if (leadTimeInTicks>-noteOnLag) //Prevent adjustment if play head is off left edge of view
+//                        {
+                            if (timeDelta<0) //Reduce adjustment for trailing time deltas
+                                timeDelta = timeDelta * sequenceObject.leadLagAdjustmentFactor;
+
+                        const double proposedTimeIncrement = variableTimeIncrement+timeDelta;
+                        if (timeIncrement*sequenceObject.lowerTempoLimit < proposedTimeIncrement &&
+                            proposedTimeIncrement < timeIncrement*sequenceObject.upperTempoLimit)
+                        {
+                            if (timeDelta+variableTimeIncrement>0.0) //Don't let speed go too negative or zero
+                            {
+//                                std::cout << "ADJUST\n" ;
+                                variableTimeIncrement = variableTimeIncrement + timeDelta;
+                            }
+                            variableTempoRatio = variableTimeIncrement/timeIncrement;
+//                            std::cout << "RTT " << getRealTimeTempo() << "\n" ;
+                        }
+                    }
+//                sequenceObject.suppressSpeedAdjustment = autoPlaying; //The next note after autoplaying should not cause speed adjustment
+                    prevTimeInTicks = timeInTicks;
+                }
+            }
+            else //Last note
+            {
+                sequenceReadHead = INT_MAX;
+            }
+
+            currentSeqStep = availableNotes[availableNotes.size()-1];
+            lastPlayedSeqStep = currentSeqStep;
+
+            double lastScheduledNoteTime = -1;
+            int lastScheduledNote = 0;
+            if (scheduledNotes.size()>0)
+            {
+                lastScheduledNote = scheduledNotes.back();
+                lastScheduledNoteTime = theSequence->at(scheduledNotes.back()).scheduledOnTime;
+                std::cout << "scheduledNotes back, lastScheduledNoteTime  "
+                << scheduledNotes.back() << " "<<lastScheduledNoteTime << "\n";
+            }
+            
+            //------------------------------------------------------------------------------
+            //Schedule note-ons of the all notes in availableNotes
+            for (int noteToStart = 0;noteToStart < availableNotes.size();noteToStart++)
+            {
+                const int step = availableNotes[noteToStart];
+                int velocity;
+               // std::cout << timeInTicks << "NoteOn Channel "<< exprEvents[exprEventIndex].getChannel() <<"\n";
+                //The method of computing velocities is determined by the noteOn's midi channel
+                if (exprEvents[exprEventIndex].getChannel() == 16) //Computer keyboard sends on channel 16
+                {
+                    //All velocities from the original sequence
+                    velocity = theSequence->at(availableNotes[noteToStart]).getVelocity();
+                }
+                else if (exprEvents[exprEventIndex].getChannel() <= 13)
+                {
+                    //Highest note in chain velocity is a blend of the expr and the score vel using exprVelToScoreVelRatio
+                    //Lower vel notes in chain vel are proportioned from highest note's output vel
+                    //The exprVelToScoreVelRatio is set by the "vr" command
+                    double highVelInChain = theSequence->at(availableNotes[noteToStart]).highestVelocityInChain;
+                    double exprVel = exprEvents[exprEventIndex].getVelocity();
+                    double thisNoteOriginalVelocity = theSequence->at(availableNotes[noteToStart]).getVelocity();
+
+                    double proportionedVelocity = sequenceObject.exprVelToScoreVelRatio*exprVel
+                                    + (1.0-sequenceObject.exprVelToScoreVelRatio)*thisNoteOriginalVelocity;
+                    
+                    if (exprVel<highVelInChain)
+                        velocity = std::round((proportionedVelocity/highVelInChain) * thisNoteOriginalVelocity);
+                    else
+                        velocity = proportionedVelocity;
+                }
+//                else if (exprEvents[exprEventIndex].getChannel() == 14)
+//                {
+//                    double highVelInChain = theSequence->at(availableNotes[noteToStart]).highestVelocityInChain;
+//                    double exprVel = exprEvents[exprEventIndex].getVelocity();
+//                    double thisNoteOriginalVelocity = theSequence->at(availableNotes[noteToStart]).getVelocity();
+//                    if (exprVel<highVelInChain)
+//                        velocity = (exprVel/highVelInChain) * thisNoteOriginalVelocity;
+//                    else
+//                        velocity = thisNoteOriginalVelocity +
+//                                    ((exprVel-highVelInChain)/(127-highVelInChain)) * (127-thisNoteOriginalVelocity);
+//                }
+                else if(exprEvents[exprEventIndex].getChannel() == 15) //All velocities equal expr velocity
+                {
+                    velocity = exprEvents[exprEventIndex].getVelocity(); //All velocities equal expr velocity
+                }
+                else
+                    assert(false);
+                
+                double scheduledOnTime;
+                if (lastScheduledNoteTime>0)
+                    scheduledOnTime = lastScheduledNoteTime +
+                                    (theSequence->at(step).getTimeStamp() - theSequence->at(lastScheduledNote).getTimeStamp());
+                else
+                    scheduledOnTime = timeInTicks + (theSequence->at(step).getTimeStamp() -
+                                          theSequence->at(availableNotes[0]).getTimeStamp());
+                if (lastScheduledNoteTime>0)
+                    std::cout << "step, lastScheduledNoteTime " << step << " " <<lastScheduledNoteTime << "\n";
+                theSequence->at(step).noteOffNow = false;
+                theSequence->at(step).scheduledOnTime = scheduledOnTime;
+                theSequence->at(step).adjustedVelocity = velocity;
+                theSequence->at(step).scheduledOffTime = scheduledOnTime +
+                     (theSequence->at(step).offTime-theSequence->at(step).getTimeStamp());
+                if (theSequence->at(step).triggeredNote)
+                    theSequence->at(step).triggeringExprNote = exprEvents[exprEventIndex].getNoteNumber();
+                else
+                    theSequence->at(step).triggeringExprNote = -1;
+//                String note = MidiMessage::getMidiNoteName (theSequence->at(step).getNoteNumber(), true, true, 3);
+//                    std::cout << timeInTicks << " scheduledNotes.push_back (at 1)"<< step <<" "<<note<<" "<<theSequence.at(step).scheduledOnTime<< "\n";
+                if (theSequence->at(step).autoplayedNote)
+                {
+                    autoPlaying = true;
+//                        std::cout << "autoplay on at " << step << "\n";
+                }
+                scheduledNotes.push_back(step);
+            }

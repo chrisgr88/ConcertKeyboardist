@@ -888,7 +888,7 @@ void MIDIProcessor::processBlock ()
                     sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
                     double howEarlyIsAllowed;
                     if (autoPlaying)
-                        howEarlyIsAllowed = sequenceObject.notePlayWindowAutoplaying;
+                        howEarlyIsAllowed = 1000;//sequenceObject.notePlayWindowAutoplaying;
                     else
                         howEarlyIsAllowed = 9999999;
                         
@@ -913,7 +913,7 @@ void MIDIProcessor::processBlock ()
                 break;
             
             //Add the chain of notes that are autoTriggered by this note to availableNotes
-            if (availableNotes.size()>0)
+            if (availableNotes.size()>0) //We added a note so there may be more
             {
                 int triggeredStep = theSequence->at(noteIndex).triggers;
                 while (triggeredStep < theSequence->size() && (triggeredStep != -1))
@@ -987,6 +987,16 @@ void MIDIProcessor::processBlock ()
             currentSeqStep = availableNotes[availableNotes.size()-1];
             lastPlayedSeqStep = currentSeqStep;
 
+            double lastScheduledNoteTime = -1;
+            int lastScheduledNote = 0;
+            if (scheduledNotes.size()>0)
+            {
+                lastScheduledNote = scheduledNotes.back();
+                lastScheduledNoteTime = theSequence->at(scheduledNotes.back()).scheduledOnTime;
+                std::cout << "scheduledNotes back, lastScheduledNoteTime  "
+                << scheduledNotes.back() << " "<<lastScheduledNoteTime << "\n";
+            }
+            
             //------------------------------------------------------------------------------
             //Schedule note-ons of the all notes in availableNotes
             for (int noteToStart = 0;noteToStart < availableNotes.size();noteToStart++)
@@ -1035,12 +1045,19 @@ void MIDIProcessor::processBlock ()
                 else
                     assert(false);
                 
-                const double timeShift = (theSequence->at(step).getTimeStamp() -
+                double scheduledOnTime;
+                if (lastScheduledNoteTime>0)
+                    scheduledOnTime = lastScheduledNoteTime +
+                                    (theSequence->at(step).getTimeStamp() - theSequence->at(lastScheduledNote).getTimeStamp());
+                else
+                    scheduledOnTime = timeInTicks + (theSequence->at(step).getTimeStamp() -
                                           theSequence->at(availableNotes[0]).getTimeStamp());
+                if (lastScheduledNoteTime>0)
+                    std::cout << "step, lastScheduledNoteTime " << step << " " <<lastScheduledNoteTime << "\n";
                 theSequence->at(step).noteOffNow = false;
-                theSequence->at(step).scheduledOnTime = timeInTicks + timeShift;
+                theSequence->at(step).scheduledOnTime = scheduledOnTime;
                 theSequence->at(step).adjustedVelocity = velocity;
-                theSequence->at(step).scheduledOffTime = timeInTicks + timeShift +
+                theSequence->at(step).scheduledOffTime = scheduledOnTime +
                      (theSequence->at(step).offTime-theSequence->at(step).getTimeStamp());
                 if (theSequence->at(step).triggeredNote)
                     theSequence->at(step).triggeringExprNote = exprEvents[exprEventIndex].getNoteNumber();
