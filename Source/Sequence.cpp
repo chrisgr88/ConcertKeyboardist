@@ -800,7 +800,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     else
                         randAdd = rand()%temp/100.0;
                     theSequence[chord[i]].setTimeStamp(thisChordTimeStamp+randAdd);
-//                    theSequence[chord[i]].offTime = theSequence[chord[i]].offTime + randAdd;
+                    theSequence[chord[i]].offTime = theSequence[chord[i]].offTime + randAdd;
 //                    if (print)
 //                        std::cout<<i<< " thisChordTS, newTS "<<thisChordTimeStamp<< " " << theSequence[chord[i]].getTimeStamp()<< "\n";
                 }

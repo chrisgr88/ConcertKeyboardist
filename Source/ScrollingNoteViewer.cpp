@@ -633,6 +633,8 @@ void ScrollingNoteViewer::renderOpenGL()
     //Get steps (that turned off or on) out of queue
     Array<int> stepsThatChanged;
     int num = processor->noteOnOffFifo.getNumReady();
+//    if (processor->noteOnOffFifo.getNumReady()>0)
+//        std::cout <<"fifo size " << processor->noteOnOffFifo.getNumReady() << "\n";
     if (num>0)
     {
         int start1, size1, start2, size2;
@@ -645,7 +647,7 @@ void ScrollingNoteViewer::renderOpenGL()
         processor->noteOnOffFifo.finishedRead (size1 + size2);
         for (int j=0;j<stepsThatChanged.size();j++) //Turn off or on notes
         {
-//            String note = MidiMessage::getMidiNoteName (stepsThatChanged[j], true, true, 3);
+            String note = MidiMessage::getMidiNoteName (stepsThatChanged[j], true, true, 3);
 //            std::cout <<"step " << stepsThatChanged[j] << " " << note << "\n";
             if (stepsThatChanged[j]<0) //If was an off
             {
@@ -1475,6 +1477,15 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //                <<  " displayedSelection "<<displayedSelection.size()
 //                <<  "\n";
                 repaint();
+            }
+            else //Dragging on note head
+            {
+                float deltaX = (Desktop::getInstance().getMousePosition().getX() - Desktop::getInstance().getLastMouseDownPosition().getX());
+                float deltaY = (Desktop::getInstance().getMousePosition().getY() - Desktop::getInstance().getLastMouseDownPosition().getY());
+                std::cout
+                <<  " delta X "<<deltaX
+                <<  " delta Y "<<deltaY
+                <<  "\n";
             }
         }
     }

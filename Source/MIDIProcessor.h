@@ -276,8 +276,9 @@ public:
         return notesEditable;
     }
     
-    int lastPlayedSeqStep = -1;
-    int lastUserPlayedSeqStep = -1;
+    int lastPlayedSeqStep = -1; //Equal to the step of the target just before the next to be played
+    int lastUserPlayedSeqStep = -1; //Previous value of lastPlayedSeqStep
+    int lastPlayedNoteStep = -1; //The step of the last played note, even if its note a target note (for tracking tempo and measures)
     void setLastPlayedSeqStep()  //Set step to next active step after this time
     {
         int i;
