@@ -47,6 +47,10 @@ public:
         table.getHeader().addColumn ("Active", 10,   60,60,65,   TableHeaderComponent::defaultFlags);
         table.setMultipleSelectionEnabled (false);
     }
+    ~TracksComponent()
+    {
+        
+    }
     
     int getNumRows() override
     {
@@ -63,6 +67,8 @@ public:
     void paintCell (Graphics& g, int rowNum, int columnId,
                     int width, int height, bool /*rowIsSelected*/) override
     {
+//        std::cout << rowNum<< " paintCell row: rowNum, columnId " << rowNum<<" "<< columnId <<"\n";
+
         g.setColour (Colours::black);
         g.setFont (font);
         
@@ -104,6 +110,8 @@ public:
     Component* refreshComponentForCell (int rowNum, int columnId, bool /*isRowSelected*/,
                                         Component* existingComponentToUpdate) override
     {
+//        std::cout << rowNum<< "refreshComponentForCell Track row: nEvents " << sequence->trackDetails[rowNum].nNotes <<"\n";
+
         if (columnId != 10)
         {
             jassert (existingComponentToUpdate == nullptr);
@@ -113,17 +121,21 @@ public:
         PlayabilityColumnCustomComponent* playabilityBox = static_cast<PlayabilityColumnCustomComponent*> (existingComponentToUpdate);
         if (playabilityBox == nullptr)
         {
-            if (sequence->trackDetails[rowNum].nNotes>0)
-                playabilityBox = new PlayabilityColumnCustomComponent (*this,false);
+            std::cout << " new PlayabilityColumnCustomComponent: " << rowNum<<" "<<columnId<<"\n";
+            playabilityBox = new PlayabilityColumnCustomComponent (*this,false);
         }
         else
         {
+            std::cout << "Delete playability component " << rowNum<<" "<<columnId<<" "<<existingComponentToUpdate <<"\n";
             delete playabilityBox;
-            if (sequence->trackDetails[rowNum].nNotes>0)
-                playabilityBox = new PlayabilityColumnCustomComponent (*this, false);
+            playabilityBox = new PlayabilityColumnCustomComponent (*this, false);
         }
+    
         if (sequence->trackDetails[rowNum].nNotes>0)
             playabilityBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].playability);
+        else
+            playabilityBox->setEnabled(false);
+        
         return playabilityBox;
     }
     

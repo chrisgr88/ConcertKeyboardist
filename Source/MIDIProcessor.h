@@ -279,18 +279,19 @@ public:
     int lastPlayedSeqStep = -1; //Equal to the step of the target just before the next to be played
     int lastUserPlayedSeqStep = -1; //Previous value of lastPlayedSeqStep
     int lastPlayedNoteStep = -1; //The step of the last played note, even if its note a target note (for tracking tempo and measures)
-    void setLastPlayedSeqStep()  //Set step to next active step after this time
-    {
-        int i;
-        const double time = timeInTicks-xInTicksFromViewer;
-        for (i=0;i<sequenceObject.theSequence.size();i++)
-        {
-//            std::cout << "step, ts, targetTime " << i<<" "<<sequenceObject.theSequence.at(i).getTimeStamp()<<" "<<time<<"\n";
-            if (sequenceObject.theSequence.at(i).triggeredBy==-1 && sequenceObject.theSequence.at(i).getTimeStamp()>=time)
-                break;
-        }
-        lastPlayedSeqStep = i-1;
-    }
+//    void setLastPlayedSeqStep()  //Set step to next active step after this time
+//    {
+//        int i;
+//        const double time = timeInTicks-xInTicksFromViewer;
+//        for (i=0;i<sequenceObject.theSequence.size();i++)
+//        {
+////            std::cout << "step, ts, targetTime " << i<<" "<<sequenceObject.theSequence.at(i).getTimeStamp()<<" "<<time<<"\n";
+//            if (sequenceObject.theSequence.at(i).triggeredBy==-1 && sequenceObject.theSequence.at(i).getTimeStamp()>=time)
+//                break;
+//        }
+//        lastPlayedSeqStep = i-1;
+//        lastPlayedNoteStep = lastPlayedSeqStep;
+//    }
     double getLastUserPlayedStepTime()
     {
         double time;

@@ -78,6 +78,8 @@ public:
         midiProcessor.appIsActive = isActiveWindow();
     }
     
+    bool ckBlockClosing;
+    
     void actionListenerCallback (const String& message) override;
     
     bool keyPressed (const KeyPress& key, Component* originatingComponent) override;

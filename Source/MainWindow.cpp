@@ -15,6 +15,7 @@ ApplicationProperties& getAppProperties();
     MainWindow::MainWindow (String name)
     : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
+        ckBlockClosing = false;
         startTimer(1000);
         //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", 99);
         setUsingNativeTitleBar (true);
@@ -149,7 +150,10 @@ ApplicationProperties& getAppProperties();
         o.escapeKeyTriggersCloseButton  = true;
         o.useNativeTitleBar             = false;
         o.resizable                     = true;
+        
+        ckBlockClosing = true;
         o.runModal();
+        ckBlockClosing = false;
         ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
         getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
         getAppProperties().getUserSettings()->saveIfNeeded();
@@ -162,15 +166,17 @@ ApplicationProperties& getAppProperties();
         //    ScopedPointer<DialogWindow> settingsWindow;
         TracksComponent tracksComponent(&midiProcessor);
         tracksComponent.setSize (897, 200);
-        DialogWindow::LaunchOptions o;
-        o.content.setNonOwned (&tracksComponent);
-        o.dialogTitle                   = "Score Settings";
-        o.componentToCentreAround       = this;
-        o.dialogBackgroundColour        = Colours::azure;
-        o.escapeKeyTriggersCloseButton  = true;
-        o.useNativeTitleBar             = true;
-        o.resizable                     = true;
-        o.runModal();
+        DialogWindow::LaunchOptions dw;
+        dw.content.setNonOwned (&tracksComponent);
+        dw.dialogTitle                   = "Score Settings";
+        dw.componentToCentreAround       = this;
+        dw.dialogBackgroundColour        = Colours::azure;
+        dw.escapeKeyTriggersCloseButton  = true;
+        dw.useNativeTitleBar             = true;
+        dw.resizable                     = true;
+        ckBlockClosing = true;
+        dw.runModal();
+        ckBlockClosing = false;
     }
     
     void MainWindow::menuBarActivated (bool isActive)

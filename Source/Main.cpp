@@ -87,8 +87,11 @@ public:
 
     void systemRequestedQuit() override
     {
-        if (mainWindow->midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
-            quit();
+        if (!mainWindow->ckBlockClosing)
+        {
+            if (mainWindow->midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
+                quit();
+        }
     }
 
 private:

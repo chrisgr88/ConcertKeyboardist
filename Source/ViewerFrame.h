@@ -44,12 +44,12 @@ public:
     
     void timerCallback() override;
     
-    void setPlayheadToHere()
-    {
-        processor->setLastPlayedSeqStep();
-        processor->catchUp();
-//        processor->play(!processor->playing(),"current");
-    }
+//    void setPlayheadToHere()
+//    {
+//        processor->setLastPlayedSeqStep();
+//        processor->catchUp();
+////        processor->play(!processor->playing(),"current");
+//    }
     
 //    void playFromCurrentPosition()
 //    {

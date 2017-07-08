@@ -211,7 +211,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
         variableTempoRatio = 1.0;
         sequenceReadHead = 0;
         currentSeqStep = -1;
-        lastPlayedNoteStep = -1;
+        lastPlayedNoteStep = 0;
         lastPlayedSeqStep = currentSeqStep;
         timeInTicks = 0;
         metTimeInTicks = 0;
@@ -229,7 +229,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
         }
         sequenceReadHead = sequenceObject.theSequence[step].getTimeStamp();
         currentSeqStep = step-1;
-        lastPlayedNoteStep = -1;
+        lastPlayedNoteStep = currentSeqStep;
         timeInTicks = time;
 //        accompTimeInTicks = time;
     }
@@ -550,12 +550,12 @@ void MIDIProcessor::processBlock ()
             }
         }
 //        const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[currentSeqStep+1].getTimeStamp());
-        if (lastPlayedSeqStep>=0)
+        if (lastPlayedNoteStep>=0)
         {
-            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[lastPlayedSeqStep].getTimeStamp());
+            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[lastPlayedNoteStep].getTimeStamp());
             timeIncrement = sequenceObject.tempoMultiplier * tempo / 625;
             variableTimeIncrement = variableTempoRatio * sequenceObject.tempoMultiplier * tempo / 625;
-//            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedSeqStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
+//            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
 //            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
         }
 //        if (metTimeInTicks > sequenceObject.getPPQ())
@@ -599,7 +599,7 @@ void MIDIProcessor::processBlock ()
 //            << "\n";
             sendMidiMessage(note);
             listenStep++;
-            lastPlayedSeqStep = listenSequence[listenStep].triggeredBy;
+            lastPlayedNoteStep = listenSequence[listenStep].triggeredBy;
         }
     }
     
@@ -746,7 +746,7 @@ void MIDIProcessor::processBlock ()
         while (scheduledNotes.size()>0)
         {
             const int step = scheduledNotes.front();
-            lastPlayedSeqStep = step;
+            lastPlayedNoteStep = step;
             if (theSequence->size()<step) //This should never happen but testing this may prevent a crash
             {
                 scheduledNotes.pop_front();

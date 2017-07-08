@@ -303,7 +303,10 @@ public:
     double tempoMultiplier;
     void setTempoMultiplier(double value, bool documentReallyChanged)
     {
-        tempoMultiplier = value;
+        if (value<0.1)
+            tempoMultiplier = 1.0;
+        else
+            tempoMultiplier = value;
 //        setTempo (startingTempo * value);
         sequenceProps.setValue("tempoMultiplier", tempoMultiplier);//float - Factor applied to original tempos to adjust original tempo
         setChangedFlag (documentReallyChanged);
