@@ -446,10 +446,11 @@ ApplicationProperties& getAppProperties();
                 break;
                 
             case CommandIDs::fileOpen:
+                ckBlockClosing = true;
                 if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                     midiProcessor.loadFromUserSpecifiedFile();
                 Component::toFront(true);
-                //                std::cout <<"fileOpen - Set focus to 'this'\n";
+                ckBlockClosing = false;
                 break;
                 
             case CommandIDs::fileRecent:

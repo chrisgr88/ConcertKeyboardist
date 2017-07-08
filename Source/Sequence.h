@@ -330,8 +330,15 @@ public:
     }
     double getTempo (double currentTime)
     {
+        if (tempoChanges.size()==0)
+            return 120;
         static int prevTempoChangeIndex;
-        int tempoChangeIndex = prevTempoChangeIndex;
+        static double prevTime;
+        int tempoChangeIndex;
+        if (currentTime>0 || prevTime>currentTime)
+            tempoChangeIndex = prevTempoChangeIndex;
+        else
+            tempoChangeIndex = 0;
         int counter = tempoChanges.size();
         while (counter-- > 0)
         {
@@ -350,6 +357,7 @@ public:
 //        << " increment " << increment
 //        << "\n";
         prevTempoChangeIndex = tempoChangeIndex;
+        prevTime = currentTime;
 //        return increment;
         return curTempo;
     }
