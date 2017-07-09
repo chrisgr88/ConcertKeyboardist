@@ -234,7 +234,11 @@ private:
     Rectangle<int> selectionRect;
     Array<int> selectedNotes;
     Array<int> newlySelectedNotes;
-    Array<int> displayedSelection;    
+    Array<int> displayedSelection;
+    
+    bool editingNote; //Dragging on note head
+    Point<int> noteEditAnchor;
+    
     float preDragScale;
     float preDragHorizShift;
     float preDragXinTicks;

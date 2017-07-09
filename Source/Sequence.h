@@ -446,6 +446,8 @@ public:
     bool areThereProgramChanges;
 
     std::vector<NoteWithOffTime> theSequence;
+    std::vector<NoteWithOffTime> sequenceWithEdits;
+    
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;
     std::vector<ControllerMessage> softPedalChanges;

@@ -66,6 +66,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     zoomDragStarting = false;
     zoomOrScrollDragging = false;
     selecting = false;
+    editingNote = false;
     resetHorizontalShift();
     colourActiveNoteHead = Colour(0xffff00ff);//Cyan
     colourPrimaryNoteBar = Colour(0xffffccff).darker().darker();
@@ -115,6 +116,11 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
         selectionAnchor = Point<int>(e.getPosition().getX(),e.getPosition().getY());
         startTimer(TIMER_MOUSE_HOLD, 1);
     }
+    else
+    {
+        editingNote = true;
+        noteEditAnchor = Desktop::getMousePosition();
+    }
 //    std::cout << "mouse down " <<e.getPosition().getX()<<" "
 //    << selectionRect.getTopLeft().getX()<<" "<<selectionRect.getTopLeft().getY()<< "\n";
 }
@@ -123,6 +129,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     if (selecting)
     {
         selecting = false;
+        editingNote = false;
         if (!event.source.hasMouseMovedSignificantlySincePressed())
         {
             clearSelectedNotes();
@@ -1478,14 +1485,30 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //                <<  "\n";
                 repaint();
             }
-            else //Dragging on note head
+            else if (editingNote) //Dragging on note head
             {
-                float deltaX = (Desktop::getInstance().getMousePosition().getX() - Desktop::getInstance().getLastMouseDownPosition().getX());
-                float deltaY = (Desktop::getInstance().getMousePosition().getY() - Desktop::getInstance().getLastMouseDownPosition().getY());
+                float deltaX = Desktop::getMousePosition().getX() - noteEditAnchor.getX();
+                float deltaY = noteEditAnchor.getY() - Desktop::getMousePosition().getY();
+                
+                double ts  = processor->sequenceObject.theSequence.at(hoverStep).getTimeStamp();
+                float storedVel  = processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity();
+                double dur  = processor->sequenceObject.theSequence.at(hoverStep).offTime-ts;
+                float fVel = storedVel + (deltaY/10.0)/127.0;
+                
+                if (fVel>1.0) fVel = 1.0;
+                if (fVel<1.0/127.0) fVel = 1.0/127.0+0.001;
+                processor->sequenceObject.theSequence.at(hoverStep).setVelocity(fVel);
                 std::cout
+                << "vel " << (int) processor->sequenceObject.theSequence.at(hoverStep).getVelocity()
                 <<  " delta X "<<deltaX
                 <<  " delta Y "<<deltaY
+                <<  " storedVel " << storedVel
+                <<  " fVel " << fVel
+                <<  " intVel " << std::round(fVel*127.0)
+                <<  " startTick " << ts
+                <<  " duration " << dur
                 <<  "\n";
+                
             }
         }
     }

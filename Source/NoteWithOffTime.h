@@ -52,7 +52,7 @@ public:
     rectHead(-1),
     triggeringExprNote(-1),
     selected(false),
-    chordTopStep(-1),
+    chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
     timetoNextNote(-1)
@@ -81,7 +81,7 @@ public:
     rectHead(-1),
     triggeringExprNote(-1),
     selected(false),
-    chordTopStep(-1),
+    chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
     timetoNextNote(-1)
@@ -139,7 +139,7 @@ public:
     rectHead(-1),
     triggeringExprNote(-1),
     selected(false),
-    chordTopStep(-1),
+    chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
     timetoNextNote(-1)

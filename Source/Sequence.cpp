@@ -629,62 +629,62 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         ckfSysex.clear();
         sendChangeMessage(); //Is this needed?
         setChangedFlag (false);
-    }
+        theSequence.clear();
     
-    
-    //End of reloading file ####################################################################################
-    //Transfer all tracks to "theSequence"
-    theSequence.clear();
-    theControllers.clear();
-    for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
-    {
-        const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
-        const int numEvents = theTrack->getNumEvents();
-        if (isActiveTrack(trkNumber))
+//      Transfer all tracks to "theSequence"
+//      theSequence.clear();
+        theControllers.clear();
+        for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
         {
-//            std::cout
-//            << "Loading track "<< trkNumber
-//            << ", noteOns "<< nNoteOnsInTrack[trkNumber]
-//            << "\n";
+            const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
+            const int numEvents = theTrack->getNumEvents();
+            if (isActiveTrack(trkNumber))
+            {
+    //            std::cout
+    //            << "Loading track "<< trkNumber
+    //            << ", noteOns "<< nNoteOnsInTrack[trkNumber]
+    //            << "\n";
+                for (int i=0;i<numEvents;i++)
+                {
+                    if (theTrack->getEventPointer(i)->message.isNoteOn())
+                    {
+                        NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i)); //of note bar
+                        //                    std::cout << "Size of NoteWithOffTime, bool "<< sizeof(msg)<<" "<<sizeof(test) << "\n";
+    //                    msg.setChannel(1);
+                        msg.track = trkNumber;
+                        if (msg.offTime <= msg.getTimeStamp()) //In a correct sequence this should not happen
+                            msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
+                        msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
+                        msg.offTime = 96.0*msg.offTime/ppq;
+                        theSequence.push_back(msg);
+                    }
+    //                
+    //                else if (theTrack->getEventPointer(i)->message.isProgramChange())
+    //                {
+    //                    NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, 0);
+    //                    msg.setTimeStamp(0);
+    //                    theSequence.push_back(msg);
+    //                    std::cout << "ProgCh " << trkNumber<<" "<<msg.getProgramChangeNumber()<<"\n";
+    //                }
+                }
+            }
             for (int i=0;i<numEvents;i++)
             {
-                if (theTrack->getEventPointer(i)->message.isNoteOn())
+                if (theTrack->getEventPointer(i)->message.isController())
                 {
-                    NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i)); //of note bar
-                    //                    std::cout << "Size of NoteWithOffTime, bool "<< sizeof(msg)<<" "<<sizeof(test) << "\n";
-//                    msg.setChannel(1);
-                    msg.track = trkNumber;
-                    if (msg.offTime <= msg.getTimeStamp()) //In a correct sequence this should not happen
-                        msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
-                    msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
-                    msg.offTime = 96.0*msg.offTime/ppq;
-                    theSequence.push_back(msg);
+                    ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
+                    theControllers.push_back(ctrMsg);
+    //                                    std::cout << "Add Controller: Step, Time " << i << ", " << ctrMsg.getTimeStamp()
+    //                                    << " Track " << trkNumber
+    //                                    << " Channel " << ctrMsg.getChannel()
+    //                                    << " cc " << ctrMsg.getControllerNumber()
+    //                                    << " Value " << ctrMsg.getControllerValue()
+    //                                    <<"\n";
                 }
-//                
-//                else if (theTrack->getEventPointer(i)->message.isProgramChange())
-//                {
-//                    NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, 0);
-//                    msg.setTimeStamp(0);
-//                    theSequence.push_back(msg);
-//                    std::cout << "ProgCh " << trkNumber<<" "<<msg.getProgramChangeNumber()<<"\n";
-//                }
-            }
-        }
-        for (int i=0;i<numEvents;i++)
-        {
-            if (theTrack->getEventPointer(i)->message.isController())
-            {
-                ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
-                theControllers.push_back(ctrMsg);
-//                                    std::cout << "Add Controller: Step, Time " << i << ", " << ctrMsg.getTimeStamp()
-//                                    << " Track " << trkNumber
-//                                    << " Channel " << ctrMsg.getChannel()
-//                                    << " cc " << ctrMsg.getControllerNumber()
-//                                    << " Value " << ctrMsg.getControllerValue()
-//                                    <<"\n";
             }
         }
     }
+    //End of reloading file ####################################################################################
     
     if (theSequence.size()>0)
     {
@@ -758,22 +758,39 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         
         //Humanize chord note start times and velocities
         srand(0);
+        double thisChordTimeStamp;
         for (int step=0; step<theSequence.size();step++)
         {
 //            bool print = false;
-//            if (170<step && step<1950)
-//                print = true;
-            const double thisChordTimeStamp = theSequence[step].getTimeStamp();
             Array<int> chord;
-//            if (print )
-////                std::cout<<step<< " stepTS "<< theSequence[step].getTimeStamp()<< "\n";
-            while (theSequence[step].getTimeStamp() == thisChordTimeStamp)
+            int chordTopStep = step;
+            
+            if (theSequence[step].chordTopStep==-2) // -2 means not determined yet
             {
-                chord.add(step++);
-//                if (print)
-//                    std::cout<<step<< " stepTS "<< theSequence[step].getTimeStamp()<< "\n";
+                thisChordTimeStamp = theSequence[step].getTimeStamp();
+                while (theSequence[step].getTimeStamp() == thisChordTimeStamp)
+                {
+                    chord.add(step++);
+//                    if (step <20)
+//                        std::cout<< "first pass chord add " << step << "\n";
+
+                }
+                step--;
             }
-            step--;
+            else
+            {
+                if (theSequence[step].chordTopStep == -1)
+                {
+                    int chordFirstStep = step;
+                    thisChordTimeStamp = theSequence[step].getTimeStamp();
+                    chord.add(step++);
+                    while (theSequence[step].chordTopStep == chordFirstStep)
+                    {
+                        chord.add(step++);
+                    }
+                    step--;
+                }
+            }
             if (chord.size()>1)
             {
                 double timeToNextNote;
@@ -800,7 +817,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     else
                         randAdd = rand()%temp/100.0;
                     theSequence[chord[i]].setTimeStamp(thisChordTimeStamp+randAdd);
-                    theSequence[chord[i]].offTime = theSequence[chord[i]].offTime + randAdd;
+//                    theSequence[chord[i]].offTime = theSequence[chord[i]].offTime + randAdd;
 //                    if (print)
 //                        std::cout<<i<< " thisChordTS, newTS "<<thisChordTimeStamp<< " " << theSequence[chord[i]].getTimeStamp()<< "\n";
                 }
@@ -832,6 +849,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     }
                 }
             }
+            theSequence[chordTopStep].chordTopStep=-1;
         }
         
         std::sort(theSequence.begin(), theSequence.end());
@@ -965,6 +983,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         }
     }
     setLoadingFile(false);
+    dumpData(0, 20, -1);
     //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
 } //End of loadSequence
 
