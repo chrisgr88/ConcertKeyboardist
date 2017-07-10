@@ -633,15 +633,13 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         
         for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
         {
-            const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
-            const int numEvents = theTrack->getNumEvents();
-            recordsWithEdits.add(Array<NoteWithOffTime>());
-            recordsWithEdits.getLast().ensureStorageAllocated(numEvents);
+            recordsWithEdits.push_back(std::vector<MidiMessage>(trackDetails[trkNumber].nNotes));
         }
         for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
         {
             const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
             const int numEvents = theTrack->getNumEvents();
+            int eventIndex = 0;
             for (int i=0;i<numEvents;i++)
             {
                 if (theTrack->getEventPointer(i)->message.isNoteOn())
@@ -652,11 +650,14 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                         msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
                     msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
                     msg.offTime = 96.0*msg.offTime/ppq;
-                    recordsWithEdits[trkNumber].add(msg);
+                    recordsWithEdits[trkNumber][eventIndex] = msg;
+                    eventIndex++;
                 }
             }
         }
     }
+    std::cout<< "recordsWithEdits.at(1).at(3) "<< recordsWithEdits.at(1).at(3).getVelocity() << "\n";
+    
     //End of reloading file ####################################################################################
     theSequence.clear();
     
@@ -685,13 +686,21 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
                     msg.offTime = 96.0*msg.offTime/ppq;
                     msg.editedMessageIndex = recordNumber;
+                    msg.pRecordsWithEdits = &recordsWithEdits;
+                    
                     theSequence.push_back(msg);
+//                    int stepNum = theSequence.size()-1;
+//                    std::cout << "msg.pRecordsWithEdits " <<   stepNum << " "<<
+//                    " "<< theSequence[stepNum].pRecordsWithEdits->size() <<"\n";;
+
+                    
                     recordNumber++;
 //                    std::cout <<theSequence.size()<< " Add note: Track, TimeStamp, NN " << msg.track  << ", "
 //                    << msg.getTimeStamp()<< " " << msg.getNoteNumber() <<"\n";
                 }
             }
         }
+
         //Controllers
         for (int i=0;i<numEvents;i++)
         {
@@ -713,6 +722,11 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     {
         std::sort(theSequence.begin(), theSequence.end());
         std::sort(theControllers.begin(), theControllers.end());
+        
+        
+        std::cout << "msg.pRecordsWithEdits " << 7 <<" "<< theSequence[7].getFloatVelocity() <<"\n";
+        theSequence[7].changeVelocity(0.90);
+        std::cout << "msg.pRecordsWithEdits " << 7 <<" "<< theSequence[7].getFloatVelocity() <<"\n";
         
         //Extract pedal changes
         String sustainPedalDirection = "";

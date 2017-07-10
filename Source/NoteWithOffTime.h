@@ -32,6 +32,7 @@ class NoteWithOffTime : public MidiMessage
 public:
     NoteWithOffTime(int trk, int byte1, int byte2, int byte3, double onTime, double offT) :
     MidiMessage(byte1,byte2,byte3,onTime),
+    pRecordsWithEdits(NULL),
     editedMessageIndex(-1),
     messageChanged(false),
     track(trk),
@@ -62,6 +63,7 @@ public:
     
     NoteWithOffTime(int trk, MidiMessage msg, double offT) :
     MidiMessage(msg),
+    pRecordsWithEdits(NULL),
     editedMessageIndex(-1),
     messageChanged(false),
     track(trk),
@@ -92,6 +94,7 @@ public:
     
     NoteWithOffTime(NoteWithOffTime const &note) :
     MidiMessage(note),
+    pRecordsWithEdits(note.pRecordsWithEdits),
     editedMessageIndex(note.editedMessageIndex),
     messageChanged(note.messageChanged),
     track(note.track),
@@ -122,6 +125,7 @@ public:
     
     NoteWithOffTime() :
     MidiMessage(),
+    pRecordsWithEdits(NULL),
     editedMessageIndex(-1),
     messageChanged(false),
     track(0),
@@ -178,6 +182,38 @@ public:
             return getTimeStamp()<note2.getTimeStamp();
     }
     
+    uint8 getVelocity() const
+    {
+        if (!messageChanged)
+        {
+            return MidiMessage::getVelocity();
+        }
+        else
+        {
+//        std::cout << "pRecordsWithEdits velocity" <<   pRecordsWithEdits->size()<<" "
+//        << (int) pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity()<<"\n";
+            return pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity();
+        }
+    }
+    
+    float getFloatVelocity() const
+    {
+        if (!messageChanged)
+        {
+            return MidiMessage::getFloatVelocity();
+        }
+        else
+        {
+            return pRecordsWithEdits->at(track).at(editedMessageIndex).getFloatVelocity();
+        }
+    }
+    
+    void changeVelocity(float newVelocity)
+    {
+        pRecordsWithEdits->at(track).at(editedMessageIndex).setVelocity(newVelocity);
+        messageChanged = true;
+    }
+    
     /*
      Overall behavior:
      - Chain is defined as a contiguous series of steps all with starting times separated by amount less than or equal to chainingInterval.
@@ -195,6 +231,7 @@ public:
      - Trills are steps in the score file, and the steps are sorted by time tag, so we can no longer assume that a given chain's notes are contiguous. What are the implications of this?
      - Add a bool trill and int nextTrillStep properties to flag a trill step and indicate next step in this trill.  Use -1 to indicate last step.
      */
+    std::vector<std::vector<MidiMessage>> *pRecordsWithEdits;
     int editedMessageIndex; //Index into array of MidiMessages that hold values if edited from what was originally loaded
     bool messageChanged; //True if editedMessage is different from the values in NoteWithOffTime itself
     
