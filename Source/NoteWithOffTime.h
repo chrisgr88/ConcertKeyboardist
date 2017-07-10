@@ -24,7 +24,7 @@ public:
     {
         return getTimeStamp()<msg2.getTimeStamp();
     }
-    uint8 track;
+    int track;
 };
 
 class NoteWithOffTime : public MidiMessage
@@ -32,8 +32,9 @@ class NoteWithOffTime : public MidiMessage
 public:
     NoteWithOffTime(int trk, int byte1, int byte2, int byte3, double onTime, double offT) :
     MidiMessage(byte1,byte2,byte3,onTime),
+    editedMessageIndex(-1),
+    messageChanged(false),
     track(trk),
-//    primaryTrack(false),
     offTime(offT),
     scheduledOnTime(0),
     scheduledOffTime(0),
@@ -61,8 +62,9 @@ public:
     
     NoteWithOffTime(int trk, MidiMessage msg, double offT) :
     MidiMessage(msg),
+    editedMessageIndex(-1),
+    messageChanged(false),
     track(trk),
-//    primaryTrack(false),
     offTime(offT),
     scheduledOnTime(0),
     scheduledOffTime(0),
@@ -90,8 +92,9 @@ public:
     
     NoteWithOffTime(NoteWithOffTime const &note) :
     MidiMessage(note),
+    editedMessageIndex(note.editedMessageIndex),
+    messageChanged(note.messageChanged),
     track(note.track),
-//    primaryTrack(note.primaryTrack),
     offTime(note.offTime),
     scheduledOnTime(note.scheduledOnTime),
     scheduledOffTime(note.scheduledOffTime),
@@ -119,8 +122,9 @@ public:
     
     NoteWithOffTime() :
     MidiMessage(),
+    editedMessageIndex(-1),
+    messageChanged(false),
     track(0),
-//    primaryTrack(false),
     offTime(0),
     scheduledOnTime(0),
     scheduledOffTime(0),
@@ -191,8 +195,10 @@ public:
      - Trills are steps in the score file, and the steps are sorted by time tag, so we can no longer assume that a given chain's notes are contiguous. What are the implications of this?
      - Add a bool trill and int nextTrillStep properties to flag a trill step and indicate next step in this trill.  Use -1 to indicate last step.
      */
-    uint8 track;
-//    bool primaryTrack;
+    int editedMessageIndex; //Index into array of MidiMessages that hold values if edited from what was originally loaded
+    bool messageChanged; //True if editedMessage is different from the values in NoteWithOffTime itself
+    
+    int track;
     double offTime;
     double scheduledOnTime; // Starting time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.
     double scheduledOffTime; // Ending time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.

@@ -446,7 +446,7 @@ public:
     bool areThereProgramChanges;
 
     std::vector<NoteWithOffTime> theSequence;
-    std::vector<NoteWithOffTime> sequenceWithEdits;
+    Array<Array<NoteWithOffTime>> recordsWithEdits; //Indexed by track and then by original record position
     
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;

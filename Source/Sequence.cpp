@@ -629,62 +629,85 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         ckfSysex.clear();
         sendChangeMessage(); //Is this needed?
         setChangedFlag (false);
-        theSequence.clear();
-    
-//      Transfer all tracks to "theSequence"
-//      theSequence.clear();
-        theControllers.clear();
+        recordsWithEdits.clear();
+        
         for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
         {
             const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
             const int numEvents = theTrack->getNumEvents();
-            if (isActiveTrack(trkNumber))
-            {
-    //            std::cout
-    //            << "Loading track "<< trkNumber
-    //            << ", noteOns "<< nNoteOnsInTrack[trkNumber]
-    //            << "\n";
-                for (int i=0;i<numEvents;i++)
-                {
-                    if (theTrack->getEventPointer(i)->message.isNoteOn())
-                    {
-                        NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i)); //of note bar
-                        //                    std::cout << "Size of NoteWithOffTime, bool "<< sizeof(msg)<<" "<<sizeof(test) << "\n";
-    //                    msg.setChannel(1);
-                        msg.track = trkNumber;
-                        if (msg.offTime <= msg.getTimeStamp()) //In a correct sequence this should not happen
-                            msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
-                        msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
-                        msg.offTime = 96.0*msg.offTime/ppq;
-                        theSequence.push_back(msg);
-                    }
-    //                
-    //                else if (theTrack->getEventPointer(i)->message.isProgramChange())
-    //                {
-    //                    NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, 0);
-    //                    msg.setTimeStamp(0);
-    //                    theSequence.push_back(msg);
-    //                    std::cout << "ProgCh " << trkNumber<<" "<<msg.getProgramChangeNumber()<<"\n";
-    //                }
-                }
-            }
+            recordsWithEdits.add(Array<NoteWithOffTime>());
+            recordsWithEdits.getLast().ensureStorageAllocated(numEvents);
+        }
+        for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
+        {
+            const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
+            const int numEvents = theTrack->getNumEvents();
             for (int i=0;i<numEvents;i++)
             {
-                if (theTrack->getEventPointer(i)->message.isController())
+                if (theTrack->getEventPointer(i)->message.isNoteOn())
                 {
-                    ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
-                    theControllers.push_back(ctrMsg);
-    //                                    std::cout << "Add Controller: Step, Time " << i << ", " << ctrMsg.getTimeStamp()
-    //                                    << " Track " << trkNumber
-    //                                    << " Channel " << ctrMsg.getChannel()
-    //                                    << " cc " << ctrMsg.getControllerNumber()
-    //                                    << " Value " << ctrMsg.getControllerValue()
-    //                                    <<"\n";
+                    NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i));
+                    msg.track = trkNumber;
+                    if (msg.offTime <= msg.getTimeStamp()) //In a correct sequence this should not happen
+                        msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
+                    msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
+                    msg.offTime = 96.0*msg.offTime/ppq;
+                    recordsWithEdits[trkNumber].add(msg);
                 }
             }
         }
     }
     //End of reloading file ####################################################################################
+    theSequence.clear();
+    
+//      Transfer tracks to "theSequence"
+    theControllers.clear();
+    for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
+    {
+        const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
+        const int numEvents = theTrack->getNumEvents();
+        //Notes
+        if (isActiveTrack(trkNumber))
+        {
+//            std::cout
+//            << "Loading track "<< trkNumber
+//            << ", noteOns "<< nNoteOnsInTrack[trkNumber]
+//            << "\n";
+            int recordNumber = 0;
+            for (int i=0;i<numEvents;i++)
+            {
+                if (theTrack->getEventPointer(i)->message.isNoteOn())
+                {
+                    NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i));
+                    msg.track = trkNumber;
+                    if (msg.offTime <= msg.getTimeStamp()) //In a correct sequence this should not happen
+                        msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
+                    msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
+                    msg.offTime = 96.0*msg.offTime/ppq;
+                    msg.editedMessageIndex = recordNumber;
+                    theSequence.push_back(msg);
+                    recordNumber++;
+//                    std::cout <<theSequence.size()<< " Add note: Track, TimeStamp, NN " << msg.track  << ", "
+//                    << msg.getTimeStamp()<< " " << msg.getNoteNumber() <<"\n";
+                }
+            }
+        }
+        //Controllers
+        for (int i=0;i<numEvents;i++)
+        {
+            if (theTrack->getEventPointer(i)->message.isController())
+            {
+                ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
+                theControllers.push_back(ctrMsg);
+//                                    std::cout << "Add Controller: Step, Time " << i << ", " << ctrMsg.getTimeStamp()
+//                                    << " Track " << trkNumber
+//                                    << " Channel " << ctrMsg.getChannel()
+//                                    << " cc " << ctrMsg.getControllerNumber()
+//                                    << " Value " << ctrMsg.getControllerValue()
+//                                    <<"\n";
+            }
+        }
+    }
     
     if (theSequence.size()>0)
     {
@@ -1081,6 +1104,7 @@ void Sequence::dumpData(int start, int end, int nn)
     << " triggered "
     << " triggeredOff "
     << " chordTop "
+    << " edMsgNdx"
     << "\n";
     if (end>theSequence.size())
         end = theSequence.size();
@@ -1104,6 +1128,7 @@ void Sequence::dumpData(int start, int end, int nn)
             << theSequence[i].triggeredNote<<" "
             << theSequence[i].triggeredOffNote<<" "
             << theSequence[i].chordTopStep<<" "
+            << theSequence[i].editedMessageIndex<<" "
             <<"\n";
         }
     }
