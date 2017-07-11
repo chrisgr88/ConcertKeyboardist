@@ -882,13 +882,10 @@ void ScrollingNoteViewer::makeNoteBars()
         if (msg.triggeredBy==-1)
         {
             int velocityOfTargetNote = msg.getVelocity();
-            
             const double scaledVelocity = graphHeight * velocityOfTargetNote/127.0;
             const double thisY = scaledVelocity;
             if (prevX != -1)
             {
-//                if (30<index&&index<50)
-//                    std::cout << index<<" prevY graphHeight "<<prevY <<" "<<graphHeight<<" "<<topMargin<<"\n";
                 addLine (prevX, prevY, x, thisY, 1.0f, Colour(0xFFF0F0FF));
                 prevY = thisY;
             }
@@ -1497,16 +1494,17 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 
                 if (fVel>1.0) fVel = 1.0;
                 if (fVel<1.0/127.0) fVel = 1.0/127.0+0.001;
-                processor->sequenceObject.theSequence.at(hoverStep).setVelocity(fVel);
+                processor->sequenceObject.theSequence.at(hoverStep).changeVelocity(fVel);
                 std::cout
-                << "vel " << (int) processor->sequenceObject.theSequence.at(hoverStep).getVelocity()
-                <<  " delta X "<<deltaX
-                <<  " delta Y "<<deltaY
+                << "step" << hoverStep
+                <<  " getVelocity " << (int) processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity()
+//                <<  " delta X "<<deltaX
+//                <<  " delta Y "<<deltaY
                 <<  " storedVel " << storedVel
                 <<  " fVel " << fVel
                 <<  " intVel " << std::round(fVel*127.0)
-                <<  " startTick " << ts
-                <<  " duration " << dur
+//                <<  " startTick " << ts
+//                <<  " duration " << dur
                 <<  "\n";
                 
             }

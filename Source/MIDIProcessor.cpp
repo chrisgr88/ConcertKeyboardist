@@ -50,7 +50,7 @@ void MIDIProcessor::changeListenerCallback (ChangeBroadcaster* broadcaster)
         }
         else if (undoMgr->inUndo || undoMgr->inRedo)
         {
-            std::cout << "MidiProcessor received undo change message from Sequence" << "\n";
+//            std::cout << "MidiProcessor received undo change message from Sequence" << "\n";
         }
     }
 }

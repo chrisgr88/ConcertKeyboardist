@@ -34,7 +34,6 @@ public:
     MidiMessage(byte1,byte2,byte3,onTime),
     pRecordsWithEdits(NULL),
     editedMessageIndex(-1),
-    messageChanged(false),
     track(trk),
     offTime(offT),
     scheduledOnTime(0),
@@ -65,7 +64,6 @@ public:
     MidiMessage(msg),
     pRecordsWithEdits(NULL),
     editedMessageIndex(-1),
-    messageChanged(false),
     track(trk),
     offTime(offT),
     scheduledOnTime(0),
@@ -96,7 +94,6 @@ public:
     MidiMessage(note),
     pRecordsWithEdits(note.pRecordsWithEdits),
     editedMessageIndex(note.editedMessageIndex),
-    messageChanged(note.messageChanged),
     track(note.track),
     offTime(note.offTime),
     scheduledOnTime(note.scheduledOnTime),
@@ -127,7 +124,6 @@ public:
     MidiMessage(),
     pRecordsWithEdits(NULL),
     editedMessageIndex(-1),
-    messageChanged(false),
     track(0),
     offTime(0),
     scheduledOnTime(0),
@@ -182,36 +178,52 @@ public:
             return getTimeStamp()<note2.getTimeStamp();
     }
     
-    uint8 getVelocity() const
-    {
-        if (!messageChanged)
-        {
-            return MidiMessage::getVelocity();
-        }
-        else
-        {
-//        std::cout << "pRecordsWithEdits velocity" <<   pRecordsWithEdits->size()<<" "
-//        << (int) pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity()<<"\n";
-            return pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity();
-        }
-    }
     
-    float getFloatVelocity() const
+    void changeTimeStamp(double newTimeStamp)
     {
-        if (!messageChanged)
-        {
-            return MidiMessage::getFloatVelocity();
-        }
-        else
-        {
-            return pRecordsWithEdits->at(track).at(editedMessageIndex).getFloatVelocity();
-        }
+        pRecordsWithEdits->at(track).at(editedMessageIndex).setTimeStamp(newTimeStamp);
     }
-    
+    double getTimeStamp() const
+    {
+        return pRecordsWithEdits->at(track).at(editedMessageIndex).getTimeStamp();
+    }
+    double getOriginalTimeStamp() const
+    {
+        return MidiMessage::getTimeStamp();
+    }
+
     void changeVelocity(float newVelocity)
     {
         pRecordsWithEdits->at(track).at(editedMessageIndex).setVelocity(newVelocity);
-        messageChanged = true;
+    }
+    uint8 getVelocity() const
+    {
+        return pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity();
+    }
+    float getFloatVelocity() const
+    {
+        return pRecordsWithEdits->at(track).at(editedMessageIndex).getFloatVelocity();
+    }
+    uint8 getOriginalVelocity() const
+    {
+        return MidiMessage::getVelocity();
+    }
+    float getOriginalFloatVelocity() const
+    {
+        return MidiMessage::getFloatVelocity();
+    }
+    
+    void changeNoteNumber(int newNewNoteNumber)
+    {
+        pRecordsWithEdits->at(track).at(editedMessageIndex).setNoteNumber(newNewNoteNumber);
+    }
+    int getNoteNumber() const
+    {
+        return pRecordsWithEdits->at(track).at(editedMessageIndex).getNoteNumber();
+    }
+    int getOriginalNoteNumber() const
+    {
+        return MidiMessage::getNoteNumber();
     }
     
     /*
@@ -233,7 +245,6 @@ public:
      */
     std::vector<std::vector<MidiMessage>> *pRecordsWithEdits;
     int editedMessageIndex; //Index into array of MidiMessages that hold values if edited from what was originally loaded
-    bool messageChanged; //True if editedMessage is different from the values in NoteWithOffTime itself
     
     int track;
     double offTime;

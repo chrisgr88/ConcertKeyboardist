@@ -364,7 +364,7 @@ public:
     
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval)
     {
-        std::cout << "chainCommand: interval = " <<inverval<<"\n";
+//        std::cout << "chainCommand: interval = " <<inverval<<"\n";
         Array<Sequence::StepActivity> stepActivity = sequenceObject.chain(selection, inverval);
         if (undoMgr->inUndo || undoMgr->inRedo)
             setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0]).getTimeStamp());

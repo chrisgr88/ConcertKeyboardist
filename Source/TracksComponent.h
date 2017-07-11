@@ -121,12 +121,10 @@ public:
         PlayabilityColumnCustomComponent* playabilityBox = static_cast<PlayabilityColumnCustomComponent*> (existingComponentToUpdate);
         if (playabilityBox == nullptr)
         {
-            std::cout << " new PlayabilityColumnCustomComponent: " << rowNum<<" "<<columnId<<"\n";
             playabilityBox = new PlayabilityColumnCustomComponent (*this,false);
         }
         else
         {
-            std::cout << "Delete playability component " << rowNum<<" "<<columnId<<" "<<existingComponentToUpdate <<"\n";
             delete playabilityBox;
             playabilityBox = new PlayabilityColumnCustomComponent (*this, false);
         }

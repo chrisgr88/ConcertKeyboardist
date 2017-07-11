@@ -70,7 +70,7 @@ ApplicationProperties& getAppProperties();
     // This is sent actions from viewerFrame where the toolbar is implemented
     void MainWindow::actionListenerCallback (const String& message)
     {
-        std::cout <<"actionListenerCallback"<< message << "\n";
+//        std::cout <<"actionListenerCallback"<< message << "\n";
         if (message == "fileSave")
             perform (CommandIDs::fileSave);
         else if (message == "fileOpen")
