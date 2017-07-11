@@ -1104,8 +1104,11 @@ void ScrollingNoteViewer::makeNoteBars()
     }
     
     //Position of next note to play
-    const double x = processor->sequenceObject.theSequence[processor->lastPlayedSeqStep+1].getTimeStamp()*pixelsPerTick;
-    nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
+    if (processor->lastPlayedSeqStep+1 < processor->sequenceObject.theSequence.size())
+    {
+        const double x = processor->sequenceObject.theSequence[processor->lastPlayedSeqStep+1].getTimeStamp()*pixelsPerTick;
+        nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
+    }
 }
 
 void ScrollingNoteViewer::updatePlayedNotes()
