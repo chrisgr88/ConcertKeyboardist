@@ -946,8 +946,9 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     
         
         //Find chainTriggers and set this property for all steps in a given chain
+        assert (theSequence.size()>0);
         int step = 0;
-        int chainTrigger;
+        int chainTrigger = 0;
         while (step < theSequence.size())
         {
             //If this step is a firstInChain scan all notes with time stamp equal to that of the firstInChain for the shortest note
@@ -967,6 +968,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 }
                 chainTrigger = stepOfhighestNote;
             }
+            assert(0<=chainTrigger && chainTrigger<theSequence.size());
             theSequence[step].chainTrigger = chainTrigger;
             step++;
         }
@@ -1111,6 +1113,14 @@ int Sequence::myConvertFromBase64 (OutputStream& binaryOutput, StringRef base64T
     return length;
 }
 
+void Sequence::dumpData(Array<int> sel)
+{
+    if (sel.size()>0)
+        dumpData(sel.getFirst(),sel.getLast(),-1);
+    else
+        dumpData(-1,0,-1);
+}
+
 void Sequence::dumpData(int start, int end, int nn)
 {
     if (start==-1)
@@ -1138,7 +1148,7 @@ void Sequence::dumpData(int start, int end, int nn)
     << "\n";
     if (end>theSequence.size())
         end = theSequence.size();
-    for (int i=start; i<theSequence.size() && i<end;i++)
+    for (int i=start; i<theSequence.size() && i<=end;i++)
     {
         if (nn==-1 || theSequence[i].getNoteNumber()==nn )
         {

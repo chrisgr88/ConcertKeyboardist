@@ -196,6 +196,10 @@ public:
         selectedNotes = sel;
         processor->setCopyOfSelectedNotes(selectedNotes);
     }
+    Array<int> getSelectedNotes()
+    {
+        return selectedNotes;
+    }
     void clearSelectedNotes()
     {
         selectedNotes.clear();

@@ -319,6 +319,10 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("NextBookmark", "Go to Next Bookmark", category, 0);
                 result.addDefaultKeypress (KeyPress::rightKey, ModifierKeys::commandModifier);
                 break;
+            case CommandIDs::dumpData:
+                result.setInfo ("dumpData", "dumpData", category, 0);
+                result.addDefaultKeypress ('d', ModifierKeys::commandModifier);
+                break;
             default:
                 break;
         }
@@ -427,7 +431,8 @@ ApplicationProperties& getAppProperties();
             CommandIDs::nextMeasure,
             CommandIDs::toggleBookmark,
             CommandIDs::previousBookmark,
-            CommandIDs::nextBookmark
+            CommandIDs::nextBookmark,
+            CommandIDs::dumpData
         };
         commands.addArray (ids, numElementsInArray (ids));
     }
@@ -687,7 +692,9 @@ ApplicationProperties& getAppProperties();
                 //                pViewerFrame->setPlayheadToHere();
                 break;
             }
-                
+            case CommandIDs::dumpData:
+                midiProcessor.sequenceObject.dumpData(pViewerFrame->noteViewer.getSelectedNotes()); //Dump selection to console
+            break;
             default:
                 return false;
         }

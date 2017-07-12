@@ -220,6 +220,7 @@ public:
     }
     
     void saveSequence(File fileToSave);
+    void dumpData(Array<int>);
     void dumpData(int start, int end, int nn);
     
     enum UserPlaysWhat {both, primary, secondary, autonomousPlaying};

@@ -52,6 +52,8 @@ namespace CommandIDs
     static const int nextMeasure                = 0x60040;
     static const int previousBookmark           = 0x60050;
     static const int nextBookmark               = 0x60060;
+    
+    static const int dumpData                   = 0x90000;
     //    static const int tempo                      = 0x50020;
 }
 

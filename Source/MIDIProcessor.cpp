@@ -82,7 +82,12 @@ void MIDIProcessor::play (bool ply, String fromWhere)
 //        variableTempoRatio = 1.0;
         double now;
         if (fromWhere=="ZTL")
-            now = sequenceObject.theSequence[currentSeqStep+1].getTimeStamp();
+        {
+            if (currentSeqStep+1<sequenceObject.theSequence.size())
+                now = sequenceObject.theSequence[currentSeqStep+1].getTimeStamp();
+            else
+                now = sequenceObject.theSequence[currentSeqStep].getTimeStamp();
+        }
         else if (fromWhere=="previousStart")
         {
             now = lastStartTime;
@@ -227,6 +232,8 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             if (sequenceObject.theSequence[step].getTimeStamp()>=time && sequenceObject.theSequence[step].triggeredBy==-1)
                 break;
         }
+        if (step==sequenceObject.theSequence.size())
+            step = sequenceObject.theSequence.size() - 1;
         sequenceReadHead = sequenceObject.theSequence[step].getTimeStamp();
         currentSeqStep = step-1;
         lastPlayedNoteStep = currentSeqStep;
