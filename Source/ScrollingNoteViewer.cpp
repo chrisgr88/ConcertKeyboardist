@@ -840,8 +840,6 @@ void ScrollingNoteViewer::makeNoteBars()
     nKeys = maxNote-minNote+1;
     const float h = trackVerticalSize*noteBarWidthRatio; //Note bar height
     const int seqSize = static_cast<int>(sequence->size());
-    if (seqSize==0)
-        return;
     int seqDurationInTicks =  processor->sequenceObject.getSeqDurationInTicks();
     const int sequenceWidthPixels = seqDurationInTicks+sequenceStartPixel;
     
@@ -850,6 +848,8 @@ void ScrollingNoteViewer::makeNoteBars()
     //Top margin
     addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(0xFF404040));
     addRectangle(-sequenceWidthPixels, topMargin-1.0f, sequenceWidthPixels*30, 1.0f, Colour(0xFFB0B0B0).darker());
+    if (seqSize==0)
+        return;
     
     //Black & white note track highlighting
     for (int note = minNote;note<=maxNote;note++)
@@ -870,6 +870,8 @@ void ScrollingNoteViewer::makeNoteBars()
     //Last line
     addRectangle(seqDurationInTicks*pixelsPerTick-1.0f,0.f,2.0f,initialHeight, Colour(0xFFC0C0C0));
     
+    if (seqSize==0)
+        return;
     //Velocity graph
     const double graphHeight = 300.0-getTopMargin()-toolbarHeight; //300 is the original window height set in MainComponent.cpp
     double prevY = graphHeight * sequence->at(0).highestVelocityInChain/127.0;
@@ -940,7 +942,7 @@ void ScrollingNoteViewer::makeNoteBars()
         
         sequence->at(index).head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
         
-        if (msg.chainTrigger==index) //If it's a target note
+        if (msg.triggeredBy==-1) //If it's a target note
         {
                 if (processor->getNotesEditable() || sequence->at(index).getTimeStamp()>=readHead)
                 sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,

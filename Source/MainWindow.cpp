@@ -631,8 +631,8 @@ ApplicationProperties& getAppProperties();
                     midiProcessor.undoMgr->perform(action);
                     midiProcessor.sequenceObject.setChangedFlag(true);
                     midiProcessor.catchUp();
-                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
-                                                    Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+//                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
+//                                                    Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
                 }
             }
                 break;

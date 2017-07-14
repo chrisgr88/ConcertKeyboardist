@@ -75,6 +75,8 @@ void MIDIProcessor::timerCallback (int timerID)
 void MIDIProcessor::play (bool ply, String fromWhere)
 {
 //    std::cout << "xInTicksFromViewer " << xInTicksFromViewer <<"\n";
+    if (sequenceObject.theSequence.size()==0)
+        return;
     if (!isPlaying && ply)
     {
         if (xInTicksFromViewer !=0)
@@ -234,6 +236,8 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
         }
         if (step==sequenceObject.theSequence.size())
             step = sequenceObject.theSequence.size() - 1;
+        if (step==-1)
+            step = 0;
         sequenceReadHead = sequenceObject.theSequence[step].getTimeStamp();
         currentSeqStep = step-1;
         lastPlayedNoteStep = currentSeqStep;

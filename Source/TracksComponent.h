@@ -167,7 +167,8 @@ public:
             trkDetail.playability = newPlayability;
             sequence->trackDetails.set(rowNum, trkDetail);
             sequence->setChangedFlag(true);
-            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+            processor->sequenceObject.targetNoteTimes.clear();
+            processor->buildSequenceAsOf(Sequence::loadFile, Sequence::doRetainEdits, processor->getTimeInTicks());
         }
     }
     

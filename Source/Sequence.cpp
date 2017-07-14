@@ -169,10 +169,11 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
 
 Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double interval)
 {
+    std::cout<< "Chain called from chain command" << "\n";
+    //If there was no selection, construct a selection array with all steps
     double startTime;
     double endTime;
-    Array<Sequence::StepActivity> stepActivityList;
-    if (selection.size()>0) //If not loading a file then we are in the chain command
+    if (selection.size()>0)
     {
         startTime = theSequence.at(selection[0]).getTimeStamp();
         endTime = theSequence.at(selection.getLast()).getTimeStamp();
@@ -186,18 +187,17 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
             selection.add(step);
     }
     
-    theSequence[0].firstInChain = 0;
-    theSequence[0].triggeredBy = -1;
-    int firstInThisChain = 0;
-    
+    //For steps in selection, construct stepActivityList from the targetNoteTimes array.
+    //Entries in stepActivityList are {int step; bool active}
+    Array<Sequence::StepActivity> stepActivityList;
     if (!getLoadingFile())
     {
         for (int step=0;step<theSequence.size();step++)
         {
             if (!selection.contains(step))
                 continue;
-            if ((startTime<=theSequence.at(step).getTimeStamp() && theSequence.at(step).getTimeStamp()<=endTime))
-            {
+//            if ((startTime<=theSequence.at(step).getTimeStamp() && theSequence.at(step).getTimeStamp()<=endTime))
+//            {
                 const int index = targetNoteTimes.indexOf(theSequence.at(step).getTimeStamp());
                 if (index>=0)
                 {
@@ -210,11 +210,13 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
                     const StepActivity act = {step, false};
                     stepActivityList.add(act);
                 }
-            }
+//            }
         }
     }
-    
-//    targetNoteTimes.removeIf([startTime, endTime](double v) { return (startTime<=v && v<= endTime);} );
+
+    theSequence[0].firstInChain = 0;
+    theSequence[0].triggeredBy = -1;
+    int firstInThisChain = 0;
     int firstStep = -1;
     for (int step=0;step<theSequence.size();step++)
     {
@@ -226,9 +228,10 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
             if (firstStep==-1)
                 firstStep = step;
             if (step==0)
-                startTimeDifference = 99999;
+                startTimeDifference = DBL_MAX;
             else
                 startTimeDifference = theSequence[step].getTimeStamp()-theSequence[step-1].getTimeStamp();
+            //We need to have recomputed chord top steps here!!!
             if (theSequence[step].chordTopStep!=-1 || startTimeDifference<=interval)
             {
                 if (step>0)
@@ -266,6 +269,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
     }
+//    targetNoteTimes.clear();
     setLoadingFile(true);
     
     if (fileToLoad.getFileName().length() > 0 && type == Sequence::loadFile)
@@ -344,7 +348,9 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         numTracks = midiFile.getNumTracks();
         
         //Track overview
-        trackDetails.clear();
+        if (retainEdits==Sequence::doNotRetainEdits)
+        {
+            trackDetails.clear();
 //        nNoteOnsInTrack.clear();
 //        nSustainMessagesInTrack.clear();
 //        nSoftMessagesInTrack.clear();
@@ -441,6 +447,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
             else
                 trkDetail.playability = TrackTypes::Track_Other;
             trackDetails.add(trkDetail);
+            }
         }
         seqDurationInTicks = 96.0*seqDurationInTicks/ppq;
 //        std::cout << "seqDurationInTicks " << seqDurationInTicks << "\n";
@@ -577,7 +584,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //                    std::cout <<"read bookmark "<< bm <<"\n";
                     bookmarkTimes.add(bm);
                 }
-                else if (key == "trackDetails")
+                else if (retainEdits==Sequence::doNotRetainEdits && key == "trackDetails")
                 {
                     StringArray values;
                     values.addTokens(value, " ", "\"");
@@ -798,6 +805,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         for (int step=0; step<theSequence.size();step++)
         {
 //            bool print = false;
+            if (step<14)
+                std::cout << "Load sequence chord analysis at " << step << "\n";
             Array<int> chord;
             StringArray chSorter;
             int chordTopStep = step;
@@ -834,9 +843,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
             }
             if (chord.size()>1)
             {
-//                StringArray chSorter;
-//                for (
-                
+                if (step < 14)
+                    std::cout<<" step, chord top step " << step<< " "  << chord.getFirst() << "\n";
                 double timeToNextNote;
                 if (step<theSequence.size()-1)
                     timeToNextNote = theSequence[step+1].getOriginalTimeStamp()-thisChordTimeStamp;
@@ -844,8 +852,6 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     timeToNextNote = DBL_MAX;
                 double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
                 
-//                if (print)
-//                    std::cout<<step<< " localFuzz "<< localFuzz<< "\n";
                 bool allSameVelocities = true;
                 const int firstVelocity =  theSequence[chord[0]].getOriginalVelocity();
                 for (int i=1; i<chord.size(); i++)
@@ -907,16 +913,18 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         
         std::sort(theSequence.begin(), theSequence.end());
 //        
-//        //Determine which notes are triggeredBy previous notes
-        if(targetNoteTimes.size()>0) //Non zero if loaded from ckf file or previously created for midi file by chain ()
+//        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
+        if(targetNoteTimes.size()>0) //If loaded from ck file or previously created for midi file by chain ()
         {
             int firstInThisChain = 0;
-            double prevTS = -1;
+            double prevTS = -1.0;
+            std::cout<< "Chain in loadSequence " << "\n";
             for (int step=0; step<theSequence.size();step++)
             {
-//                std::cout<< step
-//                << " ts " << theSequence[step].getTimeStamp()
-//                << " firstInChain" << targetNoteTimes.contains(theSequence[step].getTimeStamp()) << "\n";
+                if (step<14)
+                    std::cout<< step
+                    << " ts " << theSequence[step].getTimeStamp()
+                    << " firstInChain " << targetNoteTimes.contains(theSequence[step].getTimeStamp()) << "\n";
                 if (prevTS != theSequence[step].getTimeStamp() && targetNoteTimes.contains(theSequence[step].getTimeStamp()))
                 {
                     if (step>0)
@@ -941,7 +949,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         }
         else
         {
-            chain(Array<int>(),chainingInterval);
+            chain(Array<int>(),chainingInterval); //This is used only for when a plain midi file is loaded
         }
     
         
