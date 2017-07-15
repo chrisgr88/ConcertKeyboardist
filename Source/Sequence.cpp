@@ -351,174 +351,173 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         if (retainEdits==Sequence::doNotRetainEdits)
         {
             trackDetails.clear();
-//        nNoteOnsInTrack.clear();
-//        nSustainMessagesInTrack.clear();
-//        nSoftMessagesInTrack.clear();
-        programChanges.clear();
-        for (int i=0;i<16;i++)
-            programChanges.push_back(-1);
-        areThereProgramChanges = false;
-        
-        seqDurationInTicks = 0;
-        for (int trk=0;trk<numTracks;trk++)
-        {
-            String txt = "";
-            const MidiMessageSequence *theTrack = midiFile.getTrack(trk);
-            const int numEvents = theTrack->getNumEvents();
-    //        std::cout << "Track " << trk << " events " << numEvents << "\n";
-            int nNoteOns = 0;
-            int nSysex = 0;
-            int nMeta = 0;
-            int nTrackMeta = 0;
-            int nChannelMeta = 0;
-            int nKeySigMeta = 0;
-            int nTimeSigMeta = 0;
-            int nSustains = 0;
-            int nSofts = 0;
-            int nSostenutos = 0;
-            int nOtherContr = 0;
-            int channel = -1;
-            TrackDetail trkDetail;
-            trkDetail.startMeasure = -1;
-            trkDetail.endMeasure = -1;
-            for (int i=0;i<numEvents;i++) 
-            {
-                MidiMessage msg = theTrack->getEventPointer(i)->message;
-//                std::cout << "trk " << trk << " channel " << msg.getChannel() << "\n";
-                
-                if (msg.isTextMetaEvent())
-                {
-                    txt += msg.getTextFromTextMetaEvent();
-                }
-
-                if (msg.isProgramChange())
-                {
-                    programChanges[msg.getChannel()-1] = msg.getProgramChangeNumber();
-                    areThereProgramChanges = true;
-                    trkDetail.instrument = String(MidiMessage::getGMInstrumentName(msg.getProgramChangeNumber()));
-                }
-                if (msg.isController())
-                {
-                    if (msg.isSustainPedalOn())
-                        nSustains++;
-                    if (msg.isSostenutoPedalOn()) nSostenutos++;
-                    if (msg.isSoftPedalOn())
-                        nSofts++;
-                    if (!msg.isSustainPedalOn() && !msg.isSostenutoPedalOn() && !msg.isSoftPedalOn())
-                        nOtherContr++;
-                }
-                if (msg.isNoteOn())
-                {
-                    if (theTrack->getTimeOfMatchingKeyUp(i) > seqDurationInTicks)
-                        seqDurationInTicks = theTrack->getTimeOfMatchingKeyUp(i);
-                    nNoteOns++;
-                    const double ts = msg.getTimeStamp();
-                    if (trkDetail.startMeasure == -1)
-                        trkDetail.startMeasure = ts; //Will convert to measure later.
-                    trkDetail.endMeasure = ts; //Will convert to measure later
-                    channel = msg.getChannel();
-                }
-                if (msg.isSysEx()) nSysex++;
-                if (msg.isMetaEvent()) nMeta++;
-                if (msg.isTrackMetaEvent()) nTrackMeta++;
-                if (msg.isMidiChannelMetaEvent()) nChannelMeta++;
-                if (msg.isKeySignatureMetaEvent()) nKeySigMeta++;
-                if (msg.isTimeSignatureMetaEvent()) nTimeSigMeta++;
-                if (msg.isTrackNameEvent())
-                    trkDetail.description = msg.getTextFromTextMetaEvent();
-                else
-                    trkDetail.description = "";
-            }
-            trkDetail.description = txt;
-            trkDetail.nNotes = nNoteOns;
-            trkDetail.nSustains = nSustains;
-            trkDetail.nSofts = nSofts;
-            trkDetail.originalChannel = channel;
-//            if (trkDetail.description.length()!=0 || trkDetail.instrument.length()!=0 ||
-//                        trkDetail.nNotes!=0 || trkDetail.nSustains!=0 || trkDetail.nSofts !=0)
-//                trkDetail.showInList = true;
-//            else
-//                trkDetail.showInList = false;
+            programChanges.clear();
+            for (int i=0;i<16;i++)
+                programChanges.push_back(-1);
+            areThereProgramChanges = false;
             
-            if (trkDetail.nNotes>0)
-                trkDetail.playability = TrackTypes::Track_Play;
-            else if (trkDetail.nSustains>0 || trkDetail.nSofts>0)
-                trkDetail.playability = TrackTypes::Track_Controllers;
-            else
-                trkDetail.playability = TrackTypes::Track_Other;
-            trackDetails.add(trkDetail);
+            seqDurationInTicks = 0;  //Is this not being updated when we enable a track after having no tracks enabled??
+            for (int trk=0;trk<numTracks;trk++)
+            {
+                String txt = "";
+                const MidiMessageSequence *theTrack = midiFile.getTrack(trk);
+                const int numEvents = theTrack->getNumEvents();
+        //        std::cout << "Track " << trk << " events " << numEvents << "\n";
+                int nNoteOns = 0;
+                int nSysex = 0;
+                int nMeta = 0;
+                int nTrackMeta = 0;
+                int nChannelMeta = 0;
+                int nKeySigMeta = 0;
+                int nTimeSigMeta = 0;
+                int nSustains = 0;
+                int nSofts = 0;
+                int nSostenutos = 0;
+                int nOtherContr = 0;
+                int channel = -1;
+                TrackDetail trkDetail;
+                trkDetail.startMeasure = -1;
+                trkDetail.endMeasure = -1;
+                for (int i=0;i<numEvents;i++) 
+                {
+                    MidiMessage msg = theTrack->getEventPointer(i)->message;
+    //                std::cout << "trk " << trk << " channel " << msg.getChannel() << "\n";
+                    
+                    if (msg.isTextMetaEvent())
+                    {
+                        txt += msg.getTextFromTextMetaEvent();
+                    }
+
+                    if (msg.isProgramChange())
+                    {
+                        programChanges[msg.getChannel()-1] = msg.getProgramChangeNumber();
+                        areThereProgramChanges = true;
+                        trkDetail.instrument = String(MidiMessage::getGMInstrumentName(msg.getProgramChangeNumber()));
+                    }
+                    if (msg.isController())
+                    {
+                        if (msg.isSustainPedalOn())
+                            nSustains++;
+                        if (msg.isSostenutoPedalOn()) nSostenutos++;
+                        if (msg.isSoftPedalOn())
+                            nSofts++;
+                        if (!msg.isSustainPedalOn() && !msg.isSostenutoPedalOn() && !msg.isSoftPedalOn())
+                            nOtherContr++;
+                    }
+                    if (msg.isNoteOn())
+                    {
+                        if (theTrack->getTimeOfMatchingKeyUp(i) > seqDurationInTicks)
+                            seqDurationInTicks = theTrack->getTimeOfMatchingKeyUp(i);
+                        nNoteOns++;
+                        const double ts = msg.getTimeStamp();
+                        if (trkDetail.startMeasure == -1)
+                            trkDetail.startMeasure = ts; //Will convert to measure later.
+                        trkDetail.endMeasure = ts; //Will convert to measure later
+                        channel = msg.getChannel();
+                    }
+                    if (msg.isSysEx()) nSysex++;
+                    if (msg.isMetaEvent()) nMeta++;
+                    if (msg.isTrackMetaEvent()) nTrackMeta++;
+                    if (msg.isMidiChannelMetaEvent()) nChannelMeta++;
+                    if (msg.isKeySignatureMetaEvent()) nKeySigMeta++;
+                    if (msg.isTimeSignatureMetaEvent()) nTimeSigMeta++;
+                    if (msg.isTrackNameEvent())
+                        trkDetail.description = msg.getTextFromTextMetaEvent();
+                    else
+                        trkDetail.description = "";
+                }
+                trkDetail.description = txt;
+                trkDetail.nNotes = nNoteOns;
+                trkDetail.nSustains = nSustains;
+                trkDetail.nSofts = nSofts;
+                trkDetail.originalChannel = channel;
+    //            if (trkDetail.description.length()!=0 || trkDetail.instrument.length()!=0 ||
+    //                        trkDetail.nNotes!=0 || trkDetail.nSustains!=0 || trkDetail.nSofts !=0)
+    //                trkDetail.showInList = true;
+    //            else
+    //                trkDetail.showInList = false;
+                
+                if (trkDetail.nNotes>0)
+                    trkDetail.playability = TrackTypes::Track_Play;
+                else if (trkDetail.nSustains>0 || trkDetail.nSofts>0)
+                    trkDetail.playability = TrackTypes::Track_Controllers;
+                else
+                    trkDetail.playability = TrackTypes::Track_Other;
+                trackDetails.add(trkDetail);
+                }
             }
-        }
         seqDurationInTicks = 96.0*seqDurationInTicks/ppq;
 //        std::cout << "seqDurationInTicks " << seqDurationInTicks << "\n";
-        
-        //Beat & measure lines
-        beatTimes.clear();
-        measureTimes.clear();
-        int tickPosition = 0;
-        for (int timeSigIndex=0;timeSigChanges.size()>timeSigIndex;timeSigIndex++)
+        if (retainEdits==Sequence::doNotRetainEdits)
         {
-            timeSigChanges[timeSigIndex].getTimeSignatureInfo(numerator, denominator);
-            const float ticksPerBeat = getPPQ() * 4.0/(float)denominator;
-            
-            int startTick;
-            if (timeSigIndex==0)
-                startTick = 0;
-            else
-                startTick = timeSigChanges[timeSigIndex].getTimeStamp();
-            int endTick;
-            if (timeSigChanges.size()>timeSigIndex+1)
-                endTick = timeSigChanges[timeSigIndex+1].getTimeStamp();
-            else
-                endTick = seqDurationInTicks;
-            
-            //        bool up = false;
-            const int sectionDurationInBeats = (endTick - startTick) / ticksPerBeat;
-            for (int beat=0;beat<sectionDurationInBeats;beat++)
+            //Beat & measure lines
+            beatTimes.clear();
+            measureTimes.clear();
+            int tickPosition = 0;
+            for (int timeSigIndex=0;timeSigChanges.size()>timeSigIndex;timeSigIndex++)
             {
-                if (beat%numerator == 0) //Measure
+                timeSigChanges[timeSigIndex].getTimeSignatureInfo(numerator, denominator);
+                const float ticksPerBeat = getPPQ() * 4.0/(float)denominator;
+                
+                int startTick;
+                if (timeSigIndex==0)
+                    startTick = 0;
+                else
+                    startTick = timeSigChanges[timeSigIndex].getTimeStamp();
+                int endTick;
+                if (timeSigChanges.size()>timeSigIndex+1)
+                    endTick = timeSigChanges[timeSigIndex+1].getTimeStamp();
+                else
+                    endTick = seqDurationInTicks;
+                
+                //        bool up = false;
+                const int sectionDurationInBeats = (endTick - startTick) / ticksPerBeat;
+                for (int beat=0;beat<sectionDurationInBeats;beat++)
                 {
-                    measureTimes.push_back(tickPosition);
-//                    if (measureTimes.size()<30)
-//                        std::cout << measureTimes.size() <<  " measuretime "  << tickPosition << "\n";
-                    beatTimes.push_back(tickPosition);
-                }
-                else //Beat
-                    beatTimes.push_back(tickPosition);
-                tickPosition += ticksPerBeat;
-            }
-        }
-        measureTimes.push_back(seqDurationInTicks);
-        beatTimes.push_back(seqDurationInTicks);
-        
-        //Compute start and end measure in each playable track
-        for (int trk=0;trk<trackDetails.size();trk++)
-        {
-            bool foundStart = false;
-            if (trackDetails[trk].startMeasure != -1) //If we found any note
-            {
-                TrackDetail trkDetail = trackDetails[trk];
-                //The following were determined during the scan of all events (including noteOns) in each track
-                const int startInTicks = 96.0*trackDetails[trk].startMeasure/ppq;
-                const int endInTicks = 96.0*trackDetails[trk].endMeasure/ppq;
-//                std::cout << "start ticks, end ticks " << trk <<" "<<startInTicks << " " << endInTicks << "\n";
-                int m;
-                for (m=0;m<measureTimes.size()-1;m++)
-                {
-//                    std::cout << "measure, time " << m <<" "<<measureTimes[m] << "\n";
-                    if (!foundStart && measureTimes[m]<=startInTicks && startInTicks<measureTimes[m+1])
+                    if (beat%numerator == 0) //Measure
                     {
-                        trkDetail = trackDetails[trk];
-                        trkDetail.startMeasure = m+1;
-                        trackDetails.set(trk, trkDetail);
-                        foundStart = true;
+                        measureTimes.push_back(tickPosition);
+    //                    if (measureTimes.size()<30)
+    //                        std::cout << measureTimes.size() <<  " measuretime "  << tickPosition << "\n";
+                        beatTimes.push_back(tickPosition);
                     }
-                    if (foundStart && measureTimes[m]<=endInTicks && endInTicks<measureTimes[m+1])
+                    else //Beat
+                        beatTimes.push_back(tickPosition);
+                    tickPosition += ticksPerBeat;
+                }
+            }
+            measureTimes.push_back(seqDurationInTicks);
+            beatTimes.push_back(seqDurationInTicks);
+            
+            //Compute start and end measure in each track with any notes
+            for (int trk=0;trk<trackDetails.size();trk++)
+            {
+                bool foundStart = false;
+                if (trackDetails[trk].startMeasure != -1) //If we found any note
+                {
+                    TrackDetail trkDetail = trackDetails[trk];
+                    //The following were determined during the scan of all events (including noteOns) in each track
+                    const int startInTicks = 96.0*trackDetails[trk].startMeasure/ppq;
+                    const int endInTicks = 96.0*trackDetails[trk].endMeasure/ppq;
+    //                std::cout << "start ticks, end ticks " << trk <<" "<<startInTicks << " " << endInTicks << "\n";
+                    int m;
+                    for (m=0;m<measureTimes.size()-1;m++)
                     {
-                        trkDetail = trackDetails[trk];
-                        trkDetail.endMeasure = m+1;
-                        trackDetails.set(trk, trkDetail);
-                        break;
+    //                    std::cout << "measure, time " << m <<" "<<measureTimes[m] << "\n";
+                        if (!foundStart && measureTimes[m]<=startInTicks && startInTicks<measureTimes[m+1])
+                        {
+                            trkDetail = trackDetails[trk];
+                            trkDetail.startMeasure = m+1;
+                            trackDetails.set(trk, trkDetail);
+                            foundStart = true;
+                        }
+                        if (foundStart && measureTimes[m]<=endInTicks && endInTicks<measureTimes[m+1])
+                        {
+                            trkDetail = trackDetails[trk];
+                            trkDetail.endMeasure = m+1;
+                            trackDetails.set(trk, trkDetail);
+                            break;
+                        }
                     }
                 }
             }
@@ -674,11 +673,12 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
         const int numEvents = theTrack->getNumEvents();
         //Notes
+//        std::cout
+//        << "Loading track "<< trkNumber;
         if (isActiveTrack(trkNumber))
         {
 //            std::cout
-//            << "Loading track "<< trkNumber
-//            << ", noteOns "<< nNoteOnsInTrack[trkNumber]
+//            << ", noteOns "<< trackDetails[trkNumber].nNotes
 //            << "\n";
             int recordNumber = 0;
             for (int i=0;i<numEvents;i++)
@@ -686,7 +686,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 if (theTrack->getEventPointer(i)->message.isNoteOn())
                 {
                     NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i));
-                    msg.track = trkNumber;
+//                    msg.track = trkNumber;
                     if (msg.offTime <= msg.getOriginalTimeStamp()) //In a correct sequence this should not happen
                         msg.offTime = msg.getOriginalTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
                     msg.setTimeStamp(96.0*msg.getOriginalTimeStamp()/ppq);
@@ -706,6 +706,9 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 }
             }
         }
+//        else
+//            std::cout
+//            << " Inactive "<< "\n";
 
         //Controllers
         for (int i=0;i<numEvents;i++)
@@ -728,6 +731,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     {
         std::sort(theSequence.begin(), theSequence.end());
         std::sort(theControllers.begin(), theControllers.end());
+        seqDurationInTicks = theSequence.back().getTimeStamp(); //We update this here so that it reflects currently active tracks
         
         
 //        std::cout << "msg.pRecordsWithEdits " << 7 <<" "<< theSequence[7].getFloatVelocity() <<"\n";
@@ -805,8 +809,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         for (int step=0; step<theSequence.size();step++)
         {
 //            bool print = false;
-            if (step<14)
-                std::cout << "Load sequence chord analysis at " << step << "\n";
+//            if (step<14)
+//                std::cout << "Load sequence chord analysis at " << step << "\n";
             Array<int> chord;
             StringArray chSorter;
             int chordTopStep = step;
@@ -918,13 +922,13 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         {
             int firstInThisChain = 0;
             double prevTS = -1.0;
-            std::cout<< "Chain in loadSequence " << "\n";
+//            std::cout<< "Chain in loadSequence " << "\n";
             for (int step=0; step<theSequence.size();step++)
             {
-                if (step<14)
-                    std::cout<< step
-                    << " ts " << theSequence[step].getTimeStamp()
-                    << " firstInChain " << targetNoteTimes.contains(theSequence[step].getTimeStamp()) << "\n";
+//                if (step<14)
+//                    std::cout<< step
+//                    << " ts " << theSequence[step].getTimeStamp()
+//                    << " firstInChain " << targetNoteTimes.contains(theSequence[step].getTimeStamp()) << "\n";
                 if (prevTS != theSequence[step].getTimeStamp() && targetNoteTimes.contains(theSequence[step].getTimeStamp()))
                 {
                     if (step>0)
