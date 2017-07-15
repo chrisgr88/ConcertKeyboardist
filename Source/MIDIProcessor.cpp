@@ -229,7 +229,8 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     {
         for (step=0;step<theSequence->size();step++)
         {
-            if (std::abs(sequenceObject.theSequence[step].getTimeStamp()-time)<0.001 && sequenceObject.theSequence[step].triggeredBy==-1)
+            if (sequenceObject.theSequence[step].getTimeStamp()>=(time-0.001) && sequenceObject.theSequence[step].triggeredBy==-1)
+//            if (std::abs(sequenceObject.theSequence[step].getTimeStamp()-time)<0.001 && sequenceObject.theSequence[step].triggeredBy==-1)
                 break;
         }
         if (step==sequenceObject.theSequence.size())

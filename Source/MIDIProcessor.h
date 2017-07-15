@@ -163,10 +163,10 @@ public:
     void setXInTicks(double x)
     {
         xInTicksFromViewer = x;
-//        std::cout
-//        << "set xInTicksFromViewer " << xInTicksFromViewer
-//        << " timeInTicks " << timeInTicks
-//        << "\n";
+        std::cout
+        << "set xInTicksFromViewer " << xInTicksFromViewer
+        << " timeInTicks " << timeInTicks
+        << "\n";
     }
     
     bool playing() {return isPlaying;}
