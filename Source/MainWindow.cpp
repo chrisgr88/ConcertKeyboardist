@@ -531,7 +531,7 @@ ApplicationProperties& getAppProperties();
                 }
                 break;
             case CommandIDs::rewind:
-                std::cout <<"Rewind\n";
+//                std::cout <<"Rewind\n";
                 if (midiProcessor.isListening)
                 {
                     midiProcessor.play(false,"ZTL");

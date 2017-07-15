@@ -1241,7 +1241,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             {
                 timeInTicksTweens.add(prevTimeInTicks+(twTo-prevTimeInTicks)*((double)(i+1)/(double)nSteps));
                 horizontalShiftTweens.add(0);
-                //                std::cout << i << " timeInTicksStep horizontalShift step " <<  timeInTicksTweens[i]<< " " <<timeInTicksTweens[i] <<"\n";
+//                std::cout << i << " timeInTicksStep horizontalShift step " <<  timeInTicksTweens[i]<< " " <<timeInTicksTweens[i] <<"\n";
             }
             animationStep = 0;
             startTimer (TIMER_TWEEN, transitionTime/nSteps); // timeInMS / nSteps

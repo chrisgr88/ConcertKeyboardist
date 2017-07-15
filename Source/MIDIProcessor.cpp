@@ -161,9 +161,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
 
 void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 {
-//    std::cout << "Rewind: time " << time <<"\n";
-//    std::cout
-//    << "Entering Rewind: "
+//    std::cout << "Rewind: time " << time
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
 //    << "\n";
     
@@ -231,7 +229,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     {
         for (step=0;step<theSequence->size();step++)
         {
-            if (sequenceObject.theSequence[step].getTimeStamp()>=time && sequenceObject.theSequence[step].triggeredBy==-1)
+            if (std::abs(sequenceObject.theSequence[step].getTimeStamp()-time)<0.001 && sequenceObject.theSequence[step].triggeredBy==-1)
                 break;
         }
         if (step==sequenceObject.theSequence.size())
@@ -881,6 +879,7 @@ void MIDIProcessor::processBlock ()
 //                <<" "<<exprEvents[exprEventIndex].getNoteNumber()<<"\n";
             if (waitingForFirstNote)
             {
+//                std::cout << " Set lastStartTime " << timeInTicks <<"\n";
                 lastStartTime = timeInTicks;
                 waitingForFirstNote = false;
             }

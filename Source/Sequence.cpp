@@ -847,8 +847,6 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
             }
             if (chord.size()>1)
             {
-                if (step < 14)
-                    std::cout<<" step, chord top step " << step<< " "  << chord.getFirst() << "\n";
                 double timeToNextNote;
                 if (step<theSequence.size()-1)
                     timeToNextNote = theSequence[step+1].getOriginalTimeStamp()-thisChordTimeStamp;
