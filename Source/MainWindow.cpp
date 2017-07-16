@@ -106,7 +106,7 @@ ApplicationProperties& getAppProperties();
             midiProcessor.sequenceObject.chainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
             perform (CommandIDs::chainSelectedNotes);
         }
-        else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVelocity")
+        else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVel")
         {
             const double hV = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
             std::cout << "Performing HumanizeVelocity " <<hV<<"\n";

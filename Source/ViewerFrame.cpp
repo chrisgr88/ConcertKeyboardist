@@ -111,18 +111,18 @@ void ViewerFrame::timerCallback()
     
     if (pChainAmountBox->returnPressed)
     {
-//        std::cout << "chainAmount" <<pChainAmountBox->textBox.getText().getDoubleValue()<<"\n";
+        std::cout << "Return pressed - chainAmount" <<pChainAmountBox->textBox.getText().getDoubleValue()<<"\n";
         chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
-//        sendActionMessage("chain:"+String(chainAmount));
+        sendActionMessage("chain:"+String(chainAmount));
         grabKeyboardFocus();
         pChainAmountBox->returnPressed = false;
     }
     
     if (pHumanizeVelocity->returnPressed)
     {
-//        std::cout << "HumanizeVelocity " <<pHumanizeVelocity->textBox.getText().getDoubleValue()<<"\n";
+        std::cout << "Return pressed - HumanizeVelocity " <<pHumanizeVelocity->textBox.getText().getDoubleValue()<<"\n";
         humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
-//        sendActionMessage("humanizeVelocity:"+String(humanizeVelocityAmount));
+        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
         grabKeyboardFocus();
         pHumanizeVelocity->returnPressed = false;
     }
