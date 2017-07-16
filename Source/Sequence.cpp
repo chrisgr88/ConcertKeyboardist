@@ -804,10 +804,10 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         }
         
         //Humanize chord note start times and velocities
-        srand(0);
         double thisChordTimeStamp;
         for (int step=0; step<theSequence.size();step++)
         {
+            srand(step);
 //            bool print = false;
 //            if (step<14)
 //                std::cout << "Load sequence chord analysis at " << step << "\n";
@@ -845,6 +845,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     step--;
                 }
             }
+            chSorter.sort(true);
             if (chord.size()>1)
             {
                 double timeToNextNote;
@@ -864,16 +865,25 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     
                     const int temp = localTimeFuzz*100;
                     double randAdd;
+                    unsigned r = rand();
+                    
                     if (temp==0)
                         randAdd = 0;
                     else
-                        randAdd = rand()%temp/100.0;
-                    theSequence[chord[i]].changeTimeStamp(thisChordTimeStamp+randAdd);
+                        randAdd = r%temp/100.0;
+                    
+                    int step =  chSorter[i].fromFirstOccurrenceOf(":", false, true).getIntValue();
+                    theSequence[step].changeTimeStamp(thisChordTimeStamp+randAdd);
+//                    if (step<5)
+//                        std::cout<<i<<" "<<thisChordTimeStamp<< " r, temp, randAdd "<<r<< " " << temp
+//                        << " "<<randAdd
+//                        << " "<<theSequence[step].getTimeStamp()
+//                        <<"\n";
 //                    theSequence[chord[i]].offTime = theSequence[chord[i]].offTime + randAdd;
 //                    if (print)
 //                        std::cout<<i<< " thisChordTS, newTS "<<thisChordTimeStamp<< " " << theSequence[chord[i]].getTimeStamp()<< "\n";
                 }
-                chSorter.sort(true);
+
                 if (/*allSameVelocities ||*/ reVoiceChords)
                 {
 //                    std::cout<<"Found chord at " << chord[0] << " size "<< chord.size()  << "\n";
