@@ -80,8 +80,8 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
 //    std::cout << " Writing sysexTrackMarker - length = "<< len << "\n";
     
     //std::unique_ptr<MidiMessageSequence>  seq(new MidiMessageSequence);
-    MidiMessageSequence  seq;
-    seq.addEvent(sysex);
+    MidiMessageSequence  sysexSeq;
+    sysexSeq.addEvent(sysex);
     
     for (int i=0;i<props.size();i++)
     {
@@ -93,7 +93,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             propertyStr.copyToUTF8(buffer,128);
             MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
             std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-            seq.addEvent(sysex);
+            sysexSeq.addEvent(sysex);
         }
         else
             std::cout << " Don't Write sysex property - "<< keys[i] << "\n";
@@ -109,7 +109,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
 //        td::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-        seq.addEvent(sysex);
+        sysexSeq.addEvent(sysex);
     }
     
     for (int i=0;i<bookmarkTimes.size();i++)
@@ -122,7 +122,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
 //        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-        seq.addEvent(sysex);
+        sysexSeq.addEvent(sysex);
     }
     for (int track=0;track<trackDetails.size();track++)
     {
@@ -135,7 +135,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
 //        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-        seq.addEvent(sysex);
+        sysexSeq.addEvent(sysex);
     }
     //    std::cout << " Writing this many sysex records - "<< seq->getNumEvents()<< "\n";
 
@@ -147,17 +147,32 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     short timeFormat = midiFile.getTimeFormat();
     for (int trkNumber=0;trkNumber<tracksToCopy;trkNumber++)
     {
-        MidiMessageSequence seq;
+        MidiMessageSequence trackSeq;
         const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
         const int numEvents = theTrack->getNumEvents();
+        int noteIndex = 0;
         for (int i=0;i<numEvents;i++)
         {
             MidiMessage msg = theTrack->getEventPointer(i)->message;
-            seq.addEvent(msg);
+            if (msg.isNoteOn())
+            {
+                if (trackDetails[trkNumber].nNotes>0)
+                {
+                    int editedVel = recordsWithEdits[trkNumber][noteIndex].getVelocity();
+                    int msgVel = msg.getVelocity();
+                    if (noteIndex<15)   //editedVel!=msgVel)
+                    {
+                        std::cout <<trkNumber<<" "<<noteIndex<<" "<<recordsWithEdits[trkNumber][noteIndex].getTimeStamp()<<" Note compare "<<editedVel<<" "<<msgVel<<"\n";
+                        msg.setVelocity((float)editedVel/127.0f);
+                    }
+                    noteIndex++;
+                }
+            }
+            trackSeq.addEvent(msg);
         }
-        outputFile.addTrack(seq);
+        outputFile.addTrack(trackSeq);
     }
-    outputFile.addTrack(seq);
+    outputFile.addTrack(sysexSeq);
     outputFile.setTicksPerQuarterNote(timeFormat);
     File tempFile = fileToSave.withFileExtension("ckf");
     fileToSave.deleteFile();

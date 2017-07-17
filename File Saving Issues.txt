@@ -1,0 +1,81 @@
+File Saving Issues
+
+Note Data - for changed notes, or all?
+- velocities
+- note number
+- time stamp
+- off time
+- channel?
+
+Chords
+- Remember which notes are grouped as part of a chord
+- Remember ck chord property for each chord
+- Remeber ck adjusted velocity & time/duration for each note?  Or generate anew on loading?
+
+Other ornamentations? 
+ - Remember which notes are grouped as part of this element
+ - trills
+ - grace notes
+ - etc.
+ - Remember properties of this element
+
+ Program Changes
+ 	- For whole track
+ 	- Multiple within a track
+
+ Sustains
+
+ Softs
+
+ Tempos
+
+ Annotations
+
+ Capabilities
+  - Save as standard midi file
+  - When loaded by another app should it get the edited version, or not?
+  - Especially chords
+  	- If we save chords with CK time changes a notation app will no longer see them as chords
+  	- So saved midi file must put all chord notes at the same time
+  	- Even chord notes that were previously not simultaneous, when marked as a chord are saved as simultaneous
+  - But it would still be useful to be able to choose to save with adjusted times/velocities for playing in another app.
+  - Ability to record live playing
+    - save velocities and on/off times for re-listening or export for use elsewhere
+
+ Storage
+  - Store original data in sysex track so that it's always retrievable
+  - Checkbox in save dialog for choosing whether to save "plain" or "adjusted" note data (or whether to save user played version)
+  - A user played recording should be in a different sysex track from the manual edit data
+
+  Chords
+  	- Command to mark a selection of notes to be treated as a chord (does not directly affect their timing or velocities)
+  	- Chord note options
+  		- Timing
+  			- Custom times
+  			- Broken times 
+  				- top note first or bottom note first 
+  				- lag between notes ("slope")
+  				- amount of randomness & seed
+  		- Voicing
+  			- Custom velocities
+  			- Random
+  			- Automatic
+  	- Ability to copy and paste a set of chord properties from one chord to others
+  	- Library of chord timing options and voicing options
+  	- Ability to use some sort of machine learning model to adjust timing and velocities?
+
+Issues
+  	- Back and forth to notation software
+  		- Save with chord notes simultaneous
+  		- Edit in notation
+  		- Save in notation (ckf data may be lost)
+  		- ck detects file and auto reloads 
+  		- ck matches notes based on track and time stamp
+  		- reapplies chord edits
+
+Ability to work with Melodyne to create midi files or apply velocities/timing to midi files  		
+
+
+
+
+
