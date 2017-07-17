@@ -667,8 +667,10 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 {
                     NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i));
                     msg.track = trkNumber;
-                    if (msg.offTime <= msg.getOriginalTimeStamp()) //In a correct sequence this should not happen
-                        msg.offTime = msg.getOriginalTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
+                    //In a correct sequence this should not happen
+                    //But if it does, turn it into a short note  with non neg duration
+                    if (msg.offTime <= theTrack->getEventPointer(i)->message.getTimeStamp())
+                        msg.offTime = theTrack->getEventPointer(i)->message.getTimeStamp()+50;
                     msg.setTimeStamp(96.0*msg.getOriginalTimeStamp()/ppq);
                     msg.offTime = 96.0*msg.offTime/ppq;
                     recordsWithEdits[trkNumber][eventIndex] = msg;
@@ -901,7 +903,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 
                 if (/*allSameVelocities ||*/ reVoiceChords)
                 {
-                    std::cout<<"Found chord at " << chord[0] << " size "<< chord.size()  << "\n";
+//                    std::cout<<"Found chord at " << chord[0] << " size "<< chord.size()  << "\n";
                     if (chord.size()==2)
                     {
                         const float topNoteVel = theSequence[chord[0]].getOriginalFloatVelocity();
@@ -933,13 +935,13 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //                        << " " << chord.getLast()
 //                        << " " << (int) theSequence[chord.getLast()].getVelocity() << "\n";
                     }
-                    if (step<30)
-                        for (int j=0;j<chord.size();j++)
-                        {
-                            int step =  chSorter[j].fromFirstOccurrenceOf(":", false, true).getIntValue();
-                            std::cout<< j << " " << " nn " << chSorter[j] <<" " <<theSequence[chord[j]].getNoteNumber() << " "
-                            << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << " Order " <<step<< "\n";
-                        }
+//                    if (step<30)
+//                        for (int j=0;j<chord.size();j++)
+//                        {
+//                            int step =  chSorter[j].fromFirstOccurrenceOf(":", false, true).getIntValue();
+//                            std::cout<< j << " " << " nn " << chSorter[j] <<" " <<theSequence[chord[j]].getNoteNumber() << " "
+//                            << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << " Order " <<step<< "\n";
+//                        }
                 }
             }
             theSequence[chordTopStep].chordTopStep=-1;
