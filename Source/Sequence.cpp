@@ -25,7 +25,7 @@ Sequence::Sequence()
     setNotePlayWindow(200);
     setLatePlayAdjustmentWindow(100);
     setLeadLagAdjustmentFactor(1.0);
-    setKX(0.0000001);
+    setKX(0.0000000);
     setKV(0.00010);
     setLowerTempoLimit(0.6);
     setUpperTempoLimit(1.4);
@@ -901,38 +901,45 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 
                 if (/*allSameVelocities ||*/ reVoiceChords)
                 {
-//                    std::cout<<"Found chord at " << chord[0] << " size "<< chord.size()  << "\n";
+                    std::cout<<"Found chord at " << chord[0] << " size "<< chord.size()  << "\n";
                     if (chord.size()==2)
                     {
                         const float topNoteVel = theSequence[chord[0]].getOriginalFloatVelocity();
-                        theSequence[chord[1]].changeVelocity(topNoteVel * (1.0 - 0.3*chordVelocityHumanize));
-//                        std::cout<< 1 << " " << chord[1]  <<" "<< (int) theSequence[chord[1]].getVelocity() << "\n";
+                        const float originalVel = theSequence[chord[1]].getOriginalFloatVelocity();
+                        const float ckVel = 0.7f * topNoteVel;
+                        const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
+                        theSequence[chord[1]].changeVelocity(proRatedVel);
+                        std::cout<< 1 << " " << chord[1]  <<" "<< (int) theSequence[chord[1]].getVelocity() << "\n";
                     }
                     else // (chord.size()>2)
                     {
                         const float topNoteVel = theSequence[chord[0]].getOriginalFloatVelocity();
-//                        std::cout<< 0 << " " << chord[0]  << " " << (int) theSequence[chord[0]].getVelocity() << "\n";
+                        std::cout<< 0 << " " << chord[0]  << " " << (int) theSequence[chord[0]].getVelocity() << "\n";
                         for (int j=1;j<chord.size()-1;j++)
                         {
                             int step =  chSorter[j].fromFirstOccurrenceOf(":", false, true).getIntValue();
-                            const float newVel = topNoteVel * (1.0 - 0.4*chordVelocityHumanize);
-//                            const int thisStep = chord[j];
-                            theSequence[step].changeVelocity(newVel);
-//                            std::cout<< j << " " << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << "\n";
+                            const float originalVel = theSequence[chord[step]].getOriginalFloatVelocity();
+                            const float ckVel = 0.6f * topNoteVel;
+                            const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
+                            theSequence[step].changeVelocity(proRatedVel);
+                            std::cout<< j << " " << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << "\n";
                         }
-                        const float newVel = topNoteVel * (1.0 - 0.2*chordVelocityHumanize);
                         int step =  chSorter[chSorter.size()-1].fromFirstOccurrenceOf(":", false, true).getIntValue();
-                        theSequence[step].changeVelocity(newVel);
+                        const float originalVel = theSequence[chord[step]].getOriginalFloatVelocity();
+                        const float ckVel = 0.8f * topNoteVel;
+                        const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
+                        theSequence[step].changeVelocity(proRatedVel);
 //                        std::cout<< chord.size()-1
 //                        << " " << chord.getLast()
 //                        << " " << (int) theSequence[chord.getLast()].getVelocity() << "\n";
                     }
-//                    for (int j=0;j<chord.size();j++)
-//                    {
-//                        int step =  chSorter[j].fromFirstOccurrenceOf(":", false, true).getIntValue();
-//                        std::cout<< j << " " << " nn " << chSorter[j] <<" " <<theSequence[chord[j]].getNoteNumber() << " "
-//                        << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << " Order " <<step<< "\n";
-//                    }
+                    if (step<30)
+                        for (int j=0;j<chord.size();j++)
+                        {
+                            int step =  chSorter[j].fromFirstOccurrenceOf(":", false, true).getIntValue();
+                            std::cout<< j << " " << " nn " << chSorter[j] <<" " <<theSequence[chord[j]].getNoteNumber() << " "
+                            << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << " Order " <<step<< "\n";
+                        }
                 }
             }
             theSequence[chordTopStep].chordTopStep=-1;

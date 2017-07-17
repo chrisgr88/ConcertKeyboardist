@@ -516,9 +516,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 28;
-                minSize = 28;
-                maxSize = 28;
+                preferredSize = 35;
+                minSize = 35;
+                maxSize = 35;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
