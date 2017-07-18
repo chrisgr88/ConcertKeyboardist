@@ -1,3 +1,10 @@
+Work Plan - Saving User Edit to Midi File
+- Create new tagged sysex track "OriginalNotes" that contains original midi file's note ons and offs.
+- Change ck file loading to construct theSequence from the OriginalNotes track if present (it should be).
+	- If OriginalNotes is not present then the ck file was edited outside CK
+		- If the Ck sequence is still the active sequence then use the active sequence OriginalNotes to reconstruct memory image
+		- If not still in memory warn the user and load the midi notes from the normal tracks (which could lose chord info)
+
 File Saving Issues
 
 Note Data - for changed notes, or all?
@@ -10,7 +17,8 @@ Note Data - for changed notes, or all?
 Chords
 - Remember which notes are grouped as part of a chord
 - Remember ck chord property for each chord
-- Remeber ck adjusted velocity & time/duration for each note?  Or generate anew on loading?
+- On loading generate ck adjusted velocity & time/duration for each note
+- Ck chord properties - see below
 
 Other ornamentations? 
  - Remember which notes are grouped as part of this element
@@ -41,11 +49,16 @@ Other ornamentations?
   - But it would still be useful to be able to choose to save with adjusted times/velocities for playing in another app.
   - Ability to record live playing
     - save velocities and on/off times for re-listening or export for use elsewhere
+    - A user played recording's on/off times & velocities should be in a special sysex track
+    - Ability to keep user played timing but alter chord styles?
 
  Storage
-  - Store original data in sysex track so that it's always retrievable
-  - Checkbox in save dialog for choosing whether to save "plain" or "adjusted" note data (or whether to save user played version)
-  - A user played recording should be in a different sysex track from the manual edit data
+  - Store tags as a sequence of sysex records.  
+  	- Mark chords by time stamp (like target notes)
+  	- All notes in loaded sequence at that time stamp are considered to be part of that chord
+  	- Each chord record includes chord styling properties for that chord
+  - Ability to export a midi file that uses "adjusted" note time/velocity data
+  - Ability to export a user played version
 
   Chords
   	- Command to mark a selection of notes to be treated as a chord (does not directly affect their timing or velocities)
@@ -71,7 +84,7 @@ Issues
   		- Save in notation (ckf data may be lost)
   		- ck detects file and auto reloads 
   		- ck matches notes based on track and time stamp
-  		- reapplies chord edits
+  		- regenerates chord velocity and timing styles
 
 Ability to work with Melodyne to create midi files or apply velocities/timing to midi files  		
 
