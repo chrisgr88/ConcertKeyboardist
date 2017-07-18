@@ -160,11 +160,11 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
                 {
                     int editedVel = recordsWithEdits[trkNumber][noteIndex].getVelocity();
                     int msgVel = msg.getVelocity();
-                    if (noteIndex<15)   //editedVel!=msgVel)
-                    {
-                        std::cout <<trkNumber<<" "<<noteIndex<<" "<<recordsWithEdits[trkNumber][noteIndex].getTimeStamp()<<" Note compare "<<editedVel<<" "<<msgVel<<"\n";
-                        msg.setVelocity((float)editedVel/127.0f);
-                    }
+//                    if (noteIndex<15)   //editedVel!=msgVel)
+//                    {
+//                        std::cout <<trkNumber<<" "<<noteIndex<<" "<<recordsWithEdits[trkNumber][noteIndex].getTimeStamp()<<" Note compare "<<editedVel<<" "<<msgVel<<"\n";
+//                        msg.setVelocity((float)editedVel/127.0f);
+//                    }
                     noteIndex++;
                 }
             }
