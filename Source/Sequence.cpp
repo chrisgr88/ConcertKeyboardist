@@ -693,7 +693,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                             msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
                         const double ts = msg.getTimeStamp();
                         msg.setTimeStamp(96.0*ts/ppq);
-                        double setTS = msg.getTimeStamp();
+//                        double setTS = msg.getTimeStamp();
                         const double ot = 96.0*msg.offTime/ppq;
                         msg.offTime = ot;
                         msg.setPMidiMessage(&(theTrack->getEventPointer(i)->message));
@@ -737,18 +737,22 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     detail.nNotes = chordNotes.size();
                     detail.notes = chordNotes;
                     chords.add(detail);
-                    uint64 key = detail.timeStamp*10000000+detail.notes[0].channel*1000+detail.notes[0].noteNumber;
+                    uint64 key = detail.timeStamp*10000000; //+detail.notes[0].channel*1000+detail.notes[0].noteNumber;
                     chordIndex[key] = chords.size()-1;
-//                    unsigned chNum = chordIndex[key];
-//                    std::cout <<key<<" ts" <<detail.timeStamp<< "/ nNotes "<<detail.nNotes << " chNum " << chNum<<"\n";
+                    unsigned chNum = chordIndex[key];
+                    std::cout <<key<<" ts" <<detail.timeStamp<< "/ nNotes "<<detail.nNotes << " chNum " << chNum<<"\n";
                 }
             }
         }
         for (std::map<uint64,unsigned>::iterator it=chordIndex.begin(); it!=chordIndex.end(); ++it)
+        {
+            if (chords[it->second].timeStamp > 2000)
+                break;
             std::cout << "ts"<<chords[it->second].timeStamp
             <<"/ "<<chords[it->second].nNotes
             <<" topNote "<<chords[it->second].notes[0].noteNumber
             <<"\n";
+        }
     }
 
     //End of reloading file ####################################################################################
@@ -900,13 +904,37 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //            while (theSequence[step].getTimeStamp()<thisChordTimeStamp)
 //                step++;
             //step is now this chord's step
-            double thisChordTimeStamp;
-            for (int step=0; step<theSequence.size();step++)
+        double thisChordTimeStamp;
+        Array<int> chord;
+        int prevChordIndex = -1;
+        for (int step=0; step<theSequence.size();step++)
+        {
+            const uint64 key = theSequence[step].getTimeStamp()*10000000;
+            if (chordIndex.find(key)!=chordIndex.end()
+                && (prevChordIndex==-1||chordIndex[key]==prevChordIndex))
             {
-                srand(step);
-    //            bool print = false;
-    //            if (step<14)
-    //                std::cout << "Load sequence chord analysis at " << step << "\n";
+                chord.add(step);
+                prevChordIndex = chordIndex[key];
+//                if (theSequence[step].getTimeStamp() < 2000)
+//                    std::cout
+//                    << "add step " <<step
+//                    << " key " << key
+//                    << " index " << (chordIndex.find(key)==chordIndex.end())
+//                    << " nNotes " << chords[chordIndex[key]].nNotes
+//                    << "\n";
+            }
+            else
+            {
+                if (chord.size()>0)
+                    std::cout <<"Found chord " <<theSequence[step].getTimeStamp()<<" "<< chord.size() <<"\n";
+                prevChordIndex = -1;
+                chord.clear();
+            }
+        }
+        
+        for (int step=0; step<theSequence.size();step++)
+        {
+        //                srand(step);
                 Array<int> chord;
                 
                 StringArray chSorter;
