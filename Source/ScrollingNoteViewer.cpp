@@ -86,6 +86,8 @@ ScrollingNoteViewer::~ScrollingNoteViewer()
 
 void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
 {
+    draggingVelocity = false;
+    draggingTime = false;
     //We defer pickup of up the mouse position until drag actually starts because the mouseDown position is slightly
     //different from the first position returned in mouseDrag.
     newlySelectedNotes.clear();
@@ -146,6 +148,15 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     stopTimer(TIMER_MOUSE_HOLD);
     const double x = event.position.getX();
     const double y = event.position.getY();
+    if (draggingTime)
+    {
+        draggingTime = false;
+    }
+    else if (draggingVelocity)
+    {
+        draggingVelocity = false;
+    }
+    
     const double vert = (y - getTopMargin())/trackVerticalSize;
     const double xInTicks = ((x - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale + processor->getTimeInTicks();
     const float sequenceScaledX = xInTicks*pixelsPerTick;
@@ -284,7 +295,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
                 + " nn:" + String::String(nn) + " ch:" + String::String(sequence->at(i).getChannel())
                 + " vel:" + String((int)sequence->at(i).getVelocity());
             hoverInfo = note+" step:"+String::String(hoverStep) + " tick:" + String(sequence->at(i).getTimeStamp())
-                + " dur:" + String((sequence->at(i).offTime-sequence->at(i).getTimeStamp()));
+                + " dur:" + String((sequence->at(i).getOffTime()-sequence->at(i).getTimeStamp()));
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
         sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
@@ -1338,8 +1349,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         double xx = Desktop::getInstance().getMousePosition().getX();
         double yy = Desktop::getInstance().getMousePosition().getY();
         double y = curDragPosition.getY();
-        double hh =
-        Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
+        double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
         if (yy<=0)
         {
             Desktop::getInstance().setMousePosition(Point<int> (xx,5));
@@ -1489,28 +1499,51 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             }
             else if (editingNote) //Dragging on note head
             {
-                float deltaX = Desktop::getMousePosition().getX() - noteEditAnchor.getX();
+                float deltaX = noteEditAnchor.getX() - Desktop::getMousePosition().getX();
                 float deltaY = noteEditAnchor.getY() - Desktop::getMousePosition().getY();
+                if (!draggingVelocity && !draggingTime)
+                {
+                    if (std::abs(deltaX)>std::abs(deltaY))
+                    {
+                        draggingTime = true;
+                        timeStartDrag = processor->sequenceObject.theSequence.at(hoverStep).getTimeStamp();
+                    }
+                    else
+                    {
+                        draggingVelocity = true;
+                        velStartDrag = processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity();
+                    }
+                }
+                float fVel;
+                double fTime;
+                if (draggingVelocity)
+                {
+                    fVel = std::min(1.0,velStartDrag + (deltaY/5.0)/127.0);
+                    fVel = std::max(0.0f, fVel);
+                    std::cout << "fVel " << deltaY<<" "<<velStartDrag <<" "<< fVel  <<  "\n";
+                    processor->sequenceObject.theSequence.at(hoverStep).changeVelocity(fVel);
+                }
+                else if (draggingTime)
+                {
+                    fTime = std::max(0.0,timeStartDrag - (deltaX/10.0));
+                    std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< fTime  <<  "\n";
+                    processor->sequenceObject.theSequence.at(hoverStep).changeTimeStamp(fTime);
+                }
                 
-                double ts  = processor->sequenceObject.theSequence.at(hoverStep).getTimeStamp();
-                float storedVel  = processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity();
-                double dur  = processor->sequenceObject.theSequence.at(hoverStep).offTime-ts;
-                float fVel = storedVel + (deltaY/10.0)/127.0;
-                
-                if (fVel>1.0) fVel = 1.0;
-                if (fVel<1.0/127.0) fVel = 1.0/127.0+0.001;
-                processor->sequenceObject.theSequence.at(hoverStep).changeVelocity(fVel);
-                std::cout
-                << "step" << hoverStep
-                <<  " getVelocity " << (int) processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity()
-//                <<  " delta X "<<deltaX
-//                <<  " delta Y "<<deltaY
-                <<  " storedVel " << storedVel
-                <<  " fVel " << fVel
-                <<  " intVel " << std::round(fVel*127.0)
-//                <<  " startTick " << ts
-//                <<  " duration " << dur
-                <<  "\n";
+//                if (fVel>1.0) fVel = 1.0;
+//                if (fVel<1.0/127.0) fVel = 1.0/127.0+0.001;
+//                processor->sequenceObject.theSequence.at(hoverStep).changeVelocity(fVel);
+//                std::cout
+//                << "step" << hoverStep
+//                <<  " getVelocity " << (int) processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity()
+////                <<  " delta X "<<deltaX
+////                <<  " delta Y "<<deltaY
+//                <<  " storedVel " << storedVel
+//                <<  " fVel " << fVel
+//                <<  " intVel " << std::round(fVel*127.0)
+////                <<  " startTick " << ts
+////                <<  " duration " << dur
+//                <<  "\n";
                 
             }
         }

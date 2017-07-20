@@ -76,6 +76,22 @@ Other ornamentations?
   	- Ability to copy and paste a set of chord properties from one chord to others
   	- Library of chord timing options and voicing options
   	- Ability to use some sort of machine learning model to adjust timing and velocities?
+  	- Chord data structure
+  		- Tag: "ch:"
+  		- Timestamp: double
+  		- Timing type:
+  			- "tc" - custom time offsets - list of offsets in ticks (one for each note)
+  			- "ta" - algorithmic
+  				- slope in ticks per note, randomness in ticks (positive slope means bottom note first, negative means top first)
+  		- Velocity types
+  			- "vc:" - custom - followed by space delimited list of uint8s, one for each note
+  			- "vp:" - profile, followed by profile id from profile library
+  			- "va:" - algorithmically generated from context - deep learning, music rules, examples 
+  			- All of these also include a randomize parameter that states the amplitude of randomzation on top of the base rule
+  		- Example chords;
+  			"ch:234.6 tc:1.2 0 3.3 2.6 4.5 vc:3 55 44 44"  ("tc": rand 1.2, list of times; "vc": rand 1.2; list of velocities)
+  			"ch:4562.2 ta:3.3 0.0  vp:3 0" ("ta":rand 3; slope 0.0; "vp":rand 3; profile # 0)
+  		- i.e. All parameter tags are followed by a randomize amount, followed by other arguments
 
 Issues
   	- Back and forth to notation software

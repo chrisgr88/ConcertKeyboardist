@@ -846,7 +846,7 @@ void MIDIProcessor::processBlock ()
 //            <<" "<<theSequence.at(step).adjustedVelocity
 //            <<" "<<theSequence.at(step).scheduledOffTime
 //            <<"\n";
-            const double duration = theSequence->at(step).offTime - theSequence->at(step).getTimeStamp();
+            const double duration = theSequence->at(step).getOffTime() - theSequence->at(step).getTimeStamp();
             theSequence->at(step).scheduledOffTime = duration+timeInTicks;
             onNotes.add(step);
             highlightSteps.add(step+1);
@@ -1088,7 +1088,7 @@ void MIDIProcessor::processBlock ()
                 theSequence->at(step).scheduledOnTime = scheduledOnTime;
                 theSequence->at(step).adjustedVelocity = velocity;
                 theSequence->at(step).scheduledOffTime = scheduledOnTime +
-                     (theSequence->at(step).offTime-theSequence->at(step).getTimeStamp());
+                     (theSequence->at(step).getOffTime()-theSequence->at(step).getTimeStamp());
                 if (theSequence->at(step).triggeredNote)
                     theSequence->at(step).triggeringExprNote = exprEvents[exprEventIndex].getNoteNumber();
                 else

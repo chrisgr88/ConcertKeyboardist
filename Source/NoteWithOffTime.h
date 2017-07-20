@@ -32,8 +32,7 @@ class NoteWithOffTime : public MidiMessage
 public:
     NoteWithOffTime(int trk, int byte1, int byte2, int byte3, double onTime, double offT) :
     MidiMessage(byte1,byte2,byte3,onTime),
-    pRecordsWithEdits(NULL),
-    editedMessageIndex(-1),
+//    pRecordsWithEdits(NULL),
     track(trk),
     offTime(offT),
     scheduledOnTime(0),
@@ -62,8 +61,7 @@ public:
     
     NoteWithOffTime(int trk, MidiMessage msg, double offT) :
     MidiMessage(msg),
-    pRecordsWithEdits(NULL),
-    editedMessageIndex(-1),
+//    pRecordsWithEdits(NULL),
     track(trk),
     offTime(offT),
     scheduledOnTime(0),
@@ -92,8 +90,7 @@ public:
     
     NoteWithOffTime(NoteWithOffTime const &note) :
     MidiMessage(note),
-    pRecordsWithEdits(note.pRecordsWithEdits),
-    editedMessageIndex(note.editedMessageIndex),
+//    pRecordsWithEdits(note.pRecordsWithEdits),
     track(note.track),
     offTime(note.offTime),
     scheduledOnTime(note.scheduledOnTime),
@@ -122,8 +119,7 @@ public:
     
     NoteWithOffTime() :
     MidiMessage(),
-    pRecordsWithEdits(NULL),
-    editedMessageIndex(-1),
+//    pRecordsWithEdits(NULL),
     track(0),
     offTime(0),
     scheduledOnTime(0),
@@ -179,51 +175,66 @@ public:
     }
     
     
-    void changeTimeStamp(double newTimeStamp)
+//    void changeTimeStamp(double newTimeStamp)
+//    {
+//        pRecordsWithEdits->at(track).at(editedMessageIndex).setTimeStamp(newTimeStamp);
+//    }
+//    double getTimeStamp() const
+//    {
+//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getTimeStamp();
+//    }
+    inline double getOriginalTimeStamp() const
     {
-        pRecordsWithEdits->at(track).at(editedMessageIndex).setTimeStamp(newTimeStamp);
+        return getTimeStamp();
     }
-    double getTimeStamp() const
+    void changeTimeStamp(double newTS)
     {
-        return pRecordsWithEdits->at(track).at(editedMessageIndex).getTimeStamp();
+        setTimeStamp(newTS);
     }
-    double getOriginalTimeStamp() const
+    
+    void setOffTime(double newOffTime)
     {
-        return MidiMessage::getTimeStamp();
+        offTime = newOffTime;
+    }
+    double getOffTime()
+    {
+        return offTime;
     }
 
     void changeVelocity(float newVelocity)
     {
-        pRecordsWithEdits->at(track).at(editedMessageIndex).setVelocity(newVelocity);
+//        pRecordsWithEdits->at(track).at(editedMessageIndex).setVelocity(newVelocity);
+        setVelocity(newVelocity);
     }
-    uint8 getVelocity() const
-    {
-        return pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity();
-    }
-    float getFloatVelocity() const
-    {
-        return pRecordsWithEdits->at(track).at(editedMessageIndex).getFloatVelocity();
-    }
+//    uint8 getVelocity() const
+//    {
+//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity();
+//    }
+//    float getFloatVelocity() const
+//    {
+//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getFloatVelocity();
+//    }
     uint8 getOriginalVelocity() const
     {
-        return MidiMessage::getVelocity();
+        return getVelocity();
     }
     float getOriginalFloatVelocity() const
     {
-        return MidiMessage::getFloatVelocity();
+        return getFloatVelocity();
     }
     
     void changeNoteNumber(int newNewNoteNumber)
     {
-        pRecordsWithEdits->at(track).at(editedMessageIndex).setNoteNumber(newNewNoteNumber);
+//        pRecordsWithEdits->at(track).at(editedMessageIndex).setNoteNumber(newNewNoteNumber);
+        setNoteNumber(newNewNoteNumber);
     }
-    int getNoteNumber() const
-    {
-        return pRecordsWithEdits->at(track).at(editedMessageIndex).getNoteNumber();
-    }
+//    int getNoteNumber() const
+//    {
+//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getNoteNumber();
+//    }
     int getOriginalNoteNumber() const
     {
-        return MidiMessage::getNoteNumber();
+        return getNoteNumber();
     }
     
     /*
@@ -243,8 +254,17 @@ public:
      - Trills are steps in the score file, and the steps are sorted by time tag, so we can no longer assume that a given chain's notes are contiguous. What are the implications of this?
      - Add a bool trill and int nextTrillStep properties to flag a trill step and indicate next step in this trill.  Use -1 to indicate last step.
      */
-    std::vector<std::vector<MidiMessage>> *pRecordsWithEdits;
-    int editedMessageIndex; //Index into array of MidiMessages that hold values if edited from what was originally loaded
+//    std::vector<std::vector<MidiMessage>> *pRecordsWithEdits;
+//    int editedMessageIndex; //Index into array of MidiMessages that hold values if edited from what was originally loaded
+    MidiMessage *pMidiMessage;
+    void setPMidiMessage(MidiMessage *pMsg)
+    {
+        pMidiMessage = pMsg;
+    }
+    MidiMessage *getPMidiMessage()
+    {
+        return pMidiMessage;
+    }
     
     int track;
     double offTime;

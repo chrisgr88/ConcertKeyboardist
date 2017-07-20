@@ -14,6 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "NoteWithOffTime.h"
 #include <iostream>
+#include <map>
 
 const char* const filenameSuffix = ".ckf";
 const char* const filenameWildcard = "*.mid;*.ckf;*.ppf";
@@ -447,7 +448,7 @@ public:
     bool areThereProgramChanges;
 
     std::vector<NoteWithOffTime> theSequence;
-    std::vector<std::vector<MidiMessage>> recordsWithEdits; //Indexed by track and then by original record position
+//    std::vector<std::vector<MidiMessage>> recordsWithEdits; //Indexed by track and then by original record position
     
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;
@@ -468,7 +469,34 @@ public:
     int numTracks;
     Array<MidiMessage> timeSigChanges;
     
+    //ChordVelTypes: Custom - "cust"; From Preset - "pres"; From Algorithm - "alg"
+    //ChordTimeTypes Custom - "cust"; From Algorithm - "alg"
+    
+    typedef struct ChordNote {
+        double timeStamp;
+        double timeOffset;
+        double duration;
+        int track;
+        int channel;
+        int noteNumber;
+        int velocity;
+    } chordNote;
+    
+    typedef struct ChordDetail {
+        int nNotes;
+        Array<ChordNote> notes;
+        double timeStamp;
+        String timeType;
+        float  timeRandomize;
+        String timeParam;
+        String velocityType;
+        float  velocityRandomize;
+        String velocityParam;
+    } chordDetail;
+    
     Array<double> targetNoteTimes;
+    Array<ChordDetail> chords;
+    std::map<uint64, unsigned> chordIndex;
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;
     

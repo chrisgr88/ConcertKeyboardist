@@ -234,6 +234,10 @@ private:
     bool zoomDragStarting;
     bool zoomOrScrollDragging;
     bool selecting;
+    bool draggingVelocity;
+    bool draggingTime;
+    float velStartDrag;
+    float timeStartDrag;
     Point<int> selectionAnchor;
     Rectangle<int> selectionRect;
     Array<int> selectedNotes;

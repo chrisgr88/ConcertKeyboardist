@@ -446,7 +446,7 @@ public:
             {
                 NoteWithOffTime onMsg = theSequence->at(step);
                 NoteWithOffTime offMsg = onMsg;
-                offMsg.setTimeStamp(onMsg.offTime);
+                offMsg.setTimeStamp(onMsg.getOffTime());
                 offMsg.setVelocity(0);
                 listenSequence.push_back(onMsg);
                 listenSequence.push_back(offMsg);
