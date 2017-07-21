@@ -386,7 +386,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 programChanges.push_back(-1);
             areThereProgramChanges = false;
             
-            seqDurationInTicks = 0;  //Is this not being updated when we enable a track after having no tracks enabled??
+            seqDurationInTicks = 0;
             for (int trk=0;trk<numTracks;trk++)
             {
                 String txt = "";
@@ -739,20 +739,20 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     chords.add(detail);
                     uint64 key = detail.timeStamp*10000000; //+detail.notes[0].channel*1000+detail.notes[0].noteNumber;
                     chordIndex[key] = chords.size()-1;
-                    unsigned chNum = chordIndex[key];
-                    std::cout <<key<<" ts" <<detail.timeStamp<< "/ nNotes "<<detail.nNotes << " chNum " << chNum<<"\n";
+//                    unsigned chNum = chordIndex[key];
+//                    std::cout <<key<<" ts" <<detail.timeStamp<< "/ nNotes "<<detail.nNotes << " chNum " << chNum<<"\n";
                 }
             }
         }
-        for (std::map<uint64,unsigned>::iterator it=chordIndex.begin(); it!=chordIndex.end(); ++it)
-        {
-            if (chords[it->second].timeStamp > 2000)
-                break;
-            std::cout << "ts"<<chords[it->second].timeStamp
-            <<"/ "<<chords[it->second].nNotes
-            <<" topNote "<<chords[it->second].notes[0].noteNumber
-            <<"\n";
-        }
+//        for (std::map<uint64,unsigned>::iterator it=chordIndex.begin(); it!=chordIndex.end(); ++it)
+//        {
+//            if (chords[it->second].timeStamp > 2000)
+//                break;
+//            std::cout << "ts"<<chords[it->second].timeStamp
+//            <<"/ "<<chords[it->second].nNotes
+//            <<" topNote "<<chords[it->second].notes[0].noteNumber
+//            <<"\n";
+//        }
     }
 
     //End of reloading file ####################################################################################
@@ -823,6 +823,17 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     {
         std::sort(theSequence.begin(), theSequence.end());
         std::sort(theControllers.begin(), theControllers.end());
+        //Remove exact duplicate notes
+        NoteWithOffTime prevMsg;
+        for (int step=0; step<theSequence.size();step++)
+        {
+            if (prevMsg.getChannel()==theSequence[step].getChannel() &&
+                    prevMsg.getNoteNumber()==theSequence[step].getNoteNumber() &&
+                    prevMsg.getTimeStamp()==theSequence[step].getTimeStamp())
+                theSequence.erase(theSequence.begin()+step);
+            else
+                prevMsg = theSequence[step];
+        }
         seqDurationInTicks = theSequence.back().getTimeStamp(); //We update this here so that it reflects currently active tracks
         
         
@@ -896,23 +907,15 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         }
         
         //Humanize chord note start times and velocities
-//        {
-//        int step = 0;
-//        for (int chrd=0;chrd<chords.size();chrd++)
-//        {
-//            double thisChordTimeStamp = chords[chrd].timeStamp;
-//            while (theSequence[step].getTimeStamp()<thisChordTimeStamp)
-//                step++;
-            //step is now this chord's step
         double thisChordTimeStamp;
         Array<int> chord;
         int prevChordIndex = -1;
         for (int step=0; step<theSequence.size();step++)
         {
             const uint64 key = theSequence[step].getTimeStamp()*10000000;
-            if (chordIndex.find(key)!=chordIndex.end()
-                && (prevChordIndex==-1||chordIndex[key]==prevChordIndex))
+            if (chordIndex.find(key)!=chordIndex.end() && (prevChordIndex==-1||chordIndex[key]==prevChordIndex))
             {
+                //This step is in a chord
                 chord.add(step);
                 prevChordIndex = chordIndex[key];
 //                if (theSequence[step].getTimeStamp() < 2000)
@@ -923,34 +926,15 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //                    << " nNotes " << chords[chordIndex[key]].nNotes
 //                    << "\n";
             }
-            else
+            else //Never in a chord, or chord ended
             {
-                if (chord.size()>0)
-                    std::cout <<"Found chord " <<theSequence[step].getTimeStamp()<<" "<< chord.size() <<"\n";
-                prevChordIndex = -1;
-                chord.clear();
-            }
-        }
-        
-        for (int step=0; step<theSequence.size();step++)
-        {
-        //                srand(step);
-                Array<int> chord;
-                
-                StringArray chSorter;
-                int chordTopStep = step;
-    //            std::cout << "theSequence[step].chordTopStep " << theSequence[step].chordTopStep << "\n";
-                thisChordTimeStamp = theSequence[step].getOriginalTimeStamp();
-                while (step<theSequence.size() && theSequence[step].getOriginalTimeStamp() == thisChordTimeStamp)
+//                prevChordIndex = -1;
+                if (prevChordIndex != -1)// chord.size()>1)
                 {
-                    chord.add(step);
-                    chSorter.add(String(1.0-theSequence[step].getNoteNumber()/127.0,3)+":"+String(step));
-                    step++;
-                }
-                step--;
-                chSorter.sort(true);
-                if (chord.size()>1)
-                {
+                    prevChordIndex = -1;
+//                    std::cout <<"Found chord " <<theSequence[step].getTimeStamp()<<" "<< chord.size() <<"\n";
+                    thisChordTimeStamp = theSequence[chord[0]].getTimeStamp();
+                    
                     double timeToNextNote;
                     if (step<theSequence.size()-1)
                         timeToNextNote = theSequence[step+1].getOriginalTimeStamp()-thisChordTimeStamp;
@@ -975,21 +959,11 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                         else
                             randAdd = r%temp/100.0;
                         
-                        int step =  chSorter[i].fromFirstOccurrenceOf(":", false, true).getIntValue();
+                        int step =  chord[i];
                         theSequence[step].changeTimeStamp(thisChordTimeStamp+randAdd);
-    //                    if (step<5)
-    //                        std::cout<<i<<" "<<thisChordTimeStamp<< " r, temp, randAdd "<<r<< " " << temp
-    //                        << " "<<randAdd
-    //                        << " "<<theSequence[step].getTimeStamp()
-    //                        <<"\n";
-    //                    theSequence[chord[i]].getOffTime() = theSequence[chord[i]].getOffTime() + randAdd;
-    //                    if (print)
-    //                        std::cout<<i<< " thisChordTS, newTS "<<thisChordTimeStamp<< " " << theSequence[chord[i]].getTimeStamp()<< "\n";
                     }
-
                     if (/*allSameVelocities ||*/ reVoiceChords)
                     {
-    //                    std::cout<<"Found chord at " << chord[0] << " size "<< chord.size()  << "\n";
                         if (chord.size()==2)
                         {
                             const float topNoteVel = theSequence[chord[0]].getOriginalFloatVelocity();
@@ -997,43 +971,33 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                             const float ckVel = 0.7f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
                             theSequence[chord[1]].changeVelocity(proRatedVel);
-    //                        std::cout<< 1 << " " << chord[1]  <<" "<< (int) theSequence[chord[1]].getVelocity() << "\n";
                         }
                         else // (chord.size()>2)
                         {
                             const float topNoteVel = theSequence[chord[0]].getOriginalFloatVelocity();
-    //                        std::cout<< 0 << " " << chord[0]  << " " << (int) theSequence[chord[0]].getVelocity() << "\n";
                             for (int j=1;j<chord.size()-1;j++)
                             {
-                                int step =  chSorter[j].fromFirstOccurrenceOf(":", false, true).getIntValue();
+                                int step =  chord[j];
                                 const float originalVel = theSequence[chord[step]].getOriginalFloatVelocity();
                                 const float ckVel = 0.6f * topNoteVel;
                                 const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
                                 theSequence[step].changeVelocity(proRatedVel);
-    //                            std::cout<< j << " " << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << "\n";
                             }
-                            int step =  chSorter[chSorter.size()-1].fromFirstOccurrenceOf(":", false, true).getIntValue();
+                            int step =  chord[chord.size()-1];
                             const float originalVel = theSequence[chord[step]].getOriginalFloatVelocity();
                             const float ckVel = 0.8f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
                             theSequence[step].changeVelocity(proRatedVel);
-    //                        std::cout<< chord.size()-1
-    //                        << " " << chord.getLast()
-    //                        << " " << (int) theSequence[chord.getLast()].getVelocity() << "\n";
                         }
-    //                    if (step<30)
-    //                        for (int j=0;j<chord.size();j++)
-    //                        {
-    //                            int step =  chSorter[j].fromFirstOccurrenceOf(":", false, true).getIntValue();
-    //                            std::cout<< j << " " << " nn " << chSorter[j] <<" " <<theSequence[chord[j]].getNoteNumber() << " "
-    //                            << chord[j]  << " " << (int) theSequence[chord[j]].getVelocity() << " Order " <<step<< "\n";
-    //                        }
                     }
+                    theSequence[chord[0]].chordTopStep=-1;
+                    theSequence[step].chordTopStep=-1;
                 }
-                theSequence[chordTopStep].chordTopStep=-1;
+                else
+                    theSequence[step].chordTopStep=-1;
+                chord.clear();
             }
-//        }
-//        }
+        }
         
 //        for (int i=0;i<chords.size();i++)
 //            std::cout << "Chord "<<i<<" "<<chords[i].timeStamp<<" "<<chords[i].nNotes<<"\n";
