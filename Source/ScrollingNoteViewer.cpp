@@ -294,8 +294,9 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             String note = MidiMessage::getMidiNoteName (nn, true, true, 3)
                 + " nn:" + String::String(nn) + " ch:" + String::String(sequence->at(i).getChannel())
                 + " vel:" + String((int)sequence->at(i).getVelocity());
-            hoverInfo = note+" step:"+String::String(hoverStep) + " tick:" + String(sequence->at(i).getTimeStamp())
-                + " dur:" + String((sequence->at(i).getOffTime()-sequence->at(i).getTimeStamp()));
+            hoverInfo = " step:"+String::String(hoverStep) + " tick:" + String(sequence->at(i).getTimeStamp())
+                + " dur:" + String((sequence->at(i).getOffTime()-sequence->at(i).getTimeStamp()))
+                + " " + note;
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
         sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar

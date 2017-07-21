@@ -137,21 +137,49 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
 //        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
+//    double timeStamp; //19
+//    
+//    int nNotes; //9 char //Reconstuct from notes records?
+//    Array<ChordNote> notes; //Stored in separate ChordNote records
+//    
+//    String timeType; //3
+//    String timeParam; //10
+//    float  timeRandAmplitude; //9
+//    unsigned int timeRandSeed; //10
+//    
+//    String velType; //3
+//    String velParam; //10
+//    float  velRandAmplitude; //9
+//    unsigned int velRandSeed; //10
     for (int i=0;i<chords.size();i++)
     {
         //Property "chordDetails"
-        double chordTime = chords[i].timeStamp;
-        String propertyStr = String("chordDetails:")+String(chordTime) +
-        +" "+chords[i].timeType +" "+String(chords[i].timeRandomize)+" "+chords[i].timeParam
-        +" "+chords[i].velocityType +" "+String(chords[i].velocityRandomize)+" "+chords[i].velocityParam;
+        String propertyStr = String("chordDetails:")+String(chords[i].timeStamp) +
+        +" "+chords[i].timeType +" "+chords[i].timeParam +" "+String(chords[i].timeRandAmplitude)+" "+String(chords[i].timeRandSeed)
+        +" "+chords[i].velType+" "+chords[i].velParam+" "+String(chords[i].velRandAmplitude)+" "+String(chords[i].velRandSeed);
         int len = propertyStr.length();
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
         std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        for (int note=0;note<chords[i].nNotes;note++) //These store the original values for a chord note
+        {
+            String propertyStr = String("chordNote:")
+            +String(chords[i].notes[note].timeStamp)+" "
+            +String(chords[i].notes[note].duration)+" "
+            +String(chords[i].notes[note].track)+" "
+            +String(chords[i].notes[note].channel)+" "
+            +String(chords[i].notes[note].noteNumber)+" "
+            +String(chords[i].notes[note].velocity);
+            int len = propertyStr.length();
+            char buffer[128];
+            propertyStr.copyToUTF8(buffer,128);
+            MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+            std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        }
         sysexSeq.addEvent(sysex);
     }
-    //    std::cout << " Writing this many sysex records - "<< seq->getNumEvents()<< "\n";
+    //    std::cout << " Number of sysex records written - "<< seq->getNumEvents()<< "\n";
 
     int tracksToCopy = midiFile.getNumTracks();
     if (loadedCkfFile)
@@ -724,7 +752,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     nt.noteNumber = tempSeq[step].getNoteNumber();
                     nt.channel = tempSeq[step].getChannel();
                     nt.duration = tempSeq[step].offTime - tempSeq[step].getTimeStamp();
-                    nt.velocity = tempSeq[step].getVelocity();
+                    nt.velocity = tempSeq[step].getFloatVelocity();
                     nt.track = tempSeq[step].track;
                     chordNotes.add(nt);
                     step++;

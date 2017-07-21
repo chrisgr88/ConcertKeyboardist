@@ -473,25 +473,30 @@ public:
     //ChordTimeTypes Custom - "cust"; From Algorithm - "alg"
     
     typedef struct ChordNote {
-        double timeStamp;
-        double timeOffset;
-        double duration;
-        int track;
-        int channel;
-        int noteNumber;
-        int velocity;
+        double timeStamp; //19
+        double timeOffset; //19
+        double duration; //19
+        int track; //10
+        int channel; //3
+        int noteNumber; //4
+        float velocity; //Or velocity offset from top note?  //4
     } chordNote;
     
     typedef struct ChordDetail {
-        int nNotes;
-        Array<ChordNote> notes;
-        double timeStamp;
-        String timeType;
-        float  timeRandomize;
-        String timeParam;
-        String velocityType;
-        float  velocityRandomize;
-        String velocityParam;
+        double timeStamp; //19        
+        
+        int nNotes; //9 char //Reconstuct from notes records?
+        Array<ChordNote> notes; //Stored in separate ChordNote records
+        
+        String timeType; //3
+        String timeParam; //10
+        float  timeRandAmplitude; //9
+        unsigned int timeRandSeed; //10
+        
+        String velType; //3
+        String velParam; //10
+        float  velRandAmplitude; //9
+        unsigned int velRandSeed; //10
     } chordDetail;
     
     Array<double> targetNoteTimes;

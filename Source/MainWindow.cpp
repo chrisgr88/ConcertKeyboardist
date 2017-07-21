@@ -109,7 +109,7 @@ ApplicationProperties& getAppProperties();
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVel")
         {
             const double hV = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
-            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
+//            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
             if (0 <= hV && hV <= 1.0)
                 midiProcessor.sequenceObject.setChordVelocityHumanize(hV, false);
             midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
@@ -117,7 +117,7 @@ ApplicationProperties& getAppProperties();
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeTime")
         {
             const double hT = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
-            std::cout << "Performing HumanizeStartTime " <<hT<<"\n";
+//            std::cout << "Performing HumanizeStartTime " <<hT<<"\n";
             if (0 <= hT)
             {
                 midiProcessor.sequenceObject.setChordTimeHumanize(hT, true);
@@ -181,7 +181,7 @@ ApplicationProperties& getAppProperties();
     
     void MainWindow::menuBarActivated (bool isActive)
     {
-        std::cout <<"menuBarActivated\n";
+//        std::cout <<"menuBarActivated\n";
     }
     
     StringArray MainWindow::getMenuBarNames()
@@ -385,7 +385,7 @@ ApplicationProperties& getAppProperties();
             File recent = recentFiles.getFile (menuItemID - 100);
             String files = recentFiles.toString();
             String path = recent.getFullPathName();
-            std::cout << "Load recent file " << recentFiles.getNumFiles() << " " <<  path << " " << recentFiles.toString() << "\n";
+//            std::cout << "Load recent file " << recentFiles.getNumFiles() << " " <<  path << " " << recentFiles.toString() << "\n";
             
             if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                 midiProcessor.loadSpecifiedFile(recent);

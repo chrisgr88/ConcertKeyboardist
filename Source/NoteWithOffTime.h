@@ -55,7 +55,8 @@ public:
     chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
-    timetoNextNote(-1)
+    timetoNextNote(-1),
+    chordIndex(-1)
     {
     }
     
@@ -84,7 +85,8 @@ public:
     chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
-    timetoNextNote(-1)
+    timetoNextNote(-1),
+    chordIndex(-1)
     {
     }
     
@@ -113,7 +115,8 @@ public:
     chordTopStep(note.chordTopStep),
     muted(note.muted),
     head(note.head),
-    timetoNextNote(note.timetoNextNote)
+    timetoNextNote(note.timetoNextNote),
+    chordIndex(note.chordIndex)
     {
     }
     
@@ -142,7 +145,8 @@ public:
     chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
-    timetoNextNote(-1)
+    timetoNextNote(-1),
+    chordIndex(-1)
     {
     }
     
@@ -289,5 +293,6 @@ public:
     bool muted;
     Rectangle<float> head;
     double timetoNextNote;
+    int chordIndex;  //Index in chords[ ] of this note's chord, if any. This may change depending on which tracks are active.
 };
 #endif  // NOTEWITHOFFTIME_H_INCLUDED
