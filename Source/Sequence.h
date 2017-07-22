@@ -472,21 +472,22 @@ public:
     //ChordVelTypes: Custom - "cust"; From Preset - "pres"; From Algorithm - "alg"
     //ChordTimeTypes Custom - "cust"; From Algorithm - "alg"
     
-    typedef struct ChordNote {
+    typedef struct OriginalNote {
+        int indexOfChordDetail; //4
         double timeStamp; //19
         double timeOffset; //19
         double duration; //19
         int track; //10
         int channel; //3
         int noteNumber; //4
-        float velocity; //Or velocity offset from top note?  //4
-    } chordNote;
+        float floatVelocity; //8
+    } originalNote;
     
     typedef struct ChordDetail {
         double timeStamp; //19        
         
-        int nNotes; //9 char //Reconstuct from notes records?
-        Array<ChordNote> notes; //Stored in separate ChordNote records
+//        int nNotes; //9 char //Reconstuct from notes records?
+        Array<int> noteIndices; //Indices of chord's notes
         
         String timeType; //3
         String timeParam; //10
@@ -500,8 +501,17 @@ public:
     } chordDetail;
     
     Array<double> targetNoteTimes;
+    Array<OriginalNote> originalNotes;
     Array<ChordDetail> chords;
-    std::map<uint64, unsigned> chordIndex;
+    std::map<uint64, unsigned> originalNoteIndex; //key is timestamp*10000000+noteNumber*100+track
+    uint64 makekey(int step)
+    {
+        const uint64 key = theSequence[step].getTimeStamp()*10000000+
+        theSequence[step].getChannel()*1000+
+        theSequence[step].getNoteNumber();
+        return key;
+    }
+    
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;
     
