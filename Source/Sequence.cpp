@@ -740,6 +740,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //            }
             
             double thisChordTimeStamp;
+            int uniqueNonChordIndicator = -1;
             for (int step=0; step<tempSeq.size();step++)
             {
 //                Array<OriginalNote> originalNotes;
@@ -768,7 +769,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 {
                     OriginalNote tempNote = tempOriginalNotes[j];
                     if (tempOriginalNotes.size()==1)
-                        tempNote.indexOfChordDetail = -1;
+                        tempNote.indexOfChordDetail = uniqueNonChordIndicator--; //A negative id different for each non chord note
                     else
                     {
                         tempNote.indexOfChordDetail = chords.size();
@@ -957,18 +958,27 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         //Humanize chord note start times and velocities
         double thisChordTimeStamp;
         Array<int> chord;
-        int prevNoteChordIndex = -1;
         for (int step=0; step<theSequence.size();step++)
         {
-            //uint64 key = nt.timeStamp*10000000+nt.channel*1000+nt.noteNumber;
             const uint64 key = theSequence[step].getTimeStamp()*10000000+
                             theSequence[step].getChannel()*1000+
                             theSequence[step].getNoteNumber();
-            if (originalNoteIndex.find(key)!=originalNoteIndex.end() && (prevNoteChordIndex==-1||originalNoteIndex[key]==prevNoteChordIndex))
+            int thisStepChordNoteIndex = originalNotes[originalNoteIndex[key]].indexOfChordDetail;
+            int nextStepChordNoteIndex;
+            if (step+1<theSequence.size())
             {
-                //This step is in a chord
-                chord.add(step);
-                prevNoteChordIndex = originalNoteIndex[key];
+                const uint64 keyNext = theSequence[step+1].getTimeStamp()*10000000+
+                theSequence[step+1].getChannel()*1000+
+                theSequence[step+1].getNoteNumber();
+                nextStepChordNoteIndex = originalNotes[originalNoteIndex[keyNext]].indexOfChordDetail;
+            }
+            else
+                nextStepChordNoteIndex = INT32_MAX;
+        
+            chord.add(step);
+            
+            if (thisStepChordNoteIndex != nextStepChordNoteIndex)
+            {
 //                if (theSequence[step].getTimeStamp() < 2000)
 //                    std::cout
 //                    << "add step " <<step
@@ -976,13 +986,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //                    << " index " << (chordIndex.find(key)==chordIndex.end())
 //                    << " nNotes " << chords[chordIndex[key]].nNotes
 //                    << "\n";
-            }
-            else //We were never in a chord, or chord ended
-            {
-//                prevChordIndex = -1;
-                if (prevNoteChordIndex != -1)// chord.size()>1)
+                if (chord.size()>1)
                 {
-                    prevNoteChordIndex = -1;
 //                    std::cout <<"Found chord " <<theSequence[step].getTimeStamp()<<" "<< chord.size() <<"\n";
                     thisChordTimeStamp = theSequence[chord[0]].getTimeStamp();
                     
@@ -1047,12 +1052,14 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                         }
                     }
                     theSequence[chord[0]].chordTopStep=-1;
-                    theSequence[step].chordTopStep=-1;
+//                    theSequence[step].chordTopStep=-1;
                 }
                 else
                     theSequence[step].chordTopStep=-1;
                 chord.clear();
             }
+            else
+                ;//Do nothing
         }
         
 //        for (int i=0;i<chords.size();i++)
