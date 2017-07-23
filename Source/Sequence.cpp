@@ -780,12 +780,12 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     originalNotes.add(tempOriginalNotes[j]);
                     
                     uint64 key = tempOriginalNotes[j].timeStamp*10000000+tempOriginalNotes[j].channel*1000+tempOriginalNotes[j].noteNumber;
-                    std::cout <<"Next original note: index " << originalNotes.size()-1
-                    << " key " << key
-                    << " timeStamp " <<tempOriginalNotes[j].timeStamp
-                    << " nChordNotes "<<tempOriginalNotes.size()
-                    << " indexOfChordDetail " << tempOriginalNotes[j].indexOfChordDetail
-                    <<"\n";
+//                    std::cout <<"Next original note: index " << originalNotes.size()-1
+//                    << " key " << key
+//                    << " timeStamp " <<tempOriginalNotes[j].timeStamp
+//                    << " nChordNotes "<<tempOriginalNotes.size()
+//                    << " indexOfChordDetail " << tempOriginalNotes[j].indexOfChordDetail
+//                    <<"\n";
                     originalNoteIndex[key] = originalNotes.size()-1;
                 }
 
@@ -793,12 +793,12 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 {
                     detail.timeStamp = tempOriginalNotes[0].timeStamp;
                     chords.add(detail);
-                    std::cout <<"\nNext chord: chordNum "<<chords.size()-1
-                    <<" timeStamp " <<detail.timeStamp
-                    << " nNotes "<< detail.noteIndices.size();
-                    if (detail.noteIndices.size()>0)
-                        std::cout << " firstIndex " << detail.noteIndices[0];
-                    std::cout <<"\n\n";
+//                    std::cout <<"\nNext chord: chordNum "<<chords.size()-1
+//                    <<" timeStamp " <<detail.timeStamp
+//                    << " nNotes "<< detail.noteIndices.size();
+//                    if (detail.noteIndices.size()>0)
+//                        std::cout << " firstIndex " << detail.noteIndices[0];
+//                    std::cout <<"\n\n";
                 }
             }
         }
@@ -976,7 +976,9 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 nextStepChordNoteIndex = INT32_MAX;
         
             chord.add(step);
-            
+            int fooo;
+            if (step>7)
+                fooo = 99;
             if (thisStepChordNoteIndex != nextStepChordNoteIndex)
             {
 //                if (theSequence[step].getTimeStamp() < 2000)
@@ -988,27 +990,24 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //                    << "\n";
                 if (chord.size()>1)
                 {
+                    srand(step);
 //                    std::cout <<"Found chord " <<theSequence[step].getTimeStamp()<<" "<< chord.size() <<"\n";
-                    thisChordTimeStamp = theSequence[chord[0]].getTimeStamp();
+                    thisChordTimeStamp = getOriginalNote(step).timeStamp;
                     
                     double timeToNextNote;
                     if (step<theSequence.size()-1)
-                        timeToNextNote = theSequence[step+1].getOriginalTimeStamp()-thisChordTimeStamp;
+                        timeToNextNote = getOriginalNote(step+1).timeStamp-thisChordTimeStamp;
                     else
                         timeToNextNote = DBL_MAX;
                     double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
                     
                     bool allSameVelocities = true;
                     
-//                    const uint64 key = theSequence[step].getTimeStamp()*10000000+
-//                    theSequence[step].getChannel()*1000+
-//                    theSequence[step].getNoteNumber();
-                    //|originalNoteIndex[key]
-                    const int firstVelocity =  theSequence[chord[0]].getOriginalVelocity();
+                    const float firstVelocity =  getOriginalNote(chord[0]).floatVelocity;
                     for (int i=1; i<chord.size(); i++)
                     {
                         theSequence[chord[i]].chordTopStep = chord[0];
-                        if (theSequence[chord[i]].getOriginalVelocity() != firstVelocity)
+                        if (theSequence[chord[i]].getFloatVelocity() != firstVelocity)
                             allSameVelocities = false;
                         
                         const int temp = localTimeFuzz*100;
@@ -1027,32 +1026,31 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                     {
                         if (chord.size()==2)
                         {
-                            const float topNoteVel = theSequence[chord[0]].getOriginalFloatVelocity();
-                            const float originalVel = theSequence[chord[1]].getOriginalFloatVelocity();
+                            const float topNoteVel = getOriginalNote(chord[0]).floatVelocity;
+                            const float originalVel = getOriginalNote(chord[1]).floatVelocity;
                             const float ckVel = 0.7f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
                             theSequence[chord[1]].changeVelocity(proRatedVel);
                         }
                         else // (chord.size()>2)
                         {
-                            const float topNoteVel = theSequence[chord[0]].getOriginalFloatVelocity();
+                            const float topNoteVel = getOriginalNote(chord[0]).floatVelocity;
                             for (int j=1;j<chord.size()-1;j++)
                             {
-                                int step =  chord[j];
-                                const float originalVel = theSequence[chord[step]].getOriginalFloatVelocity();
+                                const int step =  chord[j];
+                                const float originalVel = getOriginalNote(step).floatVelocity;
                                 const float ckVel = 0.6f * topNoteVel;
                                 const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
                                 theSequence[step].changeVelocity(proRatedVel);
                             }
                             int step =  chord[chord.size()-1];
-                            const float originalVel = theSequence[chord[step]].getOriginalFloatVelocity();
+                            const float originalVel = getOriginalNote(step).floatVelocity;
                             const float ckVel = 0.8f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
                             theSequence[step].changeVelocity(proRatedVel);
                         }
                     }
                     theSequence[chord[0]].chordTopStep=-1;
-//                    theSequence[step].chordTopStep=-1;
                 }
                 else
                     theSequence[step].chordTopStep=-1;
@@ -1306,7 +1304,6 @@ void Sequence::dumpData(int start, int end, int nn)
     << " triggered "
     << " triggeredOff "
     << " chordTop "
-    << " edMsgNdx"
     << "\n";
     if (end>theSequence.size())
         end = theSequence.size();

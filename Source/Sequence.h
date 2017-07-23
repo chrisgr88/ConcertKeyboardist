@@ -472,7 +472,8 @@ public:
     //ChordVelTypes: Custom - "cust"; From Preset - "pres"; From Algorithm - "alg"
     //ChordTimeTypes Custom - "cust"; From Algorithm - "alg"
     
-    typedef struct OriginalNote {
+    class OriginalNote {
+        friend Sequence;
         int indexOfChordDetail; //4
         double timeStamp; //19
         double timeOffset; //19
@@ -481,7 +482,7 @@ public:
         int channel; //3
         int noteNumber; //4
         float floatVelocity; //8
-    } originalNote;
+    };
     
     typedef struct ChordDetail {
         double timeStamp; //19        
@@ -504,12 +505,13 @@ public:
     Array<OriginalNote> originalNotes;
     Array<ChordDetail> chords;
     std::map<uint64, unsigned> originalNoteIndex; //key is timestamp*10000000+noteNumber*100+track
-    uint64 makekey(int step)
+    
+    OriginalNote getOriginalNote(int step)
     {
         const uint64 key = theSequence[step].getTimeStamp()*10000000+
         theSequence[step].getChannel()*1000+
         theSequence[step].getNoteNumber();
-        return key;
+        return originalNotes[originalNoteIndex[key]];
     }
     
     Array<Array<double>> undoStack;
