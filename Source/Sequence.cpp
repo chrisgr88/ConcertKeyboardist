@@ -712,6 +712,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
             {
                 const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
                 const int numEvents = theTrack->getNumEvents();
+                allNotes.push_back(std::vector<NoteWithOffTime>());
                 for (int i=0;i<numEvents;i++)
                 {
                     if (theTrack->getEventPointer(i)->message.isNoteOn())
@@ -724,8 +725,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //                        double setTS = msg.getTimeStamp();
                         const double ot = 96.0*msg.offTime/ppq;
                         msg.offTime = ot;
-                        msg.setPMidiMessage(&(theTrack->getEventPointer(i)->message));
                         tempSeq.push_back(msg);
+                        allNotes[trkNumber].push_back(msg);
                     }
                 }
             }
@@ -832,7 +833,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                         msg.offTime = msg.getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
                     msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
                     msg.offTime = 96.0*msg.offTime/ppq;
-                    msg.setPMidiMessage(&(theTrack->getEventPointer(i)->message));
+                    msg.setIndexInTrack(99);
 //                    msg.pRecordsWithEdits = &recordsWithEdits;
                     
                     theSequence.push_back(msg);

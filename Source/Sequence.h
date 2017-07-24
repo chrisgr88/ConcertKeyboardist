@@ -448,7 +448,7 @@ public:
     bool areThereProgramChanges;
 
     std::vector<NoteWithOffTime> theSequence;
-//    std::vector<std::vector<MidiMessage>> recordsWithEdits; //Indexed by track and then by original record position
+    std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
     
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;

@@ -258,16 +258,15 @@ public:
      - Trills are steps in the score file, and the steps are sorted by time tag, so we can no longer assume that a given chain's notes are contiguous. What are the implications of this?
      - Add a bool trill and int nextTrillStep properties to flag a trill step and indicate next step in this trill.  Use -1 to indicate last step.
      */
-//    std::vector<std::vector<MidiMessage>> *pRecordsWithEdits;
-//    int editedMessageIndex; //Index into array of MidiMessages that hold values if edited from what was originally loaded
-    MidiMessage *pMidiMessage;
-    void setPMidiMessage(MidiMessage *pMsg)
+//   Index to this note's editable entry in track in allNotes[tracks[ ]].
+    int indexInTrack;
+    void setIndexInTrack(int index)
     {
-        pMidiMessage = pMsg;
+        indexInTrack = index;
     }
-    MidiMessage *getPMidiMessage()
+    MidiMessage getIndexInTrack()
     {
-        return pMidiMessage;
+        return indexInTrack;
     }
     
     int track;
