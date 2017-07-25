@@ -86,9 +86,9 @@ void MIDIProcessor::play (bool ply, String fromWhere)
         if (fromWhere=="ZTL")
         {
             if (currentSeqStep+1<sequenceObject.theSequence.size())
-                now = sequenceObject.theSequence[currentSeqStep+1].getTimeStamp();
+                now = sequenceObject.theSequence[currentSeqStep+1]->timeStamp;
             else
-                now = sequenceObject.theSequence[currentSeqStep].getTimeStamp();
+                now = sequenceObject.theSequence[currentSeqStep]->timeStamp;
         }
         else if (fromWhere=="previousStart")
         {
@@ -97,9 +97,9 @@ void MIDIProcessor::play (bool ply, String fromWhere)
         else if (fromWhere == "currentPlayhead")
         {
             if (lastPlayedSeqStep+1<sequenceObject.theSequence.size())
-                now = sequenceObject.theSequence[lastPlayedSeqStep+1].getTimeStamp();
+                now = sequenceObject.theSequence[lastPlayedSeqStep+1]->timeStamp;
             else
-                now = sequenceObject.theSequence[0].getTimeStamp();
+                now = sequenceObject.theSequence[0]->timeStamp;
         }
         else
             now = 0;
@@ -168,7 +168,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     listenStep = 0;
     if (listenSequence.size()>0)
     {
-        while (time > listenSequence[listenStep].getTimeStamp())
+        while (time > listenSequence[listenStep].timeStamp)
             listenStep++;
     }
     timeIncrement =  sequenceObject.tempoMultiplier * 96.0*sequenceObject.getTempo(time)/60000.0;
@@ -176,7 +176,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     leadLag = 0;
     changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
     sendSynchronousChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
-    std::vector<NoteWithOffTime> *theSequence = sequenceObject.getSequence();
+    std::vector<NoteWithOffTime*> *theSequence = sequenceObject.getSequence();
     HighResolutionTimer::stopTimer();
     panic = true;
     for (int chan=1;chan<=16;chan++)
@@ -202,9 +202,9 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
         sequenceObject.noteIsOn.push_back(false);
     for (int i=0; i<theSequence->size();i++)
     {
-        theSequence->at(i).noteOffNow = false;
-        theSequence->at(i).sustaining = false;
-        theSequence->at(i).selected = false;
+        theSequence->at(i)->noteOffNow = false;
+        theSequence->at(i)->sustaining = false;
+        theSequence->at(i)->selected = false;
     }
     noteOnOffFifo.reset();
     onNotes.clear();
@@ -229,15 +229,15 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     {
         for (step=0;step<theSequence->size();step++)
         {
-            if (sequenceObject.theSequence[step].getTimeStamp()>=(time-0.001) && sequenceObject.theSequence[step].triggeredBy==-1)
-//            if (std::abs(sequenceObject.theSequence[step].getTimeStamp()-time)<0.001 && sequenceObject.theSequence[step].triggeredBy==-1)
+            if (sequenceObject.theSequence[step]->timeStamp>=(time-0.001) && sequenceObject.theSequence[step]->triggeredBy==-1)
+//            if (std::abs(sequenceObject.theSequence[step].timeStamp-time)<0.001 && sequenceObject.theSequence[step].triggeredBy==-1)
                 break;
         }
         if (step==sequenceObject.theSequence.size())
             step = sequenceObject.theSequence.size() - 1;
         if (step==-1)
             step = 0;
-        sequenceReadHead = sequenceObject.theSequence[step].getTimeStamp();
+        sequenceReadHead = sequenceObject.theSequence[step]->timeStamp;
         currentSeqStep = step-1;
         lastPlayedNoteStep = currentSeqStep;
         timeInTicks = time;
@@ -260,7 +260,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             {
     //            std::cout
     //            << " sustainPedalChange " << k
-    //            << " at " << sequenceObject.sustainPedalChanges[k].getTimeStamp()
+    //            << " at " << sequenceObject.sustainPedalChanges[k].timeStamp
     //            << " value " << sequenceObject.sustainPedalChanges[k].getControllerValue()
     //            << "\n";
                 if (sequenceObject.sustainPedalChanges[k].getTimeStamp()>=time)
@@ -287,7 +287,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             {
 //                std::cout
 //                << " softPedalChange " << k
-//                << " at " << sequenceObject.softPedalChanges[k].getTimeStamp()
+//                << " at " << sequenceObject.softPedalChanges[k].timeStamp
 //                << " value " << sequenceObject.softPedalChanges[k].getControllerValue()
 //                << "\n";
                 if (sequenceObject.softPedalChanges[k].getTimeStamp()>=time)
@@ -319,13 +319,13 @@ void MIDIProcessor::listenToSelection()
 //        if (copyOfSelectedNotes.size()==0)
 //        {
             catchUp();
-            startListenTime = sequenceObject.theSequence[currentSeqStep+1].getTimeStamp();
-            endListenTime =  sequenceObject.theSequence.back().getTimeStamp();
+            startListenTime = sequenceObject.theSequence[currentSeqStep+1]->timeStamp;
+            endListenTime =  sequenceObject.theSequence.back()->timeStamp;
 //        }
 //        else
 //        {
-//            startListenTime =  sequenceObject.theSequence[copyOfSelectedNotes[0]].getTimeStamp();
-//            endListenTime =  sequenceObject.theSequence[copyOfSelectedNotes.getLast()].getTimeStamp();
+//            startListenTime =  sequenceObject.theSequence[copyOfSelectedNotes[0]].timeStamp;
+//            endListenTime =  sequenceObject.theSequence[copyOfSelectedNotes.getLast()].timeStamp;
 //        }
         setListenSequence(startListenTime, endListenTime, Array<int>());
 //        rewind(startListenTime);
@@ -361,25 +361,25 @@ void MIDIProcessor::playableStepForwardBack(bool direction)
     if (!direction)
     {
         for (int step=currentSeqStep; 0<=step ; step--)
-            if (sequenceObject.theSequence[step].triggeredBy == -1)
+            if (sequenceObject.theSequence[step]->triggeredBy == -1)
             {
-//                rewind(sequenceObject.theSequence[step].getTimeStamp(), true);
-                tweenMove(sequenceObject.theSequence[step].getTimeStamp(), 5.0);
+//                rewind(sequenceObject.theSequence[step].timeStamp, true);
+                tweenMove(sequenceObject.theSequence[step]->timeStamp, 5.0);
                 break;
             }
     }
     else
     {
         int nextStep;
-        if (timeInTicks == sequenceObject.theSequence[currentSeqStep+1].getTimeStamp())
+        if (timeInTicks == sequenceObject.theSequence[currentSeqStep+1]->timeStamp)
             nextStep = currentSeqStep+2;
         else
             nextStep = currentSeqStep+1;
         for (int step=nextStep; step<sequenceObject.theSequence.size()-1; step++)
-            if (sequenceObject.theSequence[step].triggeredBy == -1)
+            if (sequenceObject.theSequence[step]->triggeredBy == -1)
             {
-//                rewind(sequenceObject.theSequence[step].getTimeStamp(), true);
-                tweenMove(sequenceObject.theSequence[step].getTimeStamp(), 5.0);
+//                rewind(sequenceObject.theSequence[step].timeStamp, true);
+                tweenMove(sequenceObject.theSequence[step]->timeStamp, 5.0);
                 break;
             }
     }
@@ -523,7 +523,7 @@ void MIDIProcessor::addRemoveBookmark (int action)
 //<#processBlock#>
 void MIDIProcessor::processBlock ()
 {
-    std::vector<NoteWithOffTime> * theSequence;
+    std::vector<NoteWithOffTime*> * theSequence;
     if (sequenceObject.loadingFile)
         return;
     if (panic)
@@ -559,10 +559,10 @@ void MIDIProcessor::processBlock ()
                 }
             }
         }
-//        const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[currentSeqStep+1].getTimeStamp());
+//        const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[currentSeqStep+1]timeStamp);
         if (lastPlayedNoteStep>=0)
         {
-            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[lastPlayedNoteStep].getTimeStamp());
+            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[lastPlayedNoteStep]->timeStamp);
             timeIncrement = sequenceObject.tempoMultiplier * tempo / 625;
             variableTimeIncrement = variableTempoRatio * sequenceObject.tempoMultiplier * tempo / 625;
 //            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
@@ -598,11 +598,11 @@ void MIDIProcessor::processBlock ()
     
     if (isListening && listenSequence.size()>0)
     {
-        while (timeInTicks > listenSequence[listenStep].getTimeStamp())
+        while (timeInTicks > listenSequence[listenStep].timeStamp)
         {
-            MidiMessage note = MidiMessage::noteOn(listenSequence[listenStep].getChannel(),
-                                                      listenSequence[listenStep].getNoteNumber(),
-                                                     listenSequence[listenStep].getVelocity());
+            MidiMessage note = MidiMessage::noteOn(listenSequence[listenStep].channel,
+                                                      listenSequence[listenStep].noteNumber,
+                                                     listenSequence[listenStep].velocity);
 //            std::cout << listenStep
 //            << " Autoplay note " << listenSequence[listenStep].getNoteNumber()
 //            << " Velocity " << (int) listenSequence[listenStep].getVelocity()
@@ -662,18 +662,18 @@ void MIDIProcessor::processBlock ()
                 continue;
             }
             //Note offs for triggered notes
-            if (theSequence->at(step).noteOffNow)
+            if (theSequence->at(step)->noteOffNow)
             {
 //                std::cout << " trg" << step ;
-                MidiMessage noteOff = MidiMessage::noteOn(theSequence->at(step).getChannel(),theSequence->at(step).getNoteNumber(),(uint8) 0);
+                MidiMessage noteOff = MidiMessage::noteOn(theSequence->at(step)->channel,theSequence->at(step)->noteNumber,(uint8) 0);
 //                String note = MidiMessage::getMidiNoteName (theSequence->at(step).getNoteNumber(), true, true, 3);
 //                std::cout << timeInTicks
 //                << " Trig noteOff " << step
 //                << " " << note
-//                << " timeStamp "<<theSequence->at(step).getTimeStamp()
+//                << " timeStamp "<<theSequence->at(step).timeStamp
 //                << " scheduledOffTime " << theSequence->at(step).scheduledOffTime
 //                << " firstInChain "<<theSequence->at(step).firstInChain
-//                << " firstInChain TS "<<theSequence->at(theSequence->at(step).firstInChain).getTimeStamp()
+//                << " firstInChain TS "<<theSequence->at(theSequence->at(step).firstInChain).timeStamp
 //                << "\n";
 
 //                if (midiDestination==MidiDestination::internalSynth)
@@ -685,14 +685,14 @@ void MIDIProcessor::processBlock ()
 //                    midiOutput->sendMessageNow(noteOff); //<<<<<< Use this to directly send midi
                 
                 sendMidiMessage(noteOff);
-                sequenceObject.setNoteActive(theSequence->at(step).getNoteNumber(), theSequence->at(step).getChannel(), false);
+                sequenceObject.setNoteActive(theSequence->at(step)->noteNumber, theSequence->at(step)->channel, false);
                 onNotes.remove(onNoteIndex);
                 deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by viewer
             }
-            else if ((theSequence->at(step).autoplayedNote || theSequence->at(step).sustaining) && theSequence->at(step).scheduledOffTime <= timeInTicks)
+            else if ((theSequence->at(step)->autoplayedNote || theSequence->at(step)->sustaining) && theSequence->at(step)->scheduledOffTime <= timeInTicks)
             {
 //                std::cout << " TO" << step ;
-                MidiMessage noteOff = MidiMessage::noteOn(theSequence->at(step).getChannel(),theSequence->at(step).getNoteNumber(),(uint8) 0);
+                MidiMessage noteOff = MidiMessage::noteOn(theSequence->at(step)->channel,theSequence->at(step)->noteNumber,(uint8) 0);
 //                String note = MidiMessage::getMidiNoteName (noteOff.getNoteNumber(), true, true, 3);
 //                std::cout << timeInTicks << " Timeout noteOff " << step << " " << note
 //                << " timeInTicks "<<timeInTicks
@@ -705,7 +705,7 @@ void MIDIProcessor::processBlock ()
 //                noteOff.setTimeStamp(99.0);
 //                synthMessageCollector.addMessageToQueue (noteOff);
                 sendMidiMessage(noteOff);
-                sequenceObject.setNoteActive(theSequence->at(step).getNoteNumber(),theSequence->at(step).getChannel(), false);
+                sequenceObject.setNoteActive(theSequence->at(step)->noteNumber,theSequence->at(step)->channel, false);
                 onNotes.remove(onNoteIndex);
                 deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by scrollingNoteViewer
             }
@@ -762,14 +762,14 @@ void MIDIProcessor::processBlock ()
                 scheduledNotes.pop_front();
                 continue;
             }
-            const double schedTime = theSequence->at(step).scheduledOnTime;
+            const double schedTime = theSequence->at(step)->scheduledOnTime;
             if (schedTime > timeInTicks)
             {
                 //                std::cout << timeInTicks << " SKIP NOTE-ONS" <<" "<<theSequence->at(step).scheduledOnTime<<"\n";
                 break;
             }
 
-            if (sequenceObject.isNoteActive(theSequence->at(step).getNoteNumber(),theSequence->at(step).getChannel()))
+            if (sequenceObject.isNoteActive(theSequence->at(step)->noteNumber,theSequence->at(step)->channel))
             {
                 //Do an noteOff of this note and remove it from onNotes
 //                std::cout << timeInTicks << " Repeated note forced note off\n";
@@ -781,8 +781,8 @@ void MIDIProcessor::processBlock ()
                 {
 //                    std::cout << "channels " << theSequence->at(onNotes[i]).getChannel()
 //                    <<" "<< theSequence->at(step).getChannel()<<"\n";
-                    if (theSequence->at(onNotes[i]).getNoteNumber() == theSequence->at(step).getNoteNumber()
-                        && theSequence->at(onNotes[i]).getChannel() == theSequence->at(step).getChannel())
+                    if (theSequence->at(onNotes[i])->noteNumber == theSequence->at(step)->noteNumber
+                        && theSequence->at(onNotes[i])->channel == theSequence->at(step)->channel)
                     {
                         stepToTurnOff = onNotes[i];
                         break;
@@ -792,21 +792,21 @@ void MIDIProcessor::processBlock ()
                 if (stepToTurnOff!=-1)
                 {
                     
-                    MidiMessage noteOff = MidiMessage::noteOn(theSequence->at(stepToTurnOff).getChannel(),
-                                                              theSequence->at(stepToTurnOff).getNoteNumber(), (uint8) 0);
+                    MidiMessage noteOff = MidiMessage::noteOn(theSequence->at(stepToTurnOff)->channel,
+                                                              theSequence->at(stepToTurnOff)->noteNumber, (uint8) 0);
 //                    String note = MidiMessage::getMidiNoteName (theSequence->at(stepToTurnOff).getNoteNumber(), true, true, 3);
 //                    std::cout << timeInTicks << " Repeated note forced noteOff " << step << " " << note
 //                    << " triggeredBy "<<theSequence->at(stepToTurnOff).triggeredBy
-//                    << " timeStamp "<<theSequence->at(stepToTurnOff).getTimeStamp()
+//                    << " timeStamp "<<theSequence->at(stepToTurnOff).timeStamp
 //                    << " firstInChain "<<theSequence->at(stepToTurnOff).firstInChain
-//                    << " firstInChain TS "<<theSequence->at(theSequence->at(stepToTurnOff).firstInChain).getTimeStamp()
+//                    << " firstInChain TS "<<theSequence->at(theSequence->at(stepToTurnOff).firstInChain).timeStamp
 //                    << "\n";
 //                    midiMessages.addEvent(noteOff,0);
 //                    midiOutput->sendMessageNow(noteOff);
 //                    noteOff.setTimeStamp(99.0);
 //                    synthMessageCollector.addMessageToQueue (noteOff);
                     sendMidiMessage(noteOff);
-                    sequenceObject.setNoteActive(theSequence->at(step).getNoteNumber(),theSequence->at(step).getChannel(), false);
+                    sequenceObject.setNoteActive(theSequence->at(step)->noteNumber,theSequence->at(step)->channel, false);
                     const int index = onNotes.indexOf(stepToTurnOff);
                     onNotes.remove(index);
                     Array<int> deHighlightSteps;
@@ -827,12 +827,13 @@ void MIDIProcessor::processBlock ()
 //            String note = MidiMessage::getMidiNoteName (theSequence->at(step).getNoteNumber(), true, true, 3);
 //            std::cout << timeInTicks << " noteOn " << step << " " << note
 //            << " triggeredBy "<<theSequence->at(step).triggeredBy
-//            << " timeStamp "<<theSequence->at(step).getTimeStamp()
+//            << " timeStamp "<<theSequence->at(step).timeStamp
 //            << " firstInChain "<<theSequence->at(step).firstInChain
-//            << " firstInChain TS "<<theSequence->at(theSequence->at(step).firstInChain).getTimeStamp()
+//            << " firstInChain TS "<<theSequence->at(theSequence->at(step).firstInChain).timeStamp
 //            << "\n";
-            MidiMessage noteOn = MidiMessage::noteOn(theSequence->at(step).getChannel(),theSequence->at(step).getNoteNumber(),
-                                                        (uint8)theSequence->at(step).adjustedVelocity);
+            MidiMessage noteOn = MidiMessage::noteOn(theSequence->at(step)->channel,theSequence->at(step)->noteNumber,
+                                                        theSequence->at(step)->adjustedVelocity);
+            std::cout << timeInTicks << " noteOn vel " << step <<" "<< noteOn.getFloatVelocity() <<"\n";
             noteOn.setTimeStamp(samplePosition);
             sendMidiMessage(noteOn);
 //            String note = MidiMessage::getMidiNoteName (noteOn.getNoteNumber(), true, true, 3);
@@ -841,13 +842,13 @@ void MIDIProcessor::processBlock ()
 //                std::cout << timeInTicks << " Note Already On! " << step <<" "<<note
 //                <<" "<<theSequence->at(step).scheduledOffTime<<"\n";
 //            }
-            sequenceObject.setNoteActive(theSequence->at(step).getNoteNumber(),theSequence->at(step).getChannel(), true);
+            sequenceObject.setNoteActive(theSequence->at(step)->noteNumber,theSequence->at(step)->channel, true);
 //            std::cout << timeInTicks << " Do the noteOn " << step <<" "<<note
 //            <<" "<<theSequence.at(step).adjustedVelocity
 //            <<" "<<theSequence.at(step).scheduledOffTime
 //            <<"\n";
-            const double duration = theSequence->at(step).getOffTime() - theSequence->at(step).getTimeStamp();
-            theSequence->at(step).scheduledOffTime = duration+timeInTicks;
+            const double duration = theSequence->at(step)->offTime - theSequence->at(step)->timeStamp;
+            theSequence->at(step)->scheduledOffTime = duration+timeInTicks;
             onNotes.add(step);
             highlightSteps.add(step+1);
             scheduledNotes.pop_front();
@@ -895,15 +896,13 @@ void MIDIProcessor::processBlock ()
             //Add next "firstInChain" note to availableNotes
             for (noteIndex=currentSeqStep+1;noteIndex<theSequence->size();noteIndex++)
             {
-                if (theSequence->at(noteIndex).isNoteOn() &&
-                    theSequence->at(noteIndex).getTimeStamp()>=sequenceReadHead &&
-                    theSequence->at(noteIndex).firstInChain == noteIndex)
+                if (theSequence->at(noteIndex)->timeStamp>=sequenceReadHead &&
+                    theSequence->at(noteIndex)->firstInChain == noteIndex)
                 {
-                    const NoteWithOffTime note = theSequence->at(noteIndex);
-                    earliness = note.getTimeStamp()-timeInTicks;
-                    const int stepPlayed = theSequence->at(currentSeqStep+1).firstInChain;
+                    earliness = theSequence->at(noteIndex)->timeStamp-timeInTicks;
+                    const int stepPlayed = theSequence->at(currentSeqStep+1)->firstInChain;
                     lastUserPlayedSeqStep = stepPlayed;
-                    const double noteTimeStamp = theSequence->at(stepPlayed).getTimeStamp();
+                    const double noteTimeStamp = theSequence->at(stepPlayed)->timeStamp;
                     changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
                     sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
                     double howEarlyIsAllowed;
@@ -918,9 +917,9 @@ void MIDIProcessor::processBlock ()
                         if (scheduledNotes.size()==0)
                             leadLag = noteTimeStamp - timeInTicks;
                         availableNotes.add(noteIndex); //This is the triggering note
-                        mostRecentNoteTime = theSequence->at(noteIndex).getTimeStamp();
-                        const double vel = theSequence->at(noteIndex).getVelocity();
-                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex).track))
+                        mostRecentNoteTime = theSequence->at(noteIndex)->timeStamp;
+                        const double vel = theSequence->at(noteIndex)->velocity;
+                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex)->track))
                         {
                             nPrimaryNotes++;
                             sumPrimaryVel += vel;
@@ -937,16 +936,16 @@ void MIDIProcessor::processBlock ()
             //Add the chain of notes that are autoTriggered by this note to availableNotes
             if (availableNotes.size()>0) //We added a note so there may be more
             {
-                int triggeredStep = theSequence->at(noteIndex).triggers;
+                int triggeredStep = theSequence->at(noteIndex)->triggers;
                 while (triggeredStep < theSequence->size() && (triggeredStep != -1))
                 {
                     availableNotes.add(triggeredStep);
-                    if (sequenceObject.isPrimaryTrack(theSequence->at(triggeredStep).track))
+                    if (sequenceObject.isPrimaryTrack(theSequence->at(triggeredStep)->track))
                     {
                         nPrimaryNotes++;
-                        sumPrimaryVel += theSequence->at(triggeredStep).getVelocity();
+                        sumPrimaryVel += theSequence->at(triggeredStep)->velocity;
                     }
-                    triggeredStep = theSequence->at(triggeredStep).triggers;
+                    triggeredStep = theSequence->at(triggeredStep)->triggers;
                 }
             }
 
@@ -956,7 +955,7 @@ void MIDIProcessor::processBlock ()
             {
                 if (availableNotes.size()>0)
                 {
-                    sequenceReadHead = theSequence->at(noteIndex).getTimeStamp()+1;
+                    sequenceReadHead = theSequence->at(noteIndex)->timeStamp+1;
                     const double noteOnLag = mostRecentNoteTime-timeInTicks;
                     const double deltaNoteOnLag = noteOnLag - prevNoteOnLag;
                     prevNoteOnLag = noteOnLag;
@@ -1014,7 +1013,7 @@ void MIDIProcessor::processBlock ()
             if (autoPlaying)//scheduledNotes.size()>0)
             {
                 lastScheduledNote = scheduledNotes.back();
-                lastScheduledNoteTime = theSequence->at(scheduledNotes.back()).scheduledOnTime;
+                lastScheduledNoteTime = theSequence->at(scheduledNotes.back())->scheduledOnTime;
 //                std::cout << "scheduledNotes back, lastScheduledNoteTime  "
 //                << scheduledNotes.back() << " "<<lastScheduledNoteTime << "\n";
                 
@@ -1032,22 +1031,22 @@ void MIDIProcessor::processBlock ()
             for (int noteToStart = 0;noteToStart < availableNotes.size();noteToStart++)
             {
                 const int step = availableNotes[noteToStart];
-                int velocity;
+                float velocity;
                // std::cout << timeInTicks << "NoteOn Channel "<< exprEvents[exprEventIndex].getChannel() <<"\n";
                 //The method of computing velocities is determined by the noteOn's midi channel
                 if (exprEvents[exprEventIndex].getChannel() == 16) //Computer keyboard sends on channel 16
                 {
                     //All velocities from the original sequence
-                    velocity = theSequence->at(availableNotes[noteToStart]).getVelocity();
+                    velocity = theSequence->at(availableNotes[noteToStart])->velocity;
                 }
                 else if (exprEvents[exprEventIndex].getChannel() <= 13)
                 {
                     //Highest note in chain velocity is a blend of the expr and the score vel using exprVelToScoreVelRatio
                     //Lower vel notes in chain vel are proportioned from highest note's output vel
                     //The exprVelToScoreVelRatio is set by the "vr" command
-                    double highVelInChain = theSequence->at(availableNotes[noteToStart]).highestVelocityInChain;
+                    double highVelInChain = theSequence->at(availableNotes[noteToStart])->highestVelocityInChain;
                     double exprVel = exprEvents[exprEventIndex].getVelocity();
-                    double thisNoteOriginalVelocity = theSequence->at(availableNotes[noteToStart]).getVelocity();
+                    double thisNoteOriginalVelocity = theSequence->at(availableNotes[noteToStart])->velocity;
 
                     double proportionedVelocity = sequenceObject.exprVelToScoreVelRatio*exprVel
                                     + (1.0-sequenceObject.exprVelToScoreVelRatio)*thisNoteOriginalVelocity;
@@ -1078,24 +1077,24 @@ void MIDIProcessor::processBlock ()
                 double scheduledOnTime;
                 if (lastScheduledNoteTime>0)
                     scheduledOnTime = lastScheduledNoteTime +
-                                    (theSequence->at(step).getTimeStamp() - theSequence->at(lastScheduledNote).getTimeStamp());
+                                    (theSequence->at(step)->timeStamp - theSequence->at(lastScheduledNote)->timeStamp);
                 else
-                    scheduledOnTime = timeInTicks + (theSequence->at(step).getTimeStamp() -
-                                          theSequence->at(availableNotes[0]).getTimeStamp());
+                    scheduledOnTime = timeInTicks + (theSequence->at(step)->timeStamp -
+                                          theSequence->at(availableNotes[0])->timeStamp);
 //                if (lastScheduledNoteTime>0)
 //                    std::cout << "step, lastScheduledNoteTime " << step << " " <<lastScheduledNoteTime << "\n";
-                theSequence->at(step).noteOffNow = false;
-                theSequence->at(step).scheduledOnTime = scheduledOnTime;
-                theSequence->at(step).adjustedVelocity = velocity;
-                theSequence->at(step).scheduledOffTime = scheduledOnTime +
-                     (theSequence->at(step).getOffTime()-theSequence->at(step).getTimeStamp());
-                if (theSequence->at(step).triggeredNote)
-                    theSequence->at(step).triggeringExprNote = exprEvents[exprEventIndex].getNoteNumber();
+                theSequence->at(step)->noteOffNow = false;
+                theSequence->at(step)->scheduledOnTime = scheduledOnTime;
+                theSequence->at(step)->adjustedVelocity = velocity;
+                theSequence->at(step)->scheduledOffTime = scheduledOnTime +
+                     (theSequence->at(step)->offTime-theSequence->at(step)->timeStamp);
+                if (theSequence->at(step)->triggeredNote)
+                    theSequence->at(step)->triggeringExprNote = exprEvents[exprEventIndex].getNoteNumber();
                 else
-                    theSequence->at(step).triggeringExprNote = -1;
+                    theSequence->at(step)->triggeringExprNote = -1;
 //                String note = MidiMessage::getMidiNoteName (theSequence->at(step).getNoteNumber(), true, true, 3);
 //                    std::cout << timeInTicks << " scheduledNotes.push_back (at 1)"<< step <<" "<<note<<" "<<theSequence.at(step).scheduledOnTime<< "\n";
-                if (theSequence->at(step).autoplayedNote)
+                if (theSequence->at(step)->autoplayedNote)
                 {
                     autoPlaying = true;
 //                        std::cout << "autoplay on at " << step << "\n";
@@ -1115,14 +1114,14 @@ void MIDIProcessor::processBlock ()
             {
                 //Turn off all onNotes that this expr note-off is related to.
                 const int seqStep = onNotes[onNoteIndex];
-                const int exprNoteThatStartedThisOnNote = theSequence->at(seqStep).triggeringExprNote;
+                const int exprNoteThatStartedThisOnNote = theSequence->at(seqStep)->triggeringExprNote;
 //                String note = MidiMessage::getMidiNoteName (sequenceObject.theSequence[seqStep].getNoteNumber(), true, true, 3);
                 if (exprNoteThatStartedThisOnNote == exprEvents[exprEventIndex].getNoteNumber())
                 {
-                    if (theSequence->at(seqStep).triggeredOffNote)
-                        theSequence->at(seqStep).noteOffNow = true;
+                    if (theSequence->at(seqStep)->triggeredOffNote)
+                        theSequence->at(seqStep)->noteOffNow = true;
                     else
-                        theSequence->at(seqStep).sustaining = true;
+                        theSequence->at(seqStep)->sustaining = true;
                 }
             }
         }

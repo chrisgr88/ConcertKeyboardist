@@ -285,8 +285,8 @@ public:
 //        const double time = timeInTicks-xInTicksFromViewer;
 //        for (i=0;i<sequenceObject.theSequence.size();i++)
 //        {
-////            std::cout << "step, ts, targetTime " << i<<" "<<sequenceObject.theSequence.at(i).getTimeStamp()<<" "<<time<<"\n";
-//            if (sequenceObject.theSequence.at(i).triggeredBy==-1 && sequenceObject.theSequence.at(i).getTimeStamp()>=time)
+////            std::cout << "step, ts, targetTime " << i<<" "<<sequenceObject.theSequence.at(i).timeStamp<<" "<<time<<"\n";
+//            if (sequenceObject.theSequence.at(i).triggeredBy==-1 && sequenceObject.theSequence.at(i).timeStamp>=time)
 //                break;
 //        }
 //        lastPlayedSeqStep = i-1;
@@ -299,7 +299,7 @@ public:
             time = -1.0;
         else
         {
-            time = sequenceObject.theSequence[lastUserPlayedSeqStep].getTimeStamp();
+            time = sequenceObject.theSequence[lastUserPlayedSeqStep]->timeStamp;
         }
         return time;
     }
@@ -311,7 +311,7 @@ public:
         {
             for (int i=0;i<steps.size();i++)
             {
-                const double ts = sequenceObject.theSequence.at(steps[i]).getTimeStamp();
+                const double ts = sequenceObject.theSequence.at(steps[i])->timeStamp;
                 const int index = sequenceObject.targetNoteTimes.indexOf(ts);
                 if (index>=0)
                 {
@@ -320,7 +320,7 @@ public:
                 }
                 else
                 {
-                    if (sequenceObject.theSequence.at(steps[i]).chordTopStep==-1)
+                    if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
                         sequenceObject.targetNoteTimes.add(ts);
                     const Sequence::StepActivity act = {steps[i], false};
                     stepActivityList.add(act);
@@ -331,11 +331,11 @@ public:
         {
             for (int i=0;i<steps.size();i++)
             {
-                const double ts = sequenceObject.theSequence.at(steps[i]).getTimeStamp();
+                const double ts = sequenceObject.theSequence.at(steps[i])->timeStamp;
                 const int index = sequenceObject.targetNoteTimes.indexOf (ts);
                 if (index>=0)
                 {
-                    if (sequenceObject.theSequence.at(steps[i]).chordTopStep==-1)
+                    if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
                         sequenceObject.targetNoteTimes.remove(index);
                     const Sequence::StepActivity act = {steps[i], true};
                     stepActivityList.add(act);
@@ -349,7 +349,7 @@ public:
         }
 
         if (undoMgr->inUndo || undoMgr->inRedo)
-            setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0]).getTimeStamp());
+            setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->timeStamp);
         else
         {
             sequenceObject.setChangedFlag(true);
@@ -367,7 +367,7 @@ public:
 //        std::cout << "chainCommand: interval = " <<inverval<<"\n";
         Array<Sequence::StepActivity> stepActivity = sequenceObject.chain(selection, inverval);
         if (undoMgr->inUndo || undoMgr->inRedo)
-            setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0]).getTimeStamp());
+            setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->timeStamp);
         else
         {
             sequenceObject.setChangedFlag(true);
@@ -395,7 +395,7 @@ public:
                 steps.add(act[i].step);
             changeMessageType = CHANGE_MESSAGE_UNDO;
             sequenceObject.undoneOrRedoneSteps = steps;
-            setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0]).getTimeStamp());
+            setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->timeStamp);
 //            inUndoRedo = true;
             sendSynchronousChangeMessage();
             changeMessageType = CHANGE_MESSAGE_NONE;
@@ -406,7 +406,7 @@ public:
 
     bool getNoteActivity(int step)
     {
-        const double ts = sequenceObject.theSequence.at(step).getTimeStamp();
+        const double ts = sequenceObject.theSequence.at(step)->timeStamp;
         const int index = sequenceObject.targetNoteTimes.indexOf(ts);
         if (index>=0)
             return true;
@@ -416,7 +416,7 @@ public:
 
     inline void setAsTargetNote(int step)
     {
-        const double ts = sequenceObject.theSequence.at(step).getTimeStamp();
+        const double ts = sequenceObject.theSequence.at(step)->timeStamp;
         const int index = sequenceObject.targetNoteTimes.indexOf(ts);
         if (index==-1)
             sequenceObject.targetNoteTimes.add(ts);
@@ -424,7 +424,7 @@ public:
     
     inline void setAsNonTargetNote(int step)
     {
-        const double ts = sequenceObject.theSequence.at(step).getTimeStamp();
+        const double ts = sequenceObject.theSequence.at(step)->timeStamp;
         const int index = sequenceObject.targetNoteTimes.indexOf(ts);
         if (index>-1)
             sequenceObject.targetNoteTimes.remove(index);
@@ -438,16 +438,16 @@ public:
     void setListenSequence(double startTime, double endTime, Array<int> tracks)
     {
         listenSequence.clear();
-        std::vector<NoteWithOffTime> *theSequence = sequenceObject.getSequence();
+        std::vector<NoteWithOffTime*> *theSequence = sequenceObject.getSequence();
         for (int step=0; step<theSequence->size(); step++)
         {
-            if (startTime <= theSequence->at(step).getTimeStamp() && theSequence->at(step).getTimeStamp()<=endTime
-                && (tracks.size()==0||tracks.contains(theSequence->at(step).getTrack())))
+            if (startTime <= theSequence->at(step)->timeStamp && theSequence->at(step)->timeStamp<=endTime
+                && (tracks.size()==0||tracks.contains(theSequence->at(step)->getTrack())))
             {
-                NoteWithOffTime onMsg = theSequence->at(step);
+                NoteWithOffTime onMsg = *(theSequence->at(step));
                 NoteWithOffTime offMsg = onMsg;
-                offMsg.setTimeStamp(onMsg.getOffTime());
-                offMsg.setVelocity(0);
+                offMsg.timeStamp = (onMsg.offTime);
+                offMsg.velocity = (0);
                 listenSequence.push_back(onMsg);
                 listenSequence.push_back(offMsg);
             }
@@ -468,10 +468,10 @@ public:
         int step;
         for (step=currentSeqStep;step<sequenceObject.theSequence.size();step++)
         {
-            if (sequenceObject.theSequence[step].triggeredBy==-1)
+            if (sequenceObject.theSequence[step]->triggeredBy==-1)
                 break;
         }
-        return sequenceObject.theSequence[step].getTimeStamp();
+        return sequenceObject.theSequence[step]->timeStamp;
     }
     
 private:

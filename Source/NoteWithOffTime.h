@@ -27,47 +27,54 @@ public:
     int track;
 };
 
-class NoteWithOffTime : public MidiMessage
+class NoteWithOffTime// : public MidiMessage
 {
 public:
-    NoteWithOffTime(int trk, int byte1, int byte2, int byte3, double onTime, double offT) :
-    MidiMessage(byte1,byte2,byte3,onTime),
-//    pRecordsWithEdits(NULL),
-    track(trk),
-    offTime(offT),
-    scheduledOnTime(0),
-    scheduledOffTime(0),
-    adjustedVelocity(0),
-    firstInChain(-1),
-    triggers(-1),
-    triggeredBy(-1),
-    chainTrigger(-1),
-    highestVelocityInChain(0),
-    triggeredNote(false),
-    triggeredOffNote(false),
-    autoplayedNote(false),
-    noteOffNow(false),
-    sustaining(false),
-    rectBar(-1),
-    rectHead(-1),
-    triggeringExprNote(-1),
-    selected(false),
-    chordTopStep(-2),
-    muted(false),
-    head(Rectangle<float>()),
-    timetoNextNote(-1),
-    chordIndex(-1)
-    {
-    }
+//    NoteWithOffTime(int trk, int byte1, int byte2, int byte3, double onTime, double offT) :
+//    MidiMessage(byte1,byte2,byte3,onTime),
+////    pRecordsWithEdits(NULL),
+//    track(trk),
+//    channel(channel),
+//    noteNumber(noteNumber),
+//    velocity(velocity),
+//    offTime(offT),
+//    scheduledOnTime(0),
+//    scheduledOffTime(0),
+//    adjustedVelocity(0),
+//    firstInChain(-1),
+//    triggers(-1),
+//    triggeredBy(-1),
+//    chainTrigger(-1),
+//    highestVelocityInChain(0),
+//    triggeredNote(false),
+//    triggeredOffNote(false),
+//    autoplayedNote(false),
+//    noteOffNow(false),
+//    sustaining(false),
+//    rectBar(-1),
+//    rectHead(-1),
+//    triggeringExprNote(-1),
+//    selected(false),
+//    chordTopStep(-2),
+//    muted(false),
+//    head(Rectangle<float>()),
+//    timetoNextNote(-1),
+//    chordIndex(-1)
+//    {
+//    }
     
-    NoteWithOffTime(int trk, MidiMessage msg, double offT) :
-    MidiMessage(msg),
+    NoteWithOffTime(int trk, double tStamp, int chan, int noteNum, float vel, double offT) :
+//    MidiMessage(msg),
 //    pRecordsWithEdits(NULL),
     track(trk),
+    timeStamp(tStamp),
+    channel(chan),
+    noteNumber(noteNum),
+    velocity(vel),
     offTime(offT),
     scheduledOnTime(0),
     scheduledOffTime(0),
-    adjustedVelocity(0),
+    adjustedVelocity(0.0f),
     firstInChain(-1),
     triggers(-1),
     triggeredBy(-1),
@@ -91,9 +98,12 @@ public:
     }
     
     NoteWithOffTime(NoteWithOffTime const &note) :
-    MidiMessage(note),
-//    pRecordsWithEdits(note.pRecordsWithEdits),
+//    MidiMessage(note),
     track(note.track),
+    timeStamp(note.timeStamp),
+    channel(note.channel),
+    noteNumber(note.noteNumber),
+    velocity(note.velocity),
     offTime(note.offTime),
     scheduledOnTime(note.scheduledOnTime),
     scheduledOffTime(note.scheduledOffTime),
@@ -121,13 +131,17 @@ public:
     }
     
     NoteWithOffTime() :
-    MidiMessage(),
+//    MidiMessage(),
 //    pRecordsWithEdits(NULL),
     track(0),
+    timeStamp(0.0),
+    channel(1),
+    noteNumber(0),
+    velocity(0),
     offTime(0),
     scheduledOnTime(0),
     scheduledOffTime(0),
-    adjustedVelocity(0),
+    adjustedVelocity(0.0f),
     firstInChain(-1),
     triggers(-1),
     triggeredBy(-1),
@@ -172,10 +186,10 @@ public:
     
     bool operator< (const NoteWithOffTime& note2) const
     {
-        if (getTimeStamp()==note2.getTimeStamp())
-            return getNoteNumber()>note2.getNoteNumber();
+        if (timeStamp==note2.timeStamp)
+            return noteNumber>note2.noteNumber;
         else
-            return getTimeStamp()<note2.getTimeStamp();
+            return timeStamp<note2.timeStamp;
     }
     
     
@@ -187,29 +201,29 @@ public:
 //    {
 //        return pRecordsWithEdits->at(track).at(editedMessageIndex).getTimeStamp();
 //    }
-    inline double getOriginalTimeStamp() const
-    {
-        return getTimeStamp();
-    }
-    void changeTimeStamp(double newTS)
-    {
-        setTimeStamp(newTS);
-    }
+//    inline double getOriginalTimeStamp() const
+//    {
+//        return timeStamp;
+//    }
+//    void changeTimeStamp(double newTS)
+//    {
+//        timeStamp = newTS;
+//    }
     
-    void setOffTime(double newOffTime)
-    {
-        offTime = newOffTime;
-    }
-    double getOffTime()
-    {
-        return offTime;
-    }
+//    void setOffTime(double newOffTime)
+//    {
+//        offTime = newOffTime;
+//    }
+//    double getOffTime()
+//    {
+//        return offTime;
+//    }
 
-    void changeVelocity(float newVelocity)
-    {
-//        pRecordsWithEdits->at(track).at(editedMessageIndex).setVelocity(newVelocity);
-        setVelocity(newVelocity);
-    }
+//    void changeVelocity(float newVelocity)
+//    {
+////        pRecordsWithEdits->at(track).at(editedMessageIndex).setVelocity(newVelocity);
+//        velocity = newVelocity;
+//    }
 //    uint8 getVelocity() const
 //    {
 //        return pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity();
@@ -218,28 +232,20 @@ public:
 //    {
 //        return pRecordsWithEdits->at(track).at(editedMessageIndex).getFloatVelocity();
 //    }
-    uint8 getOriginalVelocity() const
-    {
-        return getVelocity();
-    }
-    float getOriginalFloatVelocity() const
-    {
-        return getFloatVelocity();
-    }
     
-    void changeNoteNumber(int newNewNoteNumber)
-    {
-//        pRecordsWithEdits->at(track).at(editedMessageIndex).setNoteNumber(newNewNoteNumber);
-        setNoteNumber(newNewNoteNumber);
-    }
+//    void changeNoteNumber(int newNewNoteNumber)
+//    {
+////        pRecordsWithEdits->at(track).at(editedMessageIndex).setNoteNumber(newNewNoteNumber);
+//        setNoteNumber(newNewNoteNumber);
+//    }
 //    int getNoteNumber() const
 //    {
 //        return pRecordsWithEdits->at(track).at(editedMessageIndex).getNoteNumber();
 //    }
-    int getOriginalNoteNumber() const
-    {
-        return getNoteNumber();
-    }
+//    int getOriginalNoteNumber() const
+//    {
+//        return getNoteNumber();
+//    }
     
     /*
      Overall behavior:
@@ -270,10 +276,14 @@ public:
     }
     
     int track;
+    double timeStamp;
+    int channel;
+    int noteNumber;
+    float velocity;
     double offTime;
     double scheduledOnTime; // Starting time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.
     double scheduledOffTime; // Ending time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.
-    uint8 adjustedVelocity; //Computed at scheduling time.  May be based on the expr note velocity and secondary track vs primary track velocity.
+    float adjustedVelocity; //Computed at scheduling time.  May be based on the expr note velocity and secondary track vs primary track velocity.
     int firstInChain; // First step in a chain.  A chain ends at the first step whose start time is more than chainingInterval from previous step's start time.  Steps in the score are sorted by timeStamp (and then in descending order of note number).  This means that all steps in a chain are contiguous in the score.  Every step has a firstInChain property including the firstInChain itself.
     int triggers; //The step that this note triggers.  Set to -1 if last in group.
     int triggeredBy; //The that step that directly triggers this note.  Set to -1 if first in group.

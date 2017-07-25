@@ -178,7 +178,7 @@ public:
     {
         return timeSigChanges;
     }
-    inline std::vector<NoteWithOffTime> *getSequence()
+    inline std::vector<NoteWithOffTime*> *getSequence()
     {
         return &theSequence;
     }
@@ -191,7 +191,7 @@ public:
     int myConvertFromBase64 (OutputStream& binaryOutput, StringRef base64TextInput);
     uint varintLength(char* input, uint inputSize);
     int getSeqDurationInTicks() {return seqDurationInTicks;}
-    std::vector<NoteWithOffTime> getNotesInTimeRange(double minTimeStamp, double maxTimeStamp);
+//    std::vector<NoteWithOffTime*> getNotesInTimeRange(double minTimeStamp, double maxTimeStamp);
     Array<MidiMessage> getCurrentTimeSig(double timeStamp);
     SortedSet<int> getNotesUsed(int &minNote, int &maxNote);
     
@@ -447,7 +447,7 @@ public:
     std::vector<int> programChanges;
     bool areThereProgramChanges;
 
-    std::vector<NoteWithOffTime> theSequence;
+    std::vector<NoteWithOffTime*> theSequence;
     std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
     
     std::vector<ControllerMessage> theControllers;
@@ -508,9 +508,9 @@ public:
     
     OriginalNote getOriginalNote(int step)
     {
-        const uint64 key = theSequence[step].getTimeStamp()*10000000+
-        theSequence[step].getChannel()*1000+
-        theSequence[step].getNoteNumber();
+        const uint64 key = theSequence[step]->timeStamp*10000000+
+        theSequence[step]->channel*1000+
+        theSequence[step]->noteNumber;
         return originalNotes[originalNoteIndex[key]];
     }
     

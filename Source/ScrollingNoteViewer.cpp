@@ -164,12 +164,12 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     preDragXinTicks = xInTicks;
     if (vert>0.0 && xInTicks>0.0) //Test if we are on a note bar
     {
-        std::vector<NoteWithOffTime> *sequence = processor->sequenceObject.getSequence();
+        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
         int i;
         int step = -1;
         for (i=0;i<sequence->size();i++)
         {
-            if (sequence->at(i).head.contains(sequenceScaledX, scaledY))
+            if (sequence->at(i)->head.contains(sequenceScaledX, scaledY))
             {
                 step = i;
                 break;
@@ -262,13 +262,13 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
     preDragXinTicks = xInTicks;
     if (vert>0.0 && xInTicks>0.0) //Test if we are on a note bar
     {
-        std::vector<NoteWithOffTime> *sequence = processor->sequenceObject.getSequence();
+        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
         const int nn = maxNote - vert + 1;
         int i;
         int step = -1;
         for (i=0;i<sequence->size();i++)
         {
-            if (sequence->at(i).head.contains(sequenceScaledX, scaledY))
+            if (sequence->at(i)->head.contains(sequenceScaledX, scaledY))
                 {
                     step = i;
                     break;
@@ -281,8 +281,8 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             String note = MidiMessage::getMidiNoteName (nn, true, true, 3);
             if (selectedNotes.size()>=1)
             {
-                const double time1 = sequence->at(selectedNotes[0]).getTimeStamp();
-                const double time2 = sequence->at(selectedNotes.getLast()).getTimeStamp();
+                const double time1 = sequence->at(selectedNotes[0])->timeStamp;
+                const double time2 = sequence->at(selectedNotes.getLast())->timeStamp;
                 note = note + " Selection width:" + String (std::abs(time1-time2));
             }
             hoverInfo = note;
@@ -292,10 +292,10 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
 //            std::cout << "mouseMove found step " << step <<"\n";
             hoveringOver = HOVER_NOTEBAR;
             String note = MidiMessage::getMidiNoteName (nn, true, true, 3)
-                + " nn:" + String::String(nn) + " ch:" + String::String(sequence->at(i).getChannel())
-                + " vel:" + String((int)sequence->at(i).getVelocity());
-            hoverInfo = " step:"+String::String(hoverStep) + " tick:" + String(sequence->at(i).getTimeStamp())
-                + " dur:" + String((sequence->at(i).getOffTime()-sequence->at(i).getTimeStamp()))
+                + " nn:" + String::String(nn) + " ch:" + String::String(sequence->at(i)->channel)
+                + " vel:" + String((int)sequence->at(i)->velocity);
+            hoverInfo = " step:"+String::String(hoverStep) + " tick:" + String(sequence->at(i)->timeStamp)
+                + " dur:" + String((sequence->at(i)->offTime-sequence->at(i)->timeStamp))
                 + " " + note;
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
@@ -647,7 +647,7 @@ void ScrollingNoteViewer::renderOpenGL()
     openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
     openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
     
-    std::vector<NoteWithOffTime> *sequence = processor->sequenceObject.getSequence();
+    std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
 
     //Get steps (that turned off or on) out of queue
     Array<int> stepsThatChanged;
@@ -672,16 +672,16 @@ void ScrollingNoteViewer::renderOpenGL()
             {
                 const int step = -(stepsThatChanged[j]+1);
 //                std::cout << "DeHighlight step " << step << "\n";
-                if (processor->sequenceObject.isPrimaryTrack(sequence->at(step).track))
+                if (processor->sequenceObject.isPrimaryTrack(sequence->at(step)->track))
                 {
-                    setRectangleColour(sequence->at(step).rectHead, colourInactiveNoteHead);//Head
+                    setRectangleColour(sequence->at(step)->rectHead, colourInactiveNoteHead);//Head
 //                    setRectangleColour(sequence->at(step).rectBar,  colourPrimaryNoteBar);//Bar
                 }
             }
             else if (stepsThatChanged[j]>0) //It was an on
             {
 //                std::cout << "Highlight step " << (stepsThatChanged[j]-1) << "\n";
-                setRectangleColour(sequence->at(stepsThatChanged[j]-1).rectHead,   colourNoteOn); //Head
+                setRectangleColour(sequence->at(stepsThatChanged[j]-1)->rectHead,   colourNoteOn); //Head
             }
         }
     }
@@ -690,8 +690,8 @@ void ScrollingNoteViewer::renderOpenGL()
         int step = processor->lastPlayedSeqStep+1;
         if (step<processor->sequenceObject.theSequence.size())
         {
-            const float timeStamp = sequence->at(step).getTimeStamp();
-            const float width = 4.0f;// (sequence->at(step+1).getTimeStamp()-timeStamp)*pixelsPerTick;
+            const float timeStamp = sequence->at(step)->timeStamp;
+            const float width = 4.0f;// (sequence->at(step+1).timeStamp-timeStamp)*pixelsPerTick;
     //      const float height = 13.0f * sequence->at(step).getFloatVelocity();
     //      setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 2.0f+(13.0-height), width, height);
             setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 0.0f, width, 15.f);
@@ -847,7 +847,7 @@ void ScrollingNoteViewer::makeNoteBars()
     trackVerticalSize = ((float)initialHeight-topMargin)/nKeys;
     vertices.clear();
     indices.clear();
-    std::vector<NoteWithOffTime> *sequence = processor->sequenceObject.getSequence();
+    std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
     nKeys = maxNote-minNote+1;
     const float h = trackVerticalSize*noteBarWidthRatio; //Note bar height
@@ -886,16 +886,15 @@ void ScrollingNoteViewer::makeNoteBars()
         return;
     //Velocity graph
     const double graphHeight = 300.0-getTopMargin()-toolbarHeight; //300 is the original window height set in MainComponent.cpp
-    double prevY = graphHeight * sequence->at(0).highestVelocityInChain/127.0;
+    double prevY = graphHeight * sequence->at(0)->highestVelocityInChain/127.0;
     double prevX = -1;
     for (int index = 0;index<static_cast<int>(sequence->size());index++)
     {
-        const NoteWithOffTime msg = sequence->at(index);
-        const double startPixel = msg.getTimeStamp()*pixelsPerTick;
+        const double startPixel = sequence->at(index)->timeStamp*pixelsPerTick;
         double x = startPixel;
-        if (msg.triggeredBy==-1)
+        if (sequence->at(index)->triggeredBy==-1)
         {
-            int velocityOfTargetNote = msg.getVelocity();
+            int velocityOfTargetNote = sequence->at(index)->velocity;
             const double scaledVelocity = graphHeight * velocityOfTargetNote/127.0;
             const double thisY = scaledVelocity;
             if (prevX != -1)
@@ -911,11 +910,11 @@ void ScrollingNoteViewer::makeNoteBars()
     //Note Bars
     for (int index = 0;index<static_cast<int>(sequence->size());index++)
     {
-        const NoteWithOffTime msg = sequence->at(index);
-        const double startPixel = msg.getTimeStamp()*pixelsPerTick;
-        double endPixel = msg.offTime*pixelsPerTick;
-        const int noteNumber = msg.getNoteNumber();
-        const double thisEndTime = msg.offTime;
+//        const NoteWithOffTime msg = sequence->at(index);
+        const double startPixel = sequence->at(index)->timeStamp*pixelsPerTick;
+        double endPixel = sequence->at(index)->offTime*pixelsPerTick;
+        const int noteNumber = sequence->at(index)->noteNumber;
+        const double thisEndTime = sequence->at(index)->offTime;
         const float y = noteYs[noteNumber]*rescaleHeight + topMargin;
         int indexOfNextSameNote = -1;
         long size = sequence->size();
@@ -924,10 +923,10 @@ void ScrollingNoteViewer::makeNoteBars()
         
         for (int nxtNoteIndex=index+1;nxtNoteIndex<size-2;nxtNoteIndex++)
         {
-            const double spacing = (sequence->at(nxtNoteIndex).getTimeStamp() - thisEndTime)*pixelsPerTick;
+            const double spacing = (sequence->at(nxtNoteIndex)->timeStamp - thisEndTime)*pixelsPerTick;
             if (spacing > headWidth)
                 break;
-            if (sequence->at(nxtNoteIndex).getNoteNumber()==noteNumber)// && sequence->at(nxtNoteIndex).chainTrigger==nxtNoteIndex)
+            if (sequence->at(nxtNoteIndex)->noteNumber==noteNumber)// && sequence->at(nxtNoteIndex).chainTrigger==nxtNoteIndex)
             {
                 indexOfNextSameNote = nxtNoteIndex;
 //                std::cout<< "index,  indexOfNextSameNote "<< index<<" "<<indexOfNextSameNote<< "\n";
@@ -941,7 +940,7 @@ void ScrollingNoteViewer::makeNoteBars()
         if (indexOfNextSameNote == -1)
             startPixelOfNextSameNote = DBL_MAX;
         else
-            startPixelOfNextSameNote = sequence->at(indexOfNextSameNote).getTimeStamp()*pixelsPerTick;
+            startPixelOfNextSameNote = sequence->at(indexOfNextSameNote)->timeStamp*pixelsPerTick;
         
         const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
         const float headHeight =  h * headToBarHeightRatio;
@@ -949,31 +948,31 @@ void ScrollingNoteViewer::makeNoteBars()
         if (headWidth > startPixelOfNextSameNote-x)
             headWidth = std::max(minSpacing,startPixelOfNextSameNote-x-minSpacing);
 
-        const float vel = msg.getFloatVelocity();
+        const float vel = sequence->at(index)->velocity;
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
         
-        sequence->at(index).head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
+        sequence->at(index)->head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
         
-        if (msg.triggeredBy==-1) //If it's a target note
+        if (sequence->at(index)->triggeredBy==-1) //If it's a target note
         {
-                if (processor->getNotesEditable() || sequence->at(index).getTimeStamp()>=readHead)
-                sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                if (processor->getNotesEditable() || sequence->at(index)->timeStamp>=readHead)
+                sequence->at(index)->rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                         colourActiveNoteHead, vBasedNoteBar);
             else
-                sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                sequence->at(index)->rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                       colourInactiveNoteHead, vBasedNoteBar);
         }
         else
         {
-            if (sequence->at(index).chordTopStep==-1 && (processor->getNotesEditable()||sequence->at(index).getTimeStamp()>=readHead))
-                sequence->at(index).rectBar = addNote(false,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+            if (sequence->at(index)->chordTopStep==-1 && (processor->getNotesEditable()||sequence->at(index)->timeStamp>=readHead))
+                sequence->at(index)->rectBar = addNote(false,x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                       colourInactiveNoteHead, vBasedNoteBar);
             else
-                sequence->at(index).rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                sequence->at(index)->rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                       vBasedNoteBar, vBasedNoteBar);
         }
         
-        sequence->at(index).rectHead = sequence->at(index).rectBar + 1;
+        sequence->at(index)->rectHead = sequence->at(index)->rectBar + 1;
     }
     
     //Sustain bars
@@ -1002,10 +1001,10 @@ void ScrollingNoteViewer::makeNoteBars()
         int sustainBarNum = 0;
         for (int step=0; step<static_cast<int>(sequence->size()); step++)
         {
-            const NoteWithOffTime msg = sequence->at(step);
+//            const NoteWithOffTime msg = sequence->at(step);
             const double barLeft = sustainBars[sustainBarNum].getX();
             const double barRight = sustainBars[sustainBarNum].getRight();
-            const double msgTimeStamp = msg.getTimeStamp();
+            const double msgTimeStamp = sequence->at(step)->timeStamp;
             if (!inSustainBar) //Msg is after the start of this bar
             {
                 if (msgTimeStamp > barRight)
@@ -1028,14 +1027,14 @@ void ScrollingNoteViewer::makeNoteBars()
                 addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,2.0, Colour(Colours::orange).brighter());
                 sustainBarNum++;
                 if (msgTimeStamp > barRight)
-                    highestNote = msg.getNoteNumber();
+                    highestNote = sequence->at(step)->noteNumber;
                 else
                     highestNote = -1;
             }
             if (inSustainBar)
             {
-                if (msg.getNoteNumber()>highestNote)
-                    highestNote = msg.getNoteNumber();
+                if (sequence->at(step)->noteNumber>highestNote)
+                    highestNote = sequence->at(step)->noteNumber;
             }
         }
     } //End sustain bars
@@ -1067,10 +1066,10 @@ void ScrollingNoteViewer::makeNoteBars()
         int softBarNum = 0;
         for (int step=0; step<static_cast<int>(sequence->size()); step++)
         {
-            const NoteWithOffTime msg = sequence->at(step);
+//            const NoteWithOffTime msg = sequence->at(step);
             const double barLeft = softBars[softBarNum].getX();
             const double barRight = softBars[softBarNum].getRight();
-            const double msgTimeStamp = msg.getTimeStamp();
+            const double msgTimeStamp = sequence->at(step)->timeStamp;
             if (!insoftBar) //Msg is after the start of this bar
             {
                 if (msgTimeStamp > barRight)
@@ -1097,14 +1096,14 @@ void ScrollingNoteViewer::makeNoteBars()
                 
                 softBarNum++;
                 if (msgTimeStamp > barRight)
-                    highestNote = msg.getNoteNumber();
+                    highestNote = sequence->at(step)->noteNumber;
                 else
                     highestNote = -1;
             }
             if (insoftBar)
             {
-                if (msg.getNoteNumber()>highestNote)
-                    highestNote = msg.getNoteNumber();
+                if (sequence->at(step)->noteNumber>highestNote)
+                    highestNote = sequence->at(step)->noteNumber;
             }
         }
     } //End soft bars
@@ -1120,7 +1119,7 @@ void ScrollingNoteViewer::makeNoteBars()
     //Position of next note to play
     if (processor->lastPlayedSeqStep+1 < processor->sequenceObject.theSequence.size())
     {
-        const double x = processor->sequenceObject.theSequence[processor->lastPlayedSeqStep+1].getTimeStamp()*pixelsPerTick;
+        const double x = processor->sequenceObject.theSequence[processor->lastPlayedSeqStep+1]->timeStamp*pixelsPerTick;
         nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
     }
 }
@@ -1194,7 +1193,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
         }
         for (int i=0;i<displayedSelection.size();i++)
         {
-            const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[displayedSelection[i]].head;
+            const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[displayedSelection[i]]->head;
             const Rectangle<float> head = Rectangle<float>(
                  scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
                  scaledHead.getY()*verticalScale,
@@ -1461,11 +1460,11 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 newlySelectedNotes.clear();
                 for (int step=0;step<processor->sequenceObject.theSequence.size();step++)
                 {
-                    if (processor->sequenceObject.theSequence[step].chordTopStep==-1 &&
-                        processor->sequenceObject.theSequence[step].getTimeStamp() >= xInTicksLeft
-                        && processor->sequenceObject.theSequence[step].getTimeStamp() <= xInTicksRight)
+                    if (processor->sequenceObject.theSequence[step]->chordTopStep==-1 &&
+                        processor->sequenceObject.theSequence[step]->timeStamp >= xInTicksLeft
+                        && processor->sequenceObject.theSequence[step]->timeStamp <= xInTicksRight)
                     {
-                        const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[step].head;
+                        const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[step]->head;
                         const Rectangle<float> head = Rectangle<float>(
                                                                  scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
                                                                  scaledHead.getY()*verticalScale,
@@ -1507,12 +1506,12 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     if (std::abs(deltaX)>std::abs(deltaY))
                     {
                         draggingTime = true;
-                        timeStartDrag = processor->sequenceObject.theSequence.at(hoverStep).getTimeStamp();
+                        timeStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->timeStamp;
                     }
                     else
                     {
                         draggingVelocity = true;
-                        velStartDrag = processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity();
+                        velStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->velocity;
                     }
                 }
                 float fVel;
@@ -1522,13 +1521,13 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     fVel = std::min(1.0,velStartDrag + (deltaY/5.0)/127.0);
                     fVel = std::max(0.0f, fVel);
                     std::cout << "fVel " << deltaY<<" "<<velStartDrag <<" "<< fVel  <<  "\n";
-                    processor->sequenceObject.theSequence.at(hoverStep).changeVelocity(fVel);
+                    processor->sequenceObject.theSequence.at(hoverStep)->velocity = fVel;
                 }
                 else if (draggingTime)
                 {
                     fTime = std::max(0.0,timeStartDrag - (deltaX/10.0));
                     std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< fTime  <<  "\n";
-                    processor->sequenceObject.theSequence.at(hoverStep).changeTimeStamp(fTime);
+                    processor->sequenceObject.theSequence.at(hoverStep)->timeStamp = fTime;
                 }
                 
 //                if (fVel>1.0) fVel = 1.0;
