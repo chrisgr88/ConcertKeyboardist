@@ -833,7 +833,7 @@ void MIDIProcessor::processBlock ()
 //            << "\n";
             MidiMessage noteOn = MidiMessage::noteOn(theSequence->at(step)->channel,theSequence->at(step)->noteNumber,
                                                         theSequence->at(step)->adjustedVelocity);
-            std::cout << timeInTicks << " noteOn vel " << step <<" "<< noteOn.getFloatVelocity() <<"\n";
+//            std::cout << timeInTicks << " noteOn vel " << step <<" "<< noteOn.getFloatVelocity() <<"\n";
             noteOn.setTimeStamp(samplePosition);
             sendMidiMessage(noteOn);
 //            String note = MidiMessage::getMidiNoteName (noteOn.getNoteNumber(), true, true, 3);
@@ -1045,7 +1045,9 @@ void MIDIProcessor::processBlock ()
                     //Lower vel notes in chain vel are proportioned from highest note's output vel
                     //The exprVelToScoreVelRatio is set by the "vr" command
                     double highVelInChain = theSequence->at(availableNotes[noteToStart])->highestVelocityInChain;
-                    double exprVel = exprEvents[exprEventIndex].getVelocity();
+                    float exprVel = exprEvents[exprEventIndex].getVelocity();
+                    if (exprVel>=1.0f)
+                        exprVel = exprVel/127.0;
                     double thisNoteOriginalVelocity = theSequence->at(availableNotes[noteToStart])->velocity;
 
                     double proportionedVelocity = sequenceObject.exprVelToScoreVelRatio*exprVel
@@ -1070,6 +1072,7 @@ void MIDIProcessor::processBlock ()
                 else if(exprEvents[exprEventIndex].getChannel() == 15) //All velocities equal expr velocity
                 {
                     velocity = exprEvents[exprEventIndex].getVelocity(); //All velocities equal expr velocity
+                    velocity = velocity/127.0;
                 }
                 else
                     assert(false);

@@ -985,9 +985,6 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 nextStepChordNoteIndex = INT32_MAX;
         
             chord.add(step);
-            int fooo;
-            if (step>7)
-                fooo = 99;
             if (thisStepChordNoteIndex != nextStepChordNoteIndex)
             {
 //                if (theSequence[step].timeStamp < 2000)
@@ -1039,7 +1036,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                             const float originalVel = getOriginalNote(chord[1]).floatVelocity;
                             const float ckVel = 0.7f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-//                            theSequence[chord[1]]->velocity = (proRatedVel);
+                            theSequence[chord[1]]->velocity = proRatedVel;
                         }
                         else // (chord.size()>2)
                         {
@@ -1050,13 +1047,13 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                                 const float originalVel = getOriginalNote(step).floatVelocity;
                                 const float ckVel = 0.6f * topNoteVel;
                                 const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-//                                theSequence[step]->velocity = (proRatedVel);
+                                theSequence[step]->velocity = proRatedVel;
                             }
                             int step =  chord[chord.size()-1];
                             const float originalVel = getOriginalNote(step).floatVelocity;
                             const float ckVel = 0.8f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-//                            theSequence[step]->velocity = (proRatedVel);
+                            theSequence[step]->velocity = proRatedVel;
                         }
                     }
                     theSequence[chord[0]]->chordTopStep=-1;
