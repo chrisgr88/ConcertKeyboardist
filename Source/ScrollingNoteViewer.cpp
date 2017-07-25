@@ -886,7 +886,7 @@ void ScrollingNoteViewer::makeNoteBars()
         return;
     //Velocity graph
     const double graphHeight = 300.0-getTopMargin()-toolbarHeight; //300 is the original window height set in MainComponent.cpp
-    double prevY = graphHeight * sequence->at(0)->highestVelocityInChain/127.0;
+    double prevY = graphHeight * sequence->at(0)->highestVelocityInChain;
     double prevX = -1;
     for (int index = 0;index<static_cast<int>(sequence->size());index++)
     {
@@ -894,8 +894,8 @@ void ScrollingNoteViewer::makeNoteBars()
         double x = startPixel;
         if (sequence->at(index)->triggeredBy==-1)
         {
-            int velocityOfTargetNote = sequence->at(index)->velocity;
-            const double scaledVelocity = graphHeight * velocityOfTargetNote/127.0;
+            float velocityOfTargetNote = sequence->at(index)->velocity;
+            const double scaledVelocity = graphHeight * velocityOfTargetNote;
             const double thisY = scaledVelocity;
             if (prevX != -1)
             {

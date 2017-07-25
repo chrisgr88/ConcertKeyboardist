@@ -326,6 +326,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
         chords.clear();
+        allNotes.clear();
         originalNoteIndex.clear();
     }
     setLoadingFile(true);
@@ -871,10 +872,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         struct {
             bool operator()(NoteWithOffTime* a, NoteWithOffTime* b) const
             {
-                return a->timeStamp < b->timeStamp;
-                
                 if (a->timeStamp==b->timeStamp)
-                    return a->noteNumber < b->noteNumber;
+                    return a->noteNumber > b->noteNumber;
                 else
                     return a->timeStamp < b->timeStamp;
             }
@@ -1143,7 +1142,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         for (int step=0;step<theSequence.size();step++)
         {
             int firstInChain = step;
-            int highestVelocity = -1;
+            float highestVelocity = -1;
             int firstStep = step;
             bool enteredLoop = false;
             while (step<theSequence.size() && theSequence[step]->firstInChain==firstInChain)
