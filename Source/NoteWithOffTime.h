@@ -7,7 +7,6 @@
 
   ==============================================================================
 */
-
 #ifndef NOTEWITHOFFTIME_H_INCLUDED
 #define NOTEWITHOFFTIME_H_INCLUDED
 
@@ -30,47 +29,16 @@ public:
 class NoteWithOffTime// : public MidiMessage
 {
 public:
-//    NoteWithOffTime(int trk, int byte1, int byte2, int byte3, double onTime, double offT) :
-//    MidiMessage(byte1,byte2,byte3,onTime),
-////    pRecordsWithEdits(NULL),
-//    track(trk),
-//    channel(channel),
-//    noteNumber(noteNumber),
-//    velocity(velocity),
-//    offTime(offT),
-//    scheduledOnTime(0),
-//    scheduledOffTime(0),
-//    adjustedVelocity(0),
-//    firstInChain(-1),
-//    triggers(-1),
-//    triggeredBy(-1),
-//    chainTrigger(-1),
-//    highestVelocityInChain(0.0f),
-//    triggeredNote(false),
-//    triggeredOffNote(false),
-//    autoplayedNote(false),
-//    noteOffNow(false),
-//    sustaining(false),
-//    rectBar(-1),
-//    rectHead(-1),
-//    triggeringExprNote(-1),
-//    selected(false),
-//    chordTopStep(-2),
-//    muted(false),
-//    head(Rectangle<float>()),
-//    timetoNextNote(-1),
-//    chordIndex(-1)
-//    {
-//    }
     
     NoteWithOffTime(int trk, double tStamp, int chan, int noteNum, float vel, double offT) :
-//    MidiMessage(msg),
-//    pRecordsWithEdits(NULL),
     track(trk),
+    indexInTrack(-1),
     timeStamp(tStamp),
+    originalTimeStamp(-1),
     channel(chan),
     noteNumber(noteNum),
     velocity(vel),
+    originalVelocity(vel),
     offTime(offT),
     scheduledOnTime(0),
     scheduledOffTime(0),
@@ -98,12 +66,14 @@ public:
     }
     
     NoteWithOffTime(NoteWithOffTime const &note) :
-//    MidiMessage(note),
     track(note.track),
+    indexInTrack(note.indexInTrack),
     timeStamp(note.timeStamp),
+    originalTimeStamp(note.originalTimeStamp),
     channel(note.channel),
     noteNumber(note.noteNumber),
     velocity(note.velocity),
+    originalVelocity(note.originalVelocity),
     offTime(note.offTime),
     scheduledOnTime(note.scheduledOnTime),
     scheduledOffTime(note.scheduledOffTime),
@@ -131,13 +101,14 @@ public:
     }
     
     NoteWithOffTime() :
-//    MidiMessage(),
-//    pRecordsWithEdits(NULL),
     track(0),
+    indexInTrack(-1),
     timeStamp(0.0),
+    originalTimeStamp(-1),
     channel(1),
     noteNumber(0),
     velocity(0),
+    originalVelocity(0),
     offTime(0),
     scheduledOnTime(0),
     scheduledOffTime(0),
@@ -192,61 +163,6 @@ public:
             return timeStamp<note2.timeStamp;
     }
     
-    
-//    void changeTimeStamp(double newTimeStamp)
-//    {
-//        pRecordsWithEdits->at(track).at(editedMessageIndex).setTimeStamp(newTimeStamp);
-//    }
-//    double getTimeStamp() const
-//    {
-//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getTimeStamp();
-//    }
-//    inline double getOriginalTimeStamp() const
-//    {
-//        return timeStamp;
-//    }
-//    void changeTimeStamp(double newTS)
-//    {
-//        timeStamp = newTS;
-//    }
-    
-//    void setOffTime(double newOffTime)
-//    {
-//        offTime = newOffTime;
-//    }
-//    double getOffTime()
-//    {
-//        return offTime;
-//    }
-
-//    void changeVelocity(float newVelocity)
-//    {
-////        pRecordsWithEdits->at(track).at(editedMessageIndex).setVelocity(newVelocity);
-//        velocity = newVelocity;
-//    }
-//    uint8 getVelocity() const
-//    {
-//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getVelocity();
-//    }
-//    float getFloatVelocity() const
-//    {
-//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getFloatVelocity();
-//    }
-    
-//    void changeNoteNumber(int newNewNoteNumber)
-//    {
-////        pRecordsWithEdits->at(track).at(editedMessageIndex).setNoteNumber(newNewNoteNumber);
-//        setNoteNumber(newNewNoteNumber);
-//    }
-//    int getNoteNumber() const
-//    {
-//        return pRecordsWithEdits->at(track).at(editedMessageIndex).getNoteNumber();
-//    }
-//    int getOriginalNoteNumber() const
-//    {
-//        return getNoteNumber();
-//    }
-    
     /*
      Overall behavior:
      - Chain is defined as a contiguous series of steps all with starting times separated by amount less than or equal to chainingInterval.
@@ -265,21 +181,14 @@ public:
      - Add a bool trill and int nextTrillStep properties to flag a trill step and indicate next step in this trill.  Use -1 to indicate last step.
      */
 //   Index to this note's editable entry in track in allNotes[tracks[ ]].
-    int indexInTrack;
-    void setIndexInTrack(int index)
-    {
-        indexInTrack = index;
-    }
-    MidiMessage getIndexInTrack()
-    {
-        return indexInTrack;
-    }
-    
     int track;
+    int indexInTrack; //Index to this note's entry in its track in midiFile
     double timeStamp;
+    double originalTimeStamp;
     int channel;
     int noteNumber;
     float velocity;
+    float originalVelocity;  //As loaded from file
     double offTime;
     double scheduledOnTime; // Starting time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.
     double scheduledOffTime; // Ending time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.

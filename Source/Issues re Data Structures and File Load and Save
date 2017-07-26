@@ -1,0 +1,24 @@
+Issues re Data Structures and File Load and Save
+
+- Is it Necessary to Recompute Chord Data When Tracks Are Enabled
+
+- Catalog where is loadSequence is called from, and the Parameters Used
+
+- Do we need a separate chord data array, or could it be combined into allNotes?
+
+- Do we need a separate array to hold original values or could we could we save pointers into the actual file tracks
+    - Have pointer in NWOT (noteWithOffTime) to index of entry in original track?
+    - What if notes are added?  Added notes have a null value for this pointer
+
+- Editing
+    - Enable editing of non-target notes
+    - Adjust timeStamp in the targetNotes list when a target note's time is changed
+    - Move entire chord when top note is moved
+    - Adjust all velocities when top note is changed?
+    - Add visual gauges for velocity and time when note is dragged
+    - Allow dragging on selection of notes
+    - Ability to drag time of chord member notes.  They remain in the chord but their offset is stored in the chord's data.
+
+- File saving
+    - Save chord notes at actual times but remember chord membership in sysex? or
+    - Save chord notes as simultaneous but remember chord note offsets in sysex?

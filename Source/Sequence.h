@@ -484,7 +484,9 @@ public:
         float floatVelocity; //8
     };
     
-    typedef struct ChordDetail {
+    class ChordDetail {
+        friend Sequence;
+        
         double timeStamp; //19        
         
 //        int nNotes; //9 char //Reconstuct from notes records?
@@ -499,21 +501,13 @@ public:
         String velParam; //10
         float  velRandAmplitude; //9
         unsigned int velRandSeed; //10
-    } chordDetail;
+    };
     
     Array<double> targetNoteTimes;
-    Array<OriginalNote> originalNotes;
+//    Array<OriginalNote> originalNotes;
     Array<ChordDetail> chords;
     std::map<uint64, unsigned> originalNoteIndex; //key is timestamp*10000000+noteNumber*100+track
-    
-    OriginalNote getOriginalNote(int step)
-    {
-        const uint64 key = theSequence[step]->timeStamp*10000000+
-        theSequence[step]->channel*1000+
-        theSequence[step]->noteNumber;
-        return originalNotes[originalNoteIndex[key]];
-    }
-    
+        
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;
     

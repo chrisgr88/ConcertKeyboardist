@@ -1527,6 +1527,9 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 {
                     fTime = std::max(0.0,timeStartDrag - (deltaX/10.0));
                     std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< fTime  <<  "\n";
+                    processor->sequenceObject.theSequence.at(hoverStep)->offTime =
+                        (processor->sequenceObject.theSequence.at(hoverStep)->offTime-
+                         processor->sequenceObject.theSequence.at(hoverStep)->timeStamp) + fTime;
                     processor->sequenceObject.theSequence.at(hoverStep)->timeStamp = fTime;
                 }
                 
