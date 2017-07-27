@@ -429,6 +429,42 @@ public:
         if (index>-1)
             sequenceObject.targetNoteTimes.remove(index);
     }
+    void changeNoteTime(int step, double time)
+    {
+        std::cout << "changeStepTime\n";
+        std::vector<NoteWithOffTime*> notesToChange;
+        const double delta = time-sequenceObject.theSequence.at(step)->timeStamp;
+        for (int i=0;i<sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers.size();i++)
+            notesToChange.push_back(sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers[i]);
+        const int nNotes = notesToChange.size();
+        if (nNotes==0)
+            notesToChange.push_back(sequenceObject.theSequence.at(step));
+        if (getNoteActivity(step))
+        {
+            setAsNonTargetNote(step);
+            for (int i=0;i<notesToChange.size();i++)
+            {
+                double timeStamp = notesToChange[i]->timeStamp;
+                double offTime = notesToChange[i]->offTime;
+                timeStamp += delta;
+                offTime += delta;
+                notesToChange[i]->timeStamp = timeStamp;
+                notesToChange[i]->offTime = offTime;
+            }
+            setAsTargetNote(step);
+        }
+        else
+        {
+            for (int i=0;i<notesToChange.size();i++)
+            {
+                notesToChange[i]->timeStamp = notesToChange[i]->timeStamp + delta;
+                notesToChange[i]->offTime = notesToChange[i]->offTime + delta;
+            }
+        }
+        sequenceObject.setChangedFlag(true);
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+            //        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp += delta;
+    }
     void setCopyOfSelectedNotes(Array<int> sel)
     {
         copyOfSelectedNotes = sel;

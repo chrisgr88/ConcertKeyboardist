@@ -150,11 +150,16 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     const double y = event.position.getY();
     if (draggingTime)
     {
-        draggingTime = false;
+        if (timeAfterDrag != -1)
+            processor->changeNoteTime(hoverStep, timeAfterDrag);
     }
     else if (draggingVelocity)
     {
-        draggingVelocity = false;
+        if (velocityAfterDrag != -1)
+        {
+            processor->sequenceObject.theSequence.at(hoverStep)->velocity = velocityAfterDrag;
+            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+        }
     }
     
     const double vert = (y - getTopMargin())/trackVerticalSize;
@@ -197,7 +202,8 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else if (hoveringOver == HOVER_NOTEBAR)
     {
-        if (processor->getNotesEditable() && hoverStep>=0) //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
+        //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
+        if (!draggingVelocity && !draggingTime && processor->getNotesEditable() && hoverStep>=0)
             startTimer(TIMER_TOGGLE_TARGET_NOTE, 1);
     }
     else if (hoveringOver==HOVER_ZEROTIMELINE || hoveringOver==HOVER_ZEROTIMEHANDLE) //Clicked on ZTL - make this the current time
@@ -209,6 +215,8 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else
         hoveringOver = HOVER_NONE;
+    draggingVelocity = false;
+    draggingTime = false;
     repaint();
 }
 void ScrollingNoteViewer::mouseDoubleClick (const MouseEvent& e)
@@ -1485,7 +1493,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     if (!selectedNotes.contains(newlySelectedNotes[i]))
                         displayedSelection.add(newlySelectedNotes[i]);
                 }
-                for (int i=0;i<selectedNotes.size();i++)
+                for     (int i=0;i<selectedNotes.size();i++)
                 {
                     if (!newlySelectedNotes.contains(selectedNotes[i]))
                         displayedSelection.add(selectedNotes[i]);
@@ -1503,52 +1511,52 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 float deltaY = noteEditAnchor.getY() - Desktop::getMousePosition().getY();
                 if (!draggingVelocity && !draggingTime)
                 {
+                    velocityAfterDrag = -1;
+                    timeAfterDrag = -1;
                     if (std::abs(deltaX)>std::abs(deltaY))
                     {
                         draggingTime = true;
                         timeStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->timeStamp;
                     }
-                    else
+                    else if (std::abs(deltaX)<std::abs(deltaY))
                     {
                         draggingVelocity = true;
                         velStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->velocity;
                     }
                 }
-                float fVel;
-                double fTime;
                 if (draggingVelocity)
                 {
-                    fVel = std::min(1.0,velStartDrag + (deltaY/5.0)/127.0);
-                    fVel = std::max(0.0f, fVel);
-                    std::cout << "fVel " << deltaY<<" "<<velStartDrag <<" "<< fVel  <<  "\n";
-                    processor->sequenceObject.theSequence.at(hoverStep)->velocity = fVel;
+                    velocityAfterDrag = std::min(1.0,velStartDrag + (deltaY/5.0)/127.0);
+                    velocityAfterDrag = std::max(0.0f, velocityAfterDrag);
+                    std::cout << "fVel " << deltaY<<" "<<velStartDrag <<" "<< velocityAfterDrag  <<  "\n";
                 }
                 else if (draggingTime)
                 {
-                    fTime = std::max(0.0,timeStartDrag - (deltaX/10.0));
-                    std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< fTime  <<  "\n";
-                    processor->sequenceObject.theSequence.at(hoverStep)->offTime =
-                        (processor->sequenceObject.theSequence.at(hoverStep)->offTime-
-                         processor->sequenceObject.theSequence.at(hoverStep)->timeStamp) + fTime;
-                    processor->sequenceObject.theSequence.at(hoverStep)->timeStamp = fTime;
+                    timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/10.0));
+                    std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< timeAfterDrag  <<  "\n";
                 }
-                
-//                if (fVel>1.0) fVel = 1.0;
-//                if (fVel<1.0/127.0) fVel = 1.0/127.0+0.001;
-//                processor->sequenceObject.theSequence.at(hoverStep).changeVelocity(fVel);
-//                std::cout
-//                << "step" << hoverStep
-//                <<  " getVelocity " << (int) processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity()
-////                <<  " delta X "<<deltaX
-////                <<  " delta Y "<<deltaY
-//                <<  " storedVel " << storedVel
-//                <<  " fVel " << fVel
-//                <<  " intVel " << std::round(fVel*127.0)
-////                <<  " startTick " << ts
-////                <<  " duration " << dur
-//                <<  "\n";
-                
+                else
+                    ;//No movement yet
             }
+//            else if (draggingTime)
+//            {
+//                
+////                if (fVel>1.0) fVel = 1.0;
+////                if (fVel<1.0/127.0) fVel = 1.0/127.0+0.001;
+////                processor->sequenceObject.theSequence.at(hoverStep).changeVelocity(fVel);
+////                std::cout
+////                << "step" << hoverStep
+////                <<  " getVelocity " << (int) processor->sequenceObject.theSequence.at(hoverStep).getFloatVelocity()
+//////                <<  " delta X "<<deltaX
+//////                <<  " delta Y "<<deltaY
+////                <<  " storedVel " << storedVel
+////                <<  " fVel " << fVel
+////                <<  " intVel " << std::round(fVel*127.0)
+//////                <<  " startTick " << ts
+//////                <<  " duration " << dur
+////                <<  "\n";
+//                
+//            }
         }
     }
 }

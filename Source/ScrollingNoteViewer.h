@@ -238,6 +238,8 @@ private:
     bool draggingTime;
     float velStartDrag;
     float timeStartDrag;
+    double timeAfterDrag;
+    float velocityAfterDrag;
     Point<int> selectionAnchor;
     Rectangle<int> selectionRect;
     Array<int> selectedNotes;

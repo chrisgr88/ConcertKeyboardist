@@ -471,26 +471,27 @@ public:
     
     //ChordVelTypes: Custom - "cust"; From Preset - "pres"; From Algorithm - "alg"
     //ChordTimeTypes Custom - "cust"; From Algorithm - "alg"
-    
-    class OriginalNote {
-        friend Sequence;
-        int indexOfChordDetail; //4
-        double timeStamp; //19
-        double timeOffset; //19
-        double duration; //19
-        int track; //10
-        int channel; //3
-        int noteNumber; //4
-        float floatVelocity; //8
-    };
+//    
+//    class OriginalNote {
+//        friend Sequence;
+//        int indexOfChordDetail; //4
+//        double timeStamp; //19
+//        double timeOffset; //19
+//        double duration; //19
+//        int track; //10
+//        int channel; //3
+//        int noteNumber; //4
+//        float floatVelocity; //8
+//    };
     
     class ChordDetail {
         friend Sequence;
         
-        double timeStamp; //19        
+    public:
+        double timeStamp; //19
         
 //        int nNotes; //9 char //Reconstuct from notes records?
-        Array<int> noteIndices; //Indices of chord's notes
+        Array<NoteWithOffTime*> notePointers; //Pointers to chord's notes
         
         String timeType; //3
         String timeParam; //10
@@ -504,10 +505,8 @@ public:
     };
     
     Array<double> targetNoteTimes;
-//    Array<OriginalNote> originalNotes;
-    Array<ChordDetail> chords;
-    std::map<uint64, unsigned> originalNoteIndex; //key is timestamp*10000000+noteNumber*100+track
-        
+    std::vector<ChordDetail> chords;
+    
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;
     

@@ -326,8 +326,6 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
         chords.clear();
-//        allNotes.clear();
-        originalNoteIndex.clear();
     }
     if (type==LoadType::loadFile)
     {
@@ -776,12 +774,10 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
             int uniqueNonChordIndicator = -1;
             for (int step=0; step<tempSeq.size();step++)
             {
-//                Array<OriginalNote> originalNotes;
                 thisChordTimeStamp = tempSeq[step]->timeStamp;
                 Array<NoteWithOffTime*> tempChordNotes;
                 while (step<tempSeq.size() && tempSeq[step]->timeStamp == thisChordTimeStamp)
                 {
-                    OriginalNote nt;
 //                    nt.indexOfChordDetail = chords.size();
 //                    nt.indexOfChordDetail = -1; //Mark as not in a chord for now
                     tempChordNotes.add(tempSeq[step]);
@@ -790,10 +786,9 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 step--;
                 
                 ChordDetail detail;
-                detail.noteIndices.clear();
+                detail.notePointers.clear();
                 for (int j=0;j<tempChordNotes.size();j++)
                 {
-//                    OriginalNote tempNote = tempChordNotes[j];
                     if (tempChordNotes.size()==1)
                         tempChordNotes[j]->chordIndex = uniqueNonChordIndicator--; //A negative id different for each non chord note
                     else
@@ -814,7 +809,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 if (tempChordNotes.size()>1)
                 {
                     detail.timeStamp = tempChordNotes[0]->timeStamp;
-                    chords.add(detail);
+                    detail.notePointers = tempChordNotes;
+                    chords.push_back(detail);
 //                    std::cout <<"\nNext chord: chordNum "<<chords.size()-1
 //                    <<" timeStamp " <<detail.timeStamp
 //                    << " nNotes "<< detail.noteIndices.size();
