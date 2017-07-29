@@ -330,14 +330,14 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
 //        std::cout << "Hover " << hoveringOver << "\n";
 }
 
-int ScrollingNoteViewer::addNote(bool playable, float x, float y,  float w, float h, float headWidth, float headHeight,
+int ScrollingNoteViewer::addNote(/*bool playable, */float x, float y,  float w, float h, float headWidth, float headHeight,
                                  Colour colHead, Colour colBar)
 {
     const float headY = y-(headHeight-h)/2.0;
     int id = addRectangle(x, y, w, h, colBar); //Bar
-    if (playable)
-        addRectangle(x, headY, headWidth, headHeight, colHead); //Header
-    else
+//    if (playable)
+//        addRectangle(x, headY, headWidth, headHeight, colHead); //Header
+//    else
         addRectangle(x, headY, headWidth, headHeight, colHead);
     return id;
 }
@@ -920,6 +920,9 @@ void ScrollingNoteViewer::makeNoteBars()
     }
     
     const double readHead = processor->getSequenceReadHead();
+    const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
+    const float headHeight =  h * headToBarHeightRatio;
+    Array<NoteBarDescription> deferredNoteBars; //Info to defer making active note bars until inactive ones are made
     //Note Bars
     for (int index = 0;index<static_cast<int>(sequence->size());index++)
     {
@@ -955,11 +958,10 @@ void ScrollingNoteViewer::makeNoteBars()
         else
             startPixelOfNextSameNote = sequence->at(indexOfNextSameNote)->timeStamp*pixelsPerTick;
         
-        const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
-        const float headHeight =  h * headToBarHeightRatio;
-        
         if (headWidth > startPixelOfNextSameNote-x)
             headWidth = std::max(minSpacing,startPixelOfNextSameNote-x-minSpacing);
+        if (headWidth<3.0f)
+            headWidth=3.0f;
 
         const float vel = sequence->at(index)->velocity;
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
@@ -970,13 +972,23 @@ void ScrollingNoteViewer::makeNoteBars()
         {
             if (processor->getNotesEditable() || sequence->at(index)->timeStamp>=readHead)
             {
-                sequence->at(index)->rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
-                                                        colourActiveNoteHead, vBasedNoteBar);
+//                sequence->at(index)->rectBar = addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,
+//                                                        colourActiveNoteHead, vBasedNoteBar);
+                NoteBarDescription nbd;
+                nbd.seqIndex = index;
+                nbd.x = x;
+                nbd.y = y-0.5;
+                nbd.w = w;
+                nbd.headWidth = headWidth;
+                nbd.headHeight = headHeight+1.0;
+                nbd.colHead = colourActiveNoteHead;
+                nbd.colBar = vBasedNoteBar;
+                deferredNoteBars.add(nbd);
 //                std::cout <<" Editable, colourActiveNoteHead, ";
             }
             else
             {
-                sequence->at(index)->rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                sequence->at(index)->rectBar = addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                       colourInactiveNoteHead, vBasedNoteBar);
 //                std::cout <<"           colourInactiveNoteHead, ";
                 
@@ -986,13 +998,13 @@ void ScrollingNoteViewer::makeNoteBars()
         {
             if (sequence->at(index)->chordTopStep==-1 && (processor->getNotesEditable()||sequence->at(index)->timeStamp>=readHead))
             {
-                sequence->at(index)->rectBar = addNote(false,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                sequence->at(index)->rectBar = addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                       colourInactiveNoteHead, vBasedNoteBar);
 //                std::cout <<" Editable, colourInactiveNoteHead, ";
             }
             else
             {
-                sequence->at(index)->rectBar = addNote(true,x, y, w, noteBarVerticalSize, headWidth, headHeight,
+                sequence->at(index)->rectBar = addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                       vBasedNoteBar, vBasedNoteBar);
 //                std::cout <<"           colourInactiveNoteHead, ";
 
@@ -1000,6 +1012,13 @@ void ScrollingNoteViewer::makeNoteBars()
         }
 //        std::cout << " rectHead index "<<sequence->at(index)->rectHead<<"\n";
         sequence->at(index)->rectHead = sequence->at(index)->rectBar + 1;
+    }
+    for (int i=0;i<deferredNoteBars.size();i++)
+    {
+        sequence->at(deferredNoteBars[i].seqIndex)->rectBar = addNote(deferredNoteBars[i].x, deferredNoteBars[i].y,
+                                               deferredNoteBars[i].w, noteBarVerticalSize,
+                                               deferredNoteBars[i].headWidth, deferredNoteBars[i].headHeight,
+                                               deferredNoteBars[i].colHead, deferredNoteBars[i].colBar);
     }
     
     //Sustain bars

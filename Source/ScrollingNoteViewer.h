@@ -83,7 +83,20 @@ public:
     int addLine(float x1, float y1, float x2, float y2, float w, Colour col);
 //    int addRectangle(float x, float y, float w, float h, float r, float g, float b);
 //    int addNote(bool playable, float x, float yy, float w, float hh, float r, float g, float b);
-    int addNote(bool playable, float x, float y,  float w, float h, float headWidth, float headHeight,
+    
+    struct NoteBarDescription
+    {
+        int seqIndex;
+        float x;
+        float y;
+        float w;
+        float h;
+        float headWidth;
+        float headHeight;
+        Colour colHead;
+        Colour colBar;
+    };
+    int addNote(/*bool playable, */float x, float y,  float w, float h, float headWidth, float headHeight,
                 Colour colHead, Colour colBar);
     void setRectanglePos(int rect, float x, float y, float w, float h);
     void createShaders();
