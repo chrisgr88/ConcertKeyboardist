@@ -32,6 +32,8 @@ public:
         bool active;
     } StepActivity;
     
+    std::vector<NoteWithOffTime*> theSequence;
+    
     bool loadedCkfFile;
     bool propertiesChanged = false;
     
@@ -447,8 +449,50 @@ public:
     std::vector<int> programChanges;
     bool areThereProgramChanges;
 
-    std::vector<NoteWithOffTime*> theSequence;
     std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
+    std::vector<std::vector<NoteWithOffTime>> unchangedAllNotes;
+    
+    bool compareTwoNotes(NoteWithOffTime note1, NoteWithOffTime note2)
+    {
+        bool result = true;
+        if(note1.track!=note2.track)
+            result = false;
+        if(note1.timeStamp!=note2.timeStamp)
+            result = false;
+        if(note1.channel!=note2.channel)
+            result = false;
+        if(note1.noteNumber!=note2.noteNumber)
+            result = false;
+        if(note1.originalVelocity!=note2.originalVelocity)
+            result = false;
+        if(note1.offTime!=note2.offTime)
+            result = false;
+        if(note1.indexInTrack!=note2.indexInTrack)
+            result = false;
+        return result;
+    }
+    
+    bool compareAllNotes(String location)
+    {
+        bool result = true;
+        int trk;int index;
+        for(trk=0;trk<allNotes.size();trk++)
+            for(index=0;index<allNotes[trk].size();index++)
+            {
+                if ( !compareTwoNotes(allNotes[trk][index],unchangedAllNotes[trk][index]) )
+                {
+                    result = false;
+                    break;
+                }
+                if (!result)
+                    break;
+            }
+        if (result)
+            std::cout << "At " <<location<<" compareTwoNotes succeeded"<<"\n";
+        else
+            std::cout << "At " <<location<<" compareTwoNotes failed on: track "<<trk<< " index "<<index<<"\n";
+        return result;
+    }
     
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;

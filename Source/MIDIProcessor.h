@@ -41,6 +41,8 @@ public:
     //==============================================================================
     void hiResTimerCallback() override;
     
+    Sequence sequenceObject;
+    
     void changeListenerCallback (ChangeBroadcaster* broadcaster) override;
     void timerCallback (int timerID) override;
     double getTempo ()
@@ -107,7 +109,7 @@ public:
     //enum LoadType {loadFile, reAnalyzeOnly};
     void buildSequenceAsOf(Sequence::LoadType type, Sequence::Retain retainEdits, double time)
     {
-        pauseGLRendering = true;
+        pauseGLRendering = true; 
         HighResolutionTimer::stopTimer();
         if (type==Sequence::loadFile)
             lastUserPlayedSeqStep=-1;
@@ -188,11 +190,6 @@ public:
 //        return pauseGLRendering;
     }
     
-    void updateActiveTracks()
-    {
-        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doNotRetainEdits, 0.0);
-    }
-    
     bool noteIsOn(int seqStep)
     {
         return onNotes.contains(seqStep);
@@ -247,8 +244,6 @@ public:
         sequenceObject.sequenceProps.setValue("minorVersion", var(99)); //That created this file
         sequenceObject.sequenceProps.setValue("buildNumber", var(99)); //That created this file
     }
-    
-    Sequence sequenceObject;
     
     bool resetViewer; //Used as flag to tell viewer in a change notification to reset itself
     
@@ -462,6 +457,7 @@ public:
             }
         }
         sequenceObject.setChangedFlag(true);
+        catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
             //        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp += delta;
     }

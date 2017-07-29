@@ -112,6 +112,7 @@ ApplicationProperties& getAppProperties();
 //            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
             if (0 <= hV && hV <= 1.0)
                 midiProcessor.sequenceObject.setChordVelocityHumanize(hV, false);
+            midiProcessor.catchUp();
             midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
         }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeTime")
@@ -120,6 +121,7 @@ ApplicationProperties& getAppProperties();
 //            std::cout << "Performing HumanizeStartTime " <<hT<<"\n";
             if (0 <= hT)
             {
+                midiProcessor.catchUp();
                 midiProcessor.sequenceObject.setChordTimeHumanize(hT, true);
                 midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
             }

@@ -317,7 +317,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
  <#loadSequence#>
  */
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
-void Sequence::loadSequence(LoadType type, Retain retainEdits)
+void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 {
     if (retainEdits == doNotRetainEdits)
     {
@@ -325,16 +325,16 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         chainingInterval = 12.0;
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
-        chords.clear();
-    }
-    if (type==LoadType::loadFile)
-    {
-//        chords.clear();
-        allNotes.clear();
+        if (loadFile==LoadType::loadFile)
+        {
+            //This is not a LoadType::reAnalyzeOnly so clear everything
+            chords.clear();
+            allNotes.clear();
+        }
     }
     setLoadingFile(true);
     
-    if (fileToLoad.getFileName().length() > 0 && type == Sequence::loadFile)
+    if (fileToLoad.getFileName().length() > 0 && loadFile == Sequence::loadFile)
     {
         if (!fileToLoad.exists()) {
             std::cout << "File " << fileToLoad.getFileName() << " does not exist.\n";
@@ -709,13 +709,15 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         sendChangeMessage(); //Is this needed?
         setChangedFlag (false);
         
-        if (true/*really reloading file*/) //Assemble allNotes[ ] [ ]
+        if (allNotes.size()==0) //Assemble allNotes[ ] [ ]
         {
             for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
             {
                 const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
                 const int numEvents = theTrack->getNumEvents();
                 allNotes.push_back(std::vector<NoteWithOffTime>());
+                unchangedAllNotes.push_back(std::vector<NoteWithOffTime>());
+                int noteCount=0;
                 for (int i=0;i<numEvents;i++)
                 {
                     if (theTrack->getEventPointer(i)->message.isNoteOn())
@@ -732,16 +734,27 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                         const double ts = msg.timeStamp;
                         msg.timeStamp= (96.0*ts/ppq);
                         msg.originalVelocity = msg.velocity;
+                        if (trkNumber==2 && noteCount==0)
+                            std::cout<< "set Velocity " <<msg.velocity <<"\n";
                         msg.originalTimeStamp= msg.timeStamp;
                         const double ot = 96.0*msg.offTime/ppq;
                         msg.offTime = ot;
                         msg.indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));
                         allNotes[trkNumber].push_back(msg);
+                        unchangedAllNotes[trkNumber].push_back(msg);
+                        noteCount++;
                     }
                 }
             }
         }
-        if (true) //chords.size()==0)
+        else
+        {
+            for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
+                for (int i=0;i<allNotes[trkNumber].size();i++)
+                    allNotes[trkNumber][i].restoreDefaults();
+        }
+                    
+        if (chords.size()==0)
         {
             std::vector<NoteWithOffTime*> tempSeq;
             for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
@@ -823,6 +836,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     }
 
     //End of reloading file ####################################################################################
+    compareAllNotes("End of reloading file");
     theSequence.clear();
     
 //      Transfer tracks to "theSequence"
@@ -840,25 +854,15 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
 //            << "\n";
             for (int i=0;i<numEvents;i++)
             {
-                if (true)//allNotes[trkNumber][i].isNoteOn())
-                {
-//                    NoteWithOffTime msg(trkNumber, theTrack->getEventPointer(i)->message, theTrack->getTimeOfMatchingKeyUp(i));
-//                    msg.track = trkNumber;
-//                    if (msg.offTime <= msg.timeStamp) //In a correct sequence this should not happen
-//                        msg.offTime = msg.timeStamp+50; //But if it does, turn it into a short note  with non neg duration
-//                    msg.setTimeStamp(96.0*msg.timeStamp/ppq);
-//                    msg.offTime = 96.0*msg.offTime/ppq;
-                    
-                    theSequence.push_back(&(allNotes[trkNumber][i]));
-//                    int stepNum = theSequence.size()-1;
-//                    std::cout << "msg.pRecordsWithEdits " <<   stepNum << " "<<
-//                    " "<< theSequence[stepNum].pRecordsWithEdits->size() <<"\n";;
-
-//                    std::cout <<theSequence.size()<< " Add note: Track, TimeStamp, NN " << msg.track  << ", "
-//                    << msg.timeStamp<< " " << msg.getNoteNumber() <<"\n";
-                }
+                theSequence.push_back(&(allNotes[trkNumber][i]));        
+                //                std::cout << "msg.pRecordsWithEdits " <<   stepNum << " "<<
+//                " "<< theSequence[stepNum].pRecordsWithEdits->size() <<"\n";;
+//
+//                std::cout <<theSequence.size()<< " Add note: Track, TimeStamp, NN " << msg.track  << ", "
+//                << msg.timeStamp<< " " << msg.getNoteNumber() <<"\n";
             }
         }
+//        std::cout << "At B theSequence.size "<<theSequence.size() <<"\n";
 
         //Controllers
         const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
@@ -906,7 +910,6 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
                 prevMsg = theSequence[step];
         }
         seqDurationInTicks = theSequence.back()->timeStamp; //We update this here so that it reflects currently active tracks
-        
         
 //        std::cout << "msg.pRecordsWithEdits " << 7 <<" "<< theSequence[7].getFloatVelocity() <<"\n";
 ////        theSequence[7].changeVelocity(0.90);
@@ -1075,10 +1078,8 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
         
 //        for (int i=0;i<chords.size();i++)
 //            std::cout << "Chord "<<i<<" "<<chords[i].timeStamp<<" "<<chords[i].nNotes<<"\n";
-        
         std::sort(theSequence.begin(), theSequence.end(), customCompare);
-//        
-//        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
+        //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
         if(targetNoteTimes.size()>0) //If loaded from ck file or previously created for midi file by chain ()
         {
             int firstInThisChain = 0;
@@ -1213,6 +1214,7 @@ void Sequence::loadSequence(LoadType type, Retain retainEdits)
     setLoadingFile(false);
 //    dumpData(0, 20, -1);
     //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
+    compareAllNotes("End of loadSequence");
 } //End of loadSequence
 
 SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)
@@ -1308,6 +1310,7 @@ void Sequence::dumpData(int start, int end, int nn)
     << " channel "
     << " nn "
     << " note "
+    << " vel "
     << " timeStamp "
     << " offTime "
     << " firstInChain "
@@ -1331,6 +1334,7 @@ void Sequence::dumpData(int start, int end, int nn)
             << theSequence[i]->channel <<" "
             << theSequence[i]->noteNumber <<" "
             << note<<" "
+            << std::round(theSequence[i]->velocity*127.0) <<" "
             << theSequence[i]->timeStamp<<" "
             << theSequence[i]->offTime<<" "
             << theSequence[i]->firstInChain<<" "

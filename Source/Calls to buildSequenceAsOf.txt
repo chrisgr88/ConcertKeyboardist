@@ -1,0 +1,36 @@
+Calls to buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time)
+ 	(Note that buildSequenceAsOf is the way loadSequence is always called)
+
+MainWindow.cpp
+	- At humanizeVel
+		buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead())
+	- At humanizeTime
+		midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
+MidiProcessor.cpp
+	- At changeListenerCallback () where (broadcaster == &sequenceObject)
+		buildSequenceAsOf(Sequence::loadFile, Sequence::doNotRetainEdits, 0.0)
+	- At addRemoveBookmark() when (action==BOOKMARK_ADD || action==BOOKMARK_TOGGLE)
+		buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getTimeInTicks());  <<<do we need this?>>>
+	- At addRemoveBookmark() at end (for all calls)
+		buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getTimeInTicks());
+MidiProcessor.h
+	- At updateActiveTracks ()
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doNotRetainEdits, 0.0)	
+    - At changeNoteTime ()
+     	buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+ScrollingNoteViewer
+	- At mouseUp () after draggingVelocity
+		processor->catchUp();
+        processor->sequenceObject.theSequence.at(hoverStep)->velocity = velocityAfterDrag;
+        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+	- At changeListenerCallback for changeMessageType == CHANGE_MESSAGE_UNDO 
+	    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+        makeKeyboard ();
+        makeNoteBars ();
+        repaint();
+TrackComponent.h
+	- At setPlayability ()
+		processor->buildSequenceAsOf(Sequence::loadFile, Sequence::doRetainEdits, processor->getTimeInTicks()); 
+ViewerFrame.cpp
+	- At fileDoubleClicked ()
+		processor->buildSequenceAsOf(Sequence::loadFile, Sequence::doNotRetainEdits, 0.0);

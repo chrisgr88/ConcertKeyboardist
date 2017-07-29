@@ -139,6 +139,33 @@ public:
     {
     };
     
+    void restoreDefaults()
+    {
+//        velocity=0;
+        scheduledOnTime=0;
+        scheduledOffTime=0;
+        adjustedVelocity=0.0f;
+        firstInChain=-1;
+        triggers=-1;
+        triggeredBy=-1;
+        chainTrigger=-1;
+        highestVelocityInChain=-1;
+        triggeredNote=false;
+        triggeredOffNote=false;
+        autoplayedNote=false;
+        noteOffNow=false;
+        sustaining=false;
+        rectBar=-1;
+        rectHead=-1;
+        triggeringExprNote=-1;
+        selected=false;
+        chordTopStep=-2;
+        muted=false;
+        head=Rectangle<float>();
+        timetoNextNote=-1;
+        chordIndex=-1;
+    }
+    
     void selectStep(bool sel)
     {
         selected = sel;
@@ -213,4 +240,5 @@ public:
     double timetoNextNote;
     int chordIndex;  //Index in chords[ ] of this note's chord, if any. This may change depending on which tracks are active.
 };
+
 #endif  // NOTEWITHOFFTIME_H_INCLUDED

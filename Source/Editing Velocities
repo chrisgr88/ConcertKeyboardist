@@ -1,0 +1,36 @@
+Editing Velocities
+	- allNotes contains
+		- velocity (editable by user & changable by chords)
+		- originalVelocity (same as originally loaded from file)
+
+	- User can change:
+		- Non chord notes
+			- Setting stored in allNotes velocity
+			- Retained across rebuilds & track changes
+			- Stored in main tracks of file
+			- Becomes the originalVelocity when file reopened
+		- Chord top (active) notes
+			- Persisted the same way as non chord notes
+		- Chord slave notes
+			- With voicing algorithm
+			- Manually
+
+Chord velocity goals
+	- User can change head note velocity and it adjusts the whole chord
+		- Slave note velocities are proportionally adjusted and stored in NWOT.velocity
+	- Relative velocities of slave notes to master are stored in the chord detail record?
+	- Adjusing velocity of a slave note	changes the relative velocity in the detail record and the actual NWOT.velocity
+	- What if notes in multiple tracks are in a chord and some tracks are inactive?
+		- The original master may not be present
+			- Pretend original master exists, calculate velocities for notes that are really present?
+			- or, Designate a temporary master
+			- However, In the playing engine there MUST be a designated master in a track that is really in theSequence
+		- There may be no slave notes
+
+Therefore we may need a different stored set of activeNotes and chord  definitions for each combination of tracks
+	- Or we need named snapshots with given active tracks, and each snapshot has its own definitions of active notes & chords
+	- But how to reconcile actual velocities (which are shared among all snapshots) that are stored in the file's midi tracks 
+
+
+
+Chord build process
