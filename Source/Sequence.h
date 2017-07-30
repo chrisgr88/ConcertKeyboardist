@@ -472,27 +472,27 @@ public:
         return result;
     }
     
-    bool compareAllNotes(String location)
-    {
-        bool result = true;
-        int trk;int index;
-        for(trk=0;trk<allNotes.size();trk++)
-            for(index=0;index<allNotes[trk].size();index++)
-            {
-                if ( !compareTwoNotes(allNotes[trk][index],unchangedAllNotes[trk][index]) )
-                {
-                    result = false;
-                    break;
-                }
-                if (!result)
-                    break;
-            }
-        if (result)
-            std::cout << "At " <<location<<" compareTwoNotes succeeded"<<"\n";
-        else
-            std::cout << "At " <<location<<" compareTwoNotes failed on: track "<<trk<< " index "<<index<<"\n";
-        return result;
-    }
+//    bool compareAllNotes(String location)
+//    {
+//        bool result = true;
+//        int trk;int index;
+//        for(trk=0;trk<allNotes.size();trk++)
+//            for(index=0;index<allNotes[trk].size();index++)
+//            {
+//                if ( !compareTwoNotes(allNotes[trk][index],unchangedAllNotes[trk][index]) )
+//                {
+//                    result = false;
+//                    break;
+//                }
+//                if (!result)
+//                    break;
+//            }
+//        if (result)
+//            std::cout << "At " <<location<<" compareTwoNotes succeeded"<<"\n";
+//        else
+//            std::cout << "At " <<location<<" compareTwoNotes failed on: track "<<trk<< " index "<<index<<"\n";
+//        return result;
+//    }
     
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;

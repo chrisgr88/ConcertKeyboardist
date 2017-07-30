@@ -747,12 +747,12 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 }
             }
         }
-        else
-        {
-            for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
-                for (int i=0;i<allNotes[trkNumber].size();i++)
-                    allNotes[trkNumber][i].restoreDefaults();
-        }
+//        else
+//        {
+//            for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
+//                for (int i=0;i<allNotes[trkNumber].size();i++)
+//                    allNotes[trkNumber][i].restoreDefaults();
+//        }
                     
         if (chords.size()==0)
         {
@@ -774,6 +774,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 }
             } customCompare;
             std::sort(tempSeq.begin(), tempSeq.end(), customCompare);
+            for (int step=0;step<theSequence.size();step++)
+                theSequence[step]->currentStep = step;
 //            for (int i=0;i<60;i++)
 //            {
 //                std::cout <<"all notes "
@@ -836,7 +838,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
     }
 
     //End of reloading file ####################################################################################
-    compareAllNotes("End of reloading file");
+//    compareAllNotes("End of reloading file");
     theSequence.clear();
     
 //      Transfer tracks to "theSequence"
@@ -909,11 +911,11 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             else
                 prevMsg = theSequence[step];
         }
+        for (int step=0;step<theSequence.size();step++)
+        {
+            theSequence[step]->currentStep = step;
+        }
         seqDurationInTicks = theSequence.back()->timeStamp; //We update this here so that it reflects currently active tracks
-        
-//        std::cout << "msg.pRecordsWithEdits " << 7 <<" "<< theSequence[7].getFloatVelocity() <<"\n";
-////        theSequence[7].changeVelocity(0.90);
-//        std::cout << "msg.pRecordsWithEdits " << 7 <<" "<< theSequence[7].getFloatVelocity() <<"\n";
         
         //Extract pedal changes
         String sustainPedalDirection = "";
@@ -980,9 +982,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             }
         }
         
-        //Humanize chord note start times and velocities
+        //###Humanize chord note start times and velocities
         double thisChordTimeStamp;
-        Array<int> chord;
+        std::vector<NoteWithOffTime*> chord;
+        int chordTopStep;
         for (int step=0; step<theSequence.size();step++)
         {
             int thisStepChordNoteIndex = theSequence[step]->chordIndex;
@@ -994,21 +997,27 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             else
                 nextStepChordNoteIndex = INT32_MAX;
         
-            chord.add(step);
+            chord.push_back(theSequence[step]);
+            if (chord.size()==1)
+                chordTopStep=step;
             if (thisStepChordNoteIndex != nextStepChordNoteIndex)
             {
-//                if (theSequence[step].timeStamp < 2000)
-//                    std::cout
-//                    << "add step " <<step
-//                    << " key " << key
-//                    << " index " << (chordIndex.find(key)==chordIndex.end())
-//                    << " nNotes " << chords[chordIndex[key]].nNotes
-//                    << "\n";
                 if (chord.size()>1)
                 {
-                    srand(step);
+                    struct {
+                        bool operator()(NoteWithOffTime* a, NoteWithOffTime* b) const
+                        {
+                            if (a->originalTimeStamp==b->originalTimeStamp)
+                                return a->noteNumber > b->noteNumber;
+                            else
+                                return a->timeStamp < b->timeStamp;
+                        }
+                    } customCompare2;
+                    std::sort(chord.begin(), chord.end(),customCompare2);
+                    
 //                    std::cout <<"Found chord " <<theSequence[step].timeStamp<<" "<< chord.size() <<"\n";
                     thisChordTimeStamp = theSequence[step]->originalTimeStamp;
+                    srand(thisChordTimeStamp);
                     
                     double timeToNextNote;
                     if (step<theSequence.size()-1)
@@ -1017,56 +1026,47 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         timeToNextNote = DBL_MAX;
                     double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
                     
-                    bool allSameVelocities = true;
-                    
-                    const float firstVelocity =  theSequence[chord[0]]->originalVelocity;
+                    const float firstVelocity =  chord[0]->originalVelocity;
                     for (int i=1; i<chord.size(); i++)
                     {
-                        theSequence[chord[i]]->chordTopStep = chord[0];
-                        if (theSequence[chord[i]]->velocity != firstVelocity)
-                            allSameVelocities = false;
-                        
+                        chord[i]->chordTopStep = chordTopStep;
                         const int temp = localTimeFuzz*100;
                         double randAdd;
                         unsigned r = rand();
-                        
                         if (temp==0)
                             randAdd = 0;
                         else
                             randAdd = r%temp/100.0;
-                        
-//                        int step =  chord[i];
-//                        theSequence[step]->timeStamp = (thisChordTimeStamp+randAdd);
+                                                chord[i]->timeStamp = (thisChordTimeStamp+randAdd);
                     }
                     if (/*allSameVelocities ||*/ reVoiceChords)
                     {
+                        const float topNoteVel = chord[0]->originalVelocity;
+                        const float userEditFactor = chord[0]->velocity/topNoteVel;
                         if (chord.size()==2)
                         {
-                            const float topNoteVel = theSequence[chord[0]]->originalVelocity;
-                            const float originalVel = theSequence[chord[1]]->originalVelocity;
+                            const float originalVel = chord[1]->originalVelocity;
                             const float ckVel = 0.7f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            theSequence[chord[1]]->velocity = proRatedVel;
+                            chord[1]->setVelocity(proRatedVel*userEditFactor);
                         }
                         else // (chord.size()>2)
                         {
-                            const float topNoteVel = theSequence[chord[0]]->originalVelocity;
                             for (int j=1;j<chord.size()-1;j++)
                             {
-                                const int step =  chord[j];
-                                const float originalVel = theSequence[step]->originalVelocity;
+                                const float originalVel = chord[j]->originalVelocity;
                                 const float ckVel = 0.6f * topNoteVel;
                                 const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                                theSequence[step]->velocity = proRatedVel;
+                                chord[j]->setVelocity(proRatedVel*userEditFactor);
                             }
-                            int step =  chord[chord.size()-1];
-                            const float originalVel = theSequence[step]->originalVelocity;
+//                            int step =  chord[chord.size()-1];
+                            const float originalVel = chord[chord.size()-1]->originalVelocity;
                             const float ckVel = 0.8f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            theSequence[step]->velocity = proRatedVel;
+                            chord[chord.size()-1]->setVelocity(proRatedVel*userEditFactor);
                         }
                     }
-                    theSequence[chord[0]]->chordTopStep=-1;
+                    chord[0]->chordTopStep=-1;
                 }
                 else
                     theSequence[step]->chordTopStep=-1;
@@ -1079,6 +1079,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //        for (int i=0;i<chords.size();i++)
 //            std::cout << "Chord "<<i<<" "<<chords[i].timeStamp<<" "<<chords[i].nNotes<<"\n";
         std::sort(theSequence.begin(), theSequence.end(), customCompare);
+        for (int step=0;step<theSequence.size();step++)
+            theSequence[step]->currentStep = step;
         //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
         if(targetNoteTimes.size()>0) //If loaded from ck file or previously created for midi file by chain ()
         {
@@ -1214,7 +1216,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
     setLoadingFile(false);
 //    dumpData(0, 20, -1);
     //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
-    compareAllNotes("End of loadSequence");
+//    compareAllNotes("End of loadSequence");
 } //End of loadSequence
 
 SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)

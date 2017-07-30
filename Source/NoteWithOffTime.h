@@ -43,6 +43,7 @@ public:
     scheduledOnTime(0),
     scheduledOffTime(0),
     adjustedVelocity(0.0f),
+    currentStep(-1),
     firstInChain(-1),
     triggers(-1),
     triggeredBy(-1),
@@ -78,6 +79,7 @@ public:
     scheduledOnTime(note.scheduledOnTime),
     scheduledOffTime(note.scheduledOffTime),
     adjustedVelocity(note.adjustedVelocity),
+    currentStep(note.currentStep),
     firstInChain(note.firstInChain),
     triggers(note.triggers),
     triggeredBy(note.triggeredBy),
@@ -113,6 +115,7 @@ public:
     scheduledOnTime(0),
     scheduledOffTime(0),
     adjustedVelocity(0.0f),
+    currentStep(-1),
     firstInChain(-1),
     triggers(-1),
     triggeredBy(-1),
@@ -139,32 +142,33 @@ public:
     {
     };
     
-    void restoreDefaults()
-    {
-//        velocity=0;
-        scheduledOnTime=0;
-        scheduledOffTime=0;
-        adjustedVelocity=0.0f;
-        firstInChain=-1;
-        triggers=-1;
-        triggeredBy=-1;
-        chainTrigger=-1;
-        highestVelocityInChain=-1;
-        triggeredNote=false;
-        triggeredOffNote=false;
-        autoplayedNote=false;
-        noteOffNow=false;
-        sustaining=false;
-        rectBar=-1;
-        rectHead=-1;
-        triggeringExprNote=-1;
-        selected=false;
-        chordTopStep=-2;
-        muted=false;
-        head=Rectangle<float>();
-        timetoNextNote=-1;
-        chordIndex=-1;
-    }
+//    void restoreDefaults()
+//    {
+////        velocity=0;
+//        scheduledOnTime=0;
+//        scheduledOffTime=0;
+//        adjustedVelocity=0.0f;
+//        currentStep=-1;
+//        firstInChain=-1;
+//        triggers=-1;
+//        triggeredBy=-1;
+//        chainTrigger=-1;
+//        highestVelocityInChain=-1;
+//        triggeredNote=false;
+//        triggeredOffNote=false;
+//        autoplayedNote=false;
+//        noteOffNow=false;
+//        sustaining=false;
+//        rectBar=-1;
+//        rectHead=-1;
+//        triggeringExprNote=-1;
+//        selected=false;
+//        chordTopStep=-2;
+//        muted=false;
+//        head=Rectangle<float>();
+//        timetoNextNote=-1;
+//        chordIndex=-1;
+//    }
     
     void selectStep(bool sel)
     {
@@ -178,6 +182,13 @@ public:
     {
         selected = !selected;
         return selected;
+    }
+    
+    inline void setVelocity(float vel)
+    {
+//        if (currentStep<15)
+//            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+        velocity = vel;
     }
     
     int getTrack() {return track;}
@@ -220,6 +231,7 @@ public:
     double scheduledOnTime; // Starting time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.
     double scheduledOffTime; // Ending time assigned to steps when they are turned on by the scheduler based on the original note's time stamp and off time, adusted by the actual timeInTicks that the chainTrigger is triggered by an expr note.
     float adjustedVelocity; //Computed at scheduling time.  May be based on the expr note velocity and secondary track vs primary track velocity.
+    int currentStep;
     int firstInChain; // First step in a chain.  A chain ends at the first step whose start time is more than chainingInterval from previous step's start time.  Steps in the score are sorted by timeStamp (and then in descending order of note number).  This means that all steps in a chain are contiguous in the score.  Every step has a firstInChain property including the firstInChain itself.
     int triggers; //The step that this note triggers.  Set to -1 if last in group.
     int triggeredBy; //The that step that directly triggers this note.  Set to -1 if first in group.
