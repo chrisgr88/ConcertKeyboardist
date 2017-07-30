@@ -557,8 +557,12 @@ ApplicationProperties& getAppProperties();
                 std::cout <<"decreaseTempo\n";
                 break;
             case CommandIDs::scoreSettings:
+                std::cout <<"tracksWindow\n";
                 showScoreSettings();
-                std::cout <<"scoreSettings\n";
+//                midiProcessor.sequenceObject->setChangedFlag(true);
+//                midiProcessor.sequenceObject.targetNoteTimes.clear();
+                midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+//                midiProcessor.buildSequenceAsOf(Sequence::loadFile, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
                 break;
             case CommandIDs::editUndo:
                 std::cout <<"editUndo\n";
