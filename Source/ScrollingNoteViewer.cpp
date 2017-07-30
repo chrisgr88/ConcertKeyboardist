@@ -681,11 +681,11 @@ void ScrollingNoteViewer::renderOpenGL()
             {
                 const int step = -(stepsThatChanged[j]+1);
 //                std::cout << "DeHighlight step " << step << "\n";
-                if (processor->sequenceObject.isPrimaryTrack(sequence->at(step)->track))
-                {
+//                if (processor->sequenceObject.isPrimaryTrack(sequence->at(step)->track))
+//                {
                     setRectangleColour(sequence->at(step)->rectHead, colourInactiveNoteHead);//Head
 //                    setRectangleColour(sequence->at(step).rectBar,  colourPrimaryNoteBar);//Bar
-                }
+//                }
             }
             else if (stepsThatChanged[j]>0) //It was an on
             {
@@ -1266,7 +1266,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             {
                 makeKeyboard ();
                 makeNoteBars ();
-//                clearSelectedNotes();
+                clearSelectedNotes();
                 sequenceChanged = true;
             }
             else

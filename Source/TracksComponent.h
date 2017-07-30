@@ -168,7 +168,7 @@ public:
             sequence->trackDetails.set(rowNum, trkDetail);
             sequence->setChangedFlag(true);
             processor->sequenceObject.targetNoteTimes.clear();
-            processor->buildSequenceAsOf(Sequence::loadFile, Sequence::doRetainEdits, processor->getTimeInTicks());
+            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
         }
     }
     

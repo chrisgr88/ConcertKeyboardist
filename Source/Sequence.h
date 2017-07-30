@@ -432,12 +432,12 @@ public:
         sequenceProps.setValue("pluginFile", value);
     }
     
-    bool inline isPrimaryTrack (int trk)
-    {
-//        std::cout << "trk, primaryTracks, isPrimary " << trk<<" "<<primaryTracks << " "<<(primaryTracks & (1 << trk)) << "\n";
-//        return primaryTracks & (1 << trk);
-        return (trackDetails[trk].playability == Track_Play);
-    }
+//    bool inline isPrimaryTrack (int trk)
+//    {
+////        std::cout << "trk, primaryTracks, isPrimary " << trk<<" "<<primaryTracks << " "<<(primaryTracks & (1 << trk)) << "\n";
+////        return primaryTracks & (1 << trk);
+//        return (trackDetails[trk].playability == Track_Play);
+//    }
     bool inline isActiveTrack (int trk)
     {
         return (trackDetails[trk].playability == Track_Play);

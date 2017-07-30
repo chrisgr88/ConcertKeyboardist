@@ -919,11 +919,11 @@ void MIDIProcessor::processBlock ()
                         availableNotes.add(noteIndex); //This is the triggering note
                         mostRecentNoteTime = theSequence->at(noteIndex)->timeStamp;
                         const double vel = theSequence->at(noteIndex)->velocity;
-                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex)->track))
-                        {
+//                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex)->track))
+//                        {
                             nPrimaryNotes++;
                             sumPrimaryVel += vel;
-                        }
+//                        }
                     }
                     else
                         skipProcessingTheseEvents = true;//std::cout << "Ignore noteOn" << "\n";
@@ -940,11 +940,11 @@ void MIDIProcessor::processBlock ()
                 while (triggeredStep < theSequence->size() && (triggeredStep != -1))
                 {
                     availableNotes.add(triggeredStep);
-                    if (sequenceObject.isPrimaryTrack(theSequence->at(triggeredStep)->track))
-                    {
+//                    if (sequenceObject.isPrimaryTrack(theSequence->at(triggeredStep)->track))
+//                    {
                         nPrimaryNotes++;
                         sumPrimaryVel += theSequence->at(triggeredStep)->velocity;
-                    }
+//                    }
                     triggeredStep = theSequence->at(triggeredStep)->triggers;
                 }
             }
