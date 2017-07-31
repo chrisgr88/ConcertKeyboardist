@@ -532,21 +532,15 @@ public:
         friend Sequence;
         
     public:
-        double timeStamp; //19
-        
-//        int nNotes; //9 char //Reconstuct from notes records?
-        Array<NoteWithOffTime*> notePointers; //Pointers to chord's notes
-        
-        String timeType; //3
-        String timeParam; //10
-        float  timeRandAmplitude; //9
+        double timeStamp; //20
+        String timeSpec; //20
+        float  timeRandAmplitude; //10
         unsigned int timeRandSeed; //10
-        
-        String velType; //3
-        String velParam; //10
-        float  velRandAmplitude; //9
+        String velSpec; //20
+        float  velRandAmplitude; //10
         unsigned int velRandSeed; //10
-    };
+        Array<NoteWithOffTime*> notePointers; //Pointers to chord's notes        
+    }; //100
     
     Array<double> targetNoteTimes;
     std::vector<ChordDetail> chords;

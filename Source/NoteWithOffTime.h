@@ -184,6 +184,13 @@ public:
         return selected;
     }
     
+    inline void setTimeStamp(double ts)
+    {
+        //        if (currentStep<15)
+        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+        timeStamp = ts;
+    }
+    
     inline void setVelocity(float vel)
     {
 //        if (currentStep<15)

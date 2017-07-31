@@ -1262,11 +1262,12 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
 //        std::cout << " ViewerCallback:  " <<  processor->changeMessageType <<"\n";
         if (processor->changeMessageType == CHANGE_MESSAGE_REWIND)
         {
-            if (processor->sequenceObject.fileToLoad != prevFileLoaded || processor->getTimeInTicks()==0)
+            if (processor->sequenceObject.fileToLoad != prevFileLoaded)
+                clearSelectedNotes();
+            if (processor->getTimeInTicks()==0)
             {
                 makeKeyboard ();
                 makeNoteBars ();
-                clearSelectedNotes();
                 sequenceChanged = true;
             }
             else

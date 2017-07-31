@@ -429,30 +429,42 @@ public:
         std::cout << "changeStepTime\n";
         std::vector<NoteWithOffTime*> notesToChange;
         const double delta = time-sequenceObject.theSequence.at(step)->timeStamp;
-        for (int i=0;i<sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers.size();i++)
-            notesToChange.push_back(sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers[i]);
+        const int thisChordIndex = sequenceObject.theSequence.at(step)->chordIndex;
+        if (thisChordIndex>=0) //If top note of a chord
+        {
+//            for (int i=0;i<sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers.size();i++)
+            for (int chordStep=step;
+                 chordStep<sequenceObject.theSequence.size()&&thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex;
+                 chordStep++)
+            {
+                if (thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex)
+                    notesToChange.push_back(sequenceObject.theSequence[chordStep]);
+            }
+        }
+//                notesToChange.push_back(sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers[i]);
+        
         const int nNotes = notesToChange.size();
         if (nNotes==0)
             notesToChange.push_back(sequenceObject.theSequence.at(step));
         if (getNoteActivity(step))
         {
-            setAsNonTargetNote(step);
+            setAsNonTargetNote(step); //Temporarily
             for (int i=0;i<notesToChange.size();i++)
             {
                 double timeStamp = notesToChange[i]->timeStamp;
                 double offTime = notesToChange[i]->offTime;
                 timeStamp += delta;
                 offTime += delta;
-                notesToChange[i]->timeStamp = timeStamp;
+                notesToChange[i]->setTimeStamp(timeStamp);
                 notesToChange[i]->offTime = offTime;
             }
-            setAsTargetNote(step);
+            setAsTargetNote(step); //Retore as target note
         }
         else
         {
             for (int i=0;i<notesToChange.size();i++)
             {
-                notesToChange[i]->timeStamp = notesToChange[i]->timeStamp + delta;
+                notesToChange[i]->setTimeStamp(notesToChange[i]->timeStamp + delta);
                 notesToChange[i]->offTime = notesToChange[i]->offTime + delta;
             }
         }

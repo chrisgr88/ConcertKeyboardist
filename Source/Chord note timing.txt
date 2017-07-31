@@ -1,0 +1,40 @@
+Chord note timing
+
+- A chord is
+	- a group of notes that was simultaneous (or nearly) when originally imported
+	- any notes close together in time that is defined to be a chord
+
+TimeStamps
+- note timeStamp
+- note originalTimeStamp
+- chord timeStamp
+
+Handle
+- Drag overall chord time
+- Compute timeStamps of individual notes relative to chord time
+- Handle sorts during rebuild
+
+- How to store note timeStamps
+
+- Chord notes stored from highest nn to lowest
+
+    class ChordDetail {
+        double timeStamp; //20
+        String timeSpec; //20
+        float  timeRandAmplitude; //10
+        unsigned int timeRandSeed; //10
+        String velSpec; //20
+        float  velRandAmplitude; //10
+        unsigned int velRandSeed; //10
+    }; //100
+
+    re. notePointers: 
+    	- Can we assume that chord notes are always contiguous and in the same order when sorted by timeStamp?
+    		- Yes, if we never allow a chord note to be changed not to be contiguous to other chord notes
+    		- Can restore note order by sorting contiguous notes in decending order by noteNumber
+    	- Then do we not need the notePointers array
+
+    Saving and retaining chord membership
+    	- Chord notes can have different timestamps when saved and normal midi message has no place to store a chord pointer
+    	- Therefore store each chord as a sysex of its ChordDetail followed by separate sysex's with each chord note's timestamp 
+    		- NoteDetail records could also store other note info, if any.  e.g. "Original" velocities?

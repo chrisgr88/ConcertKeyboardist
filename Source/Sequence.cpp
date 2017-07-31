@@ -1,4 +1,4 @@
-/*
+    /*
   ==============================================================================
 
     Sequence.cpp
@@ -224,9 +224,9 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     setChangedFlag(false);
 }
 
+//This is for when a plain midi file is loaded or when called from chain command
 Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double interval)
 {
-    std::cout<< "Chain called from chain command" << "\n";
     //If there was no selection, construct a selection array with all steps
     double startTime;
     double endTime;
@@ -870,18 +870,20 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
         if (theTrack!=NULL)
         {
+//            std::cout << "trkNumber " << trkNumber  << " numEvents " << theTrack->getNumEvents()<<"\n";
             for (int i=0;i<theTrack->getNumEvents();i++)
             {
                 if (theTrack->getEventPointer(i)->message.isController())
                 {
                     ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
                     theControllers.push_back(ctrMsg);
-    //                                    std::cout << "Add Controller: Step, Time " << i << ", " << ctrMsg.timeStamp
-    //                                    << " Track " << trkNumber
-    //                                    << " Channel " << ctrMsg.getChannel()
-    //                                    << " cc " << ctrMsg.getControllerNumber()
-    //                                    << " Value " << ctrMsg.getControllerValue()
-    //                                    <<"\n";
+//                    std::cout << "Add Controller: timeStamp " << ctrMsg.getTimeStamp()
+//                    << " Track " << trkNumber
+//                    << " Channel " << ctrMsg.getChannel()
+//                    << " cc " << ctrMsg.getControllerNumber()
+//                    << " cc " << ctrMsg.getControllerName(ctrMsg.getControllerNumber())
+//                    << " Value " << ctrMsg.getControllerValue()
+//                    <<"\n";
                 }
             }
         }
@@ -988,6 +990,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         int chordTopStep;
         for (int step=0; step<theSequence.size();step++)
         {
+            //All sequential notes with the same chordIndex are assumed to be part of this chord (if any)
             int thisStepChordNoteIndex = theSequence[step]->chordIndex;
             int nextStepChordNoteIndex;
             if (step+1<theSequence.size())
@@ -998,7 +1001,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 nextStepChordNoteIndex = INT32_MAX;
         
             chord.push_back(theSequence[step]);
-            if (chord.size()==1)
+            if (chord.size()==1)  //The first step is always the chord top
                 chordTopStep=step;
             if (thisStepChordNoteIndex != nextStepChordNoteIndex)
             {
@@ -1007,26 +1010,23 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     struct {
                         bool operator()(NoteWithOffTime* a, NoteWithOffTime* b) const
                         {
-                            if (a->originalTimeStamp==b->originalTimeStamp)
-                                return a->noteNumber > b->noteNumber;
-                            else
-                                return a->timeStamp < b->timeStamp;
+                            return a->noteNumber > b->noteNumber;
                         }
                     } customCompare2;
                     std::sort(chord.begin(), chord.end(),customCompare2);
                     
 //                    std::cout <<"Found chord " <<theSequence[step].timeStamp<<" "<< chord.size() <<"\n";
-                    thisChordTimeStamp = theSequence[step]->originalTimeStamp;
-                    srand(thisChordTimeStamp);
+                    thisChordTimeStamp = theSequence[chordTopStep]->timeStamp;
+                    //Rand seed based on thisStepChordNoteIndex different for all chords bot constant for a chord
+                    srand(thisStepChordNoteIndex);
                     
                     double timeToNextNote;
                     if (step<theSequence.size()-1)
-                        timeToNextNote = theSequence[step+1]->originalTimeStamp-thisChordTimeStamp;
+                        timeToNextNote = theSequence[step+1]->timeStamp-thisChordTimeStamp;
                     else
                         timeToNextNote = DBL_MAX;
                     double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
                     
-                    const float firstVelocity =  chord[0]->originalVelocity;
                     for (int i=1; i<chord.size(); i++)
                     {
                         chord[i]->chordTopStep = chordTopStep;
@@ -1037,9 +1037,9 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             randAdd = 0;
                         else
                             randAdd = r%temp/100.0;
-                                                chord[i]->timeStamp = (thisChordTimeStamp+randAdd);
+                        chord[i]->setTimeStamp(thisChordTimeStamp+randAdd);
                     }
-                    if (/*allSameVelocities ||*/ reVoiceChords)
+                    if (reVoiceChords)
                     {
                         const float topNoteVel = chord[0]->originalVelocity;
                         const float userEditFactor = chord[0]->velocity/topNoteVel;
