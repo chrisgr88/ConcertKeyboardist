@@ -450,7 +450,6 @@ public:
     bool areThereProgramChanges;
 
     std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
-    std::vector<std::vector<NoteWithOffTime>> unchangedAllNotes;
     
     bool compareTwoNotes(NoteWithOffTime note1, NoteWithOffTime note2)
     {
@@ -471,28 +470,6 @@ public:
             result = false;
         return result;
     }
-    
-//    bool compareAllNotes(String location)
-//    {
-//        bool result = true;
-//        int trk;int index;
-//        for(trk=0;trk<allNotes.size();trk++)
-//            for(index=0;index<allNotes[trk].size();index++)
-//            {
-//                if ( !compareTwoNotes(allNotes[trk][index],unchangedAllNotes[trk][index]) )
-//                {
-//                    result = false;
-//                    break;
-//                }
-//                if (!result)
-//                    break;
-//            }
-//        if (result)
-//            std::cout << "At " <<location<<" compareTwoNotes succeeded"<<"\n";
-//        else
-//            std::cout << "At " <<location<<" compareTwoNotes failed on: track "<<trk<< " index "<<index<<"\n";
-//        return result;
-//    }
     
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;
@@ -530,17 +507,24 @@ public:
     
     class ChordDetail {
         friend Sequence;
-        
+        ChordDetail( )
+        {
+            timeStamp=-1;
+            scaleFactor=1.0f;
+            timeSpec="TimeSpec"; timeRandScale=1.0f; timeRandSeed=1;
+            velSpec="VelSpec"; velRandScale=1.0f; velRandSeed=1;
+        }
     public:
         double timeStamp; //20
+        float scaleFactor; //10
         String timeSpec; //20
-        float  timeRandAmplitude; //10
+        float  timeRandScale; //10
         unsigned int timeRandSeed; //10
         String velSpec; //20
-        float  velRandAmplitude; //10
+        float  velRandScale; //10
         unsigned int velRandSeed; //10
         Array<NoteWithOffTime*> notePointers; //Pointers to chord's notes        
-    }; //100
+    }; //110
     
     Array<double> targetNoteTimes;
     std::vector<ChordDetail> chords;

@@ -83,21 +83,15 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     MidiMessageSequence  sysexSeq;
     sysexSeq.addEvent(sysex);
     
-    for (int i=0;i<props.size();i++)
+    for (int i=0;i<props.size();i++) //Save properties actually stored in props
     {
-        if (keys[i] != "chainSeg")
-        {
-            String propertyStr = keys[i]+":"+props[keys[i]];
-            int len = propertyStr.length();
-            char buffer[128];
-            propertyStr.copyToUTF8(buffer,128);
-            MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-            std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-            sysexSeq.addEvent(sysex);
-        }
-        else
-            std::cout << " Don't Write sysex property - "<< keys[i] << "\n";
-            
+        String propertyStr = keys[i]+":"+props[keys[i]];
+        int len = propertyStr.length();
+        char buffer[128];
+        propertyStr.copyToUTF8(buffer,128);
+        MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        sysexSeq.addEvent(sysex);
     }
     
     for (int i=0;i<targetNoteTimes.size();i++)
@@ -108,7 +102,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        td::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+//        td::cout << " Write sysex propertyStr - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
     
@@ -121,7 +115,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+//        std::cout << " Write sysex bookmark - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
     for (int track=0;track<trackDetails.size();track++)
@@ -134,51 +128,41 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+//        std::cout << " Write sysex trackDetails - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
-//    double timeStamp; //19
-//    
-//    int nNotes; //9 char //Reconstuct from notes records?
-//    Array<OriginalNote> notes; //Stored in separate OriginalNote records
-//    
-//    String timeType; //3
-//    String timeParam; //10
-//    float  timeRandAmplitude; //9
-//    unsigned int timeRandSeed; //10
-//    
-//    String velType; //3
-//    String velParam; //10
-//    float  velRandAmplitude; //9
-//    unsigned int velRandSeed; //10
-//    for (int i=0;i<chords.size();i++)
-//    {
-//        //Property "chordDetails"
-//        String propertyStr = String("chordDetails:")+String(chords[i].timeStamp) +
-//        +" "+chords[i].timeType +" "+chords[i].timeParam +" "+String(chords[i].timeRandAmplitude)+" "+String(chords[i].timeRandSeed)
-//        +" "+chords[i].velType+" "+chords[i].velParam+" "+String(chords[i].velRandAmplitude)+" "+String(chords[i].velRandSeed);
-//        int len = propertyStr.length();
-//        char buffer[128];
-//        propertyStr.copyToUTF8(buffer,128);
-//        MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-//        for (int note=0;note<chords[i].noteIndices.size();note++) //These store the original values for a chord note
-//        {
-//            String propertyStr = String("chordNote:")
-//            +String(originalNotes[i].timeStamp)+" "
-//            +String(originalNotes[i].duration)+" "
-//            +String(originalNotes[i].track)+" "
-//            +String(originalNotes[i].channel)+" "
-//            +String(originalNotes[i].noteNumber)+" "
-//            +String(originalNotes[i].floatVelocity);
-//            int len = propertyStr.length();
-//            char buffer[128];
-//            propertyStr.copyToUTF8(buffer,128);
-//            MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//            std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
-//        }
-//        sysexSeq.addEvent(sysex);
-//    }
+
+    for (int i=0;i<chords.size();i++)
+    {
+//        scaleFactor=1.0f;
+//        timeSpec="TimeSpec"; timeRandScale=1.0f; timeRandSeed=1;
+//        velSpec="VelSpec"; velRandScale=1.0f; velRandSeed=1;
+        //Property "chordDetails"
+        String propertyStr = String("chordDetails:")+String(chords[i].timeStamp) +" "+String(chords[i].scaleFactor)+
+        +" "+chords[i].timeSpec+" "+String(chords[i].timeRandScale)+" "+String(chords[i].timeRandSeed)
+        +" "+chords[i].velSpec+" "+String(chords[i].velRandScale)+" "+String(chords[i].velRandSeed);
+        int len = propertyStr.length();
+        char buffer[128];
+        propertyStr.copyToUTF8(buffer,128);
+        MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+        std::cout << " Write sysex chordDetails - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        sysexSeq.addEvent(sysex);
+        //Property "chNote" : The notes in this chord
+        for (int note=0;note<chords[i].notePointers.size();note++)
+        {
+            //A unique signature for the note at this exact timeStamp
+            String noteSig = String(chords[i].notePointers[note]->channel)+"/"+String(chords[i].notePointers[note]->noteNumber);
+            String propertyStr = String("chNote:")
+            +String(chords[i].notePointers[note]->timeStamp)+" "+noteSig+" "
+            +String(i); //Save chord number of this note
+            int len = propertyStr.length();
+            char buffer[128];
+            propertyStr.copyToUTF8(buffer,128);
+            MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+            std::cout << " Write sysex chNote - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+            sysexSeq.addEvent(sysex);
+        }
+    }
     //    std::cout << " Number of sysex records written - "<< seq->getNumEvents()<< "\n";
 
     int tracksToCopy = midiFile.getNumTracks();
@@ -663,7 +647,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     //                    std::cout <<"read forced nontarget note "<< value <<"\n";
                     targetNoteTimes.add(value.getDoubleValue());
                 }
-                else if (key == "chordDetails") //targetNoteTimes
+                else if (key == "chordDetails") //Each chord
                 {
 //                    StringArray values;
 //                    values.addTokens(value, " ", "\"");
@@ -674,30 +658,42 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //                    +" "+chords[i].velocityType +" "+String(chords[i].velocityRandomize)+" "+chords[i].velocityParam;
 //                    std::cout << "Loaded chord "<< values[0] <<" "<<values[1] << "\n";
                 }
+                else if (key == "chNote") //Each note that is a member of a chord
+                {
+                    //                    StringArray values;
+                    //                    values.addTokens(value, " ", "\"");
+                    
+                    //                    double chordTime = chords[i].timeStamp;
+                    //                    String propertyStr = String("chordDetails:")+String(chordTime) +
+                    //                    +" "+chords[i].timeType +" "+String(chords[i].timeRandomize)+" "+chords[i].timeParam
+                    //                    +" "+chords[i].velocityType +" "+String(chords[i].velocityRandomize)+" "+chords[i].velocityParam;
+                    //                    std::cout << "Loaded chord "<< values[0] <<" "<<values[1] << "\n";
+                }
                 else
                     sequenceProps.setValue(key, value);
             }
         }
         else //midi file
         {
-            sequenceProps.setValue("waitForFirstNote", var(true));
+            //Defaults for a new midi file
             sequenceProps.setValue("tempoMultiplier", var(1.0));
             sequenceProps.setValue("chordTimeHumanize", var(0.0));
             sequenceProps.setValue("chordVelocityHumanize", var(1.0));
-            sequenceProps.setValue("horizontalScale", var(1.0));
             sequenceProps.setValue("autoPlaySustains", var(true));
             sequenceProps.setValue("autoPlaySofts", var(true));
             sequenceProps.setValue("reVoiceChords", var(true));
-            sequenceProps.setValue("exprVelToOriginalValRatio", var(0.5));
+            sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
+            
+            sequenceProps.setValue("horizontalScale", var(1.0));
         }
+        //Get values from sequenceProps
+        setTempoMultiplier(sequenceProps.getDoubleValue("tempoMultiplier"), false);
+        chordTimeHumanize = sequenceProps.getDoubleValue("chordTimeHumanize", var(1.0));
+        chordVelocityHumanize = sequenceProps.getDoubleValue("chordVelocityHumanize", var(1.0));
         autoPlaySustains = sequenceProps.getBoolValue("autoPlaySustains", var(true));
         autoPlaySofts = sequenceProps.getBoolValue("autoPlaySofts", var(true));
         reVoiceChords = sequenceProps.getBoolValue("reVoiceChords", var(true));
-        waitForFirstNote = sequenceProps.getBoolValue("waitForFirstNote", var(true));
-        setTempoMultiplier(sequenceProps.getDoubleValue("tempoMultiplier"), false);
-        chordTimeHumanize = sequenceProps.getDoubleValue("chordTimeHumanize", var(2.0));
-        chordVelocityHumanize = sequenceProps.getDoubleValue("chordVelocityHumanize", var(1.0));
-        exprVelToScoreVelRatio = sequenceProps.getDoubleValue("exprVelToScoreVelRatio", var(0.5));
+        exprVelToScoreVelRatio = sequenceProps.getDoubleValue("exprVelToScoreVelRatio", var(1.0));
         
         StringPairArray props = sequenceProps.getAllProperties();
         StringArray keys = props.getAllKeys();
@@ -716,7 +712,6 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
                 const int numEvents = theTrack->getNumEvents();
                 allNotes.push_back(std::vector<NoteWithOffTime>());
-                unchangedAllNotes.push_back(std::vector<NoteWithOffTime>());
                 int noteCount=0;
                 for (int i=0;i<numEvents;i++)
                 {
@@ -741,97 +736,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         msg.offTime = ot;
                         msg.indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));
                         allNotes[trkNumber].push_back(msg);
-                        unchangedAllNotes[trkNumber].push_back(msg);
                         noteCount++;
                     }
-                }
-            }
-        }
-//        else
-//        {
-//            for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
-//                for (int i=0;i<allNotes[trkNumber].size();i++)
-//                    allNotes[trkNumber][i].restoreDefaults();
-//        }
-                    
-        if (chords.size()==0)
-        {
-            std::vector<NoteWithOffTime*> tempSeq;
-            for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
-            {
-                for (int i=0;i<allNotes[trkNumber].size();i++)
-                {
-                    tempSeq.push_back(&allNotes[trkNumber][i]);
-                }
-            }
-            struct {
-                bool operator()(NoteWithOffTime* a, NoteWithOffTime* b) const
-                {
-                    if (a->timeStamp==b->timeStamp)
-                        return a->noteNumber > b->noteNumber;
-                    else
-                        return a->timeStamp < b->timeStamp;
-                }
-            } customCompare;
-            std::sort(tempSeq.begin(), tempSeq.end(), customCompare);
-            for (int step=0;step<theSequence.size();step++)
-                theSequence[step]->currentStep = step;
-//            for (int i=0;i<60;i++)
-//            {
-//                std::cout <<"all notes "
-//                << " "<<tempSeq[i].track
-//                << " "<<tempSeq[i].timeStamp
-//                << " "<<tempSeq[i].getNoteNumber()
-//                << "\n";
-//            }
-            
-            double thisChordTimeStamp;
-            int uniqueNonChordIndicator = -1;
-            for (int step=0; step<tempSeq.size();step++)
-            {
-                thisChordTimeStamp = tempSeq[step]->timeStamp;
-                Array<NoteWithOffTime*> tempChordNotes;
-                while (step<tempSeq.size() && tempSeq[step]->timeStamp == thisChordTimeStamp)
-                {
-//                    nt.indexOfChordDetail = chords.size();
-//                    nt.indexOfChordDetail = -1; //Mark as not in a chord for now
-                    tempChordNotes.add(tempSeq[step]);
-                    step++;
-                }
-                step--;
-                
-                ChordDetail detail;
-                detail.notePointers.clear();
-                for (int j=0;j<tempChordNotes.size();j++)
-                {
-                    if (tempChordNotes.size()==1)
-                        tempChordNotes[j]->chordIndex = uniqueNonChordIndicator--; //A negative id different for each non chord note
-                    else
-                    {
-                        tempChordNotes[j]->chordIndex = chords.size();
-                    }
-//                    tempChordNotes.setUnchecked(j, tempChordNotes[j]);
-                    
-//                    std::cout <<"Next original note: index " << originalNotes.size()-1
-//                    << " key " << key
-//                    << " timeStamp " <<tempChordNotes[j].timeStamp
-//                    << " nChordNotes "<<tempChordNotes.size()
-//                    << " indexOfChordDetail " << tempChordNotes[j].indexOfChordDetail
-//                    <<"\n";
-//                    originalNoteIndex[key] = originalNotes.size()-1;
-                }
-
-                if (tempChordNotes.size()>1)
-                {
-                    detail.timeStamp = tempChordNotes[0]->timeStamp;
-                    detail.notePointers = tempChordNotes;
-                    chords.push_back(detail);
-//                    std::cout <<"\nNext chord: chordNum "<<chords.size()-1
-//                    <<" timeStamp " <<detail.timeStamp
-//                    << " nNotes "<< detail.noteIndices.size();
-//                    if (detail.noteIndices.size()>0)
-//                        std::cout << " firstIndex " << detail.noteIndices[0];
-//                    std::cout <<"\n\n";
                 }
             }
         }
@@ -870,7 +776,6 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
         if (theTrack!=NULL)
         {
-//            std::cout << "trkNumber " << trkNumber  << " numEvents " << theTrack->getNumEvents()<<"\n";
             for (int i=0;i<theTrack->getNumEvents();i++)
             {
                 if (theTrack->getEventPointer(i)->message.isController())
@@ -918,6 +823,91 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             theSequence[step]->currentStep = step;
         }
         seqDurationInTicks = theSequence.back()->timeStamp; //We update this here so that it reflects currently active tracks
+
+        //Build the chords list if it was not previously build or loaded from [ck] file
+        if (chords.size()==0)
+        {
+//            std::vector<NoteWithOffTime*> tempSeq;
+//            for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
+//            {
+//                for (int i=0;i<allNotes[trkNumber].size();i++)
+//                {
+//                    tempSeq.push_back(&allNotes[trkNumber][i]);
+//                    std::cout << " making tempSeq " <<trkNumber<<" "<<i
+//                    <<" pointer "<<tempSeq[tempSeq.size()-1]
+//                    <<" timeStamp "<<tempSeq[tempSeq.size()-1]->timeStamp
+//                    <<"\n";
+//                }
+//            }
+//            struct {
+//                bool operator()(NoteWithOffTime* a, NoteWithOffTime* b) const
+//                {
+//                    if (a->timeStamp==b->timeStamp)
+//                        return a->noteNumber > b->noteNumber;
+//                    else
+//                        return a->timeStamp < b->timeStamp;
+//                }
+//            } customCompare;
+//            std::sort(tempSeq.begin(), tempSeq.end(), customCompare);
+            //            for (int i=0;i<60;i++)
+            //            {
+            //                std::cout <<"all notes "
+            //                << " "<<tempSeq[i].track
+            //                << " "<<tempSeq[i].timeStamp
+            //                << " "<<tempSeq[i].getNoteNumber()
+            //                << "\n";
+            //            }
+            
+            double thisChordTimeStamp;
+            int uniqueNonChordIndicator = -1;
+            for (int step=0; step<theSequence.size();step++)
+            {
+                thisChordTimeStamp = theSequence[step]->timeStamp;
+                Array<NoteWithOffTime*> tempChordNotes;
+                while (step<theSequence.size() && theSequence[step]->timeStamp == thisChordTimeStamp)
+                {
+                    //                    nt.indexOfChordDetail = chords.size();
+                    //                    nt.indexOfChordDetail = -1; //Mark as not in a chord for now
+                    tempChordNotes.add(theSequence[step]);
+                    step++;
+                }
+                step--;
+                
+                ChordDetail detail;
+                detail.notePointers.clear();
+                for (int j=0;j<tempChordNotes.size();j++)
+                {
+                    if (tempChordNotes.size()==1)
+                        tempChordNotes[j]->chordIndex = uniqueNonChordIndicator--; //A negative id different for each non chord note
+                    else
+                    {
+                        tempChordNotes[j]->chordIndex = chords.size();
+                    }
+                    //                    tempChordNotes.setUnchecked(j, tempChordNotes[j]);
+                    
+                    //                    std::cout <<"Next original note: index " << originalNotes.size()-1
+                    //                    << " key " << key
+                    //                    << " timeStamp " <<tempChordNotes[j].timeStamp
+                    //                    << " nChordNotes "<<tempChordNotes.size()
+                    //                    << " indexOfChordDetail " << tempChordNotes[j].indexOfChordDetail
+                    //                    <<"\n";
+                    //                    originalNoteIndex[key] = originalNotes.size()-1;
+                }
+                
+                if (tempChordNotes.size()>1)
+                {
+                    detail.timeStamp = tempChordNotes[0]->timeStamp;
+                    detail.notePointers = tempChordNotes;
+                    chords.push_back(detail);
+                    //                    std::cout <<"\nNext chord: chordNum "<<chords.size()-1
+                    //                    <<" timeStamp " <<detail.timeStamp
+                    //                    << " nNotes "<< detail.noteIndices.size();
+                    //                    if (detail.noteIndices.size()>0)
+                    //                        std::cout << " firstIndex " << detail.noteIndices[0];
+                    //                    std::cout <<"\n\n";
+                }
+            }
+        }
         
         //Extract pedal changes
         String sustainPedalDirection = "";
