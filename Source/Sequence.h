@@ -32,7 +32,7 @@ public:
         bool active;
     } StepActivity;
     
-    std::vector<NoteWithOffTime*> theSequence;
+    std::vector<std::shared_ptr<NoteWithOffTime>> theSequence;
     
     bool loadedCkfFile;
     bool propertiesChanged = false;
@@ -180,9 +180,9 @@ public:
     {
         return timeSigChanges;
     }
-    inline std::vector<NoteWithOffTime*> *getSequence()
+    std::vector<std::shared_ptr<NoteWithOffTime>> &getSequence()
     {
-        return &theSequence;
+        return theSequence;
     }
     inline int getSize()
     {
@@ -449,7 +449,8 @@ public:
     std::vector<int> programChanges;
     bool areThereProgramChanges;
 
-    std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
+//    std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
+    std::vector<std::vector<std::shared_ptr<NoteWithOffTime>>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
     
     bool compareTwoNotes(NoteWithOffTime note1, NoteWithOffTime note2)
     {
@@ -519,15 +520,34 @@ public:
         float scaleFactor; //10
         String timeSpec; //20
         float  timeRandScale; //10
-        unsigned int timeRandSeed; //10
+        int timeRandSeed; //10
         String velSpec; //20
         float  velRandScale; //10
-        unsigned int velRandSeed; //10
-        Array<NoteWithOffTime*> notePointers; //Pointers to chord's notes        
+        int velRandSeed; //10
+        std::vector<std::shared_ptr<NoteWithOffTime>> notePointers; //Pointers to chord's notes
     }; //110
     
     Array<double> targetNoteTimes;
     std::vector<ChordDetail> chords;
+    std::vector<ChordDetail> testChords;
+    
+    //For each chord in the chords Array, find notes in theSequence with the same timeStamp
+    //Add them to the chord's notePointers array
+    //Also set each note's chordIndex to refer to this chord
+    //And give all non chord notes a different negative value for chordIndex
+    //We assume theSequence has been created and chords has been created or loaded from the file.  Both must be sorted by ascending timeStamp.
+    void syncChordsWithSequence()
+    {
+        int step=0;
+        for (int ch=0;ch<chords.size();ch++)
+        {
+            int negativeInt = -1;
+            while (step<theSequence.size() && theSequence[step]->timeStamp!=chords[ch].timeStamp)
+                theSequence[step++]->chordIndex = negativeInt--;
+            while (step<theSequence.size() && theSequence[step]->timeStamp==chords[ch].timeStamp)
+                theSequence[step++]->chordIndex = ch;
+        }
+    }
     
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;

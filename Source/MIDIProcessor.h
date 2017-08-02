@@ -427,12 +427,11 @@ public:
     void changeNoteTime(int step, double time)
     {
         std::cout << "changeStepTime\n";
-        std::vector<NoteWithOffTime*> notesToChange;
+        std::vector<std::shared_ptr<NoteWithOffTime>> notesToChange;
         const double delta = time-sequenceObject.theSequence.at(step)->timeStamp;
         const int thisChordIndex = sequenceObject.theSequence.at(step)->chordIndex;
         if (thisChordIndex>=0) //If top note of a chord
         {
-//            for (int i=0;i<sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers.size();i++)
             for (int chordStep=step;
                  chordStep<sequenceObject.theSequence.size()&&thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex;
                  chordStep++)
@@ -441,7 +440,6 @@ public:
                     notesToChange.push_back(sequenceObject.theSequence[chordStep]);
             }
         }
-//                notesToChange.push_back(sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].notePointers[i]);
         
         const int nNotes = notesToChange.size();
         if (nNotes==0)
@@ -468,10 +466,10 @@ public:
                 notesToChange[i]->offTime = notesToChange[i]->offTime + delta;
             }
         }
+        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp = notesToChange[0]->timeStamp;
         sequenceObject.setChangedFlag(true);
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
-            //        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp += delta;
     }
     void setCopyOfSelectedNotes(Array<int> sel)
     {
@@ -482,13 +480,12 @@ public:
     void setListenSequence(double startTime, double endTime, Array<int> tracks)
     {
         listenSequence.clear();
-        std::vector<NoteWithOffTime*> *theSequence = sequenceObject.getSequence();
-        for (int step=0; step<theSequence->size(); step++)
+        for (int step=0; step<sequenceObject.theSequence.size(); step++)
         {
-            if (startTime <= theSequence->at(step)->timeStamp && theSequence->at(step)->timeStamp<=endTime
-                && (tracks.size()==0||tracks.contains(theSequence->at(step)->getTrack())))
+            if (startTime <= sequenceObject.theSequence.at(step)->timeStamp && sequenceObject.theSequence.at(step)->timeStamp<=endTime
+                && (tracks.size()==0||tracks.contains(sequenceObject.theSequence.at(step)->getTrack())))
             {
-                NoteWithOffTime onMsg = *(theSequence->at(step));
+                NoteWithOffTime onMsg = *(sequenceObject.theSequence.at(step));
                 NoteWithOffTime offMsg = onMsg;
                 offMsg.timeStamp = (onMsg.offTime);
                 offMsg.velocity = (0);
