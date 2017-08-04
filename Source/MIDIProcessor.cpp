@@ -664,11 +664,18 @@ void MIDIProcessor::processBlock ()
             //Note offs for triggered notes
             if (sequenceObject.theSequence.at(step)->noteOffNow)
             {
-                MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,sequenceObject.theSequence.at(step)->noteNumber,(uint8) 0);
-                sendMidiMessage(noteOff);
-                sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber, sequenceObject.theSequence.at(step)->channel, false);
-                onNotes.remove(onNoteIndex);
-                deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by viewer
+//                MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,sequenceObject.theSequence.at(step)->noteNumber,(uint8) 0);
+//                sendMidiMessage(noteOff);
+//                sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber, sequenceObject.theSequence.at(step)->channel, false);
+//                onNotes.remove(onNoteIndex);
+//                deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by viewer
+                //60000.0*timeIncrement/(sequenceObject.getTempo(time)*sequenceObject.tempoMultiplier) =  96.0;
+                const double keyOverlapTimeMs = 100;
+                const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks))/96.0;
+                const double keyOverlapTimeTicks = keyOverlapTimeMs/msPerTick;
+                sequenceObject.theSequence.at(step)->noteOffNow = false;
+                sequenceObject.theSequence.at(step)->sustaining = true;
+                sequenceObject.theSequence.at(step)->scheduledOffTime = timeInTicks+keyOverlapTimeTicks;
             }
             else if ((sequenceObject.theSequence.at(step)->autoplayedNote || sequenceObject.theSequence.at(step)->sustaining) && sequenceObject.theSequence.at(step)->scheduledOffTime <= timeInTicks)
             {
