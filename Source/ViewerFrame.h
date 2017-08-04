@@ -76,7 +76,7 @@ public:
                     msg = MidiMessage::controllerEvent(1, 0x40, 127);
                 else
                     msg = MidiMessage::noteOn(1, 60+i, (uint8)127);
-                msg.setTimeStamp(99.0); //Value doesn't matter.
+                msg.setTimeStamp(99); //Value doesn't matter.
 //                if (msg.isNoteOn())
 //                    std::cout << "Kbd NoteOn " << (int)msg.getNoteNumber() << " " << (int)msg.getVelocity() << "\n";
 //                else
@@ -95,7 +95,7 @@ public:
                     msg = MidiMessage::controllerEvent(1, 64, 0);
                 else
                     msg = MidiMessage::noteOff(1, 60+i, (uint8)60);
-                msg.setTimeStamp(99.0);
+                msg.setTimeStamp(99);
 //                std::cout << "Kbd NoteOff " << (int)msg.getNoteNumber() << " " << (int)msg.getVelocity() << "\n";
                 msg.setChannel(16); //Channel 16 indicates notes from the computer keyboardk
                 processor->addMessageToQueue(msg);

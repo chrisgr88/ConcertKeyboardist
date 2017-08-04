@@ -34,7 +34,7 @@ public:
     track(trk),
     indexInTrack(-1),
     timeStamp(tStamp),
-    originalTimeStamp(-1),
+//    originalIndexInTrack(-1),
     channel(chan),
     noteNumber(noteNum),
     velocity(vel),
@@ -70,7 +70,7 @@ public:
     track(note.track),
     indexInTrack(note.indexInTrack),
     timeStamp(note.timeStamp),
-    originalTimeStamp(note.originalTimeStamp),
+//    originalIndexInTrack(note.originalIndexInTrack),
     channel(note.channel),
     noteNumber(note.noteNumber),
     velocity(note.velocity),
@@ -106,7 +106,7 @@ public:
     track(0),
     indexInTrack(-1),
     timeStamp(0.0),
-    originalTimeStamp(-1),
+//    originalIndexInTrack(-1),
     channel(1),
     noteNumber(0),
     velocity(0),
@@ -188,7 +188,14 @@ public:
     {
         //        if (currentStep<15)
         //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
-        timeStamp = ts;
+        timeStamp =  ts;
+    }
+    
+    inline double getTimeStamp()
+    {
+        //        if (currentStep<15)
+        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+        return timeStamp;
     }
     
     inline void setVelocity(float vel)
@@ -228,8 +235,8 @@ public:
 //   Index to this note's editable entry in track in allNotes[tracks[ ]].
     int track;
     int indexInTrack; //Index to this note's entry in its track in midiFile
-    double timeStamp;
-    double originalTimeStamp;
+    int timeStamp;
+//    int originalIndexInTrack;
     int channel;
     int noteNumber;
     float velocity;

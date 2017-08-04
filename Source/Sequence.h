@@ -452,25 +452,25 @@ public:
 //    std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
     std::vector<std::vector<std::shared_ptr<NoteWithOffTime>>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
     
-    bool compareTwoNotes(NoteWithOffTime note1, NoteWithOffTime note2)
-    {
-        bool result = true;
-        if(note1.track!=note2.track)
-            result = false;
-        if(note1.timeStamp!=note2.timeStamp)
-            result = false;
-        if(note1.channel!=note2.channel)
-            result = false;
-        if(note1.noteNumber!=note2.noteNumber)
-            result = false;
-        if(note1.originalVelocity!=note2.originalVelocity)
-            result = false;
-        if(note1.offTime!=note2.offTime)
-            result = false;
-        if(note1.indexInTrack!=note2.indexInTrack)
-            result = false;
-        return result;
-    }
+//    bool compareTwoNotes(NoteWithOffTime note1, NoteWithOffTime note2)
+//    {
+//        bool result = true;
+//        if(note1.track!=note2.track)
+//            result = false;
+//        if(note1.getTS!=note2.timeStamp)
+//            result = false;
+//        if(note1.channel!=note2.channel)
+//            result = false;
+//        if(note1.noteNumber!=note2.noteNumber)
+//            result = false;
+//        if(note1.originalVelocity!=note2.originalVelocity)
+//            result = false;
+//        if(note1.offTime!=note2.offTime)
+//            result = false;
+//        if(note1.indexInTrack!=note2.indexInTrack)
+//            result = false;
+//        return result;
+//    }
     
     std::vector<ControllerMessage> theControllers;
     std::vector<ControllerMessage> sustainPedalChanges;
@@ -493,19 +493,7 @@ public:
     
     //ChordVelTypes: Custom - "cust"; From Preset - "pres"; From Algorithm - "alg"
     //ChordTimeTypes Custom - "cust"; From Algorithm - "alg"
-//    
-//    class OriginalNote {
-//        friend Sequence;
-//        int indexOfChordDetail; //4
-//        double timeStamp; //19
-//        double timeOffset; //19
-//        double duration; //19
-//        int track; //10
-//        int channel; //3
-//        int noteNumber; //4
-//        float floatVelocity; //8
-//    };
-    
+
     class ChordDetail {
         friend Sequence;
         ChordDetail( )
@@ -516,7 +504,7 @@ public:
             velSpec="VelSpec"; velRandScale=1.0f; velRandSeed=1;
         }
     public:
-        double timeStamp; //20
+        int timeStamp; //20
         float scaleFactor; //10
         String timeSpec; //20
         float  timeRandScale; //10
@@ -525,29 +513,13 @@ public:
         float  velRandScale; //10
         int velRandSeed; //10
         std::vector<std::shared_ptr<NoteWithOffTime>> notePointers; //Pointers to chord's notes
+        std::vector<int> offsets; //Offsets from timeStamp of chord top note
+        std::vector<String> noteIds; //String(track)+"_"+String(channel)+"_"+String(noteNumber)
     }; //110
     
     Array<double> targetNoteTimes;
     std::vector<ChordDetail> chords;
     std::vector<ChordDetail> testChords;
-    
-    //For each chord in the chords Array, find notes in theSequence with the same timeStamp
-    //Add them to the chord's notePointers array
-    //Also set each note's chordIndex to refer to this chord
-    //And give all non chord notes a different negative value for chordIndex
-    //We assume theSequence has been created and chords has been created or loaded from the file.  Both must be sorted by ascending timeStamp.
-    void syncChordsWithSequence()
-    {
-        int step=0;
-        for (int ch=0;ch<chords.size();ch++)
-        {
-            int negativeInt = -1;
-            while (step<theSequence.size() && theSequence[step]->timeStamp!=chords[ch].timeStamp)
-                theSequence[step++]->chordIndex = negativeInt--;
-            while (step<theSequence.size() && theSequence[step]->timeStamp==chords[ch].timeStamp)
-                theSequence[step++]->chordIndex = ch;
-        }
-    }
     
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;
