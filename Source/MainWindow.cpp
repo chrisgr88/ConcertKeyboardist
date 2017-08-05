@@ -269,6 +269,10 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("ClearSelection", "Clear Selection", category, 0);
                 result.addDefaultKeypress (KeyPress::escapeKey, ModifierKeys::noModifiers);
                 break;
+            case CommandIDs::selectAll:
+                result.setInfo ("SelectAll", "SelectAll", category, 0);
+                result.addDefaultKeypress ('a', ModifierKeys::commandModifier);
+                break;
             case CommandIDs::toggleSelectedNotesActive:
                 result.setInfo ("toggleSelectedNotesActive", "toggleSelectedNotesActive", category, 0);
                 result.addDefaultKeypress ('t', ModifierKeys::noModifiers);
@@ -420,6 +424,7 @@ ApplicationProperties& getAppProperties();
             CommandIDs::editUndo,
             CommandIDs::editRedo,
             CommandIDs::clearSelection,
+            CommandIDs::selectAll,
             CommandIDs::toggleSelectedNotesActive,
             CommandIDs::setSelectedNotesActive,
             CommandIDs::setSelectedNotesInactive,
@@ -558,6 +563,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::scoreSettings:
                 std::cout <<"tracksWindow\n";
+                pViewerFrame->noteViewer.clearSelectedNotes();
                 showScoreSettings();
 //                midiProcessor.sequenceObject->setChangedFlag(true);
 //                midiProcessor.sequenceObject.targetNoteTimes.clear();
@@ -584,6 +590,11 @@ ApplicationProperties& getAppProperties();
                     midiProcessor.variableTempoRatio = 1.0;
                     
                 }
+                break;
+            case CommandIDs::selectAll:
+                std::cout <<"selectAll\n";
+                if (!midiProcessor.isPlaying)
+                    pViewerFrame->noteViewer.selectAll();
                 break;
             case CommandIDs::toggleSelectedNotesActive:
                 if (!midiProcessor.isPlaying)

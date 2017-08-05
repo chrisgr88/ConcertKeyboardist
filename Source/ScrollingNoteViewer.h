@@ -73,6 +73,7 @@ public:
     virtual void renderOpenGL() override;
     virtual void openGLContextClosing() override;
     CriticalSection glRenderLock;
+    CriticalSection mkNoteBars;
     
     Matrix3D<float> getProjectionMatrix(float horizScale, float vertScale) const;
     Matrix3D<float> getViewMatrix(float x) const;
@@ -218,6 +219,20 @@ public:
         selectedNotes.clear();
         displayedSelection.clear();
         newlySelectedNotes.clear();
+        processor->setCopyOfSelectedNotes(selectedNotes);
+        repaint();
+    }
+    void selectAll()
+    {
+        selectedNotes.clear();
+        displayedSelection.clear();
+        newlySelectedNotes.clear();
+        for (int step=0;step<processor->sequenceObject.theSequence.size();step++)
+        {
+//            if (processor->sequenceObject.isActiveTrack(processor->sequenceObject.theSequence[step]->track))
+            selectedNotes.add(step);
+            displayedSelection.add(step);
+        }
         processor->setCopyOfSelectedNotes(selectedNotes);
         repaint();
     }

@@ -29,6 +29,7 @@ namespace CommandIDs
     static const int editUndo                   = 0x40010;
     static const int editRedo                   = 0x40020;
     static const int clearSelection             = 0x40030;
+    static const int selectAll                  = 0x40032;
     static const int toggleSelectedNotesActive  = 0x41000;
     static const int setSelectedNotesActive     = 0x41001;
     static const int setSelectedNotesInactive   = 0x41002;

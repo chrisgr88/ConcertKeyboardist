@@ -946,12 +946,12 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     {
                         detail.timeStamp = detail.notePointers[0]->getTimeStamp();
                         chords.push_back(detail);
-                        std::cout <<"Next chord: chordNum "<<chords.size()-1
-                        <<" timeStamp " <<detail.timeStamp
-                        << " nNotes "<< detail.notePointers.size();
-                        if (detail.notePointers.size()>0)
-                            std::cout << " firstIndex " << detail.notePointers[0]->getTimeStamp();
-                        std::cout <<"\n";
+//                        std::cout <<"Next chord: chordNum "<<chords.size()-1
+//                        <<" timeStamp " <<detail.timeStamp
+//                        << " nNotes "<< detail.notePointers.size();
+//                        if (detail.notePointers.size()>0)
+//                            std::cout << " firstIndex " << detail.notePointers[0]->getTimeStamp();
+//                        std::cout <<"\n";
                     }
                 }
             }

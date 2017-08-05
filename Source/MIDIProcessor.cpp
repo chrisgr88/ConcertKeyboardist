@@ -670,12 +670,38 @@ void MIDIProcessor::processBlock ()
 //                onNotes.remove(onNoteIndex);
 //                deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by viewer
                 //60000.0*timeIncrement/(sequenceObject.getTempo(time)*sequenceObject.tempoMultiplier) =  96.0;
-                const double keyOverlapTimeMs = 100;
-                const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks))/96.0;
-                const double keyOverlapTimeTicks = keyOverlapTimeMs/msPerTick;
-                sequenceObject.theSequence.at(step)->noteOffNow = false;
-                sequenceObject.theSequence.at(step)->sustaining = true;
-                sequenceObject.theSequence.at(step)->scheduledOffTime = timeInTicks+keyOverlapTimeTicks;
+                int nextNoteOn = -1;
+                if (step<sequenceObject.theSequence.size())
+                {
+                    for (int st=step;st<sequenceObject.theSequence.size();st++)
+                    {
+                        if(sequenceObject.theSequence[st]->getTimeStamp()>sequenceObject.theSequence[step]->getTimeStamp())
+                        {
+                            nextNoteOn=st;
+                            break;
+                        }
+                    }
+                }
+                if (nextNoteOn==-1 || sequenceObject.theSequence[nextNoteOn]->getTimeStamp()>timeInTicks)
+                { //No need for legato so do noteoff now
+                    MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,sequenceObject.theSequence.at(step)->noteNumber,(uint8) 0);
+                    sendMidiMessage(noteOff);
+                    sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber, sequenceObject.theSequence.at(step)->channel, false);
+                    onNotes.remove(onNoteIndex);
+                    deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by viewer
+                }
+                else
+                { //Add a note overlap time to the current time and schedule the noteoff for then
+                    std::cout<<"delayed off at "<<step<<" nextNoteOn "<<nextNoteOn<<"\n";
+                    const double keyOverlapTimeMs = 100;
+                    const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks))/96.0;
+                    const double keyOverlapTimeTicks = keyOverlapTimeMs/msPerTick;
+                    sequenceObject.theSequence.at(step)->noteOffNow = false;
+                    sequenceObject.theSequence.at(step)->sustaining = true;
+                    const double newOffTime = timeInTicks+keyOverlapTimeTicks;
+                    if (newOffTime<sequenceObject.getSeqDurationInTicks())
+                        sequenceObject.theSequence.at(step)->scheduledOffTime = timeInTicks+keyOverlapTimeTicks;
+                }
             }
             else if ((sequenceObject.theSequence.at(step)->autoplayedNote || sequenceObject.theSequence.at(step)->sustaining) && sequenceObject.theSequence.at(step)->scheduledOffTime <= timeInTicks)
             {

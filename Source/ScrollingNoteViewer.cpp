@@ -240,6 +240,7 @@ void ScrollingNoteViewer::mouseDrag (const MouseEvent& event)
 void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel)
 {
     processor->leadLag = 0;
+    //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
     if (processor->isPlaying )
         processor->play(false,"current");
     float newShift = horizontalShift-300*wheel.deltaX;
@@ -288,7 +289,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
         {
             hoveringOver = HOVER_NOTETRACK;
             String note = MidiMessage::getMidiNoteName (nn, true, true, 3);
-            if (selectedNotes.size()>=1)
+            if (selectedNotes.size()>1)
             {
                 const double time1 = processor->sequenceObject.theSequence.at(selectedNotes[0])->getTimeStamp();
                 const double time2 = processor->sequenceObject.theSequence.at(selectedNotes.getLast())->getTimeStamp();
@@ -846,6 +847,7 @@ void ScrollingNoteViewer::makeKeyboard()
 //makeNoteBars (highlighted as of time of sequenceReadHead)
 void ScrollingNoteViewer::makeNoteBars()
 {
+    const ScopedLock myScopedLock (mkNoteBars);
 //    std::cout
 //    << "MNB: theSequence.size " << processor->sequenceObject.theSequence.size()
 //    << " first track " << processor->sequenceObject.theSequence[0]->track
