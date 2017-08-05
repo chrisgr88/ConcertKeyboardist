@@ -563,7 +563,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::scoreSettings:
                 std::cout <<"tracksWindow\n";
-                pViewerFrame->noteViewer.clearSelectedNotes();
+//                pViewerFrame->noteViewer.clearSelectedNotes();
                 showScoreSettings();
 //                midiProcessor.sequenceObject->setChangedFlag(true);
 //                midiProcessor.sequenceObject.targetNoteTimes.clear();
