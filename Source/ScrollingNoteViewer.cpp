@@ -1253,7 +1253,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
         
         if (draggingVelocity)
         {
-//            const float vel = processor->sequenceObject.theSequence[hoverStep]->velocity;
             const double graphHeight = 300.0-getTopMargin()-toolbarHeight;
             const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[hoverStep]->head;
             g.setColour (Colour(0xFFF0F0FF));
@@ -1266,7 +1265,16 @@ void ScrollingNoteViewer::paint (Graphics& g)
         }
         else if (draggingTime)
         {
-            
+            const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[hoverStep]->head;
+            g.setColour (Colour(0xFFF0F0FF));
+            const Rectangle<float> head = Rectangle<float>(
+                   (timeAfterDrag*pixelsPerTick)*horizontalScale+sequenceStartPixel+horizontalShift -
+                                                           processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                   (scaledHead.getY()-3.0f)*verticalScale,
+                   1.0f*horizontalScale,
+                   10.0f*verticalScale);
+            g.setColour (Colour(0xFFF0F0FF));
+            g.drawRect(head, 1.0);
         }
     }
 }
@@ -1589,8 +1597,9 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 }
                 else if (draggingTime)
                 {
-                    timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/10.0));
+                    timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/5.0));
 //                    std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< timeAfterDrag  <<  "\n";
+                    repaint();
                 }
                 else
                     ;//No movement yet
