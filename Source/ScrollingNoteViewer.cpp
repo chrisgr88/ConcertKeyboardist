@@ -1229,18 +1229,12 @@ void ScrollingNoteViewer::paint (Graphics& g)
     if (!processor->isPlaying)
     {
         g.setColour (Colours::whitesmoke);
-//        if (processor->undoMgr->inUndo)
-//        {
-//            selectedNotes.clear();
-//            displayedSelection.clear();
-//        }
         if (processor->undoMgr->inRedo)
         {
             std::cout << "paint inUndo   " << "\n";
             displayedSelection = processor->sequenceObject.undoneOrRedoneSteps;
             setSelectedNotes(processor->sequenceObject.undoneOrRedoneSteps);
             processor->undoMgr->inRedo = false;
-//            processor->inUndoRedo = false;
         }
         for (int i=0;i<displayedSelection.size();i++)
         {
@@ -1256,6 +1250,24 @@ void ScrollingNoteViewer::paint (Graphics& g)
         g.setColour (Colours::yellow);
         if (selecting)
             g.drawRect(selectionRect,2);
+        
+        if (draggingVelocity)
+        {
+//            const float vel = processor->sequenceObject.theSequence[hoverStep]->velocity;
+            const double graphHeight = 300.0-getTopMargin()-toolbarHeight;
+            const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[hoverStep]->head;
+            g.setColour (Colour(0xFFF0F0FF));
+            const Rectangle<float> head = Rectangle<float>(
+                   scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                   ((1.0-velocityAfterDrag) * graphHeight) * verticalScale   + toolbarHeight,
+                   10.0f*horizontalScale,
+                   1.0f*verticalScale);
+            g.drawRect(head, 1.0);
+        }
+        else if (draggingTime)
+        {
+            
+        }
     }
 }
 
@@ -1570,8 +1582,9 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 }
                 if (draggingVelocity)
                 {
-                    velocityAfterDrag = std::min(1.0,velStartDrag + (deltaY/5.0)/127.0);
-                    velocityAfterDrag = std::max(0.0f, velocityAfterDrag);
+                    velocityAfterDrag = std::min(1.0,velStartDrag + (deltaY/3.0)/127.0);
+                    velocityAfterDrag = std::max((float)(1.001/127.0), velocityAfterDrag); //No less than midi velocity 1
+                    repaint();
 //                    std::cout << "fVel " << deltaY<<" "<<velStartDrag <<" "<< velocityAfterDrag  <<  "\n";
                 }
                 else if (draggingTime)
