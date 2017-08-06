@@ -642,8 +642,8 @@ void MIDIProcessor::processBlock ()
     
     
     
-    //------------------------------------------------------------------
-    //Turn off onNotes that are due
+    //###------------------------------------------------------------------
+    //Turn off onNotes that are due to turn off
     if (onNotes.size()>0)
     {
 //        std::cout << onNotes.size() << " onNotes ";
@@ -751,7 +751,7 @@ void MIDIProcessor::processBlock ()
         }
     }
     
-    //Turn on scheduledNotes due to turn on
+    //###Turn on scheduledNotes due to turn on
     if (scheduledNotes.size() > 0)
     {
 //        std::cout << "noteOns: " <<timeInTicks;
@@ -876,7 +876,7 @@ void MIDIProcessor::processBlock ()
     
     //------------------------------------------------------------------
     //------------------------------------------------------------------
-    //Process next group of expr events.  Skip if none. <#Process next group of expr events#>
+    //###Process next group of expr events.  Skip if none. <#Process next group of expr events#>
     bool skipProcessingTheseEvents = false;
     for (int exprEventIndex=0;exprEventIndex<exprEvents.size();exprEventIndex++)
     {
@@ -1130,7 +1130,9 @@ void MIDIProcessor::processBlock ()
                 if (exprNoteThatStartedThisOnNote == exprEvents[exprEventIndex].getNoteNumber())
                 {
                     if (sequenceObject.theSequence.at(seqStep)->triggeredOffNote)
+                    {
                         sequenceObject.theSequence.at(seqStep)->noteOffNow = true;
+                    }
                     else
                         sequenceObject.theSequence.at(seqStep)->sustaining = true;
                 }

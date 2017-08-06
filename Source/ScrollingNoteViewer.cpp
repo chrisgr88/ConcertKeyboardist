@@ -49,6 +49,8 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     format.multisamplingLevel = 4;
     openGLContext.setPixelFormat(format);
     hoverStep = -1;
+    draggingTime = false;
+    draggingVelocity = false;
     
     setPaintingIsUnclipped(true);
     x = 0;

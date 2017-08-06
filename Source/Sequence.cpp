@@ -1246,9 +1246,12 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     i++;
                 }
                 theSequence[step]->triggeredOffNote = !shouldSustain;
+                theSequence[step]->autoplayedNote = false;
             }
             else
+            {
                 theSequence[step]->autoplayedNote = true;
+            }
         }
     }
     setLoadingFile(false);
