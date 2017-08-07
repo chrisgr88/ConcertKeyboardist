@@ -692,7 +692,7 @@ void MIDIProcessor::processBlock ()
                 }
                 else
                 { //Add a note overlap time to the current time and schedule the noteoff for then
-                    std::cout<<"delayed off at "<<step<<" nextNoteOn "<<nextNoteOn<<"\n";
+//                    std::cout<<"delayed off at "<<step<<" nextNoteOn "<<nextNoteOn<<"\n";
                     const double keyOverlapTimeMs = 100;
                     const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks))/96.0;
                     const double keyOverlapTimeTicks = keyOverlapTimeMs/msPerTick;

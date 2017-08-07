@@ -692,15 +692,6 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         chords[chordIndex].offsets.push_back(offset);
                         chords[chordIndex].noteIds.push_back(noteId);
                     }
-                    if (chords.size()<5)
-                        std::cout << "Chord note: chordIndex "<<chordIndex<<" offset "<<offset<<" ID "<<noteId<< "\n";
-                    //This will give us the chord's note timestamps, but after allNotes is constructed
-                    // we will have to scan it for notes with each timeStamp and add pointers to the notes
-                    // to the chords's notePointer vector.  Also set each note's chordIndex to refer to this chord.
-                    //The notePointer vector should be sorted from high to low note number (it will have been loaded in that order)
-//                    String propertyStr = String("chNote:")
-//                    +String(chords[i].notePointers[note]->getTimeStamp())+" "+noteSig+" "
-//                    +String(i); //Save chord number of this note
                 }
                 else
                     sequenceProps.setValue(key, value);
@@ -763,8 +754,6 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         const double ts = msg->getTimeStamp();
                         msg->setTimeStamp(96.0*ts/ppq);
                         msg->originalVelocity = msg->velocity;
-                        if (trkNumber==2 && noteCount==0)
-                            std::cout<< "set Velocity " <<msg->velocity <<"\n";
                         const double ot = 96.0*msg->offTime/ppq;
                         msg->offTime = ot;
                         msg->indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));

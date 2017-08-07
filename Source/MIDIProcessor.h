@@ -302,7 +302,6 @@ public:
     Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps) //Used only by Perform in undo
     {
         Array<Sequence::StepActivity> stepActivityList;
-        std::cout << "Target notes at A " <<sequenceObject.targetNoteTimes.size()<<"\n";
         if (setNotesActive==true)
         {
             for (int i=0;i<steps.size();i++)
@@ -346,7 +345,6 @@ public:
                 }
             }
         }
-        std::cout << "Target notes at B " <<sequenceObject.targetNoteTimes.size()<<"\n";
 
         if (undoMgr->inUndo || undoMgr->inRedo)
             setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
@@ -356,16 +354,12 @@ public:
             catchUp();
         }
 //        inUndoRedo = true;
-        std::cout << "Target notes at C " <<sequenceObject.targetNoteTimes.size()<<"\n";
         changeMessageType = CHANGE_MESSAGE_UNDO;
         sequenceObject.undoneOrRedoneSteps = steps;
         sendSynchronousChangeMessage(); //To viewer
-        std::cout << "Target notes at D " <<sequenceObject.targetNoteTimes.size()<<"\n";
         sequenceObject.targetNoteTimes.sort();
-        std::cout << "Target notes at E " <<sequenceObject.targetNoteTimes.size()<<"\n";
 //        for (int w=0;w<sequenceObject.targetNoteTimes.size()&&w<20;w++)
 //            std::cout << "tnt " <<sequenceObject.targetNoteTimes[w]<<"\n";
-        std::cout << "Target notes at F " <<sequenceObject.targetNoteTimes.size()<<"\n";
         return stepActivityList;
     }
     
@@ -438,7 +432,7 @@ public:
     }
     void changeNoteTime(int step, double time)
     {
-        std::cout << "changeNoteTime "<<step<<" "<< time<<"\n";
+//        std::cout << "changeNoteTime "<<step<<" "<< time<<"\n";
         std::vector<std::shared_ptr<NoteWithOffTime>> notesToChange;
         const double delta = time-sequenceObject.theSequence.at(step)->getTimeStamp();
         const int thisChordIndex = sequenceObject.theSequence.at(step)->chordIndex;
