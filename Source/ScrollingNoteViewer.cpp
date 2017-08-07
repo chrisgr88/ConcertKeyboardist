@@ -51,6 +51,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     hoverStep = -1;
     draggingTime = false;
     draggingVelocity = false;
+    draggingOffTime = false;
     
     setPaintingIsUnclipped(true);
     x = 0;
@@ -90,6 +91,7 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
 {
     draggingVelocity = false;
     draggingTime = false;
+    draggingOffTime = false;
     //We defer pickup of up the mouse position until drag actually starts because the mouseDown position is slightly
     //different from the first position returned in mouseDrag.
     newlySelectedNotes.clear();
@@ -163,6 +165,11 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             processor->sequenceObject.theSequence.at(hoverStep)->velocity = velocityAfterDrag;
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
         }
+    }
+    else if (draggingOffTime)
+    {
+        if (offTimeAfterDrag != -1)
+            processor->changeNoteOffTime(hoverStep, offTimeAfterDrag);
     }
     
     const double vert = (y - getTopMargin())/trackVerticalSize;
@@ -1253,25 +1260,38 @@ void ScrollingNoteViewer::paint (Graphics& g)
         if (selecting)
             g.drawRect(selectionRect,2);
         
-        if (draggingVelocity)
+        if (draggingVelocity && hoverStep>=0)
         {
+            std::cout << "draggingVelocity" << "\n";
             const double graphHeight = 300.0-getTopMargin()-toolbarHeight;
             const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[hoverStep]->head;
-            g.setColour (Colour(0xFFF0F0FF));
             const Rectangle<float> head = Rectangle<float>(
                    scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
                    ((1.0-velocityAfterDrag) * graphHeight) * verticalScale   + toolbarHeight,
                    10.0f*horizontalScale,
                    1.0f*verticalScale);
+            g.setColour (Colour(0xFFF0F0FF));
             g.drawRect(head, 1.0);
         }
-        else if (draggingTime)
+        else if (draggingTime && hoverStep>=0)
         {
+            std::cout << "draggingTime" << "\n";
             const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[hoverStep]->head;
-            g.setColour (Colour(0xFFF0F0FF));
             const Rectangle<float> head = Rectangle<float>(
                    (timeAfterDrag*pixelsPerTick)*horizontalScale+sequenceStartPixel+horizontalShift -
                                                            processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                   (scaledHead.getY()-3.0f)*verticalScale,
+                   1.0f*horizontalScale,
+                   10.0f*verticalScale);
+            g.setColour (Colour(0xFFF0F0FF));
+            g.drawRect(head, 1.0);
+        }
+        else if (draggingOffTime && hoverStep>=0)
+        {std::cout << "draggingOffTime" << "\n";
+            const Rectangle<float> scaledHead = processor->sequenceObject.theSequence[hoverStep]->head;
+            const Rectangle<float> head = Rectangle<float>(
+                   (offTimeAfterDrag*pixelsPerTick)*horizontalScale+sequenceStartPixel+horizontalShift -
+                   processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
                    (scaledHead.getY()-3.0f)*verticalScale,
                    1.0f*horizontalScale,
                    10.0f*verticalScale);
@@ -1575,14 +1595,23 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             {
                 float deltaX = noteEditAnchor.getX() - Desktop::getMousePosition().getX();
                 float deltaY = noteEditAnchor.getY() - Desktop::getMousePosition().getY();
-                if (!draggingVelocity && !draggingTime)
+                if (!draggingVelocity && !draggingTime && !draggingOffTime)
                 {
                     velocityAfterDrag = -1;
                     timeAfterDrag = -1;
+                    offTimeAfterDrag = -1;
                     if (std::abs(deltaX)>std::abs(deltaY))
                     {
-                        draggingTime = true;
+                        if (ModifierKeys::getCurrentModifiers().isCommandDown())
+                        {
+                            draggingOffTime = true;
+                        }
+                        else
+                        {
+                            draggingTime = true;
+                        }
                         timeStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->getTimeStamp();
+                        offTimeStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->offTime;
                     }
                     else if (std::abs(deltaX)<std::abs(deltaY))
                     {
@@ -1600,7 +1629,16 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 else if (draggingTime)
                 {
                     timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/5.0));
+                    timeAfterDrag = std::min(processor->sequenceObject.seqDurationInTicks, timeAfterDrag);
 //                    std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< timeAfterDrag  <<  "\n";
+                    repaint();
+                }
+                else if (draggingOffTime)
+                {
+                    offTimeAfterDrag = std::max(1.0,offTimeStartDrag - (deltaX/5.0));
+                    if (offTimeAfterDrag<timeStartDrag+1)
+                        offTimeAfterDrag = timeStartDrag+1;
+                    offTimeAfterDrag = std::min(processor->sequenceObject.seqDurationInTicks, offTimeAfterDrag);
                     repaint();
                 }
                 else

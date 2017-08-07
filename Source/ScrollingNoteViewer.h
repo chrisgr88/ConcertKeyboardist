@@ -264,10 +264,13 @@ private:
     bool selecting;
     bool draggingVelocity;
     bool draggingTime;
+    bool draggingOffTime;
     float velStartDrag;
     float timeStartDrag;
+    float offTimeStartDrag;
     double timeAfterDrag;
     float velocityAfterDrag;
+    double offTimeAfterDrag;
     Point<int> selectionAnchor;
     Rectangle<int> selectionRect;
     Array<int> selectedNotes;

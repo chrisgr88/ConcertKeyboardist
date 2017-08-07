@@ -483,6 +483,14 @@ public:
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
     }
+    void changeNoteOffTime(int step, double offTime)
+    {
+        std::cout << "changeStepOffTime\n";
+        sequenceObject.theSequence[step]->offTime = offTime;
+        sequenceObject.setChangedFlag(true);
+        catchUp();
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    }
     void setCopyOfSelectedNotes(Array<int> sel)
     {
         copyOfSelectedNotes = sel;
