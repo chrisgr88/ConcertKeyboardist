@@ -323,7 +323,6 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         {
             //This is not a LoadType::reAnalyzeOnly so clear everything
             chords.clear();
-            testChords.clear();
             allNotes.clear();
         }
     }
@@ -899,6 +898,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             theSequence[step]->setTimeStamp(noteTimeStamp);
                             chords[chIndex].notePointers.push_back(theSequence[step]);
                             theSequence[step]->chordIndex = chIndex;
+                            theSequence[step]->noteIndexInChord = ntIndex;
                         }
                     }
                 }
@@ -924,8 +924,9 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     
                     for (int j=0;j<detail.notePointers.size();j++)
                     {
+                        detail.notePointers[j]->noteIndexInChord = j; //Tell this note it's current index in the chord
                         //We mark every non chord note with a unique negative integer and every chord note with the index in chords[ ]  of its chord.
-                        if (detail.notePointers.size()==1)
+                        if (detail.notePointers.size()==1) //One note, so not a chord
                             detail.notePointers[j]->chordIndex = uniqueNonChordIndicator--; //A negative id different for each non chord note
                         else
                         {

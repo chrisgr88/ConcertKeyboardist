@@ -519,7 +519,7 @@ public:
     
     Array<double> targetNoteTimes;
     std::vector<ChordDetail> chords;
-    std::vector<ChordDetail> testChords;
+//    std::vector<ChordDetail> testChords;
     
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;

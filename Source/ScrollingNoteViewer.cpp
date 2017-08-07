@@ -1608,7 +1608,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                         }
                         else
                         {
-                            draggingTime = true;
+                            if (processor->sequenceObject.theSequence.at(hoverStep)->chordTopStep==-1)
+                                draggingTime = true;
                         }
                         timeStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->getTimeStamp();
                         offTimeStartDrag = processor->sequenceObject.theSequence.at(hoverStep)->offTime;
@@ -1630,7 +1631,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 {
                     timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/5.0));
                     timeAfterDrag = std::min(processor->sequenceObject.seqDurationInTicks, timeAfterDrag);
-//                    std::cout << "fTime " << deltaX<<" "<< timeStartDrag <<" "<< timeAfterDrag  <<  "\n";
+                    std::cout << "onTime, offTime " << timeAfterDrag <<" " << offTimeAfterDrag << "\n";
                     repaint();
                 }
                 else if (draggingOffTime)
@@ -1639,6 +1640,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     if (offTimeAfterDrag<timeStartDrag+1)
                         offTimeAfterDrag = timeStartDrag+1;
                     offTimeAfterDrag = std::min(processor->sequenceObject.seqDurationInTicks, offTimeAfterDrag);
+                    std::cout << "onTime, offTime " << timeAfterDrag <<" " << offTimeAfterDrag << "\n";
                     repaint();
                 }
                 else

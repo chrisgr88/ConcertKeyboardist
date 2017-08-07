@@ -438,18 +438,27 @@ public:
     }
     void changeNoteTime(int step, double time)
     {
-        std::cout << "changeStepTime\n";
+        std::cout << "changeNoteTime "<<step<<" "<< time<<"\n";
         std::vector<std::shared_ptr<NoteWithOffTime>> notesToChange;
         const double delta = time-sequenceObject.theSequence.at(step)->getTimeStamp();
         const int thisChordIndex = sequenceObject.theSequence.at(step)->chordIndex;
-        if (thisChordIndex>=0) //If top note of a chord
+        if (thisChordIndex>=0)
         {
-            for (int chordStep=step;
-                 chordStep<sequenceObject.theSequence.size()&&thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex;
-                 chordStep++)
+            if (sequenceObject.theSequence[step]->chordTopStep==-1) //If top note of a chord
             {
-                if (thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex)
-                    notesToChange.push_back(sequenceObject.theSequence[chordStep]);
+                for (int chordStep=step;
+                     chordStep<sequenceObject.theSequence.size()&&thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex;
+                     chordStep++)
+                {
+                    if (thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex)
+                        notesToChange.push_back(sequenceObject.theSequence[chordStep]);
+                }
+            }
+            else
+            {
+                const int ndx = sequenceObject.theSequence[step]->noteIndexInChord;
+                const int offset = time - sequenceObject.chords[sequenceObject.theSequence[step]->chordIndex].timeStamp;
+                sequenceObject.chords[sequenceObject.theSequence[step]->chordIndex].offsets[ndx] = offset;
             }
         }
         
@@ -478,14 +487,14 @@ public:
                 notesToChange[i]->offTime = notesToChange[i]->offTime + delta;
             }
         }
-        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp = notesToChange[0]->getTimeStamp();
+//        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp = notesToChange[0]->getTimeStamp();
         sequenceObject.setChangedFlag(true);
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
     }
     void changeNoteOffTime(int step, double offTime)
     {
-        std::cout << "changeStepOffTime\n";
+        std::cout << "changeNoteOffTime "<<step<<" "<< time<<"\n";
         sequenceObject.theSequence[step]->offTime = offTime;
         sequenceObject.setChangedFlag(true);
         catchUp();
