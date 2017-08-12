@@ -494,6 +494,37 @@ public:
         sequenceObject.loadingFile = false; //Starts processing
     }
     
+    void deletePedalChange(PedalType pType)
+    {
+        sequenceObject.loadingFile = true; //Stops processing
+//        if (copyOfSelectedNotes.size()<=1)
+//            return;
+        std::vector<Sequence::PedalMessage> *pedalChanges;
+        if (pType==sustPedal)
+            pedalChanges = &sequenceObject.sustainPedalChanges;
+        else if (pType==softPedal)
+            pedalChanges = &sequenceObject.softPedalChanges;
+        else
+            return;
+        
+        double currentZtlTime = timeInTicks-xInTicksFromViewer;
+        int deleteBar = -1;
+        for (int i=0;i<pedalChanges->size();i+=2)
+        {
+            if (pedalChanges->at(i).timeStamp < currentZtlTime && currentZtlTime <= pedalChanges->at(i+1).timeStamp)
+                deleteBar = i;
+        }
+        if (deleteBar!=-1)
+        {
+            const std::vector< Sequence::PedalMessage>::iterator iter1 = pedalChanges->begin() + deleteBar;
+            const std::vector< Sequence::PedalMessage>::iterator iter2 = pedalChanges->begin() + deleteBar+2;
+            pedalChanges->erase(iter1, iter2);
+            catchUp();
+            buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+        }
+        sequenceObject.loadingFile = false; //Starts processing
+    }
+    
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval)
     {
 //        std::cout << "chainCommand: interval = " <<inverval<<"\n";

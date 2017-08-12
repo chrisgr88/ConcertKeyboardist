@@ -177,7 +177,7 @@ private:
         //==============================================================================
         // Each type of item a toolbar can contain must be given a unique ID. These
         // are the ones we'll use in this demo.
-        enum DemoToolbarItemIds
+        enum ToolbarItemIds
         {
             doc_open        = 1,
             doc_save        = 2,
@@ -202,7 +202,9 @@ private:
             humVelocityBox  = 21,
             humTimeBox      = 22,
             _addSustain      = 23,
-            _addSoft      = 24
+            _addSoft        = 24,
+            _deleteSustain   = 25,
+            _deleteSoft      = 26
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -227,6 +229,8 @@ private:
             ids.add (_chain);
             ids.add (_addSustain);
             ids.add (_addSoft);
+            ids.add (_deleteSustain);
+            ids.add (_deleteSoft);
             ids.add (_humanizeVel);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
@@ -307,7 +311,9 @@ private:
             ids.add (humTimeBox);
             ids.add (separatorBarId);
             ids.add (_addSustain);
+            ids.add (_deleteSustain);
             ids.add (_addSoft);
+            ids.add (_deleteSoft);
             ids.add (flexibleSpacerId);
         }
         
@@ -326,7 +332,9 @@ private:
                     
                 case _chain:        return createButtonFromZipFileSVG (itemId, "Chain", "chain.svg");
                 case _addSustain: return createButtonFromZipFileSVG (itemId, "AddSustain", "addSustain.svg");
+                case _deleteSustain: return createButtonFromZipFileSVG (itemId, "DeleteSustain", "deleteSustain.svg");
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "AddSoft", "addSoft.svg");
+                case _deleteSoft: return createButtonFromZipFileSVG (itemId, "DeleteSoft", "deleteSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "HumanizeStartTimes", "humanizeStartTimes.svg");
                 case _humanizeVel: return createButtonFromZipFileSVG (itemId, "HumanizeVelocities.svg", "humanizeVelocities.svg");
                     

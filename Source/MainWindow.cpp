@@ -130,9 +130,17 @@ ApplicationProperties& getAppProperties();
         {
             midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
         }
+        else if (message == "deleteSustain")
+        {
+            midiProcessor.deletePedalChange(MIDIProcessor::sustPedal);
+        }
         else if (message == "addSoft")
         {
             midiProcessor.addPedalChange(MIDIProcessor::softPedal);
+        }
+        else if (message == "deleteSoft")
+        {
+            midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
         }
     }
     

@@ -29,31 +29,31 @@ factory(this)
     for (int i=0; i<toolbar.getNumItems(); i++)
     {
         int id = toolbar.getItemId(i);
-        if (id == DemoToolbarItemFactory::DemoToolbarItemIds::chainAmountBox)
+        if (id == DemoToolbarItemFactory::ToolbarItemIds::chainAmountBox)
         {
             pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
             pChainAmountBox->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pChainAmountBox->textBox.setText("12");
             chainAmount = 12.0;
         }
-        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::tempoMultiplier)
+        else if (id == DemoToolbarItemFactory::ToolbarItemIds::tempoMultiplier)
             pTempoMultiplier = (DemoToolbarItemFactory::TempoMultiplier *) toolbar.getItemComponent(i);
-        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::realTimeTempo)
+        else if (id == DemoToolbarItemFactory::ToolbarItemIds::realTimeTempo)
         {
             pRealTimeTempo = (DemoToolbarItemFactory::RealTimeTempo *) toolbar.getItemComponent(i);
             pRealTimeTempo->numberBox.setFont (Font (19.00f, Font::bold));
             pRealTimeTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).brighter());
         }
-        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::scoreTempo)
+        else if (id == DemoToolbarItemFactory::ToolbarItemIds::scoreTempo)
             pScoreTempo = (DemoToolbarItemFactory::ScoreTempo *) toolbar.getItemComponent(i);
-        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::humTimeBox)
+        else if (id == DemoToolbarItemFactory::ToolbarItemIds::humTimeBox)
         {
             pHumanizeStartTime = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("3");
             humanizeTimeAmount = 3.0;
         }
-        else if (id == DemoToolbarItemFactory::DemoToolbarItemIds::humVelocityBox)
+        else if (id == DemoToolbarItemFactory::ToolbarItemIds::humVelocityBox)
         {
             pHumanizeVelocity = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
             pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
@@ -220,57 +220,67 @@ void ViewerFrame::buttonClicked (Button* button)
 //    CommandIDs::previousBookmark,
 //    CommandIDs::nextBookmark
     
-    if (DemoToolbarItemFactory::DemoToolbarItemIds::doc_open == id)
+    if (DemoToolbarItemFactory::ToolbarItemIds::doc_open == id)
         sendActionMessage("fileOpen");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::doc_save == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::doc_save == id)
         sendActionMessage("fileSave");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::doc_saveAs == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
         sendActionMessage("fileSaveAs");
     
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::edit_undo == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::edit_undo == id)
         sendActionMessage("editUndo");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::edit_redo == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::edit_redo == id)
         sendActionMessage("editRedo");
     
     
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_play == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_play == id)
         sendActionMessage("play");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_stop == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_stop == id)
         sendActionMessage("pause");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_rewind == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_rewind == id)
         sendActionMessage("rewind");
     
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_listen == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_listen == id)
         sendActionMessage("listenToSelection");
     
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeActive == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_makeActive == id)
         sendActionMessage("setSelectedNotesActive");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_makeInactive == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_makeInactive == id)
         sendActionMessage("setSelectedNotesInactive");
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_chain == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_chain == id)
     {
         chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
         sendActionMessage("chain:"+String(chainAmount));
     }
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_humanizeTime == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
     {
         humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
         sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
     }
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_humanizeVel == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_humanizeVel == id)
     {
         humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
         sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
     }
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_addSustain == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_addSustain == id)
     {
         std::cout << "addSustain\n";
         sendActionMessage("addSustain");
     }
-    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_addSoft == id)
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_deleteSustain == id)
+    {
+        std::cout << "deleteSustain\n";
+        sendActionMessage("deleteSustain");
+    }
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_addSoft == id)
     {
         std::cout << "addSoft\n";
         sendActionMessage("addSoft");
+    }
+    else if(DemoToolbarItemFactory::ToolbarItemIds::_deleteSoft == id)
+    {
+        std::cout << "deleteSoft\n";
+        sendActionMessage("deleteSoft");
     }
     unfocusAllComponents();
 }
