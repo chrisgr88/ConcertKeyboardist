@@ -126,6 +126,14 @@ ApplicationProperties& getAppProperties();
                 midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
             }
         }
+        else if (message == "addSustain")
+        {
+            midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
+        }
+        else if (message == "addSoft")
+        {
+            midiProcessor.addPedalChange(MIDIProcessor::softPedal);
+        }
     }
     
     bool MainWindow::keyPressed (const KeyPress& key, Component* originatingComponent)

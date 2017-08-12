@@ -73,6 +73,7 @@ public:
     virtual void renderOpenGL() override;
     virtual void openGLContextClosing() override;
     CriticalSection glRenderLock;
+    std::atomic_bool rebuidingGLBuffer;
     CriticalSection mkNoteBars;
     
     Matrix3D<float> getProjectionMatrix(float horizScale, float vertScale) const;
@@ -121,6 +122,7 @@ public:
 #define TIMER_MOUSE_HOLD 2
 #define TIMER_MOUSE_DRAG 3
 #define TIMER_REPAINT_SELECTION 4
+#define TIMER_MOUSE_UP 5
     Point<int> curDragPosition;
     
     void timerCallback (int timerID) override;
@@ -262,9 +264,11 @@ private:
     bool zoomDragStarting;
     bool zoomOrScrollDragging;
     bool selecting;
-    bool draggingVelocity;
+    bool draggingVelocity; //Dragging on one note head
+    bool drawingVelocity; //Dragging on background to set multiple notes velocities
     bool draggingTime;
     bool draggingOffTime;
+//    bool showVelocityIndicator; //If true, the velocity tick mark indicator of the hoverStep is to be painted
     float velStartDrag;
     float timeStartDrag;
     float offTimeStartDrag;
@@ -283,6 +287,7 @@ private:
     float preDragScale;
     float preDragHorizShift;
     float preDragXinTicks;
+    float mouseXinTicks;
     Point<float> mouseBeforeDrag;
     int hoverStep; //Step over which mouse pointer hovers.  -1 if none.
     String hoverInfo;

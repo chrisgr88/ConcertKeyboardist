@@ -472,9 +472,21 @@ public:
 //        return result;
 //    }
     
+    class PedalMessage
+    {
+    public:
+        PedalMessage (double time, bool on)
+        {
+//            std::cout<< "Make pedal message "<<time <<" "<< on <<"\n";
+            timeStamp = time;
+            pedalOn = on;
+        }
+        double timeStamp;
+        bool pedalOn;
+    };
     std::vector<ControllerMessage> theControllers;
-    std::vector<ControllerMessage> sustainPedalChanges;
-    std::vector<ControllerMessage> softPedalChanges;
+    std::vector<PedalMessage> sustainPedalChanges;
+    std::vector<PedalMessage> softPedalChanges;
     File scoreFile;  //This is just used by the file name display in the UI because it must be changed on save
     int numerator, denominator;
 //    double timeIncrement; //Amount to increase time at each tick, based on ppq of 96.  Adjusted based on actual ppq of this midi file.

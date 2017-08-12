@@ -363,6 +363,137 @@ public:
         return stepActivityList;
     }
     
+    enum PedalType {sustPedal, softPedal};
+    void addPedalChange(PedalType pType)
+    {
+        sequenceObject.loadingFile = true; //Stops processing
+        if (copyOfSelectedNotes.size()<=1)
+            return;
+        std::vector<Sequence::PedalMessage> *pedalChanges;
+        if (pType==sustPedal)
+            pedalChanges = &sequenceObject.sustainPedalChanges;
+        else if (pType==softPedal)
+            pedalChanges = &sequenceObject.softPedalChanges;
+        else
+            return;
+        
+        double newStart = sequenceObject.theSequence[copyOfSelectedNotes.getFirst()]->getTimeStamp();
+        double newEnd = sequenceObject.theSequence[copyOfSelectedNotes.getLast()]->getTimeStamp();
+        if (pedalChanges->size()==0)
+        {
+            Sequence::PedalMessage onMsg = Sequence::PedalMessage(newStart,true);
+            Sequence::PedalMessage offMsg = Sequence::PedalMessage(newEnd+1, false);
+            pedalChanges->push_back(onMsg);
+            pedalChanges->push_back(offMsg);
+            catchUp();
+            buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+            return;
+        }
+        
+//        std::cout << " add sustain: newStart, newEnd " <<newStart<<" "<<newEnd<< "\n";
+//        MidiMessageSequence seq;
+        for (int i=0; i<pedalChanges->size() ;i+=2)
+        {
+//            if (i>10) break;
+            double thisStart = pedalChanges->at(i).timeStamp;
+            double thisEnd = pedalChanges->at(i+1).timeStamp;
+//            std::cout << i/2 <<" thisStart, thisEnd "<<thisStart<<" "<<thisEnd<< "\n";
+            if (newEnd<=thisStart) //==new entirely before 'this'
+            {
+                //Do nothing
+//                 std::cout << i/2 <<" "<<" ==new entirely before 'this' " <<"\n";
+            }
+            else if (newStart<=thisStart && (thisStart<=newEnd && newEnd<=thisEnd) ) //new partly before 'this
+            {
+                //Chop off the start of 'this' after the end of 'new'
+//                std::cout << i/2 <<" "<< " ==new partly before 'this' " <<"\n";
+                pedalChanges->at(i).timeStamp = newEnd+3.0;
+            }
+            else if ((thisStart<=newStart && newStart<=thisEnd) && thisEnd<=newEnd) //new partly after 'this'
+            {
+                //Chop off the end of 'this' before the start of 'new'
+//                std::cout << i/2 <<" "<< " ==new partly after 'this' " <<"\n";
+                pedalChanges->at(i+1).timeStamp = newStart-3.0;
+            }
+            else if (thisEnd<=newStart) //new entirely after 'this'
+            {
+                //Do nothing
+//                std::cout << i/2 <<" "<< " ==new entirely after 'this' " <<"\n";
+            }
+            else if (newStart<=thisStart && thisEnd<=newEnd) //new surrounds 'this'
+            {
+                //Delete all of 'this'
+//                std::cout << i/2 <<" "<< " ==new surrounds 'this' " << "\n";
+                pedalChanges->at(i).timeStamp = DBL_MAX; //To be flushed out later
+                pedalChanges->at(i+1).timeStamp = DBL_MAX; //To be flushed out later
+            }
+            else if (thisStart<=newStart && newEnd<=thisEnd) //'this' surrounds new
+            {
+                //Treat same as "new partly after 'this'" i.e. Chop off the part of 'this' after the end of 'new'
+//                std::cout << i/2 <<" "<< " =='this' surrounds new " << "\n";
+                pedalChanges->at(i+1).timeStamp = newStart-3.0;
+            }
+        }
+        for (int i=pedalChanges->size()-1; 0<=i ;i--) //Delete those marked for deletion above
+        {
+            if (pedalChanges->at(i).timeStamp == DBL_MAX)
+                pedalChanges->erase(pedalChanges->begin() + i);
+        }
+        if (pedalChanges->back().timeStamp<newStart) //Add at end of list
+        {
+            Sequence::PedalMessage onMsg = Sequence::PedalMessage(newStart,true);
+            Sequence::PedalMessage offMsg = Sequence::PedalMessage(newEnd+1, false);
+            if (offMsg.timeStamp>sequenceObject.seqDurationInTicks)
+                offMsg.timeStamp = sequenceObject.seqDurationInTicks;
+            pedalChanges->push_back(onMsg);
+            pedalChanges->push_back(offMsg);
+        }
+        else //Find place in list
+        {
+            for (int i=0; i<pedalChanges->size() ;i++)
+            {
+                if (pedalChanges->at(i).timeStamp>newStart)
+                {
+                    std::vector< Sequence::PedalMessage>::iterator iter;
+                    Sequence::PedalMessage onMsg = Sequence::PedalMessage(newStart,true);
+                    Sequence::PedalMessage offMsg = Sequence::PedalMessage(newEnd+1, false);
+                    iter = pedalChanges->begin() + i;
+                    pedalChanges->insert(iter, offMsg);
+                    iter = pedalChanges->begin() + i;
+                    pedalChanges->insert(iter, onMsg);
+                    break;
+                }
+            }
+        }
+//        std::cout << " nSusts "<<pedalChanges->size()/2<< "\n";
+//        for (int i=0; i<pedalChanges->size() ;i+=2)
+//        {
+//            std::cout << " Before: onTS "<<pedalChanges->at(i).timeStamp
+//            << " offTS "<<pedalChanges->at(i+1).timeStamp
+//            << "\n";
+//        }
+        for (int i=pedalChanges->size()-1; 0<=i ;i-=2) //Delete very short sustains
+        {
+            const double sustDuration = (pedalChanges->at(i).timeStamp - /*The sust-off*/
+                                         pedalChanges->at(i-1).timeStamp) /*The sust-on*/;
+            if (sustDuration <= 10)
+            {
+                const std::vector< Sequence::PedalMessage>::iterator iter1 = pedalChanges->begin() + i - 2;
+                const std::vector< Sequence::PedalMessage>::iterator iter2 = pedalChanges->begin() + i;
+                pedalChanges->erase(iter1, iter2);
+            }
+        }
+//        for (int i=0; i<pedalChanges->size() ;i+=2)
+//        {
+//            std::cout << " After: onTS "<<pedalChanges->at(i).timeStamp
+//            << " offTS "<<pedalChanges->at(i+1).timeStamp
+//            << "\n";
+//        }
+        catchUp();
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+        sequenceObject.loadingFile = false; //Starts processing
+    }
+    
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval)
     {
 //        std::cout << "chainCommand: interval = " <<inverval<<"\n";
@@ -430,9 +561,64 @@ public:
         if (index>-1)
             sequenceObject.targetNoteTimes.remove(index);
     }
+    
+    void changeNoteVelocity(int step, float velocity)
+    {
+        catchUp();
+//        if (copyOfSelectedNotes.size()<=1)
+//        {
+            sequenceObject.theSequence.at(step)->velocity = velocity;
+//        }
+//        else
+//        {
+//            if (copyOfSelectedNotes.size()>=3 && step==copyOfSelectedNotes.getFirst())
+//            {
+//                //Ramp from this velocity to existing last note velocity
+//                const float lastNoteVel = sequenceObject.theSequence.at(copyOfSelectedNotes.getLast())->velocity;
+//                const int steps = copyOfSelectedNotes.size()-1;
+//                const float increment = (lastNoteVel-velocity)/steps;
+//                for (int i=0;i<copyOfSelectedNotes.size()-1;i++)
+//                {
+//                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
+//                    {
+//                        const float newVel =  lastNoteVel - (steps-i)*increment;
+//                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = newVel;
+////                        std::cout << "New vel " << copyOfSelectedNotes[i] <<" "<<increment<<" "
+////                        << " "<<(int)(sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity*127.0)<<"\n";
+//                    }
+//                }
+//            }
+//            else if (copyOfSelectedNotes.size()>=3 && step==copyOfSelectedNotes.getLast())
+//            {
+//                //Ramp from existing first note velocity to this velocity
+//                const float firstNoteVel = sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->velocity;
+//                const int steps = copyOfSelectedNotes.size()-1;
+//                const float increment = (velocity-firstNoteVel)/steps;
+//                for (int i=1;i<copyOfSelectedNotes.size();i++)
+//                {
+//                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
+//                    {
+//                        const float newVel =  firstNoteVel + i*increment;
+//                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = newVel;
+////                        std::cout << "New vel " << copyOfSelectedNotes[i] <<" "<<increment<<" "
+////                        << " "<<(int)(sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity*127.0)<<"\n";
+//                    }
+//                }
+//            }
+//            else{
+//                for (int i=0;i<copyOfSelectedNotes.size();i++)
+//                {
+//                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
+//                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = velocity;
+//                }
+//            }
+//        }
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    }
+    
     void changeNoteTime(int step, double time)
     {
-//        std::cout << "changeNoteTime "<<step<<" "<< time<<"\n";
+        //        std::cout << "changeNoteTime "<<step<<" "<< time<<"\n";
         std::vector<std::shared_ptr<NoteWithOffTime>> notesToChange;
         const double delta = time-sequenceObject.theSequence.at(step)->getTimeStamp();
         const int thisChordIndex = sequenceObject.theSequence.at(step)->chordIndex;
@@ -481,7 +667,7 @@ public:
                 notesToChange[i]->offTime = notesToChange[i]->offTime + delta;
             }
         }
-//        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp = notesToChange[0]->getTimeStamp();
+        //        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp = notesToChange[0]->getTimeStamp();
         sequenceObject.setChangedFlag(true);
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());

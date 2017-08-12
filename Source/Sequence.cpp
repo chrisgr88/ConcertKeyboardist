@@ -1,4 +1,4 @@
-    /*
+/*
   ==============================================================================
 
     Sequence.cpp
@@ -79,7 +79,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     MidiMessage sysex = MidiMessage::createSysExMessage(sysexTrackMarker, len);
 //    std::cout << " Writing sysexTrackMarker - length = "<< len << "\n";
     
-    //std::unique_ptr<MidiMessageSequence>  seq(new MidiMessageSequence);
     MidiMessageSequence  sysexSeq;
     sysexSeq.addEvent(sysex);
     
@@ -677,8 +676,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     chDet.velRandScale=values[6].getFloatValue();
                     chDet.velRandSeed=values[7].getIntValue();
                     chords.push_back(chDet);
-                    if (chords.size()<5)
-                        std::cout << "Loaded chord "<< chords.size()-1<<" "<< chords.back().timeStamp <<" "<<chords.back().timeSpec << "\n";
+//                    if (chords.size()<5)
+//                        std::cout << "Loaded chord "<< chords.size()-1<<" "<< chords.back().timeStamp <<" "<<chords.back().timeSpec << "\n";
                 }
                 else if (key == "chordNote") //Each note that is a member of a chord
                 {
@@ -784,6 +783,63 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         //                    << " Value " << ctrMsg.getControllerValue()
                         //                    <<"\n";
                     }
+                }
+            }
+        }
+        //Extract pedal changes
+        String sustainPedalDirection = "";
+        String softPedalDirection = "";
+        //        double prevTimeStamp = -1;
+        sustainPedalChanges.clear();
+        softPedalChanges.clear();
+        double savedSustStartTime = -1;
+        double savedSoftStartTime = -1;
+        for (int i=0;i<theControllers.size();i++)
+        {
+            ControllerMessage ctrMsg = theControllers[i];
+            ctrMsg.setTimeStamp(96.0*ctrMsg.getTimeStamp()/ppq);
+            if (ctrMsg.isSustainPedalOn()||ctrMsg.isSustainPedalOff())   //Sustain pedal
+            {
+                String prevDirection = sustainPedalDirection;
+                if (ctrMsg.isSustainPedalOn())
+                {
+                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
+                    sustainPedalChanges.push_back(pedalMsg);
+                }
+                else if (ctrMsg.isSustainPedalOff())
+                {
+                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
+                    sustainPedalChanges.push_back(pedalMsg);
+                }
+            }
+            else if (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff())  //Soft pedal
+            {
+                String prevDirection = softPedalDirection;
+                if (ctrMsg.getControllerValue()>=63)
+                {
+                    if (softPedalDirection!="down")
+                    {
+                        softPedalDirection ="down";
+                        savedSoftStartTime = ctrMsg.getTimeStamp();
+                    }
+                }
+                else if (ctrMsg.getControllerValue()<63)
+                {
+                    if (softPedalDirection!="up")
+                        softPedalDirection = "up";
+                }
+                if (prevDirection != softPedalDirection && !(prevDirection=="" && softPedalDirection=="up"))
+                {
+                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(savedSoftStartTime,softPedalDirection=="down");
+                    softPedalChanges.push_back(pedalMsg);
+                    
+                    //                     std::cout << "i, Time " << i << ", " << ctrMsg.timeStamp
+                    //                     //            << " Channel " << ctrMsg.getChannel()
+                    //                     //            << " cc " << ctrMsg.getControllerNumber()
+                    //                     //            << " Value " << ctrMsg.getControllerValue()
+                    //                     << " " << softPedalDirection
+                    //                     << " Type:" << ctrMsg.getDescription()
+                    //                     <<"\n";
                 }
             }
         }
@@ -947,70 +1003,70 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             }
         }
         
-        //Extract pedal changes
-        String sustainPedalDirection = "";
-        String softPedalDirection = "";
-//        double prevTimeStamp = -1;
-        sustainPedalChanges.clear();
-        softPedalChanges.clear();
-        for (int i=0;i<theControllers.size();i++)
-        {
-            ControllerMessage ctrMsg = theControllers[i];
-            ctrMsg.setTimeStamp(96.0*ctrMsg.getTimeStamp()/ppq);
-            if (ctrMsg.isSustainPedalOn()||ctrMsg.isSustainPedalOff())   //Sustain pedal
-            {
-                String prevDirection = sustainPedalDirection;
-                if (ctrMsg.isSustainPedalOn())
-                {
-                    if (sustainPedalDirection!="down")
-                        sustainPedalDirection ="down";
-                }
-                else if (ctrMsg.isSustainPedalOff())
-                {
-                    if (sustainPedalDirection!="up")
-                        sustainPedalDirection = "up";
-                }
-                if (prevDirection != sustainPedalDirection && !(prevDirection=="" && sustainPedalDirection=="up"))
-                {
-//                    std::cout << ctrMsg.timeStamp << " sustainPedalChange "<<ctrMsg.getControllerValue()<<"\n";
-                    sustainPedalChanges.push_back(ctrMsg);
-//                    prevTimeStamp = ctrMsg.timeStamp;
-//                    std::cout << "i, Time " << i << ", " << 96.0*ctrMsg.timeStamp/ppq
-//                    << " Channel " << ctrMsg.getChannel()
-//                    << " cc " << ctrMsg.getControllerNumber()
-//                    << " Value " << ctrMsg.getControllerValue()
-//                    << " " << sustainPedalDirection
-//                    << " Type:" << ctrMsg.getDescription()
-//                    <<"\n";
-                }
-            }
-            else if (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff())  //Soft pedal
-            {
-                String prevDirection = softPedalDirection;
-                if (ctrMsg.getControllerValue()>=63)
-                {
-                    if (softPedalDirection!="down")
-                        softPedalDirection ="down";
-                }
-                else if (ctrMsg.getControllerValue()<63)
-                {
-                    if (softPedalDirection!="up")
-                        softPedalDirection = "up";
-                }
-                if (prevDirection != softPedalDirection && !(prevDirection=="" && softPedalDirection=="up"))
-                {
-                    softPedalChanges.push_back(ctrMsg);
-                    
-//                     std::cout << "i, Time " << i << ", " << ctrMsg.timeStamp
-//                     //            << " Channel " << ctrMsg.getChannel()
-//                     //            << " cc " << ctrMsg.getControllerNumber()
-//                     //            << " Value " << ctrMsg.getControllerValue()
-//                     << " " << softPedalDirection
-//                     << " Type:" << ctrMsg.getDescription()
-//                     <<"\n";
-                }
-            }
-        }
+//        //Extract pedal changes
+//        String sustainPedalDirection = "";
+//        String softPedalDirection = "";
+////        double prevTimeStamp = -1;
+//        sustainPedalChanges.clear();
+//        softPedalChanges.clear();
+//        for (int i=0;i<theControllers.size();i++)
+//        {
+//            ControllerMessage ctrMsg = theControllers[i];
+//            ctrMsg.setTimeStamp(96.0*ctrMsg.getTimeStamp()/ppq);
+//            if (ctrMsg.isSustainPedalOn()||ctrMsg.isSustainPedalOff())   //Sustain pedal
+//            {
+//                String prevDirection = sustainPedalDirection;
+//                if (ctrMsg.isSustainPedalOn())
+//                {
+//                    if (sustainPedalDirection!="down")
+//                        sustainPedalDirection ="down";
+//                }
+//                else if (ctrMsg.isSustainPedalOff())
+//                {
+//                    if (sustainPedalDirection!="up")
+//                        sustainPedalDirection = "up";
+//                }
+//                if (prevDirection != sustainPedalDirection && !(prevDirection=="" && sustainPedalDirection=="up"))
+//                {
+////                    std::cout << ctrMsg.timeStamp << " sustainPedalChange "<<ctrMsg.getControllerValue()<<"\n";
+//                    sustainPedalChanges.push_back(ctrMsg);
+////                    prevTimeStamp = ctrMsg.timeStamp;
+////                    std::cout << "i, Time " << i << ", " << 96.0*ctrMsg.timeStamp/ppq
+////                    << " Channel " << ctrMsg.getChannel()
+////                    << " cc " << ctrMsg.getControllerNumber()
+////                    << " Value " << ctrMsg.getControllerValue()
+////                    << " " << sustainPedalDirection
+////                    << " Type:" << ctrMsg.getDescription()
+////                    <<"\n";
+//                }
+//            }
+//            else if (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff())  //Soft pedal
+//            {
+//                String prevDirection = softPedalDirection;
+//                if (ctrMsg.getControllerValue()>=63)
+//                {
+//                    if (softPedalDirection!="down")
+//                        softPedalDirection ="down";
+//                }
+//                else if (ctrMsg.getControllerValue()<63)
+//                {
+//                    if (softPedalDirection!="up")
+//                        softPedalDirection = "up";
+//                }
+//                if (prevDirection != softPedalDirection && !(prevDirection=="" && softPedalDirection=="up"))
+//                {
+//                    softPedalChanges.push_back(ctrMsg);
+//                    
+////                     std::cout << "i, Time " << i << ", " << ctrMsg.timeStamp
+////                     //            << " Channel " << ctrMsg.getChannel()
+////                     //            << " cc " << ctrMsg.getControllerNumber()
+////                     //            << " Value " << ctrMsg.getControllerValue()
+////                     << " " << softPedalDirection
+////                     << " Type:" << ctrMsg.getDescription()
+////                     <<"\n";
+//                }
+//            }
+//        }
         
         //###Humanize chord note start times and velocities
         double thisChordTimeStamp;

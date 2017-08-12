@@ -263,18 +263,25 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     //            << " at " << sequenceObject.sustainPedalChanges[k].timeStamp
     //            << " value " << sequenceObject.sustainPedalChanges[k].getControllerValue()
     //            << "\n";
-                if (sequenceObject.sustainPedalChanges[k].getTimeStamp()>=time)
+                if (sequenceObject.sustainPedalChanges[k].timeStamp>=time)
                     break;
             }
             //        if (k<sequenceObject.sustainPedalChanges.size())
             nextSustainStep = k; //Note that this could be past the end of sustainPedalChanges[ ] if there are no more events
-            if(nextSustainStep-1>=0)
+            if(nextSustainStep-1 >= 0)
             {
-                sendMidiMessage(sequenceObject.sustainPedalChanges[nextSustainStep-1]);
-//                std::cout
-//                << " send " << nextSustainStep-1
-//                << " value " << sequenceObject.sustainPedalChanges[nextSustainStep-1].getControllerValue()
-//                << "\n";
+                if (sequenceObject.sustainPedalChanges[k-1].pedalOn)
+                {
+                    MidiMessage msgOn = MidiMessage::controllerEvent(1, 64, 127);
+                    msgOn.setTimeStamp(sequenceObject.sustainPedalChanges[k].timeStamp);
+                    sendMidiMessage(msgOn);
+                }
+                else
+                {
+                    MidiMessage msgOff = MidiMessage::controllerEvent(1, 64, 0);
+                    msgOff.setTimeStamp(sequenceObject.sustainPedalChanges[k].timeStamp);
+                    sendMidiMessage(msgOff);
+                }
             }
         }
     }
@@ -290,18 +297,30 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 //                << " at " << sequenceObject.softPedalChanges[k].timeStamp
 //                << " value " << sequenceObject.softPedalChanges[k].getControllerValue()
 //                << "\n";
-                if (sequenceObject.softPedalChanges[k].getTimeStamp()>=time)
+                if (sequenceObject.softPedalChanges[k].timeStamp>=time)
                     break;
             }
             //        if (k<softPedalChanges())
             nextSoftStep = k; //Note that this could be past the end of softPedalChanges[ ] if there are no more events
             if(nextSoftStep-1>=0)
             {
-                sendMidiMessage(sequenceObject.softPedalChanges[nextSoftStep-1]);
+//                sendMidiMessage(sequenceObject.softPedalChanges[nextSoftStep-1]);
 //                std::cout
 //                << " send " << nextSoftStep-1
 //                << " value " << sequenceObject.softPedalChanges[nextSoftStep-1].getControllerValue()
 //                << "\n";
+                if (sequenceObject.softPedalChanges[k-1].pedalOn)
+                {
+                    MidiMessage msgOn = MidiMessage::controllerEvent(1, 67, 127);
+                    msgOn.setTimeStamp(sequenceObject.softPedalChanges[k-1].timeStamp);
+                    sendMidiMessage(msgOn);
+                }
+                else
+                {
+                    MidiMessage msgOff = MidiMessage::controllerEvent(1, 67, 0);
+                    msgOff.setTimeStamp(sequenceObject.softPedalChanges[k-1].timeStamp);
+                    sendMidiMessage(msgOff);
+                }
             }
         }
     }
@@ -727,26 +746,45 @@ void MIDIProcessor::processBlock ()
     if (sequenceObject.autoPlaySustains)
     {
         if(nextSustainStep<sequenceObject.sustainPedalChanges.size() &&
-              sequenceObject.sustainPedalChanges[nextSustainStep].getTimeStamp() < timeInTicks+leadLag)
+              sequenceObject.sustainPedalChanges[nextSustainStep].timeStamp < timeInTicks+leadLag)
         {
-            sendMidiMessage(sequenceObject.sustainPedalChanges[nextSustainStep]);
-//            std::cout
-//            << " send " << nextSustainStep
-//            << " value " << sequenceObject.sustainPedalChanges[nextSustainStep].getControllerValue()
-//            << "\n";
+            if (sequenceObject.sustainPedalChanges[nextSustainStep].pedalOn)
+            {
+                MidiMessage msgOn = MidiMessage::controllerEvent(1, 64, 127);
+                msgOn.setTimeStamp(sequenceObject.sustainPedalChanges[nextSustainStep].timeStamp);
+                sendMidiMessage(msgOn);
+            }
+            else
+            {
+                MidiMessage msgOff = MidiMessage::controllerEvent(1, 64, 0);
+                msgOff.setTimeStamp(sequenceObject.sustainPedalChanges[nextSustainStep].timeStamp);
+                sendMidiMessage(msgOff);
+            }
             nextSustainStep++;
         }
     }
     if (sequenceObject.autoPlaySofts)
     {
         if(nextSoftStep<sequenceObject.softPedalChanges.size() &&
-           sequenceObject.softPedalChanges[nextSoftStep].getTimeStamp() < timeInTicks+leadLag)
+           sequenceObject.softPedalChanges[nextSoftStep].timeStamp < timeInTicks+leadLag)
         {
-            sendMidiMessage(sequenceObject.softPedalChanges[nextSoftStep]);
+//            sendMidiMessage(sequenceObject.softPedalChanges[nextSoftStep]);
 //            std::cout
 //            << " send " << nextSoftStep
 //            << " value " << sequenceObject.softPedalChanges[nextSoftStep].getControllerValue()
 //            << "\n";
+            if (sequenceObject.softPedalChanges[nextSoftStep].pedalOn)
+            {
+                MidiMessage msgOn = MidiMessage::controllerEvent(1, 67, 127);
+                msgOn.setTimeStamp(sequenceObject.softPedalChanges[nextSoftStep].timeStamp);
+                sendMidiMessage(msgOn);
+            }
+            else
+            {
+                MidiMessage msgOff = MidiMessage::controllerEvent(1, 67, 0);
+                msgOff.setTimeStamp(sequenceObject.softPedalChanges[nextSoftStep].timeStamp);
+                sendMidiMessage(msgOff);
+            }
             nextSoftStep++;
         }
     }

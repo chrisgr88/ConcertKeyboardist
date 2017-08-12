@@ -200,7 +200,9 @@ private:
             tempoMultiplier = 19,
             realTimeTempo   = 20,
             humVelocityBox  = 21,
-            humTimeBox      = 22
+            humTimeBox      = 22,
+            _addSustain      = 23,
+            _addSoft      = 24
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -223,6 +225,8 @@ private:
             ids.add (_makeActive);
             ids.add (_makeInactive);
             ids.add (_chain);
+            ids.add (_addSustain);
+            ids.add (_addSoft);
             ids.add (_humanizeVel);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
@@ -302,6 +306,8 @@ private:
             ids.add (_humanizeTime);
             ids.add (humTimeBox);
             ids.add (separatorBarId);
+            ids.add (_addSustain);
+            ids.add (_addSoft);
             ids.add (flexibleSpacerId);
         }
         
@@ -319,6 +325,8 @@ private:
                 case _makeInactive:        return createButtonFromZipFileSVG (itemId, "Make Inactive.svg", "makeInactive.svg");
                     
                 case _chain:        return createButtonFromZipFileSVG (itemId, "Chain", "chain.svg");
+                case _addSustain: return createButtonFromZipFileSVG (itemId, "AddSustain", "addSustain.svg");
+                case _addSoft: return createButtonFromZipFileSVG (itemId, "AddSoft", "addSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "HumanizeStartTimes", "humanizeStartTimes.svg");
                 case _humanizeVel: return createButtonFromZipFileSVG (itemId, "HumanizeVelocities.svg", "humanizeVelocities.svg");
                     
@@ -394,6 +402,7 @@ private:
                     
                     if (svgFileStream != nullptr)
                     {
+                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
                         iconNames.add (icons.getEntry(i)->filename);
                         iconsFromZipFile.add (Drawable::createFromImageDataStream (*svgFileStream));
                     }

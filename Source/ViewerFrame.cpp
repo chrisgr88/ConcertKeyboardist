@@ -262,6 +262,16 @@ void ViewerFrame::buttonClicked (Button* button)
         humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
         sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
     }
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_addSustain == id)
+    {
+        std::cout << "addSustain\n";
+        sendActionMessage("addSustain");
+    }
+    else if(DemoToolbarItemFactory::DemoToolbarItemIds::_addSoft == id)
+    {
+        std::cout << "addSoft\n";
+        sendActionMessage("addSoft");
+    }
     unfocusAllComponents();
 }
 
