@@ -144,8 +144,8 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-        if (chIndex<5)
-            std::cout << " Write sysex chordDetails - "<<chIndex<<" "<< propertyStr <<" "<<propertyStr.length() << "\n";
+//        if (chIndex<5)
+//            std::cout << " Write sysex chordDetails - "<<chIndex<<" "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
         //Property "chNote" : The notes in this chord
         for (int note=0;note<chords[chIndex].notePointers.size();note++)
@@ -161,8 +161,8 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             char buffer[128];
             propertyStr.copyToUTF8(buffer,128);
             MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-            if (chIndex<5)
-                std::cout << " Write chord note - "<<propertyStr <<" "<<propertyStr.length() << "\n";
+//            if (chIndex<5)
+//                std::cout << " Write chord note - "<<propertyStr <<" "<<propertyStr.length() << "\n";
             sysexSeq.addEvent(sysex);
         }
     }
@@ -174,6 +174,17 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     
     MidiFile outputFile;
     short timeFormat = 96;//midiFile.getTimeFormat();
+    int firstTrkWithPedals = -1;
+    int firstTrkWithNotes = -1;
+    for (int trk=0;trk<trackDetails.size();trk++ )
+    {
+        if (firstTrkWithPedals==-1 && (trackDetails[trk].nSustains>0 || trackDetails[trk].nSofts>0))
+            firstTrkWithPedals=trk;
+        if (firstTrkWithNotes==-1 && trackDetails[trk].nNotes>0)
+            firstTrkWithNotes=trk;
+    }
+    if (firstTrkWithPedals==-1)
+        firstTrkWithPedals = firstTrkWithNotes;
     for (int trk=0;trk<tracksToCopy;trk++)
     {
         MidiMessageSequence trackSeq;
@@ -185,6 +196,25 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             if (!msg.isNoteOn())
             {
                 msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
+                if (!msg.isController())
+                    trackSeq.addEvent(msg);
+                else if (msg.getControllerNumber()!=64 && msg.getControllerNumber()!=67) //Don't save original pedal messages
+                    trackSeq.addEvent(msg);
+            }
+        }
+        if (trk==firstTrkWithPedals)
+        {
+            int channel = trackDetails[firstTrkWithPedals].originalChannel;
+            for (int i=0;i<sustainPedalChanges.size();i++)
+            {
+                MidiMessage msg=MidiMessage::controllerEvent(channel, 64, sustainPedalChanges[i].pedalOn?127:0);
+                msg.setTimeStamp(sustainPedalChanges[i].timeStamp);
+                trackSeq.addEvent(msg);
+            }
+            for (int i=0;i<softPedalChanges.size();i++)
+            {
+                MidiMessage msg=MidiMessage::controllerEvent(channel, 67, softPedalChanges[i].pedalOn?127:0);
+                msg.setTimeStamp(softPedalChanges[i].timeStamp);
                 trackSeq.addEvent(msg);
             }
         }
@@ -775,72 +805,60 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     {
                         ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
                         theControllers.push_back(ctrMsg);
-                        //                    std::cout << "Add Controller: timeStamp " << ctrMsg.getTimeStamp()
-                        //                    << " Track " << trkNumber
-                        //                    << " Channel " << ctrMsg.getChannel()
-                        //                    << " cc " << ctrMsg.getControllerNumber()
-                        //                    << " cc " << ctrMsg.getControllerName(ctrMsg.getControllerNumber())
-                        //                    << " Value " << ctrMsg.getControllerValue()
-                        //                    <<"\n";
                     }
                 }
             }
         }
         //Extract pedal changes
-        String sustainPedalDirection = "";
-        String softPedalDirection = "";
-        //        double prevTimeStamp = -1;
         sustainPedalChanges.clear();
         softPedalChanges.clear();
-        double savedSustStartTime = -1;
-        double savedSoftStartTime = -1;
+        bool sustainOn;
+        bool softOn;
+        int trackWithSustains = -1;
+        int trackWithSofts = -1;
         for (int i=0;i<theControllers.size();i++)
         {
             ControllerMessage ctrMsg = theControllers[i];
             ctrMsg.setTimeStamp(96.0*ctrMsg.getTimeStamp()/ppq);
-            if (ctrMsg.isSustainPedalOn()||ctrMsg.isSustainPedalOff())   //Sustain pedal
+            if ((trackWithSustains==-1||ctrMsg.track==trackWithSustains) &&
+                ctrMsg.getControllerNumber()==64)   //Sustain pedal
             {
-                String prevDirection = sustainPedalDirection;
-                if (ctrMsg.isSustainPedalOn())
+//                std::cout<< ctrMsg.getTimeStamp()<<" sust Track " << ctrMsg.track<<" "<<ctrMsg.getControllerValue()<<"\n";
+                if (trackWithSustains==-1)
+                    sustainOn = ctrMsg.isSustainPedalOn();
+                if ((ctrMsg.isSustainPedalOn() && !sustainOn)||trackWithSustains==-1)
                 {
                     Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
                     sustainPedalChanges.push_back(pedalMsg);
+                    sustainOn = true;
                 }
-                else if (ctrMsg.isSustainPedalOff())
+                else if (ctrMsg.isSustainPedalOff() && sustainOn)
                 {
                     Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
                     sustainPedalChanges.push_back(pedalMsg);
+                    sustainOn = false;
                 }
+                if (trackWithSustains==-1)
+                    trackWithSustains = ctrMsg.track;
             }
             else if (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff())  //Soft pedal
             {
-                String prevDirection = softPedalDirection;
-                if (ctrMsg.getControllerValue()>=63)
+                if (trackWithSustains==-1)
+                    softOn = ctrMsg.isSoftPedalOn();
+                if ((ctrMsg.isSoftPedalOn() && !softOn)||trackWithSofts==-1)
                 {
-                    if (softPedalDirection!="down")
-                    {
-                        softPedalDirection ="down";
-                        savedSoftStartTime = ctrMsg.getTimeStamp();
-                    }
-                }
-                else if (ctrMsg.getControllerValue()<63)
-                {
-                    if (softPedalDirection!="up")
-                        softPedalDirection = "up";
-                }
-                if (prevDirection != softPedalDirection && !(prevDirection=="" && softPedalDirection=="up"))
-                {
-                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(savedSoftStartTime,softPedalDirection=="down");
+                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
                     softPedalChanges.push_back(pedalMsg);
-                    
-                    //                     std::cout << "i, Time " << i << ", " << ctrMsg.timeStamp
-                    //                     //            << " Channel " << ctrMsg.getChannel()
-                    //                     //            << " cc " << ctrMsg.getControllerNumber()
-                    //                     //            << " Value " << ctrMsg.getControllerValue()
-                    //                     << " " << softPedalDirection
-                    //                     << " Type:" << ctrMsg.getDescription()
-                    //                     <<"\n";
+                    softOn = true;
                 }
+                else if ((ctrMsg.isSoftPedalOff() && softOn))
+                {
+                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
+                    softPedalChanges.push_back(pedalMsg);
+                    softOn = false;
+                }
+                if (trackWithSofts==-1)
+                    trackWithSofts = ctrMsg.track;
             }
         }
     }
