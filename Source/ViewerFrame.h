@@ -344,31 +344,31 @@ private:
                 case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
                 case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
                     
-                case customComboBox:
-                {
-                    CustomToolbarComboBox *ccb = new CustomToolbarComboBox (itemId);
-                    ccb->setTooltip("CustomToolbarComboBox");
-                    return ccb;
-                }
+//                case customComboBox:
+//                {
+//                    CustomToolbarComboBox *ccb = new CustomToolbarComboBox (itemId);
+//                    ccb->setTooltip("CustomToolbarComboBox");
+//                    return ccb;
+//                }
                     
                 case chainAmountBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->setTooltip("Chaining Interval in Ticks");
+                    txtBox->textBox.setTooltip("Chaining Interval in Ticks");
                     return txtBox;
                 }
                     
                 case humVelocityBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->setTooltip("Amount of Velocity Humanization");
+                    txtBox->textBox.setTooltip("Amount of Velocity Humanization");
                     return txtBox;
                 }
                     
                 case humTimeBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->setTooltip("Amount of Time Randomization");
+                    txtBox->textBox.setTooltip("Amount of Time Randomization");
                     return txtBox;
                 }
                 
@@ -432,41 +432,41 @@ private:
        
     public:
         //=======================================================
-        class CustomToolbarComboBox : public ToolbarItemComponent
-        {
-        public:
-            CustomToolbarComboBox (const int toolbarItemId)
-            : ToolbarItemComponent (toolbarItemId, "Custom Toolbar Item", false),
-            comboBox ("demo toolbar combo box")
-            {
-                ToolbarItemComponent::addAndMakeVisible (comboBox);
-                for (int i = 1; i < 20; ++i)
-                    comboBox.addItem ("Toolbar ComboBox item " + String (i), i);
-
-                comboBox.setSelectedId (1);
-                comboBox.setEditableText (true);
-            }
-            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
-                                      int& preferredSize, int& minSize, int& maxSize) override
-            {
-                if (isVertical)
-                    return false;
-                preferredSize = 250;
-                minSize = 80;
-                maxSize = 300;
-                return true;
-            }
-            void paintButtonArea (Graphics&, int, int, bool, bool) override
-            {
-            }
-            void contentAreaChanged (const Rectangle<int>& newArea) override
-            {
-                comboBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
-                comboBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
-            }
-        ComboBox comboBox;
-        private:
-        };
+//        class CustomToolbarComboBox : public ToolbarItemComponent
+//        {
+//        public:
+//            CustomToolbarComboBox (const int toolbarItemId)
+//            : ToolbarItemComponent (toolbarItemId, "Custom Toolbar Item", false),
+//            comboBox ("demo toolbar combo box")
+//            {
+//                ToolbarItemComponent::addAndMakeVisible (comboBox);
+//                for (int i = 1; i < 20; ++i)
+//                    comboBox.addItem ("Toolbar ComboBox item " + String (i), i);
+//
+//                comboBox.setSelectedId (1);
+//                comboBox.setEditableText (true);
+//            }
+//            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
+//                                      int& preferredSize, int& minSize, int& maxSize) override
+//            {
+//                if (isVertical)
+//                    return false;
+//                preferredSize = 250;
+//                minSize = 80;
+//                maxSize = 300;
+//                return true;
+//            }
+//            void paintButtonArea (Graphics&, int, int, bool, bool) override
+//            {
+//            }
+//            void contentAreaChanged (const Rectangle<int>& newArea) override
+//            {
+//                comboBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
+//                comboBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+//            }
+//        ComboBox comboBox;
+//        private:
+//        };
         
         
 //        //=================================================
@@ -534,6 +534,7 @@ private:
                 textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey));
                 textBox.setColour (TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
                 textBox.setBounds (180, 40, 20, 20);
+//                textBox.setTooltip("Chaining Interval in Ticks");
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
@@ -729,6 +730,7 @@ private:
                 numberBox.setFont (Font (19.00f, Font::plain));
                 numberBox.setColour (TextEditor::ColourIds::textColourId, Colours::darkgrey);
                 numberBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey).brighter());
+                numberBox.setTooltip("Real Time Tempo");
                 
 //                numberBox.setColour (Label::backgroundColourId, Colours::red);
             }
@@ -823,7 +825,7 @@ private:
     }; //CustomIncDecBox
 
     DemoToolbarItemFactory factory;
-    DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
+//    DemoToolbarItemFactory::CustomToolbarComboBox *pCCB;
     DemoToolbarItemFactory::ChainAmountBox *pChainAmountBox;
     DemoToolbarItemFactory::ScoreTempo *pScoreTempo;
     DemoToolbarItemFactory::TempoMultiplier *pTempoMultiplier;

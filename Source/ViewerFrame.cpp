@@ -29,7 +29,6 @@ factory(this)
     for (int i=0; i<toolbar.getNumItems(); i++)
     {
         int id = toolbar.getItemId(i);
-//        toolbar.getItemComponent(i)->setTooltip("foo");
         if (id == DemoToolbarItemFactory::ToolbarItemIds::chainAmountBox)
         {
             pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
@@ -38,7 +37,9 @@ factory(this)
             chainAmount = 12.0;
         }
         else if (id == DemoToolbarItemFactory::ToolbarItemIds::tempoMultiplier)
+        {
             pTempoMultiplier = (DemoToolbarItemFactory::TempoMultiplier *) toolbar.getItemComponent(i);
+        }
         else if (id == DemoToolbarItemFactory::ToolbarItemIds::realTimeTempo)
         {
             pRealTimeTempo = (DemoToolbarItemFactory::RealTimeTempo *) toolbar.getItemComponent(i);
@@ -46,7 +47,10 @@ factory(this)
             pRealTimeTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).brighter());
         }
         else if (id == DemoToolbarItemFactory::ToolbarItemIds::scoreTempo)
+        {
             pScoreTempo = (DemoToolbarItemFactory::ScoreTempo *) toolbar.getItemComponent(i);
+//            pScoreTempo->setTooltip("Tempo From Score");
+        }
         else if (id == DemoToolbarItemFactory::ToolbarItemIds::humTimeBox)
         {
             pHumanizeStartTime = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
