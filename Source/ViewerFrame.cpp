@@ -14,59 +14,66 @@
 ViewerFrame::ViewerFrame (MIDIProcessor *p) :
 noteViewer(p),
 processor(p),
-factory(this)
+mainFactory(this),
+chordToolbarFactory(this)
 {
     noteViewer.addChangeListener(this);
     p->addChangeListener(this);
     addAndMakeVisible(noteViewer);
     noteViewer.setOpaque(true);
     setWantsKeyboardFocus (true);
-    addAndMakeVisible(toolbar);
-    toolbar.addDefaultItems (factory);
-    toolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
-    factory.addChangeListener(this);
     
-    for (int i=0; i<toolbar.getNumItems(); i++)
+    addAndMakeVisible(mainToolbar);
+    mainToolbar.addDefaultItems (mainFactory);
+    mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
+    mainFactory.addChangeListener(this);
+
+    addAndMakeVisible(chordToolbar);
+    chordToolbar.addDefaultItems (chordToolbarFactory);
+    chordToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
+    chordToolbarFactory.addChangeListener(this);
+    
+    for (int i=0; i<mainToolbar.getNumItems(); i++)
     {
-        int id = toolbar.getItemId(i);
-        if (id == DemoToolbarItemFactory::ToolbarItemIds::chainAmountBox)
+        int id = mainToolbar.getItemId(i);
+        if (id == MainToolbarItemFactory::ToolbarItemIds::chainAmountBox)
         {
-            pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+            pChainAmountBox = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pChainAmountBox->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pChainAmountBox->textBox.setText("12");
             chainAmount = 12.0;
         }
-        else if (id == DemoToolbarItemFactory::ToolbarItemIds::tempoMultiplier)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::tempoMultiplier)
         {
-            pTempoMultiplier = (DemoToolbarItemFactory::TempoMultiplier *) toolbar.getItemComponent(i);
+            pTempoMultiplier = (MainToolbarItemFactory::TempoMultiplier *) mainToolbar.getItemComponent(i);
         }
-        else if (id == DemoToolbarItemFactory::ToolbarItemIds::realTimeTempo)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::realTimeTempo)
         {
-            pRealTimeTempo = (DemoToolbarItemFactory::RealTimeTempo *) toolbar.getItemComponent(i);
+            pRealTimeTempo = (MainToolbarItemFactory::RealTimeTempo *) mainToolbar.getItemComponent(i);
             pRealTimeTempo->numberBox.setFont (Font (19.00f, Font::bold));
             pRealTimeTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).brighter());
         }
-        else if (id == DemoToolbarItemFactory::ToolbarItemIds::scoreTempo)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
-            pScoreTempo = (DemoToolbarItemFactory::ScoreTempo *) toolbar.getItemComponent(i);
+            pScoreTempo = (MainToolbarItemFactory::ScoreTempo *) mainToolbar.getItemComponent(i);
 //            pScoreTempo->setTooltip("Tempo From Score");
         }
-        else if (id == DemoToolbarItemFactory::ToolbarItemIds::humTimeBox)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::humTimeBox)
         {
-            pHumanizeStartTime = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+            pHumanizeStartTime = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("3");
             humanizeTimeAmount = 3.0;
         }
-        else if (id == DemoToolbarItemFactory::ToolbarItemIds::humVelocityBox)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::humVelocityBox)
         {
-            pHumanizeVelocity = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);
+            pHumanizeVelocity = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeVelocity->textBox.setText("1.0");
             humanizeVelocityAmount = 1.0;
         }
         else
-            toolbar.getItemComponent(i)->addListener(this);
+            mainToolbar.getItemComponent(i)->addListener(this);
     }
     
     addAndMakeVisible (scoreTempoInfo);
@@ -186,13 +193,13 @@ void ViewerFrame::buttonClicked (Button* button)
 //    std::cout << "Button Press " << button << "\n";
 //    toolbar.getItemComponent(1);
     int i=0;
-    for (i=0;i<toolbar.getNumItems();i++)
+    for (i=0;i<mainToolbar.getNumItems();i++)
     {
-        if (button == toolbar.getItemComponent(i))
+        if (button == mainToolbar.getItemComponent(i))
             break;
     }
     
-    int id = toolbar.getItemId(i);
+    int id = mainToolbar.getItemId(i);
     
 //    _play           = 9,
 //    _stop           = 10,
@@ -225,64 +232,64 @@ void ViewerFrame::buttonClicked (Button* button)
 //    CommandIDs::previousBookmark,
 //    CommandIDs::nextBookmark
     
-    if (DemoToolbarItemFactory::ToolbarItemIds::doc_open == id)
+    if (MainToolbarItemFactory::ToolbarItemIds::doc_open == id)
         sendActionMessage("fileOpen");
-    else if(DemoToolbarItemFactory::ToolbarItemIds::doc_save == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::doc_save == id)
         sendActionMessage("fileSave");
-    else if(DemoToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
         sendActionMessage("fileSaveAs");
     
-    else if(DemoToolbarItemFactory::ToolbarItemIds::edit_undo == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::edit_undo == id)
         sendActionMessage("editUndo");
-    else if(DemoToolbarItemFactory::ToolbarItemIds::edit_redo == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::edit_redo == id)
         sendActionMessage("editRedo");
     
     
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_play == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_play == id)
         sendActionMessage("play");
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_stop == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_stop == id)
         sendActionMessage("pause");
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_rewind == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_rewind == id)
         sendActionMessage("rewind");
     
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_listen == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_listen == id)
         sendActionMessage("listenToSelection");
     
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_makeActive == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_makeActive == id)
         sendActionMessage("setSelectedNotesActive");
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_makeInactive == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_makeInactive == id)
         sendActionMessage("setSelectedNotesInactive");
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_chain == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
     {
         chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
         sendActionMessage("chain:"+String(chainAmount));
     }
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
     {
         humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
         sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
     }
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_humanizeVel == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeVel == id)
     {
         humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
         sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
     }
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_addSustain == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
     {
         std::cout << "addSustain\n";
         sendActionMessage("addSustain");
     }
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_deleteSustain == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_deleteSustain == id)
     {
         std::cout << "deleteSustain\n";
         sendActionMessage("deleteSustain");
     }
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_addSoft == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_addSoft == id)
     {
         std::cout << "addSoft\n";
         sendActionMessage("addSoft");
     }
-    else if(DemoToolbarItemFactory::ToolbarItemIds::_deleteSoft == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_deleteSoft == id)
     {
         std::cout << "deleteSoft\n";
         sendActionMessage("deleteSoft");
@@ -406,13 +413,22 @@ void ViewerFrame::paint (Graphics& g)
 
 void ViewerFrame::resized()
 {
-    if (toolbar.isVertical())
-        toolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
+    if (mainToolbar.isVertical())
+        ;//mainToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
     else
-        toolbar.setBounds (getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight()));
+        mainToolbar.setBounds (getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight()));
     
-    noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
-                     getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight());
+    if (chordToolbar.isVertical())
+        ;//chordToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
+    else
+    {
+        Rectangle<int> shifted = getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight());
+        shifted.translate(0,noteViewer.getToolbarHeight());
+        chordToolbar.setBounds (shifted);
+    }
+    
+    noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight()*2,
+                     getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
     hoverStepInfo.setBounds(95, 0, 340, noteViewer.getToolbarHeight()-1);
     scoreTempoInfo.setBounds(95+340+16, 1, 40, noteViewer.getToolbarHeight()-1);
 }
