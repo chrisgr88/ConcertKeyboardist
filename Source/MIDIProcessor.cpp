@@ -427,6 +427,21 @@ int MIDIProcessor::getMeasure(double horizontalShift)
     return meas+1;
 }
 
+int MIDIProcessor::getZTLTime(double horizontalShift)
+{
+//    if (!isPlaying) //Compute measure based on horizontalShift, else meas was set when updating timeInTicks
+//    {
+        double ztlTime;
+        if (xInTicksFromViewer==0)
+            ztlTime = getTimeInTicks();
+        else
+            ztlTime = getTimeInTicks()-xInTicksFromViewer;
+        if (ztlTime<0.0)
+            ztlTime = 0.0;    //std::cout << "Should not be negative \n";
+//    }
+    return ztlTime;
+}
+
 void MIDIProcessor::measureForwardBack(bool direction)
 {
     play(false,"current");

@@ -1,13 +1,14 @@
 To Do Aug 11/17
 ---------------
-- Special data structure to use in sustain and soft pedal arrays (paired ons and offs & don't use actual ControllerMessage objects
-- Change sustain bar editing to be a mode toggled by a toolbar button rather than a shift key
-- Method of deleting sustain bars
-- Option click should not cancel selection
-- Add editing for soft pedal same as sustain
+- DONE Special data structure to use in sustain and soft pedal arrays
+- DONE Method of deleting sustain bars
+- Ability to save pedal controller edits
+- DONE Option click should not cancel selection
+- DONE Add editing for soft pedal same as sustain
 - Fix display of soft pedal to be just above sustain bars rather than in top bar
-- Undo
+- Undo of bar edits
 
+- Change velocity/time/end editing to be a mode toggled by a toolbar button(s) rather than a shift key
 - Show velocities for chord notes
 - Undo for velocity editing
 - Undo for time stamp editing
@@ -24,6 +25,6 @@ To Do Aug 11/17
 - Tooltips for toolbar
 
 - Add more info to hover display 
-- Add current tick as mouse-pointer to measure display 
+- DONE Add current tick at ZTL to measure display 
 
 

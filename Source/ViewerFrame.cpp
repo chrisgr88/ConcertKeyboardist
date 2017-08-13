@@ -29,6 +29,7 @@ factory(this)
     for (int i=0; i<toolbar.getNumItems(); i++)
     {
         int id = toolbar.getItemId(i);
+//        toolbar.getItemComponent(i)->setTooltip("foo");
         if (id == DemoToolbarItemFactory::ToolbarItemIds::chainAmountBox)
         {
             pChainAmountBox = (DemoToolbarItemFactory::ChainAmountBox *) toolbar.getItemComponent(i);

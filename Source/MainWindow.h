@@ -81,6 +81,8 @@ public:
         midiProcessor.appIsActive = isActiveWindow();
     }
     
+    TooltipWindow tooltipWindow;    
+    
     bool ckBlockClosing;
     
     void actionListenerCallback (const String& message) override;

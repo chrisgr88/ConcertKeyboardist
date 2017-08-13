@@ -321,25 +321,25 @@ private:
         {
             switch (itemId)
             {
-                case doc_open:      return createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
+                case doc_open: return  createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
                 case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
                 case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
                 case edit_undo:         return createButtonFromZipFileSVG (itemId, "Undo", "edit-undo.svg");
                 case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
                     
-                case _makeActive:        return createButtonFromZipFileSVG (itemId, "Make Active", "makeActive.svg");
-                case _makeInactive:        return createButtonFromZipFileSVG (itemId, "Make Inactive.svg", "makeInactive.svg");
+                case _makeActive:        return createButtonFromZipFileSVG (itemId, "Set as Target Notes", "makeActive.svg");
+                case _makeInactive:        return createButtonFromZipFileSVG (itemId, "Set as Non Target Notes", "makeInactive.svg");
                     
-                case _chain:        return createButtonFromZipFileSVG (itemId, "Chain", "chain.svg");
-                case _addSustain: return createButtonFromZipFileSVG (itemId, "AddSustain", "addSustain.svg");
-                case _deleteSustain: return createButtonFromZipFileSVG (itemId, "DeleteSustain", "deleteSustain.svg");
-                case _addSoft: return createButtonFromZipFileSVG (itemId, "AddSoft", "addSoft.svg");
-                case _deleteSoft: return createButtonFromZipFileSVG (itemId, "DeleteSoft", "deleteSoft.svg");
-                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "HumanizeStartTimes", "humanizeStartTimes.svg");
-                case _humanizeVel: return createButtonFromZipFileSVG (itemId, "HumanizeVelocities.svg", "humanizeVelocities.svg");
+                case _chain:        return createButtonFromZipFileSVG (itemId, "Chain Notes at Given Interval", "chain.svg");
+                case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
+                case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
+                case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
+                case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
+                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
+                case _humanizeVel: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Velocities", "humanizeVelocities.svg");
                     
-                case _play:        return createButtonFromZipFileSVG (itemId, "Play", "media-playback-start.svg");
-                case _stop:        return createButtonFromZipFileSVG (itemId, "Stop", "media-playback-stop.svg");
+                case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
+                case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
                     
                 case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
                 case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
@@ -347,41 +347,48 @@ private:
                 case customComboBox:
                 {
                     CustomToolbarComboBox *ccb = new CustomToolbarComboBox (itemId);
+                    ccb->setTooltip("CustomToolbarComboBox");
                     return ccb;
                 }
                     
                 case chainAmountBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
+                    txtBox->setTooltip("Chaining Interval in Ticks");
                     return txtBox;
                 }
                     
                 case humVelocityBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
+                    txtBox->setTooltip("Amount of Velocity Humanization");
                     return txtBox;
                 }
                     
                 case humTimeBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
+                    txtBox->setTooltip("Amount of Time Randomization");
                     return txtBox;
                 }
                 
                 case scoreTempo:
                 {
                     ScoreTempo *txtBox = new ScoreTempo (itemId);
+                    txtBox->setTooltip("Tempo");
                     return txtBox;
                 }
                     
                 case tempoMultiplier:
                 {
                     TempoMultiplier *tempoMultiplier = new TempoMultiplier (itemId);
+                    tempoMultiplier->setTooltip("Tempo Multiplier");
                     return tempoMultiplier;
                 }
                 case realTimeTempo:
                 {
                     RealTimeTempo *realTimeTempo = new RealTimeTempo (itemId);
+                    realTimeTempo->setTooltip("Actual Tempo");
                     return realTimeTempo;
                 }
                 default:                break;
@@ -419,6 +426,7 @@ private:
             
             Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
             ToolbarButton * tb = new ToolbarButton (itemId, text, image, 0);
+            tb->setTooltip(text);
             return tb;//new ToolbarButton (itemId, text, image, 0);
         }
        

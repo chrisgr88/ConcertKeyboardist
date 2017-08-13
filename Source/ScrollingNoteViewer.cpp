@@ -1244,13 +1244,13 @@ void ScrollingNoteViewer::paint (Graphics& g)
     
     const int meas = processor->getMeasure(horizontalShift);
     const int totalMeas = processor->sequenceObject.measureTimes.size();
-    Font f = Font (11.0*verticalScale);
+    Font f = Font (10.0*verticalScale);
     f.setStyleFlags(Font::FontStyleFlags::bold);
     g.setFont(f);
     g.setColour (Colours::white);
-    const String measTxt = String(meas)+"/"+String(totalMeas-1);
+    const String measTxt = String(meas)+"/"+String(totalMeas-1)+"["+String(processor->getZTLTime(horizontalShift))+"]";
     if (processor->sequenceObject.measureTimes.size()>0)
-        g.drawText(String(meas)+"/"+String(totalMeas-1), sequenceStartPixel+6, 3.0*verticalScale, 100,
+        g.drawText(measTxt, sequenceStartPixel+6, 3.0*verticalScale, 150,
                    9*verticalScale, juce::Justification::centredLeft);
     
     if (!processor->isPlaying)

@@ -149,6 +149,7 @@ public:
     
     void playableStepForwardBack (bool direction);
     int getMeasure(double horizontalShift);
+    int getZTLTime(double horizontalShift);
     bool getMetronomeIlluminated()
     {
         return metronomeLighted;
