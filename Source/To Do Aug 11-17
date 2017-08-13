@@ -2,7 +2,7 @@ To Do Aug 11/17
 ---------------
 - DONE Special data structure to use in sustain and soft pedal arrays
 - DONE Method of deleting sustain bars
-- Ability to save pedal controller edits
+- DONE Ability to save pedal controller edits
 - DONE Option click should not cancel selection
 - DONE Add editing for soft pedal same as sustain
 - Fix display of soft pedal to be just above sustain bars rather than in top bar
@@ -14,7 +14,7 @@ To Do Aug 11/17
 - Undo for time stamp editing
 - Undo for off time editing
 
-- Chord editing mode - shows chord visualizations
+- Chord editing mode/toolbar - shows chord visualizations
 - Chord visualization
 - Ability to define selected notes to be a chord
 - Add other chord styles 
@@ -22,9 +22,10 @@ To Do Aug 11/17
 	- UI for choosing
 	- Visualization of each chord style
 
-- Tooltips for toolbar
+- DONE Tooltips for toolbar
 
-- Add more info to hover display 
+- DONE Add track and tick to hover display 
+- DONE Display selection start, end, width while selecting. 
 - DONE Add current tick at ZTL to measure display 
 
 

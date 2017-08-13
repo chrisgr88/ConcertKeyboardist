@@ -324,12 +324,14 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
         {
 //            std::cout << "mouseMove found step " << step <<"\n";
             hoveringOver = HOVER_NOTEBAR;
-            String note = MidiMessage::getMidiNoteName (nn, true, true, 3)
-                + " nn:" + String::String(nn) + " ch:" + String::String(processor->sequenceObject.theSequence.at(i)->channel)
-                + " vel:" + String(127.0*processor->sequenceObject.theSequence.at(i)->velocity);
-            hoverInfo = " step:"+String::String(hoverStep) + " tick:" + String(processor->sequenceObject.theSequence.at(i)->getTimeStamp())
-                + " dur:" + String((processor->sequenceObject.theSequence.at(i)->offTime-processor->sequenceObject.theSequence.at(i)->getTimeStamp()))
-                + " " + note;
+            hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
+            + "[" + String::String(nn) +"]"
+            + " tr:" +String::String(processor->sequenceObject.theSequence.at(i)->track)
+            + " ch:" + String::String(processor->sequenceObject.theSequence.at(i)->channel)
+            + " vel:" + String(127.0*processor->sequenceObject.theSequence.at(i)->velocity)
+            + " dur:" + String((processor->sequenceObject.theSequence.at(i)->offTime-processor->sequenceObject.theSequence.at(i)->getTimeStamp()))+
+            + " tick:" + String(processor->sequenceObject.theSequence.at(i)->getTimeStamp())
+            + "/"+String::String(hoverStep);
             repaint();
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
@@ -1615,6 +1617,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         {
             if (selecting && !ModifierKeys::getCurrentModifiers().isAltDown())
             {
+                int mousePosInTicks = -1;
                 if (!ModifierKeys::getCurrentModifiers().isCommandDown())
                     clearSelectedNotes();
                 if (selectionAnchor.getX() > curDragPosition.getX())
@@ -1668,28 +1671,37 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                         
                         if (head.intersects(selRect))
                         {
-//                            newlySelectedNotes.add(head);
                              newlySelectedNotes.add(step);
                         }
                         
                     }
                 }
                 displayedSelection.clear();
+                int minSelNoteTime = INT_MAX;
+                int maxSelNoteTime = 0;
                 for (int i=0;i<newlySelectedNotes.size();i++)
                 {
                     if (!selectedNotes.contains(newlySelectedNotes[i]))
                         displayedSelection.add(newlySelectedNotes[i]);
+                    if (processor->sequenceObject.theSequence[newlySelectedNotes[i]]->getTimeStamp()<minSelNoteTime)
+                        minSelNoteTime = processor->sequenceObject.theSequence[newlySelectedNotes[i]]->getTimeStamp();
+                    if (processor->sequenceObject.theSequence[newlySelectedNotes[i]]->getTimeStamp()>maxSelNoteTime)
+                        maxSelNoteTime = processor->sequenceObject.theSequence[newlySelectedNotes[i]]->getTimeStamp();
                 }
                 for     (int i=0;i<selectedNotes.size();i++)
                 {
                     if (!newlySelectedNotes.contains(selectedNotes[i]))
                         displayedSelection.add(selectedNotes[i]);
                 }
+                
 //                std::cout
 //                <<  " selected "<<selectedNotes.size()
 //                <<  " newlySelected "<<newlySelectedNotes.size()
 //                <<  " displayedSelection "<<displayedSelection.size()
 //                <<  "\n";
+                hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
+                +" width:"+String(maxSelNoteTime-minSelNoteTime);
+                sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
                 repaint();
             }
             else if (editingNote) //Dragging on note head
