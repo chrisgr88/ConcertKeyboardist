@@ -271,8 +271,13 @@ void ViewerFrame::buttonClicked (Button* button)
     }
     else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeVel == id)
     {
-        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
-        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
+        altToolbarVisible = !altToolbarVisible;
+        chordToolbar.setVisible(altToolbarVisible);
+
+        resized();
+        repaint();
+//        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
+//        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
     }
     else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
     {
@@ -418,17 +423,21 @@ void ViewerFrame::resized()
     else
         mainToolbar.setBounds (getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight()));
     
-    if (chordToolbar.isVertical())
-        ;//chordToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
-    else
+    if (altToolbarVisible)
     {
-        Rectangle<int> shifted = getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight());
-        shifted.translate(0,noteViewer.getToolbarHeight());
-        chordToolbar.setBounds (shifted);
+        if (chordToolbar.isVertical())
+            ;//chordToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
+        else
+        {
+            Rectangle<int> shifted = getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight());
+            shifted.translate(0,noteViewer.getToolbarHeight());
+            chordToolbar.setBounds (shifted);
+        }
     }
     
-    noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight()*2,
-                     getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
+    int tbHeightMultiplier = altToolbarVisible?2:1;
+    noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight()*tbHeightMultiplier,
+                     getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*tbHeightMultiplier);
     hoverStepInfo.setBounds(95, 0, 340, noteViewer.getToolbarHeight()-1);
     scoreTempoInfo.setBounds(95+340+16, 1, 40, noteViewer.getToolbarHeight()-1);
 }

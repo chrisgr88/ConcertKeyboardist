@@ -163,6 +163,7 @@ private:
     
     Toolbar mainToolbar;
     Toolbar chordToolbar;
+    bool altToolbarVisible;
     
 //==============================================================================
 //###
@@ -336,7 +337,7 @@ private:
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
-                case _humanizeVel: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Velocities", "humanizeVelocities.svg");
+                case _humanizeVel: return createButtonFromZipFileSVG (itemId, "Show/Hide Chord Toolbar", "humanizeVelocities.svg");
                     
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
