@@ -527,6 +527,7 @@ public:
         std::vector<std::shared_ptr<NoteWithOffTime>> notePointers; //Pointers to chord's notes
         std::vector<int> offsets; //Offsets from timeStamp of chord top note
         std::vector<String> noteIds; //String(track)+"_"+String(channel)+"_"+String(noteNumber)
+        Rectangle<float> chordRect; //Rectangle surrounding chord for display and hit testing. Value defined in makeNoteBars.
     }; //110
     
     Array<double> targetNoteTimes;
