@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+    <g id="background" transform="matrix(0.503927,0,0,0.536785,7,6.4)">
+        <rect x="0" y="0" width="32" height="32" style="fill:none;"/>
+    </g>
+    <g id="stop" transform="matrix(0.213991,0,0,0.178928,6.59388,6.06869)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(251,0,251);"/>
+    </g>
+    <g id="stop1" transform="matrix(0.417655,0,0,0.178928,10.8733,6.09145)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(222,193,219);"/>
+    </g>
+    <g id="stop2" transform="matrix(0.213991,0,0,0.178928,6.56328,10.866)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(191,179,191);"/>
+    </g>
+    <g id="stop11" transform="matrix(0.500409,0,0,0.178928,10.5117,10.8887)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(188,150,184);"/>
+    </g>
+    <g id="stop3" transform="matrix(0.213991,0,0,0.178928,6.56328,15.7073)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(191,179,191);"/>
+    </g>
+    <g id="stop12" transform="matrix(0.52028,0,0,0.178928,10.4322,15.7433)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(148,102,143);"/>
+    </g>
+    <g id="stop4" transform="matrix(0.213991,0,0,0.178928,6.56328,20.554)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(191,179,191);"/>
+    </g>
+    <g id="stop13" transform="matrix(0.450937,0,0,0.178928,10.7095,20.59)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(124,76,120);"/>
+    </g>
+</svg>

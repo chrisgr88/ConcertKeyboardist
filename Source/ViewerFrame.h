@@ -189,7 +189,7 @@ private:
             _makeInactive    = 7,
             _chain          = 8,
             _humanizeTime   = 9,
-            _humanizeVel    = 10,
+            _chordEditToggle    = 10,
             _play           = 11,
             _stop           = 12,
             _playPause      = 13,
@@ -232,7 +232,7 @@ private:
             ids.add (_addSoft);
             ids.add (_deleteSustain);
             ids.add (_deleteSoft);
-            ids.add (_humanizeVel);
+            ids.add (_chordEditToggle);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
             ids.add (humVelocityBox);
@@ -305,11 +305,11 @@ private:
             ids.add (_chain);
             ids.add (chainAmountBox);
             ids.add (separatorBarId);
-            ids.add (_humanizeVel);
-            ids.add (humVelocityBox);
+            ids.add (_chordEditToggle);
+//            ids.add (humVelocityBox);
             ids.add (separatorBarId);
-            ids.add (_humanizeTime);
-            ids.add (humTimeBox);
+//            ids.add (_humanizeTime);
+//            ids.add (humTimeBox);
             ids.add (separatorBarId);
             ids.add (_addSustain);
             ids.add (_deleteSustain);
@@ -337,8 +337,7 @@ private:
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
-                case _humanizeVel: return createButtonFromZipFileSVG (itemId, "Show/Hide Chord Toolbar", "humanizeVelocities.svg");
-                    
+                case _chordEditToggle: return createButtonFromZipFileSVG (itemId, "Show/Hide Chord Toolbar", "chordEditToggle.svg");
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
                     
@@ -764,7 +763,7 @@ private:
             _makeInactive    = 7,
             _chain          = 8,
             _humanizeTime   = 9,
-            _humanizeVel    = 10,
+            _chordEditToggle    = 10,
             _play           = 11,
             _stop           = 12,
             _playPause      = 13,
@@ -807,7 +806,7 @@ private:
             ids.add (_addSoft);
             ids.add (_deleteSustain);
             ids.add (_deleteSoft);
-            ids.add (_humanizeVel);
+            ids.add (_chordEditToggle);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
             ids.add (humVelocityBox);
@@ -880,7 +879,7 @@ private:
             ids.add (_chain);
             ids.add (chainAmountBox);
             ids.add (separatorBarId);
-            ids.add (_humanizeVel);
+            ids.add (_chordEditToggle);
             ids.add (humVelocityBox);
             ids.add (separatorBarId);
             ids.add (_humanizeTime);
@@ -912,7 +911,7 @@ private:
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
-                case _humanizeVel: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Velocities", "humanizeVelocities.svg");
+                case _chordEditToggle: return createButtonFromZipFileSVG (itemId, "Chord Edit Toggle", "chordEditToggle.svg");
                     
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
@@ -1323,7 +1322,7 @@ private:
     MainToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
     MainToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
-    MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
+    ChordToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     
     double chainAmount;
     double humanizeVelocityAmount;

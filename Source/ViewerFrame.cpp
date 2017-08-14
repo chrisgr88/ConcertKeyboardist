@@ -58,22 +58,27 @@ chordToolbarFactory(this)
             pScoreTempo = (MainToolbarItemFactory::ScoreTempo *) mainToolbar.getItemComponent(i);
 //            pScoreTempo->setTooltip("Tempo From Score");
         }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::humTimeBox)
+//        else if (id == MainToolbarItemFactory::ToolbarItemIds::humVelocityBox)
+//        {
+//            pHumanizeVelocity = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
+//            pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
+//            pHumanizeVelocity->textBox.setText("1.0");
+//            humanizeVelocityAmount = 1.0;
+//        }
+        else
+            mainToolbar.getItemComponent(i)->addListener(this);
+    }
+    for (int i=0; i<chordToolbar.getNumItems(); i++)
+    {
+        int id = chordToolbar.getItemId(i);
+        if (id == ChordToolbarItemFactory::ToolbarItemIds::humTimeBox)
         {
-            pHumanizeStartTime = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
+            pHumanizeStartTime = (ChordToolbarItemFactory::ChainAmountBox *) chordToolbar.getItemComponent(i);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("3");
             humanizeTimeAmount = 3.0;
         }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::humVelocityBox)
-        {
-            pHumanizeVelocity = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
-            pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
-            pHumanizeVelocity->textBox.setText("1.0");
-            humanizeVelocityAmount = 1.0;
-        }
-        else
-            mainToolbar.getItemComponent(i)->addListener(this);
+        chordToolbar.getItemComponent(i)->addListener(this);
     }
     
     addAndMakeVisible (scoreTempoInfo);
@@ -130,14 +135,14 @@ void ViewerFrame::timerCallback()
         pChainAmountBox->returnPressed = false;
     }
     
-    if (pHumanizeVelocity->returnPressed)
-    {
-        std::cout << "Return pressed - HumanizeVelocity " <<pHumanizeVelocity->textBox.getText().getDoubleValue()<<"\n";
-        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
-        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
-        grabKeyboardFocus();
-        pHumanizeVelocity->returnPressed = false;
-    }
+//    if (pHumanizeVelocity->returnPressed)
+//    {
+//        std::cout << "Return pressed - HumanizeVelocity " <<pHumanizeVelocity->textBox.getText().getDoubleValue()<<"\n";
+//        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
+//        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
+//        grabKeyboardFocus();
+//        pHumanizeVelocity->returnPressed = false;
+//    }
     
     if (pHumanizeStartTime->returnPressed)
     {
@@ -198,40 +203,13 @@ void ViewerFrame::buttonClicked (Button* button)
         if (button == mainToolbar.getItemComponent(i))
             break;
     }
-    
+    if (i==mainToolbar.getNumItems()) //If not in main toolbar
+        for (i=0;i<chordToolbar.getNumItems();i++)
+        {
+            if (button == chordToolbar.getItemComponent(i))
+                break;
+        }
     int id = mainToolbar.getItemId(i);
-    
-//    _play           = 9,
-//    _stop           = 10,
-//    _playPause      = 11,
-//    _rewind         = 12,
-//    _listen         = 13,
-    
-//    CommandIDs::fileOpen - doc_open
-//    CommandIDs::fileSave - doc_save
-//    CommandIDs::fileSaveAs - doc_saveAs
-//    CommandIDs::editUndo - edit_undo
-//    CommandIDs::editRedo -edit_redo
-    
-//    CommandIDs::playPause _play, _stop
-//    CommandIDs::playFromCurrentPlayhead,
-//    CommandIDs::listenToSelection - _listen
-//    CommandIDs::increaseTempo,
-//    CommandIDs::decreaseTempo,
-
-    
-//    CommandIDs::toggleSelectedNotesActive
-//    CommandIDs::setSelectedNotesActive
-//    CommandIDs::setSelectedNotesInactive
-//    CommandIDs::chainSelectedNotes - _chain
-//    CommandIDs::velHumanizeSelection,
-//    CommandIDs::timeHumanizeSelection,
-//    CommandIDs::rewind - _rewind
-    
-//    CommandIDs::toggleBookmark,
-//    CommandIDs::previousBookmark,
-//    CommandIDs::nextBookmark
-    
     if (MainToolbarItemFactory::ToolbarItemIds::doc_open == id)
         sendActionMessage("fileOpen");
     else if(MainToolbarItemFactory::ToolbarItemIds::doc_save == id)
@@ -269,7 +247,7 @@ void ViewerFrame::buttonClicked (Button* button)
         humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
         sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
     }
-    else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeVel == id)
+    else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
     {
         altToolbarVisible = !altToolbarVisible;
         chordToolbar.setVisible(altToolbarVisible);
@@ -298,6 +276,11 @@ void ViewerFrame::buttonClicked (Button* button)
     {
         std::cout << "deleteSoft\n";
         sendActionMessage("deleteSoft");
+    }
+    else if(ChordToolbarItemFactory::ToolbarItemIds::_deleteSoft == id)
+    {
+        std::cout << "Chord deleteSoft\n";
+//        sendActionMessage("deleteSoft");
     }
     unfocusAllComponents();
 }
