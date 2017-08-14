@@ -958,7 +958,7 @@ void ScrollingNoteViewer::makeNoteBars()
     const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
     const float headHeight =  h * headToBarHeightRatio;
     Array<NoteBarDescription> deferredNoteBars; //Info to defer making active note bars until inactive ones are made
-    int prevChordIndex = -1;
+    int prevChordIndex = INT_MIN;
     RectangleList<float> chordRects;
     //Note Bars
     for (int index = 0;index<static_cast<int>(pSequence->size());index++)
@@ -1015,9 +1015,12 @@ void ScrollingNoteViewer::makeNoteBars()
                 prevChordIndex = pSequence->at(index)->chordIndex;
                 std::cout << "At " << index << " Start chord "<< pSequence->at(index)->chordIndex <<"\n";
             }
-            else
+            else if (prevChordIndex>=0)
             {
                 std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
+                int foo;
+                if (prevChordIndex==-1)
+                    foo=0;
                 RectangleList<float> rList;
                 for (int i=0;i<processor->sequenceObject.chords[prevChordIndex].notePointers.size();i++)
                 {
