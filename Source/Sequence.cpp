@@ -697,11 +697,9 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     values.addTokens(value, " ", "\"");
                     chDet.timeStamp = values[0].getIntValue();
                     chDet.scaleFactor=values[1].getFloatValue();
-                    
                     chDet.timeSpec=values[2];
                     chDet.timeRandScale=values[3].getFloatValue();
                     chDet.timeRandSeed=values[4].getIntValue();
-                    
                     chDet.velSpec=values[5];
                     chDet.velRandScale=values[6].getFloatValue();
                     chDet.velRandSeed=values[7].getIntValue();
@@ -1009,6 +1007,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     if (detail.notePointers.size()>1)
                     {
                         detail.timeStamp = detail.notePointers[0]->getTimeStamp();
+                        detail.timeSpec = "Random";
                         chords.push_back(detail);
 //                        std::cout <<"Next chord: chordNum "<<chords.size()-1
 //                        <<" timeStamp " <<detail.timeStamp

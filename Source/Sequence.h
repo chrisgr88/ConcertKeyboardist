@@ -505,15 +505,19 @@ public:
     
     //ChordVelTypes: Custom - "cust"; From Preset - "pres"; From Algorithm - "alg"
     //ChordTimeTypes Custom - "cust"; From Algorithm - "alg"
-
+    
     class ChordDetail {
         friend Sequence;
         ChordDetail( )
         {
             timeStamp=-1;
             scaleFactor=1.0f;
-            timeSpec="TimeSpec"; timeRandScale=1.0f; timeRandSeed=1;
-            velSpec="VelSpec"; velRandScale=1.0f; velRandSeed=1;
+            timeSpec="None";
+            timeRandScale=1.0f;
+            timeRandSeed=1;
+            velSpec="None"; //"None","Random',"Manual"
+            velRandScale=1.0f;
+            velRandSeed=1;
         }
     public:
         int timeStamp; //20

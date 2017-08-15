@@ -503,7 +503,7 @@ ApplicationProperties& getAppProperties();
                     int num2 = recentFiles.getNumFiles();                    
                     
 
-                    std::cout <<"N files before, after"<<num1<<" "<<num2<<"\n";
+//                    std::cout <<"N files before, after"<<num1<<" "<<num2<<"\n";
                 }
                 else
                     midiProcessor.sequenceObject.saveDocument(midiProcessor.sequenceObject.getLastDocumentOpened());

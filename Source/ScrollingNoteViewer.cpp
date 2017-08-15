@@ -74,6 +74,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     zoomOrScrollDragging = false;
     selecting = false;
     editingNote = false;
+    showingChords = false;
     resetHorizontalShift();
     colourActiveNoteHead = Colour(0xffff00ff);//Cyan
     colourPrimaryNoteBar = Colour(0xffffccff).darker().darker();
@@ -1008,53 +1009,29 @@ void ScrollingNoteViewer::makeNoteBars()
         
         pSequence->at(index)->head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
         
-        if (pSequence->at(index)->chordIndex!=prevChordIndex)
+        if (prevChordIndex>=0 && pSequence->at(index)->chordIndex!=prevChordIndex)
         {
-            if (pSequence->at(index)->chordIndex>=0)
+            std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
+            RectangleList<float> rList;
+            for (int i=0;i<processor->sequenceObject.chords[prevChordIndex].notePointers.size();i++)
             {
-                prevChordIndex = pSequence->at(index)->chordIndex;
-                std::cout << "At " << index << " Start chord "<< pSequence->at(index)->chordIndex <<"\n";
+                rList.add(processor->sequenceObject.chords[prevChordIndex].notePointers.at(i)->head);
             }
-            else if (prevChordIndex>=0)
-            {
-                std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
-                int foo;
-                if (prevChordIndex==-1)
-                    foo=0;
-                RectangleList<float> rList;
-                for (int i=0;i<processor->sequenceObject.chords[prevChordIndex].notePointers.size();i++)
-                {
-                    rList.add(processor->sequenceObject.chords[prevChordIndex].notePointers.at(i)->head);
-                }
-                Rectangle<float> chordRect = rList.getBounds();
-                processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect;
-                std::cout << "At " << prevChordIndex << " Chord rect "
-                << chordRect.getTopLeft().getX()
-                <<" "<<chordRect.getTopLeft().getY()
-                <<" "<<chordRect.getBottomRight().getX()
-                <<" "<<chordRect.getBottomRight().getY()
-                <<"\n";
-            }
+            Rectangle<float> chordRect = rList.getBounds();
+            processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect;
+            std::cout << "At " << prevChordIndex << " Chord rect "
+            << chordRect.getTopLeft().getX()
+            <<" "<<chordRect.getTopLeft().getY()
+            <<" "<<chordRect.getBottomRight().getX()
+            <<" "<<chordRect.getBottomRight().getY()
+            <<"\n";
+//            prevChordIndex = pSequence->at(index)->chordIndex;
         }
-        
-//        {
-//            chordRects.add(pSequence->at(index)->head);
-//            chordIndex = pSequence->at(index)->chordIndex;
-//        }
-//        if (chordIndex>=0 && pSequence->at(index)->chordIndex<0)
-//        {
-//            Rectangle<float> chordRect = chordRects.getBounds();
-//            processor->sequenceObject.chords.at(pSequence->at(index-1)->chordIndex).chordRect = chordRect;
-//            std::cout << "At " << index << " Chord rect "
-//            << chordRect.getTopLeft().getX()
-//            <<" "<<chordRect.getTopLeft().getY()
-//            <<" "<<chordRect.getBottomRight().getX()
-//            <<" "<<chordRect.getBottomRight().getY()
-//            <<"\n";
-//            chordRects.clear();
-//            chordIndex=-1;
-//        }
-        
+        if (pSequence->at(index)->chordIndex>=0)
+        {
+            std::cout << "At " << index << " Start chord "<< pSequence->at(index)->chordIndex <<"\n";
+            prevChordIndex = pSequence->at(index)->chordIndex;
+        }
         
 //        std::cout << "makeNoteBars at step "<<index;
         if (pSequence->at(index)->triggeredBy==-1) //If it's a target note
@@ -1338,16 +1315,19 @@ void ScrollingNoteViewer::paint (Graphics& g)
             g.setColour (Colours::seagreen);
             g.drawLine(velLine, 6.0f);
         }
-        for (int ch=0;ch<processor->sequenceObject.chords.size();ch++)
+        if (showingChords)
         {
-            const Rectangle<float> rct = processor->sequenceObject.chords[ch].chordRect.expanded(1.2, 1.2);
-            const Rectangle<float> chordRect = Rectangle<float>(
-                           rct.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
-                           rct.getY()*verticalScale,
-                           rct.getWidth()*horizontalScale,
-                           rct.getHeight()*verticalScale);
-            g.setColour (Colours::white);
-            g.drawRect(chordRect, 0.7);
+            for (int ch=0;ch<processor->sequenceObject.chords.size();ch++)
+            {
+                const Rectangle<float> rct = processor->sequenceObject.chords[ch].chordRect.expanded(1.2, 1.2);
+                const Rectangle<float> chordRect = Rectangle<float>(
+                               rct.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                               rct.getY()*verticalScale,
+                               rct.getWidth()*horizontalScale,
+                               rct.getHeight()*verticalScale);
+                g.setColour (Colours::white);
+                g.drawRect(chordRect, 0.7);
+            }
         }
         
 //        std::cout << "Paint "<< "\n";

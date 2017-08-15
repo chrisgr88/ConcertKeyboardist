@@ -15,7 +15,7 @@ ViewerFrame::ViewerFrame (MIDIProcessor *p) :
 noteViewer(p),
 processor(p),
 mainFactory(this),
-chordToolbarFactory(this)
+altToolbarFactory(this)
 {
     noteViewer.addChangeListener(this);
     p->addChangeListener(this);
@@ -28,10 +28,10 @@ chordToolbarFactory(this)
     mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
     mainFactory.addChangeListener(this);
 
-    addAndMakeVisible(chordToolbar);
-    chordToolbar.addDefaultItems (chordToolbarFactory);
-    chordToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
-    chordToolbarFactory.addChangeListener(this);
+    addAndMakeVisible(altToolbar);
+    altToolbar.addDefaultItems (altToolbarFactory);
+    altToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
+    altToolbarFactory.addChangeListener(this);
     
     for (int i=0; i<mainToolbar.getNumItems(); i++)
     {
@@ -68,17 +68,17 @@ chordToolbarFactory(this)
         else
             mainToolbar.getItemComponent(i)->addListener(this);
     }
-    for (int i=0; i<chordToolbar.getNumItems(); i++)
+    for (int i=0; i<altToolbar.getNumItems(); i++)
     {
-        int id = chordToolbar.getItemId(i);
-        if (id == ChordToolbarItemFactory::ToolbarItemIds::humTimeBox)
+        int id = altToolbar.getItemId(i);
+        if (id == AltToolbarItemFactory::ToolbarItemIds::humTimeBox)
         {
-            pHumanizeStartTime = (ChordToolbarItemFactory::ChainAmountBox *) chordToolbar.getItemComponent(i);
+            pHumanizeStartTime = (AltToolbarItemFactory::ChainAmountBox *) altToolbar.getItemComponent(i);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("3");
             humanizeTimeAmount = 3.0;
         }
-        chordToolbar.getItemComponent(i)->addListener(this);
+        altToolbar.getItemComponent(i)->addListener(this);
     }
     
     addAndMakeVisible (scoreTempoInfo);
@@ -204,9 +204,9 @@ void ViewerFrame::buttonClicked (Button* button)
             break;
     }
     if (i==mainToolbar.getNumItems()) //If not in main toolbar
-        for (i=0;i<chordToolbar.getNumItems();i++)
+        for (i=0;i<altToolbar.getNumItems();i++)
         {
-            if (button == chordToolbar.getItemComponent(i))
+            if (button == altToolbar.getItemComponent(i))
                 break;
         }
     int id = mainToolbar.getItemId(i);
@@ -250,12 +250,10 @@ void ViewerFrame::buttonClicked (Button* button)
     else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
     {
         altToolbarVisible = !altToolbarVisible;
-        chordToolbar.setVisible(altToolbarVisible);
-
+        noteViewer.showingChords = altToolbarVisible;
+        altToolbar.setVisible(altToolbarVisible);
         resized();
         repaint();
-//        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
-//        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
     }
     else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
     {
@@ -277,10 +275,15 @@ void ViewerFrame::buttonClicked (Button* button)
         std::cout << "deleteSoft\n";
         sendActionMessage("deleteSoft");
     }
-    else if(ChordToolbarItemFactory::ToolbarItemIds::_deleteSoft == id)
+    else if(AltToolbarItemFactory::ToolbarItemIds::create_chord == id)
     {
-        std::cout << "Chord deleteSoft\n";
+        std::cout << "create_chord\n";
 //        sendActionMessage("deleteSoft");
+    }
+    else if(AltToolbarItemFactory::ToolbarItemIds::delete_chord == id)
+    {
+        std::cout << "delete_chord\n";
+        //        sendActionMessage("deleteSoft");
     }
     unfocusAllComponents();
 }
@@ -408,13 +411,13 @@ void ViewerFrame::resized()
     
     if (altToolbarVisible)
     {
-        if (chordToolbar.isVertical())
-            ;//chordToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
+        if (altToolbar.isVertical())
+            ;//altToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
         else
         {
             Rectangle<int> shifted = getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight());
             shifted.translate(0,noteViewer.getToolbarHeight());
-            chordToolbar.setBounds (shifted);
+            altToolbar.setBounds (shifted);
         }
     }
     

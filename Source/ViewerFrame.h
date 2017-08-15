@@ -162,7 +162,7 @@ private:
     ComponentBoundsConstrainer resizeLimits;
     
     Toolbar mainToolbar;
-    Toolbar chordToolbar;
+    Toolbar altToolbar;
     bool altToolbarVisible;
     
 //==============================================================================
@@ -741,10 +741,10 @@ private:
     
     //==============================================================================
     //###
-    class ChordToolbarItemFactory   : public ToolbarItemFactory, public ComboBoxListener, public ChangeBroadcaster
+    class AltToolbarItemFactory   : public ToolbarItemFactory, public ComboBoxListener, public ChangeBroadcaster
     {
     public:
-        ChordToolbarItemFactory(ViewerFrame *pVF) :
+        AltToolbarItemFactory(ViewerFrame *pVF) :
         pViewerFrame(pVF)
         {
 //            std::cout << "pViewerFrame " << pViewerFrame << "\n";
@@ -754,32 +754,16 @@ private:
         // are the ones we'll use in this demo.
         enum ToolbarItemIds
         {
-            doc_open        = 1,
-            doc_save        = 2,
-            doc_saveAs      = 3,
-            edit_undo       = 4,
-            edit_redo       = 5,
-            _makeActive     = 6,
-            _makeInactive    = 7,
-            _chain          = 8,
+            create_chord        = 1,
+            delete_chord        = 2,
+//            doc_saveAs      = 3,
+//            edit_undo       = 4,
+//            edit_redo       = 5,
+//            _makeActive     = 6,
+//            _makeInactive    = 7,
+//            _chain          = 8,
             _humanizeTime   = 9,
-            _chordEditToggle    = 10,
-            _play           = 11,
-            _stop           = 12,
-            _playPause      = 13,
-            _rewind         = 14,
-            _listen         = 15,
-            customComboBox  = 16,
-            chainAmountBox  = 17,
-            scoreTempo      = 18,
-            tempoMultiplier = 19,
-            realTimeTempo   = 20,
-            humVelocityBox  = 21,
-            humTimeBox      = 22,
-            _addSustain      = 23,
-            _addSoft        = 24,
-            _deleteSustain   = 25,
-            _deleteSoft      = 26
+            humTimeBox      = 10,
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -794,31 +778,10 @@ private:
             // go in our toolbar. Any items you might want to add must be listed here. The
             // order in which they are listed will be used by the toolbar customisation panel.
             
-            ids.add (doc_open);
-            ids.add (doc_save);
-            ids.add (doc_saveAs);
-            ids.add (edit_undo);
-            ids.add (edit_redo);
-            ids.add (_makeActive);
-            ids.add (_makeInactive);
-            ids.add (_chain);
-            ids.add (_addSustain);
-            ids.add (_addSoft);
-            ids.add (_deleteSustain);
-            ids.add (_deleteSoft);
-            ids.add (_chordEditToggle);
+            ids.add (create_chord);
+            ids.add (delete_chord);
             ids.add (_humanizeTime);
-            ids.add (chainAmountBox);
-            ids.add (humVelocityBox);
             ids.add (humTimeBox);
-            ids.add (scoreTempo);
-            ids.add (tempoMultiplier);
-            ids.add (realTimeTempo);
-            ids.add (_play);
-            ids.add (_stop);
-            ids.add (_rewind);
-            ids.add (_playPause);
-            ids.add (_listen);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -829,66 +792,11 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
-            ids.add (doc_open);
-            ids.add (doc_save);
-            ids.add (doc_saveAs);
-            ids.add (separatorBarId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            
-            ids.add (separatorBarId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (realTimeTempo);
-            ids.add (separatorBarId);
-            ids.add (_rewind);
-            ids.add (_play);
-            ids.add (_stop);
-            ids.add (_listen);
-            ids.add (separatorBarId);
-            ids.add (spacerId);
-            ids.add (separatorBarId);
-            ids.add (edit_undo);
-            ids.add (edit_redo);
-            ids.add (separatorBarId);
-            ids.add (_makeActive);
-            ids.add (_makeInactive);
-            ids.add (separatorBarId);
-            ids.add (_chain);
-            ids.add (chainAmountBox);
-            ids.add (separatorBarId);
-            ids.add (_chordEditToggle);
-            ids.add (humVelocityBox);
+            ids.add (create_chord);
+            ids.add (delete_chord);
             ids.add (separatorBarId);
             ids.add (_humanizeTime);
             ids.add (humTimeBox);
-            ids.add (separatorBarId);
-            ids.add (_addSustain);
-            ids.add (_deleteSustain);
-            ids.add (_addSoft);
-            ids.add (_deleteSoft);
             ids.add (flexibleSpacerId);
         }
         
@@ -896,77 +804,17 @@ private:
         {
             switch (itemId)
             {
-                case doc_open: return  createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
-                case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
-                case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
-                case edit_undo:         return createButtonFromZipFileSVG (itemId, "Undo", "edit-undo.svg");
-                case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
-                    
-                case _makeActive:        return createButtonFromZipFileSVG (itemId, "Set as Target Notes", "makeActive.svg");
-                case _makeInactive:        return createButtonFromZipFileSVG (itemId, "Set as Non Target Notes", "makeInactive.svg");
-                    
-                case _chain:        return createButtonFromZipFileSVG (itemId, "Chain Notes at Given Interval", "chain.svg");
-                case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
-                case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
-                case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
-                case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
-                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
-                case _chordEditToggle: return createButtonFromZipFileSVG (itemId, "Chord Edit Toggle", "chordEditToggle.svg");
-                    
-                case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
-                case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
-                    
-                case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
-                case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
-                    
-                    //                case customComboBox:
-                    //                {
-                    //                    CustomToolbarComboBox *ccb = new CustomToolbarComboBox (itemId);
-                    //                    ccb->setTooltip("CustomToolbarComboBox");
-                    //                    return ccb;
-                    //                }
-                    
-                case chainAmountBox:
-                {
-                    ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Chaining Interval in Ticks");
-                    return txtBox;
-                }
-                    
-                case humVelocityBox:
-                {
-                    ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Amount of Velocity Humanization");
-                    return txtBox;
-                }
-                    
+                case create_chord: return  createButtonFromZipFileSVG (itemId, "Create Chord", "createChord.svg");
+                case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete Chord", "deleteChord.svg");
+                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Start Times", "humanizeStartTimes.svg");
                 case humTimeBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
                     txtBox->textBox.setTooltip("Amount of Time Randomization");
                     return txtBox;
                 }
-                    
-                case scoreTempo:
-                {
-                    ScoreTempo *txtBox = new ScoreTempo (itemId);
-                    txtBox->setTooltip("Tempo");
-                    return txtBox;
-                }
-                    
-                case tempoMultiplier:
-                {
-                    TempoMultiplier *tempoMultiplier = new TempoMultiplier (itemId);
-                    tempoMultiplier->setTooltip("Tempo Multiplier");
-                    return tempoMultiplier;
-                }
-                case realTimeTempo:
-                {
-                    RealTimeTempo *realTimeTempo = new RealTimeTempo (itemId);
-                    realTimeTempo->setTooltip("Actual Tempo");
-                    return realTimeTempo;
-                }
-                default:                break;
+                default:
+                    break;
             }
             
             return nullptr;
@@ -1315,14 +1163,14 @@ private:
     }; //CustomIncDecBox
     
     MainToolbarItemFactory mainFactory;
-    ChordToolbarItemFactory chordToolbarFactory;
+    AltToolbarItemFactory altToolbarFactory;
     //    MainToolbarItemFactory::CustomToolbarComboBox *pCCB;
     MainToolbarItemFactory::ChainAmountBox *pChainAmountBox;
     MainToolbarItemFactory::ScoreTempo *pScoreTempo;
     MainToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
     MainToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
-    ChordToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
+    AltToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     
     double chainAmount;
     double humanizeVelocityAmount;

@@ -239,6 +239,8 @@ public:
         repaint();
     }
     
+    bool showingChords;    
+    
 private:
     MIDIProcessor *processor;
     
