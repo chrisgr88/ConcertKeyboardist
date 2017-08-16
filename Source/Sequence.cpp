@@ -922,9 +922,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         //###
         //Build the chords list if we either loaded a midi file or loaded a ckf file (and probably read a chords list)
         //Issue - What if sequence does not include all tracks?
-        if (loadFile==Sequence::loadFile)
+        if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
         {
-            if (loadedCkfFile==true && chords.size()>0)  //It Was a ckf file so finish creating the chords list loaded from the file
+            if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
+                chords.size()>0)  //It Was a ckf file so finish creating the chords list loaded from the file
             {
                 //For each chord in the chords Array, and for each note in its chordNotes list,
                 //find notes with that timeStamp in theSequence

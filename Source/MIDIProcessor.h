@@ -526,6 +526,15 @@ public:
         sequenceObject.loadingFile = false; //Starts processing
     }
     
+    void createChord()
+    {
+        std::cout << "MidiProcessor create_chord\n";
+    }
+    void deleteChord()
+    {
+        std::cout << "MidiProcessor delete_chord\n";
+    }
+    
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval)
     {
 //        std::cout << "chainCommand: interval = " <<inverval<<"\n";
@@ -702,7 +711,7 @@ public:
         //        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp = notesToChange[0]->getTimeStamp();
         sequenceObject.setChangedFlag(true);
         catchUp();
-        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+        buildSequenceAsOf(Sequence::updateChords, Sequence::doRetainEdits, getSequenceReadHead());
     }
     void changeNoteOffTime(int step, double offTime)
     {

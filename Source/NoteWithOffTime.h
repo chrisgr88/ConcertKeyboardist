@@ -263,7 +263,7 @@ public:
     int rectHead; //GL Rect number of note head
     uint8 triggeringExprNote; //The expr controller note that caused this note to be on
     bool selected;
-    int chordTopStep; //Step of other than highest note in a group of simultaneous notes. For highest is -1, and if not in chord.
+    int chordTopStep; //Highest note in a group of notes grouped as a chord. For highest is -1, and if not in chord.
     bool muted;
     Rectangle<float> head;
     double timetoNextNote;

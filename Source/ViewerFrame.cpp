@@ -56,15 +56,7 @@ altToolbarFactory(this)
         else if (id == MainToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
             pScoreTempo = (MainToolbarItemFactory::ScoreTempo *) mainToolbar.getItemComponent(i);
-//            pScoreTempo->setTooltip("Tempo From Score");
         }
-//        else if (id == MainToolbarItemFactory::ToolbarItemIds::humVelocityBox)
-//        {
-//            pHumanizeVelocity = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
-//            pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
-//            pHumanizeVelocity->textBox.setText("1.0");
-//            humanizeVelocityAmount = 1.0;
-//        }
         else
             mainToolbar.getItemComponent(i)->addListener(this);
     }
@@ -210,80 +202,87 @@ void ViewerFrame::buttonClicked (Button* button)
                 break;
         }
     int id = mainToolbar.getItemId(i);
-    if (MainToolbarItemFactory::ToolbarItemIds::doc_open == id)
-        sendActionMessage("fileOpen");
-    else if(MainToolbarItemFactory::ToolbarItemIds::doc_save == id)
-        sendActionMessage("fileSave");
-    else if(MainToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
-        sendActionMessage("fileSaveAs");
-    
-    else if(MainToolbarItemFactory::ToolbarItemIds::edit_undo == id)
-        sendActionMessage("editUndo");
-    else if(MainToolbarItemFactory::ToolbarItemIds::edit_redo == id)
-        sendActionMessage("editRedo");
-    
-    
-    else if(MainToolbarItemFactory::ToolbarItemIds::_play == id)
-        sendActionMessage("play");
-    else if(MainToolbarItemFactory::ToolbarItemIds::_stop == id)
-        sendActionMessage("pause");
-    else if(MainToolbarItemFactory::ToolbarItemIds::_rewind == id)
-        sendActionMessage("rewind");
-    
-    else if(MainToolbarItemFactory::ToolbarItemIds::_listen == id)
-        sendActionMessage("listenToSelection");
-    
-    else if(MainToolbarItemFactory::ToolbarItemIds::_makeActive == id)
-        sendActionMessage("setSelectedNotesActive");
-    else if(MainToolbarItemFactory::ToolbarItemIds::_makeInactive == id)
-        sendActionMessage("setSelectedNotesInactive");
-    else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
+    if (button->getParentComponent() == (juce::Component*) &mainToolbar)
     {
-        chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
-        sendActionMessage("chain:"+String(chainAmount));
+        if (MainToolbarItemFactory::ToolbarItemIds::doc_open == id)
+            sendActionMessage("fileOpen");
+        else if(MainToolbarItemFactory::ToolbarItemIds::doc_save == id)
+            sendActionMessage("fileSave");
+        else if(MainToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
+            sendActionMessage("fileSaveAs");
+        
+        else if(MainToolbarItemFactory::ToolbarItemIds::edit_undo == id)
+            sendActionMessage("editUndo");
+        else if(MainToolbarItemFactory::ToolbarItemIds::edit_redo == id)
+            sendActionMessage("editRedo");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_play == id)
+            sendActionMessage("play");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_stop == id)
+            sendActionMessage("pause");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_rewind == id)
+            sendActionMessage("rewind");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_listen == id)
+            sendActionMessage("listenToSelection");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_makeActive == id)
+            sendActionMessage("setSelectedNotesActive");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_makeInactive == id)
+            sendActionMessage("setSelectedNotesInactive");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
+        {
+            chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
+            sendActionMessage("chain:"+String(chainAmount));
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
+        {
+            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+            sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
+        {
+            altToolbarVisible = !altToolbarVisible;
+            noteViewer.showingChords = altToolbarVisible;
+            altToolbar.setVisible(altToolbarVisible);
+            resized();
+            repaint();
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
+        {
+            std::cout << "addSustain\n";
+            sendActionMessage("addSustain");
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_deleteSustain == id)
+        {
+            std::cout << "deleteSustain\n";
+            sendActionMessage("deleteSustain");
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_addSoft == id)
+        {
+            std::cout << "addSoft\n";
+            sendActionMessage("addSoft");
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_deleteSoft == id)
+        {
+            std::cout << "deleteSoft\n";
+            sendActionMessage("deleteSoft");
+        }
     }
-    else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
+    else if (button->getParentComponent() == (juce::Component*) &altToolbar)
     {
-        humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
-        sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
-    }
-    else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
-    {
-        altToolbarVisible = !altToolbarVisible;
-        noteViewer.showingChords = altToolbarVisible;
-        altToolbar.setVisible(altToolbarVisible);
-        resized();
-        repaint();
-    }
-    else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
-    {
-        std::cout << "addSustain\n";
-        sendActionMessage("addSustain");
-    }
-    else if(MainToolbarItemFactory::ToolbarItemIds::_deleteSustain == id)
-    {
-        std::cout << "deleteSustain\n";
-        sendActionMessage("deleteSustain");
-    }
-    else if(MainToolbarItemFactory::ToolbarItemIds::_addSoft == id)
-    {
-        std::cout << "addSoft\n";
-        sendActionMessage("addSoft");
-    }
-    else if(MainToolbarItemFactory::ToolbarItemIds::_deleteSoft == id)
-    {
-        std::cout << "deleteSoft\n";
-        sendActionMessage("deleteSoft");
-    }
-    else if(AltToolbarItemFactory::ToolbarItemIds::create_chord == id)
-    {
-        std::cout << "create_chord\n";
-//        sendActionMessage("deleteSoft");
-    }
-    else if(AltToolbarItemFactory::ToolbarItemIds::delete_chord == id)
-    {
-        std::cout << "delete_chord\n";
-        //        sendActionMessage("deleteSoft");
+        if (AltToolbarItemFactory::ToolbarItemIds::create_chord == id)
+        {
+            std::cout << "create_chord\n";
+            sendActionMessage("create_chord");
+        }
+        else if(AltToolbarItemFactory::ToolbarItemIds::delete_chord == id)
+        {
+            std::cout << "delete_chord\n";
+            sendActionMessage("delete_chord");
+        }
+        else if(AltToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
+        {
+            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+            sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+        }
     }
     unfocusAllComponents();
 }

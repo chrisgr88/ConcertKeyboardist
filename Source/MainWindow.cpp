@@ -142,6 +142,14 @@ ApplicationProperties& getAppProperties();
         {
             midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
         }
+        else if (message == "create_chord")
+        {
+            midiProcessor.createChord();
+        }
+        else if (message == "delete_chord")
+        {
+            midiProcessor.deleteChord();
+        }
     }
     
     bool MainWindow::keyPressed (const KeyPress& key, Component* originatingComponent)
