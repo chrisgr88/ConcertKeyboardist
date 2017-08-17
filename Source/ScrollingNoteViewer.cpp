@@ -962,13 +962,14 @@ void ScrollingNoteViewer::makeNoteBars()
     Array<NoteBarDescription> deferredNoteBars; //Info to defer making active note bars until inactive ones are made
     int prevChordIndex = INT_MIN;
     RectangleList<float> chordRects;
+    //###
     //Note Bars
     for (int index = 0;index<static_cast<int>(pSequence->size());index++)
     {
 //        const NoteWithOffTime msg = sequence->at(index);
-        int foo;
-        if (index==48)
-            foo=0;
+//        int foo;
+//        if (index==48)
+//            foo=0;
         const double startPixel = pSequence->at(index)->getTimeStamp()*pixelsPerTick;
         double endPixel = pSequence->at(index)->offTime*pixelsPerTick;
         const int noteNumber = pSequence->at(index)->noteNumber;
@@ -1008,7 +1009,6 @@ void ScrollingNoteViewer::makeNoteBars()
         const float vel = pSequence->at(index)->velocity;
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
         
-        //###
         pSequence->at(index)->head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
         if (prevChordIndex>=0 && pSequence->at(index)->chordIndex!=prevChordIndex)
         {

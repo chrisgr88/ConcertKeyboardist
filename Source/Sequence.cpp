@@ -1117,7 +1117,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     } customCompare2;
                     std::sort(chord.begin(), chord.end(),customCompare2);
                     
-//                    std::cout <<"Found chord " <<theSequence[step].timeStamp<<" "<< chord.size() <<"\n";
+                    if (step<=6)
+                        std::cout <<"Found chord " <<theSequence[step]->timeStamp<<" "<< chord.size() <<"\n";
                     thisChordTimeStamp = theSequence[chordTopStep]->getTimeStamp();
                     //Rand seed based on thisStepChordNoteIndex different for all chords bot constant for a chord
                     srand(thisStepChordNoteIndex);
@@ -1427,6 +1428,7 @@ void Sequence::dumpData(int start, int end, int nn)
     << " triggered "
     << " triggeredOff "
     << " chordTop "
+    << " chordIndex "
     << "\n";
     if (end>theSequence.size())
         end = theSequence.size();
@@ -1451,6 +1453,7 @@ void Sequence::dumpData(int start, int end, int nn)
             << theSequence[i]->triggeredNote<<" "
             << theSequence[i]->triggeredOffNote<<" "
             << theSequence[i]->chordTopStep<<" "
+            << theSequence[i]->chordIndex<<" "
             <<"\n";
         }
     }
