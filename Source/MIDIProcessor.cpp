@@ -1227,6 +1227,486 @@ void MIDIProcessor::catchUp()
     rewind(timeInTicks-xInTicksFromViewer);
 }
 
+
+double MIDIProcessor::getLastUserPlayedStepTime()
+{
+    double time;
+    if (lastUserPlayedSeqStep==-1)
+        time = -1.0;
+    else
+    {
+        time = sequenceObject.theSequence[lastUserPlayedSeqStep]->getTimeStamp();
+    }
+    return time;
+}
+
+Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesActive, Array<int> steps) //Used only by Perform in undo
+{
+    Array<Sequence::StepActivity> stepActivityList;
+    if (setNotesActive==true)
+    {
+        for (int i=0;i<steps.size();i++)
+        {
+            const double ts = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
+            const int index = sequenceObject.targetNoteTimes.indexOf(ts);
+            if (index>=0)
+            {
+                const Sequence::StepActivity act = {steps[i], true};
+                stepActivityList.add(act);
+            }
+            else
+            {
+                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
+                    sequenceObject.targetNoteTimes.add(ts);
+                const Sequence::StepActivity act = {steps[i], false};
+                stepActivityList.add(act);
+            }
+        }
+    }
+    else //set Notes inActive
+    {
+        int firstStep = 0;
+        if (steps[0]==0)
+            firstStep = 1; //Start at 1 because step 0 must always be active
+        for (int i=firstStep;i<steps.size();i++) //Start at 1 because step 0 must always be active
+        {
+            const double ts = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
+            const int index = sequenceObject.targetNoteTimes.indexOf (ts);
+            if (index>=0)
+            {
+                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
+                    sequenceObject.targetNoteTimes.remove(index);
+                const Sequence::StepActivity act = {steps[i], true};
+                stepActivityList.add(act);
+            }
+            else
+            {
+                const Sequence::StepActivity act = {steps[i], false};
+                stepActivityList.add(act);
+            }
+        }
+    }
+    if (undoMgr->inUndo || undoMgr->inRedo)
+        setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
+    else
+    {
+        sequenceObject.setChangedFlag(true);
+        catchUp();
+    }
+    //        inUndoRedo = true;
+    changeMessageType = CHANGE_MESSAGE_UNDO;
+    sequenceObject.undoneOrRedoneSteps = steps;
+    sendSynchronousChangeMessage(); //To viewer
+    sequenceObject.targetNoteTimes.sort();
+    //        for (int w=0;w<sequenceObject.targetNoteTimes.size()&&w<20;w++)
+    //            std::cout << "tnt " <<sequenceObject.targetNoteTimes[w]<<"\n";
+    return stepActivityList;
+}
+
+void MIDIProcessor::addPedalChange(PedalType pType)
+{
+    sequenceObject.loadingFile = true; //Stops processing
+    if (copyOfSelectedNotes.size()<=1)
+        return;
+    std::vector<Sequence::PedalMessage> *pedalChanges;
+    if (pType==sustPedal)
+        pedalChanges = &sequenceObject.sustainPedalChanges;
+    else if (pType==softPedal)
+        pedalChanges = &sequenceObject.softPedalChanges;
+    else
+        return;
+    
+    double newStart = sequenceObject.theSequence[copyOfSelectedNotes.getFirst()]->getTimeStamp();
+    double newEnd = sequenceObject.theSequence[copyOfSelectedNotes.getLast()]->getTimeStamp();
+    if (pedalChanges->size()==0)
+    {
+        Sequence::PedalMessage onMsg = Sequence::PedalMessage(newStart,true);
+        Sequence::PedalMessage offMsg = Sequence::PedalMessage(newEnd+1, false);
+        pedalChanges->push_back(onMsg);
+        pedalChanges->push_back(offMsg);
+        catchUp();
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+        return;
+    }
+    
+    //        std::cout << " add sustain: newStart, newEnd " <<newStart<<" "<<newEnd<< "\n";
+    //        MidiMessageSequence seq;
+    for (int i=0; i<pedalChanges->size() ;i+=2)
+    {
+        //            if (i>10) break;
+        double thisStart = pedalChanges->at(i).timeStamp;
+        double thisEnd = pedalChanges->at(i+1).timeStamp;
+        //            std::cout << i/2 <<" thisStart, thisEnd "<<thisStart<<" "<<thisEnd<< "\n";
+        if (newEnd<=thisStart) //==new entirely before 'this'
+        {
+            //Do nothing
+            //                 std::cout << i/2 <<" "<<" ==new entirely before 'this' " <<"\n";
+        }
+        else if (newStart<=thisStart && (thisStart<=newEnd && newEnd<=thisEnd) ) //new partly before 'this
+        {
+            //Chop off the start of 'this' after the end of 'new'
+            //                std::cout << i/2 <<" "<< " ==new partly before 'this' " <<"\n";
+            pedalChanges->at(i).timeStamp = newEnd+3.0;
+        }
+        else if ((thisStart<=newStart && newStart<=thisEnd) && thisEnd<=newEnd) //new partly after 'this'
+        {
+            //Chop off the end of 'this' before the start of 'new'
+            //                std::cout << i/2 <<" "<< " ==new partly after 'this' " <<"\n";
+            pedalChanges->at(i+1).timeStamp = newStart-3.0;
+        }
+        else if (thisEnd<=newStart) //new entirely after 'this'
+        {
+            //Do nothing
+            //                std::cout << i/2 <<" "<< " ==new entirely after 'this' " <<"\n";
+        }
+        else if (newStart<=thisStart && thisEnd<=newEnd) //new surrounds 'this'
+        {
+            //Delete all of 'this'
+            //                std::cout << i/2 <<" "<< " ==new surrounds 'this' " << "\n";
+            pedalChanges->at(i).timeStamp = DBL_MAX; //To be flushed out later
+            pedalChanges->at(i+1).timeStamp = DBL_MAX; //To be flushed out later
+        }
+        else if (thisStart<=newStart && newEnd<=thisEnd) //'this' surrounds new
+        {
+            //Treat same as "new partly after 'this'" i.e. Chop off the part of 'this' after the end of 'new'
+            //                std::cout << i/2 <<" "<< " =='this' surrounds new " << "\n";
+            pedalChanges->at(i+1).timeStamp = newStart-3.0;
+        }
+    }
+    for (int i=pedalChanges->size()-1; 0<=i ;i--) //Delete those marked for deletion above
+    {
+        if (pedalChanges->at(i).timeStamp == DBL_MAX)
+            pedalChanges->erase(pedalChanges->begin() + i);
+    }
+    if (pedalChanges->back().timeStamp<newStart) //Add at end of list
+    {
+        Sequence::PedalMessage onMsg = Sequence::PedalMessage(newStart,true);
+        Sequence::PedalMessage offMsg = Sequence::PedalMessage(newEnd+1, false);
+        if (offMsg.timeStamp>sequenceObject.seqDurationInTicks)
+            offMsg.timeStamp = sequenceObject.seqDurationInTicks;
+        pedalChanges->push_back(onMsg);
+        pedalChanges->push_back(offMsg);
+    }
+    else //Find place in list
+    {
+        for (int i=0; i<pedalChanges->size() ;i++)
+        {
+            if (pedalChanges->at(i).timeStamp>newStart)
+            {
+                std::vector< Sequence::PedalMessage>::iterator iter;
+                Sequence::PedalMessage onMsg = Sequence::PedalMessage(newStart,true);
+                Sequence::PedalMessage offMsg = Sequence::PedalMessage(newEnd+1, false);
+                iter = pedalChanges->begin() + i;
+                pedalChanges->insert(iter, offMsg);
+                iter = pedalChanges->begin() + i;
+                pedalChanges->insert(iter, onMsg);
+                break;
+            }
+        }
+    }
+    //        std::cout << " nSusts "<<pedalChanges->size()/2<< "\n";
+    //        for (int i=0; i<pedalChanges->size() ;i+=2)
+    //        {
+    //            std::cout << " Before: onTS "<<pedalChanges->at(i).timeStamp
+    //            << " offTS "<<pedalChanges->at(i+1).timeStamp
+    //            << "\n";
+    //        }
+    for (int i=pedalChanges->size()-1; 0<=i ;i-=2) //Delete very short sustains
+    {
+        const double sustDuration = (pedalChanges->at(i).timeStamp - /*The sust-off*/
+                                     pedalChanges->at(i-1).timeStamp) /*The sust-on*/;
+        if (sustDuration <= 10)
+        {
+            const std::vector< Sequence::PedalMessage>::iterator iter1 = pedalChanges->begin() + i - 2;
+            const std::vector< Sequence::PedalMessage>::iterator iter2 = pedalChanges->begin() + i;
+            pedalChanges->erase(iter1, iter2);
+        }
+    }
+    //        for (int i=0; i<pedalChanges->size() ;i+=2)
+    //        {
+    //            std::cout << " After: onTS "<<pedalChanges->at(i).timeStamp
+    //            << " offTS "<<pedalChanges->at(i+1).timeStamp
+    //            << "\n";
+    //        }
+    catchUp();
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    sequenceObject.loadingFile = false; //Starts processing
+}
+
+void MIDIProcessor::deletePedalChange(PedalType pType)
+{
+    sequenceObject.loadingFile = true; //Stops processing
+    //        if (copyOfSelectedNotes.size()<=1)
+    //            return;
+    std::vector<Sequence::PedalMessage> *pedalChanges;
+    if (pType==sustPedal)
+        pedalChanges = &sequenceObject.sustainPedalChanges;
+    else if (pType==softPedal)
+        pedalChanges = &sequenceObject.softPedalChanges;
+    else
+        return;
+    
+    double currentZtlTime = timeInTicks-xInTicksFromViewer;
+    int deleteBar = -1;
+    for (int i=0;i<pedalChanges->size();i+=2)
+    {
+        if (pedalChanges->at(i).timeStamp < currentZtlTime && currentZtlTime <= pedalChanges->at(i+1).timeStamp)
+            deleteBar = i;
+    }
+    if (deleteBar!=-1)
+    {
+        const std::vector< Sequence::PedalMessage>::iterator iter1 = pedalChanges->begin() + deleteBar;
+        const std::vector< Sequence::PedalMessage>::iterator iter2 = pedalChanges->begin() + deleteBar+2;
+        pedalChanges->erase(iter1, iter2);
+        catchUp();
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    }
+    sequenceObject.loadingFile = false; //Starts processing
+}
+
+void MIDIProcessor::createChord()
+{
+    std::cout << "MidiProcessor create_chord\n";
+    sequenceObject.loadingFile = true; //Stops processing
+    if (copyOfSelectedNotes.size()<=1)
+        return;
+    
+    
+    catchUp();
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    sequenceObject.loadingFile = false; //Starts processing
+}
+void MIDIProcessor::deleteChord()
+{
+    std::cout << "MidiProcessor delete_chord\n";
+}
+
+Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection, double inverval)
+{
+    //        std::cout << "chainCommand: interval = " <<inverval<<"\n";
+    Array<Sequence::StepActivity> stepActivity = sequenceObject.chain(selection, inverval);
+    if (undoMgr->inUndo || undoMgr->inRedo)
+        setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
+    else
+    {
+        sequenceObject.setChangedFlag(true);
+        catchUp();
+    }
+    changeMessageType = CHANGE_MESSAGE_UNDO;
+    sequenceObject.undoneOrRedoneSteps = selection;
+    sendSynchronousChangeMessage(); //To midiProcessor
+    return stepActivity;
+}
+
+void MIDIProcessor::setIndividualNotesActivity (Array<Sequence::StepActivity> act) //Used only to restore activity after undo
+{
+    for (int i=0;i<act.size();i++)
+    {
+        if (act[i].active)
+            setAsTargetNote(act[i].step);
+        else
+            setAsNonTargetNote(act[i].step);
+    }
+    if(undoMgr->inUndo)
+    {
+        Array<int> steps;
+        for (int i=0;i<act.size();i++)
+            steps.add(act[i].step);
+        changeMessageType = CHANGE_MESSAGE_UNDO;
+        sequenceObject.undoneOrRedoneSteps = steps;
+        setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
+        //            inUndoRedo = true;
+        sendSynchronousChangeMessage();
+        changeMessageType = CHANGE_MESSAGE_NONE;
+    }
+    else
+        sequenceObject.undoneOrRedoneSteps.clear();
+}
+
+bool MIDIProcessor::getNoteActivity(int step)
+{
+    const double ts = sequenceObject.theSequence.at(step)->getTimeStamp();
+    const int index = sequenceObject.targetNoteTimes.indexOf(ts);
+    if (index>=0)
+        return true;
+    else
+        return false;
+}
+
+inline void MIDIProcessor::setAsTargetNote(int step)
+{
+    const double ts = sequenceObject.theSequence.at(step)->getTimeStamp();
+    const int index = sequenceObject.targetNoteTimes.indexOf(ts);
+    if (index==-1)
+        sequenceObject.targetNoteTimes.add(ts);
+}
+
+inline void MIDIProcessor::setAsNonTargetNote(int step)
+{
+    const double ts = sequenceObject.theSequence.at(step)->getTimeStamp();
+    const int index = sequenceObject.targetNoteTimes.indexOf(ts);
+    if (index>-1)
+        sequenceObject.targetNoteTimes.remove(index);
+}
+
+void MIDIProcessor::changeNoteVelocity(int step, float velocity)
+{
+    catchUp();
+    //        if (copyOfSelectedNotes.size()<=1)
+    //        {
+    sequenceObject.theSequence.at(step)->velocity = velocity;
+    //        }
+    //        else
+    //        {
+    //            if (copyOfSelectedNotes.size()>=3 && step==copyOfSelectedNotes.getFirst())
+    //            {
+    //                //Ramp from this velocity to existing last note velocity
+    //                const float lastNoteVel = sequenceObject.theSequence.at(copyOfSelectedNotes.getLast())->velocity;
+    //                const int steps = copyOfSelectedNotes.size()-1;
+    //                const float increment = (lastNoteVel-velocity)/steps;
+    //                for (int i=0;i<copyOfSelectedNotes.size()-1;i++)
+    //                {
+    //                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
+    //                    {
+    //                        const float newVel =  lastNoteVel - (steps-i)*increment;
+    //                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = newVel;
+    ////                        std::cout << "New vel " << copyOfSelectedNotes[i] <<" "<<increment<<" "
+    ////                        << " "<<(int)(sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity*127.0)<<"\n";
+    //                    }
+    //                }
+    //            }
+    //            else if (copyOfSelectedNotes.size()>=3 && step==copyOfSelectedNotes.getLast())
+    //            {
+    //                //Ramp from existing first note velocity to this velocity
+    //                const float firstNoteVel = sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->velocity;
+    //                const int steps = copyOfSelectedNotes.size()-1;
+    //                const float increment = (velocity-firstNoteVel)/steps;
+    //                for (int i=1;i<copyOfSelectedNotes.size();i++)
+    //                {
+    //                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
+    //                    {
+    //                        const float newVel =  firstNoteVel + i*increment;
+    //                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = newVel;
+    ////                        std::cout << "New vel " << copyOfSelectedNotes[i] <<" "<<increment<<" "
+    ////                        << " "<<(int)(sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity*127.0)<<"\n";
+    //                    }
+    //                }
+    //            }
+    //            else{
+    //                for (int i=0;i<copyOfSelectedNotes.size();i++)
+    //                {
+    //                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
+    //                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = velocity;
+    //                }
+    //            }
+    //        }
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+}
+
+void MIDIProcessor::changeNoteTime(int step, double time)
+{
+    //        std::cout << "changeNoteTime "<<step<<" "<< time<<"\n";
+    std::vector<std::shared_ptr<NoteWithOffTime>> notesToChange;
+    const double delta = time-sequenceObject.theSequence.at(step)->getTimeStamp();
+    const int thisChordIndex = sequenceObject.theSequence.at(step)->chordIndex;
+    if (thisChordIndex>=0)
+    {
+        if (sequenceObject.theSequence[step]->chordTopStep==-1) //If top note of a chord
+        {
+            for (int chordStep=step;
+                 chordStep<sequenceObject.theSequence.size()&&thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex;
+                 chordStep++)
+            {
+                if (thisChordIndex==sequenceObject.theSequence[chordStep]->chordIndex)
+                    notesToChange.push_back(sequenceObject.theSequence[chordStep]);
+            }
+        }
+        else
+        {
+            const int ndx = sequenceObject.theSequence[step]->noteIndexInChord;
+            const int offset = time - sequenceObject.chords[sequenceObject.theSequence[step]->chordIndex].timeStamp;
+            sequenceObject.chords[sequenceObject.theSequence[step]->chordIndex].offsets[ndx] = offset;
+        }
+    }
+    
+    const int nNotes = notesToChange.size();
+    if (nNotes==0)
+        notesToChange.push_back(sequenceObject.theSequence.at(step));
+    if (getNoteActivity(step))
+    {
+        setAsNonTargetNote(step); //Temporarily
+        for (int i=0;i<notesToChange.size();i++)
+        {
+            double timeStamp = notesToChange[i]->getTimeStamp();
+            double offTime = notesToChange[i]->offTime;
+            timeStamp += delta;
+            offTime += delta;
+            notesToChange[i]->setTimeStamp(timeStamp);
+            notesToChange[i]->offTime = offTime;
+        }
+        setAsTargetNote(step); //Retore as target note
+    }
+    else
+    {
+        for (int i=0;i<notesToChange.size();i++)
+        {
+            notesToChange[i]->setTimeStamp(notesToChange[i]->getTimeStamp() + delta);
+            notesToChange[i]->offTime = notesToChange[i]->offTime + delta;
+        }
+    }
+    //        sequenceObject.chords[sequenceObject.theSequence.at(step)->chordIndex].timeStamp = notesToChange[0]->getTimeStamp();
+    sequenceObject.setChangedFlag(true);
+    catchUp();
+    buildSequenceAsOf(Sequence::updateChords, Sequence::doRetainEdits, getSequenceReadHead());
+}
+void MIDIProcessor::changeNoteOffTime(int step, double offTime)
+{
+    std::cout << "changeNoteOffTime "<<step<<" "<< time<<"\n";
+    sequenceObject.theSequence[step]->offTime = offTime;
+    sequenceObject.setChangedFlag(true);
+    catchUp();
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+}
+void MIDIProcessor::setCopyOfSelectedNotes(Array<int> sel)
+{
+    copyOfSelectedNotes = sel;
+}
+
+void MIDIProcessor::setListenSequence(double startTime, double endTime, Array<int> tracks)
+{
+    listenSequence.clear();
+    for (int step=0; step<sequenceObject.theSequence.size(); step++)
+    {
+        if (startTime <= sequenceObject.theSequence.at(step)->getTimeStamp() && sequenceObject.theSequence.at(step)->getTimeStamp()<=endTime
+            && (tracks.size()==0||tracks.contains(sequenceObject.theSequence.at(step)->getTrack())))
+        {
+            NoteWithOffTime onMsg = *(sequenceObject.theSequence.at(step));
+            NoteWithOffTime offMsg = onMsg;
+            offMsg.timeStamp = (onMsg.offTime);
+            offMsg.velocity = (0);
+            listenSequence.push_back(onMsg);
+            listenSequence.push_back(offMsg);
+        }
+    }
+    std::sort(listenSequence.begin(), listenSequence.end());
+    //        for (int i=0;i<20;i++)
+    //            std::cout << i
+    //            << " note "<<  listenSequence[i].getNoteNumber()
+    //            <<" channel "  <<  listenSequence[i].getChannel()
+    //            << " velocity " << (int) listenSequence[i].getVelocity()
+    //            << "\n";
+}
+double MIDIProcessor::getStartTimeOfNextStep()
+{
+    int step;
+    for (step=currentSeqStep;step<sequenceObject.theSequence.size();step++)
+    {
+        if (sequenceObject.theSequence[step]->triggeredBy==-1)
+            break;
+    }
+    return sequenceObject.theSequence[step]->getTimeStamp();
+}
+
 void MIDIProcessor::hiResTimerCallback()
 {
     processBlock();

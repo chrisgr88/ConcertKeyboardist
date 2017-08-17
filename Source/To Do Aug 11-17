@@ -28,4 +28,63 @@ To Do Aug 11/17
 - DONE Display selection start, end, width while selecting. 
 - DONE Add current tick at ZTL to measure display 
 
+Create Chord
+------------
+ChordDetail properties to create/update:
+- int timeStamp;
+- std::vector<std::shared_ptr<NoteWithOffTime>> notePointers; //Pointers to chord's notes
+- std::vector<int> offsets; //Offsets from timeStamp of chord top note
+- std::vector<String> noteIds; //String(track)+"_"+String(channel)+"_"+String(noteNumber)
+- Rectangle<float> chordRect; //Rectangle surrounding chord for display and hit testing. Value defined in makeNoteBars.
+
+NoteWithOffTime properties to update
+- int chordTopStep;//Highest of the notes of the chord this note is in. Use -1 for highest note and if note is not in a chord.
+- int chordIndex;  //Index in chords[ ] of this note's chord, if any. This may change depending on which tracks are active.
+- int noteIndexInChord; //The current position of this note in the ChordDetail   
+
+Principles - What is a Chord?
+- Chord notes must be contiguous in theSequence
+	(Issue: What about intervening notes non active tracks?)
+- Notes with a chordIndex>=0 are part of the chord with that index.  
+- Chords with a negative chord index are not part of a chord.
+- In creating a chord, all the other above properties must also be defined
+- Chord notes are stored at their actual times in theSequence
+- When a file is saved chord notes are saved in the midi sequence with the same time stamp as the chordTopStep
+- The offset of each note to its true time in theSequence is saved in the note's chordNote record sysex
+- What if notes have their times determined by an algorithm?
+	- each chord note's time is still saved in its chordNote record
+	- details of the algorithm are saved in the chordDetail.  When the algorithm is run it should produce those same offsets
+- If the offsets were manually set then no algorithm is specified and the offsets in the chordNote records give the note times
+
+Cases
+1) None of the selected notes was already in a chord
+	- Ensure the notes are contiguous
+		(If not, refuse to make a chord?)
+	- Create a new chordDetail record and add the notes to it
+	- Insert the chordDetail record into the chords array and update all other notes chord references
+	- Update all the notes chord related properties
+2) Some notes are not in a chord and the remainder comprise all the notes in a single chord.
+	- Ensure the notes are contiguous and contiguous to the chord
+	- Add the non chord notes to the chord
+	- Update all the notes chord related properties
+3)	Some notes are not in a chord and the remainder are only part of the notes in a single chord.
+	- Ensure the notes are contiguous and contiguous to selectes notes that are inthe chord
+	- Add the non chord notes to the chord
+	- Remove the notes from that chord that were not selected
+	- Update all the notes chord related properties
+4)	Some notes are not in a chord and the remainder are only part of the notes in a single chord.
+=========
+Simplified 
+1) Ensure all selected notes are contiguous
+2) Find all of the chords that contained at least one of the selected notes and delete all those chords.
+3) Create a chord from the selected notes.
+
+Basic action  
+- Also need to update 
+- Delete all chords
+- Set all notes to have same time stamp as highest note
+- 
+Issues:
+
+
 
