@@ -536,7 +536,61 @@ public:
     
     Array<double> targetNoteTimes;
     std::vector<ChordDetail> chords;
-//    std::vector<ChordDetail> testChords;
+    
+    //Given a vector of pointers to contiguous notes sorted from highest to lowest guaranteed not to overlap any other chord,
+    // create a new chord in chords[ ] and update the notes to know about the their chord.
+    int newChordFromSteps(std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes)
+    {
+        //Create a new ChordDetail record, chDet
+        //Fill in its notePointers and noteIds (chordRect is defined in makeNoteBars)
+        //Determine location of new chord in chords[] based on time stamp
+        //Insert chDet into the chords array at the correct location
+        //Determine the Return the chordIndex of the new chord in chords[ ]
+        ChordDetail chDet;
+        StringArray values;
+        chDet.timeStamp = chordNotes.front()->timeStamp;
+        chDet.notePointers = chordNotes;
+        for (int i=0;i<chordNotes.size();i++)
+        {
+            String noteId = String(chordNotes.at(i)->track)+"_"+String(chordNotes.at(i)->channel)+"_"+String(chordNotes.at(i)->noteNumber);
+            
+            std::cout << i<< " chord notePointer: step " << chDet.notePointers[i]->currentStep
+            <<" ts " << chDet.notePointers[i]->timeStamp << "\n";
+            
+            const int offset = chordNotes.at(i)->timeStamp - chordNotes.front()->timeStamp;
+            chDet.offsets.push_back(offset);
+            chDet.noteIds.push_back(noteId);
+        }
+        int chordIndex;
+        for (chordIndex=0;chordIndex<chordNotes.size();chordIndex++)
+        {
+            if (chords[chordIndex].timeStamp > chordNotes[0]->timeStamp)
+                break;
+        }
+        std::cout << "raw chordIndex " << chordIndex << "\n";
+        
+        chords.insert(chords.begin()+chordIndex,chDet);
+        
+        //Also update each chord note's information about its membership in a chord:
+        chordNotes[0]->chordTopStep=-1;
+        chordNotes[0]->noteIndexInChord=-1;
+//        chordIndex -= 1;
+        chordNotes[0]->chordIndex = chordIndex;
+        for (int i=1; i<chordNotes.size(); i++)
+        {
+            chordNotes[i]->chordTopStep = chordNotes[0]->currentStep;
+            chordNotes[i]->chordIndex = chordIndex;
+            chordNotes[i]->noteIndexInChord = i;
+        }
+        
+        //Adjust the chord index of each note after the notes of the inserted chord
+        for (int step=chordNotes.back()->currentStep+1; step<theSequence.size();step++)
+        {
+            if (theSequence[step]->chordIndex >= 0)
+                theSequence[step]->chordIndex += 1;
+        }
+        return chordIndex;
+    }
     
     Array<Array<double>> undoStack;
     std::vector<bool> noteIsOn;

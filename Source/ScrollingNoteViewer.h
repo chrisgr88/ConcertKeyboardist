@@ -239,7 +239,7 @@ public:
         repaint();
     }
     
-    bool showingChords;    
+    bool showingChords;
     
 private:
     MIDIProcessor *processor;
@@ -292,6 +292,7 @@ private:
     float mouseXinTicks;
     Point<float> mouseBeforeDrag;
     int hoverStep; //Step over which mouse pointer hovers.  -1 if none.
+    int hoverChord; //Chord over which mouse pointer hovers.  -1 if none.
     String hoverInfo;
 #define HOVER_NONE 0
 #define HOVER_NOTEBAR 1
@@ -299,6 +300,7 @@ private:
 #define HOVER_ZEROTIMEHANDLE 3
 #define HOVER_ZEROTIMELINE 4
 #define HOVER_TOPBAR 5
+#define HOVER_CHORD 6
     int hoveringOver;
     Point<float> hoverPosition;
     

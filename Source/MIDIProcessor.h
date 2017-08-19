@@ -281,7 +281,7 @@ public:
     void addPedalChange(PedalType pType);
     void deletePedalChange(PedalType pType);
     void createChord();
-    void deleteChord();
+    void deleteChords(bool rebuild);
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval);
     void setIndividualNotesActivity (Array<Sequence::StepActivity> act); //Used only to restore activity after undo
     bool getNoteActivity(int step);

@@ -1257,7 +1257,7 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
             }
             else
             {
-                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
+//                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
                     sequenceObject.targetNoteTimes.add(ts);
                 const Sequence::StepActivity act = {steps[i], false};
                 stepActivityList.add(act);
@@ -1275,7 +1275,7 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
             const int index = sequenceObject.targetNoteTimes.indexOf (ts);
             if (index>=0)
             {
-                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
+//                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
                     sequenceObject.targetNoteTimes.remove(index);
                 const Sequence::StepActivity act = {steps[i], true};
                 stepActivityList.add(act);
@@ -1467,29 +1467,55 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
 
 void MIDIProcessor::createChord()
 {
-    std::cout << "MidiProcessor create_chord\n";
-    sequenceObject.loadingFile = true; //Stops processing
+//    std::cout << "MidiProcessor create_chord: 1st selected note"<<sequenceObject.theSequence.at(copyOfSelectedNotes[0])->currentStep <<"\n";
     if (copyOfSelectedNotes.size()<=1)
         return;
+    deleteChords(false);
+    sequenceObject.loadingFile = true; //Stops processing
     
+    std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes;
+    //Put notes in selected range into the chord vector
+    for(int i=copyOfSelectedNotes.getFirst() ; i<=copyOfSelectedNotes.getLast(); i++)
+    {
+        chordNotes.push_back(sequenceObject.theSequence[i]);
+    }
+    struct {
+        bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+        {return a->noteNumber > b->noteNumber;}
+    } customCompare2;
+    std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
+    int chordIndex = sequenceObject.newChordFromSteps(chordNotes);
     
+//    chordNotes[0]->chordTopStep=-1;
+//    chordNotes[0]->noteIndexInChord=-1;
+//    for (int i=1; i<chordNotes.size(); i++)
+//    {
+//        chordNotes[i]->chordTopStep = chordNotes[0]->currentStep;
+//        chordNotes[i]->chordIndex = chordIndex;
+//        chordNotes[i]->noteIndexInChord = i;
+//    }
+    std::cout << "added chord at "<< chordIndex <<"\n";
+    for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
+        std::cout << "chord note: step "<< sequenceObject.chords[chordIndex].notePointers[i]->currentStep
+        <<"  timestamp " << sequenceObject.chords[chordIndex].notePointers[i]->timeStamp
+        << "\n";
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
     sequenceObject.loadingFile = false; //Starts processing
 }
-void MIDIProcessor::deleteChord()
+void MIDIProcessor::deleteChords(bool rebuild)
 {
-    std::cout << "MidiProcessor delete_chord\n";
+//    std::cout << "MidiProcessor delete_chord\n";
     if (copyOfSelectedNotes.size()==0)
         return;
     sequenceObject.loadingFile = true; //Stops processing
     Array<int> chordsToRemove;
     for(int i=copyOfSelectedNotes.getFirst() ; i<=copyOfSelectedNotes.getLast(); i++)
     {
-        std::cout << "MidiProcessor chord "<< i << "\n";
+//        std::cout << "MidiProcessor chord "<< i << "\n";
         if (sequenceObject.theSequence[i]->chordIndex>=0)
         {
-            std::cout << "Request removal of chord for step "<< i << " index " << sequenceObject.theSequence[i]->chordIndex << "\n";
+//            std::cout << "Request removal of chord for step "<< i << " index " << sequenceObject.theSequence[i]->chordIndex << "\n";
             chordsToRemove.addIfNotAlreadyThere(sequenceObject.theSequence[i]->chordIndex);
             sequenceObject.theSequence[i]->chordIndex = -1;
             sequenceObject.theSequence[i]->chordTopStep = -1;
@@ -1501,11 +1527,8 @@ void MIDIProcessor::deleteChord()
     {
         int nChordsDeleted = chordsToRemove.size();
         const int lastStepChanged = sequenceObject.chords[chordsToRemove.getLast()].notePointers.back()->currentStep;
-        std::cout << "chords before"<< sequenceObject.chords.size() << "\n";
         sequenceObject.chords.erase(sequenceObject.chords.begin()+chordsToRemove.getFirst(),
                                     sequenceObject.chords.begin()+chordsToRemove.getLast()+1);
-            std::cout << "chords after"<< sequenceObject.chords.size() << "\n";
-
         int nonIndex = -1;
         int tempCount = 0;
         for (auto step=sequenceObject.theSequence.begin();step!=sequenceObject.theSequence.end();step++)
@@ -1518,16 +1541,16 @@ void MIDIProcessor::deleteChord()
 
             if (copyOfSelectedNotes.getFirst()<=(*step)->currentStep && (*step)->currentStep<=lastStepChanged)
             {
-                std::cout << "step "<<(*step)->currentStep<<" topStep before "<<(*step)->chordTopStep<<"\n";
                 (*step)->chordTopStep = -1;
                 (*step)->chordIndex = nonIndex--;
-    //            std::cout << "step "<<(*step)->currentStep<<" topStep after "<<(*step)->chordTopStep<<"\n";
             }
             tempCount++;
         }
-        
-        catchUp();
-        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+        if (rebuild)
+        {
+            catchUp();
+            buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+        }
     }
     sequenceObject.loadingFile = false; //Starts processing
 }

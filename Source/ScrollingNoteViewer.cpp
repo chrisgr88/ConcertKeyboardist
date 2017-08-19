@@ -51,6 +51,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     format.multisamplingLevel = 4;
     openGLContext.setPixelFormat(format);
     hoverStep = -1;
+    hoverChord = -1;
     draggingTime = false;
     draggingVelocity = false;
     drawingVelocity = false;
@@ -74,7 +75,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     zoomOrScrollDragging = false;
     selecting = false;
     editingNote = false;
-    showingChords = false;
+    showingChords = true;
     resetHorizontalShift();
     colourActiveNoteHead = Colour(0xffff00ff);//Cyan
     colourPrimaryNoteBar = Colour(0xffffccff).darker().darker();
@@ -296,6 +297,40 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
     const float sequenceScaledX = mouseXinTicks*pixelsPerTick;
     const float scaledY = y/verticalScale;
     preDragXinTicks = mouseXinTicks;
+    if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a chord
+    {
+        //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
+        const int nn = maxNote - vert + 1;
+        int i;
+        int ch = -1;
+        for (i=0;i<processor->sequenceObject.chords.size();i++)
+        {
+            if (processor->sequenceObject.chords[i].chordRect.contains(sequenceScaledX, scaledY))
+            {
+                ch = i;
+                break;
+            }
+        }
+        hoverChord = ch;
+        if (ch==-1)
+            hoverChord = HOVER_NONE;
+        else
+        {
+            //            std::cout << "mouseMove found step " << step <<"\n";
+            hoverChord = ch;
+//            hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
+//            + "[" + String::String(nn) +"]"
+//            + " tr:" +String::String(pSequence->at(i)->track)
+//            + " ch:" + String::String(pSequence->at(i)->channel)
+//            + " vel:" + String(127.0*pSequence->at(i)->velocity)
+//            + " dur:" + String((pSequence->at(i)->offTime-pSequence->at(i)->getTimeStamp()))+
+//            + " tick:" + String(pSequence->at(i)->getTimeStamp())
+//            + "/"+String::String(hoverStep);
+//            repaint();
+        }
+        //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
+        sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
+    }
     if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a note bar
     {
 //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
@@ -966,10 +1001,8 @@ void ScrollingNoteViewer::makeNoteBars()
     //Note Bars
     for (int index = 0;index<static_cast<int>(pSequence->size());index++)
     {
-//        const NoteWithOffTime msg = sequence->at(index);
-//        int foo;
-//        if (index==48)
-//            foo=0;
+//        if (index>=21 && index<=31)
+//            std::cout<< "noteBar: step, ts "<< index<<" "<<pSequence->at(index)->getTimeStamp()<< "\n";
         const double startPixel = pSequence->at(index)->getTimeStamp()*pixelsPerTick;
         double endPixel = pSequence->at(index)->offTime*pixelsPerTick;
         const int noteNumber = pSequence->at(index)->noteNumber;
@@ -980,6 +1013,7 @@ void ScrollingNoteViewer::makeNoteBars()
         const double minSpacing = 1.0;
         float headWidth = 6.0f;
         
+        //Adjust the head width if other note of same note number follows closely
         for (int nxtNoteIndex=index+1;nxtNoteIndex<size-2;nxtNoteIndex++)
         {
             const double spacing = (pSequence->at(nxtNoteIndex)->getTimeStamp() - thisEndTime)*pixelsPerTick;
@@ -1008,8 +1042,9 @@ void ScrollingNoteViewer::makeNoteBars()
 
         const float vel = pSequence->at(index)->velocity;
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
-        
         pSequence->at(index)->head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
+        
+        //Determine the cord rectangle, if part of a chord
         if (prevChordIndex>=0 && pSequence->at(index)->chordIndex!=prevChordIndex)
         {
 //            std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
@@ -1021,7 +1056,7 @@ void ScrollingNoteViewer::makeNoteBars()
                 rList.add(head);
             }
             Rectangle<float> chordRect = rList.getBounds();
-            processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect;
+            processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect.withWidth(1.0);
 //            std::cout << "At " << prevChordIndex << " Chord rect "
 //            << chordRect.getTopLeft().getX()
 //            <<" "<<chordRect.getTopLeft().getY()
@@ -1065,8 +1100,7 @@ void ScrollingNoteViewer::makeNoteBars()
         }
         else
         {
-            if (pSequence->at(index)->chordTopStep==-1
-                && (processor->getNotesEditable()
+            if (/*pSequence->at(index)->chordTopStep==-1 &&*/ (processor->getNotesEditable()
                     || pSequence->at(index)->getTimeStamp()>=readHead))
             {
                 pSequence->at(index)->rectBar =
@@ -1307,24 +1341,24 @@ void ScrollingNoteViewer::paint (Graphics& g)
         }
         if (!draggingVelocity && hoverStep>=0)
         {
-            const float vel = pSequence->at(hoverStep)->velocity;
-            const float graphHeight = getHeight() - topMargin;//(300.0-15.0)-toolbarHeight;
-            const float velY = ((1.0-vel) * graphHeight) + toolbarHeight - topMargin/verticalScale;
-            const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-            const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
-            const Line<float> velLine = Line<float> (velX,
-                                                     velY,
-                                                     velX+6.0f*horizontalScale,
-                                                     velY);
-            g.setColour (Colours::seagreen);
-            g.drawLine(velLine, 6.0f);
+//            const float vel = pSequence->at(hoverStep)->velocity;
+//            const float graphHeight = getHeight() - topMargin;//(300.0-15.0)-toolbarHeight;
+//            const float velY = ((1.0-vel) * graphHeight) + toolbarHeight - topMargin/verticalScale;
+//            const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
+//            const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
+//            const Line<float> velLine = Line<float> (velX,
+//                                                     velY,
+//                                                     velX+6.0f*horizontalScale,
+//                                                     velY);
+//            g.setColour (Colours::seagreen);
+//            g.drawLine(velLine, 6.0f);
         }
         //###
         if (showingChords)
         {
             for (int ch=0;ch<processor->sequenceObject.chords.size();ch++)
             {
-                const Rectangle<float> rct = processor->sequenceObject.chords[ch].chordRect.expanded(0.2, 1.0);
+                const Rectangle<float> rct = processor->sequenceObject.chords[ch].chordRect.expanded(0.0, 0.7);
                 const Rectangle<float> chordRect = Rectangle<float>(
                                rct.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
                                rct.getY()*verticalScale,
@@ -1334,7 +1368,21 @@ void ScrollingNoteViewer::paint (Graphics& g)
                     g.setColour (Colours::white);
 //                else
 //                    g.setColour (Colours::lightslategrey);
-                g.drawRect(chordRect, 0.8);
+                g.fillRect(chordRect);
+                
+                for (int np=0;np<processor->sequenceObject.chords[ch].notePointers.size();np++)
+                {
+                    Rectangle<float> headRct = processor->sequenceObject.chords[ch].notePointers[np]->head;
+                    headRct = Rectangle<float>(
+                                                                        headRct.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                                                                        headRct.getY()*verticalScale,
+                                                                        headRct.getWidth()*horizontalScale,
+                                                                        headRct.getHeight()*verticalScale);
+                    Rectangle<float> connectorRect = Rectangle<float>(chordRect.getX(), headRct.getBottom()-1.5*verticalScale,
+                                                        headRct.getRight()-chordRect.getX(),1.5*verticalScale);
+                    connectorRect.setLeft(chordRect.getTopLeft().getX());
+                    g.fillRect(connectorRect);
+                }
             }
         }
         
@@ -1347,9 +1395,9 @@ void ScrollingNoteViewer::paint (Graphics& g)
                  scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
                  scaledHead.getY()*verticalScale,
                  scaledHead.getWidth()*horizontalScale,
-                 scaledHead.getHeight()*verticalScale).expanded(1.5, 1.5);
+                 scaledHead.getHeight()*verticalScale).expanded(2, 2);
             g.setColour (Colours::whitesmoke);
-            g.drawRect(head, 1.2);
+            g.drawRect(head, 1.5);
 //            std::cout << "At B displayedSelection index"<< i<<"\n";
             const float vel = pSequence->at(displayedSelection[i])->velocity;
             const float graphHeight = getHeight() - topMargin;//(300.0-15.0)-toolbarHeight;
@@ -1362,15 +1410,15 @@ void ScrollingNoteViewer::paint (Graphics& g)
 //            <<" toolbarHeight "<< toolbarHeight
 //            <<" verticalScale "<<verticalScale<<"\n";
 //            std::cout << "At C displayedSelection index"<< i<<"\n";
-            const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
-            const Line<float> velLine = Line<float> (velX,
-                                                     velY,
-                                                     velX+6.0f*horizontalScale,
-                                                     velY);
-
-            g.setColour (Colours::seagreen);
-            if (displayedSelection[i] != hoverStep)
-                g.drawLine(velLine, 6.0f);
+//            const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
+//            const Line<float> velLine = Line<float> (velX,
+//                                                     velY,
+//                                                     velX+6.0f*horizontalScale,
+//                                                     velY);
+//
+//            g.setColour (Colours::seagreen);
+//            if (displayedSelection[i] != hoverStep)
+//                g.drawLine(velLine, 6.0f);
         }
         
         g.setColour (Colours::yellow);
@@ -1380,17 +1428,17 @@ void ScrollingNoteViewer::paint (Graphics& g)
         if (draggingVelocity && hoverStep>=0)
         {
 
-            const double graphHeight = getHeight() - topMargin*verticalScale;//(300.0-15.0)-toolbarHeight;
-//            std::cout << "draggingVelocity " << graphHeight <<" "<< getHeight()<<" "<< toolbarHeight<<" "<<verticalScale<<"\n";
-            const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-            const float velY = ((1.0-velocityAfterDrag) * graphHeight) + toolbarHeight  - topMargin/verticalScale;
-            const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
-            const Line<float> velLine = Line<float> (velX,
-                                                     velY,
-                                                     velX+6.0f*horizontalScale,
-                                                     velY);
-            g.setColour (Colours::seagreen);
-            g.drawLine(velLine, 6.0f);
+//            const double graphHeight = getHeight() - topMargin*verticalScale;//(300.0-15.0)-toolbarHeight;
+////            std::cout << "draggingVelocity " << graphHeight <<" "<< getHeight()<<" "<< toolbarHeight<<" "<<verticalScale<<"\n";
+//            const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
+//            const float velY = ((1.0-velocityAfterDrag) * graphHeight) + toolbarHeight  - topMargin/verticalScale;
+//            const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
+//            const Line<float> velLine = Line<float> (velX,
+//                                                     velY,
+//                                                     velX+6.0f*horizontalScale,
+//                                                     velY);
+//            g.setColour (Colours::seagreen);
+//            g.drawLine(velLine, 6.0f);
         }
         else if (draggingTime && hoverStep>=0)
         {
@@ -1718,7 +1766,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 newlySelectedNotes.clear();
                 for (int step=0;step<pSequence->size();step++)
                 {
-                    if (pSequence->at(step)->chordTopStep==-1 &&
+                    if (/*pSequence->at(step)->chordTopStep==-1 &&*/
                         pSequence->at(step)->getTimeStamp() >= xInTicksLeft
                         && pSequence->at(step)->getTimeStamp() <= xInTicksRight)
                     {
@@ -1781,7 +1829,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                         }
                         else
                         {
-                            if (pSequence->at(hoverStep)->chordTopStep==-1)
+//                            if (pSequence->at(hoverStep)->chordTopStep==-1)
                                 draggingTime = true;
                         }
                         timeStartDrag = pSequence->at(hoverStep)->getTimeStamp();
@@ -1789,11 +1837,11 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     }
                     else if (std::abs(deltaX)<std::abs(deltaY))
                     {
-                        if (pSequence->at(hoverStep)->chordTopStep==-1)
-                        {
+//                        if (pSequence->at(hoverStep)->chordTopStep==-1)
+//                        {
                             draggingVelocity = true;
                             velStartDrag = pSequence->at(hoverStep)->velocity;
-                        }
+//                        }
                     }
                 }
                 if (draggingVelocity)

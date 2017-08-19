@@ -683,8 +683,9 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 }
                 else if (key == "tnt") //targetNoteTimes
                 {
-                    //                    std::cout <<"read forced nontarget note "<< value <<"\n";
                     targetNoteTimes.add(value.getDoubleValue());
+                    if (targetNoteTimes.getLast()<1000)
+                        std::cout <<"target note time "<< targetNoteTimes.getLast() <<"\n";
                 }
                 else if (key == "chordDetails") //Each chord
                 {
@@ -1021,74 +1022,9 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             }
         }
         
-//        //Extract pedal changes
-//        String sustainPedalDirection = "";
-//        String softPedalDirection = "";
-////        double prevTimeStamp = -1;
-//        sustainPedalChanges.clear();
-//        softPedalChanges.clear();
-//        for (int i=0;i<theControllers.size();i++)
-//        {
-//            ControllerMessage ctrMsg = theControllers[i];
-//            ctrMsg.setTimeStamp(96.0*ctrMsg.getTimeStamp()/ppq);
-//            if (ctrMsg.isSustainPedalOn()||ctrMsg.isSustainPedalOff())   //Sustain pedal
-//            {
-//                String prevDirection = sustainPedalDirection;
-//                if (ctrMsg.isSustainPedalOn())
-//                {
-//                    if (sustainPedalDirection!="down")
-//                        sustainPedalDirection ="down";
-//                }
-//                else if (ctrMsg.isSustainPedalOff())
-//                {
-//                    if (sustainPedalDirection!="up")
-//                        sustainPedalDirection = "up";
-//                }
-//                if (prevDirection != sustainPedalDirection && !(prevDirection=="" && sustainPedalDirection=="up"))
-//                {
-////                    std::cout << ctrMsg.timeStamp << " sustainPedalChange "<<ctrMsg.getControllerValue()<<"\n";
-//                    sustainPedalChanges.push_back(ctrMsg);
-////                    prevTimeStamp = ctrMsg.timeStamp;
-////                    std::cout << "i, Time " << i << ", " << 96.0*ctrMsg.timeStamp/ppq
-////                    << " Channel " << ctrMsg.getChannel()
-////                    << " cc " << ctrMsg.getControllerNumber()
-////                    << " Value " << ctrMsg.getControllerValue()
-////                    << " " << sustainPedalDirection
-////                    << " Type:" << ctrMsg.getDescription()
-////                    <<"\n";
-//                }
-//            }
-//            else if (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff())  //Soft pedal
-//            {
-//                String prevDirection = softPedalDirection;
-//                if (ctrMsg.getControllerValue()>=63)
-//                {
-//                    if (softPedalDirection!="down")
-//                        softPedalDirection ="down";
-//                }
-//                else if (ctrMsg.getControllerValue()<63)
-//                {
-//                    if (softPedalDirection!="up")
-//                        softPedalDirection = "up";
-//                }
-//                if (prevDirection != softPedalDirection && !(prevDirection=="" && softPedalDirection=="up"))
-//                {
-//                    softPedalChanges.push_back(ctrMsg);
-//                    
-////                     std::cout << "i, Time " << i << ", " << ctrMsg.timeStamp
-////                     //            << " Channel " << ctrMsg.getChannel()
-////                     //            << " cc " << ctrMsg.getControllerNumber()
-////                     //            << " Value " << ctrMsg.getControllerValue()
-////                     << " " << softPedalDirection
-////                     << " Type:" << ctrMsg.getDescription()
-////                     <<"\n";
-//                }
-//            }
-//        }
-        
         //###Humanize chord note start times and velocities
         double thisChordTimeStamp;
-        std::vector<std::shared_ptr<NoteWithOffTime>> chord;
+        std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes;
         int chordTopStep;
         for (int step=0; step<theSequence.size();step++)
         {
@@ -1102,12 +1038,12 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             else
                 nextStepChordNoteIndex = INT32_MAX;
         
-            chord.push_back(theSequence[step]);
-            if (chord.size()==1)  //The first step is always the chord top
+            chordNotes.push_back(theSequence[step]);
+            if (chordNotes.size()==1)  //If there's one step it's always the chord top
                 chordTopStep=step;
             if (thisStepChordNoteIndex != nextStepChordNoteIndex)
             {
-                if (chord.size()>1)
+                if (chordNotes.size()>1)
                 {
                     struct {
                         bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
@@ -1115,12 +1051,12 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             return a->noteNumber > b->noteNumber;
                         }
                     } customCompare2;
-                    std::sort(chord.begin(), chord.end(),customCompare2);
+                    std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
                     
-                    if (step<=6)
-                        std::cout <<"Found chord " <<theSequence[step]->timeStamp<<" "<< chord.size() <<"\n";
+//                    if (step<=6)
+//                        std::cout <<"Found chord " <<theSequence[step]->timeStamp<<" "<< chord.size() <<"\n";
                     thisChordTimeStamp = theSequence[chordTopStep]->getTimeStamp();
-                    //Rand seed based on thisStepChordNoteIndex different for all chords bot constant for a chord
+                    //Rand seed based on thisStepChordNoteIndex different for all chords but constant for a chord
                     srand(thisStepChordNoteIndex);
                     
                     double timeToNextNote;
@@ -1130,9 +1066,9 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         timeToNextNote = DBL_MAX;
                     double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
                     
-                    for (int i=1; i<chord.size(); i++)
+                    for (int i=1; i<chordNotes.size(); i++)
                     {
-                        chord[i]->chordTopStep = chordTopStep;
+                        chordNotes[i]->chordTopStep = chordTopStep;
                         const int temp = localTimeFuzz*100;
                         double randAdd;
                         unsigned r = rand();
@@ -1140,40 +1076,40 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             randAdd = 0;
                         else
                             randAdd = r%temp/100.0;
-                        chord[i]->setTimeStamp(thisChordTimeStamp+randAdd);
+//                        chordNotes[i]->setTimeStamp(thisChordTimeStamp+randAdd);
                     }
                     if (reVoiceChords)
                     {
-                        const float topNoteVel = chord[0]->originalVelocity;
-                        const float userEditFactor = chord[0]->velocity/topNoteVel;
-                        if (chord.size()==2)
+                        const float topNoteVel = chordNotes[0]->originalVelocity;
+                        const float userEditFactor = chordNotes[0]->velocity/topNoteVel;
+                        if (chordNotes.size()==2)
                         {
-                            const float originalVel = chord[1]->originalVelocity;
+                            const float originalVel = chordNotes[1]->originalVelocity;
                             const float ckVel = 0.7f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            chord[1]->setVelocity(proRatedVel*userEditFactor);
+                            chordNotes[1]->setVelocity(proRatedVel*userEditFactor);
                         }
                         else // (chord.size()>2)
                         {
-                            for (int j=1;j<chord.size()-1;j++)
+                            for (int j=1;j<chordNotes.size()-1;j++)
                             {
-                                const float originalVel = chord[j]->originalVelocity;
+                                const float originalVel = chordNotes[j]->originalVelocity;
                                 const float ckVel = 0.6f * topNoteVel;
                                 const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                                chord[j]->setVelocity(proRatedVel*userEditFactor);
+                                chordNotes[j]->setVelocity(proRatedVel*userEditFactor);
                             }
 //                            int step =  chord[chord.size()-1];
-                            const float originalVel = chord[chord.size()-1]->originalVelocity;
+                            const float originalVel = chordNotes[chordNotes.size()-1]->originalVelocity;
                             const float ckVel = 0.8f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            chord[chord.size()-1]->setVelocity(proRatedVel*userEditFactor);
+                            chordNotes[chordNotes.size()-1]->setVelocity(proRatedVel*userEditFactor);
                         }
                     }
-                    chord[0]->chordTopStep=-1;
+                    chordNotes[0]->chordTopStep=-1;
                 }
                 else
                     theSequence[step]->chordTopStep=-1;
-                chord.clear();
+                chordNotes.clear();
             }
             else
                 ;//Do nothing

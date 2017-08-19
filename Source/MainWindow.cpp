@@ -148,7 +148,7 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "delete_chord")
         {
-            midiProcessor.deleteChord();
+            midiProcessor.deleteChords(true);
         }
     }
     

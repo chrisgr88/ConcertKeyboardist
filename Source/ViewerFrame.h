@@ -163,7 +163,7 @@ private:
     
     Toolbar mainToolbar;
     Toolbar altToolbar;
-    bool altToolbarVisible;
+    bool altToolbarVisible = true;
     
 //==============================================================================
 //###
@@ -792,6 +792,66 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);
+            
             ids.add (create_chord);
             ids.add (delete_chord);
             ids.add (separatorBarId);
