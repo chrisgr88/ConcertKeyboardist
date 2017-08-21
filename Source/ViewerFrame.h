@@ -173,7 +173,7 @@ private:
         MainToolbarItemFactory(ViewerFrame *pVF) :
             pViewerFrame(pVF)
         {
-            std::cout << "pViewerFrame " << pViewerFrame << "\n";
+//            std::cout << "pViewerFrame " << pViewerFrame << "\n";
         }
         //==============================================================================
         // Each type of item a toolbar can contain must be given a unique ID. These
@@ -417,7 +417,7 @@ private:
                     
                     if (svgFileStream != nullptr)
                     {
-                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
+//                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
                         iconNames.add (icons.getEntry(i)->filename);
                         iconsFromZipFile.add (Drawable::createFromImageDataStream (*svgFileStream));
                     }
@@ -900,7 +900,7 @@ private:
                     
                     if (svgFileStream != nullptr)
                     {
-                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
+//                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
                         iconNames.add (icons.getEntry(i)->filename);
                         iconsFromZipFile.add (Drawable::createFromImageDataStream (*svgFileStream));
                     }

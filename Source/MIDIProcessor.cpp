@@ -1472,7 +1472,7 @@ void MIDIProcessor::createChord()
 //        chordNotes[i]->chordIndex = chordIndex;
 //        chordNotes[i]->noteIndexInChord = i;
 //    }
-    std::cout << "added chord at "<< chordIndex <<"\n";
+//    std::cout << "added chord at "<< chordIndex <<"\n";
 //    for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
 //    {
 //        if (
@@ -1486,7 +1486,7 @@ void MIDIProcessor::createChord()
 }
 void MIDIProcessor::deleteChords(bool rebuild)
 {
-    std::cout << "MidiProcessor START delete_chord\n";
+//    std::cout << "MidiProcessor START delete_chord\n";
     if (copyOfSelectedNotes.size()==0)
         return;
     pauseProcessing = true;
@@ -1532,7 +1532,7 @@ void MIDIProcessor::deleteChords(bool rebuild)
         int nChordsDeleted = chordsToRemove.size();
 //        const int firstStepChanged = sequenceObject.chords[chordsToRemove.getFirst()].notePointers.front()->currentStep;
 //        const int lastStepChanged = sequenceObject.chords[chordsToRemove.getLast()].notePointers.back()->currentStep;
-        std::cout << "chordsToRemove: first, last " << chordsToRemove.getFirst()<<" "<<chordsToRemove.getLast()<<"\n";
+//        std::cout << "chordsToRemove: first, last " << chordsToRemove.getFirst()<<" "<<chordsToRemove.getLast()<<"\n";
         sequenceObject.chords.erase(sequenceObject.chords.begin()+chordsToRemove.getFirst(),
                                     sequenceObject.chords.begin()+chordsToRemove.getLast()+1);
 //        if (chordsToRemove.size()<sequenceObject.chords.size() && adjustedLastStep<sequenceObject.theSequence.size())
@@ -1559,7 +1559,7 @@ void MIDIProcessor::deleteChords(bool rebuild)
         }
     }
     pauseProcessing = false;
-    std::cout << "MidiProcessor END delete_chord\n";
+//    std::cout << "MidiProcessor END delete_chord\n";
 }
 
 Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection, double inverval)

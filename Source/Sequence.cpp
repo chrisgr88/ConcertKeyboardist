@@ -312,7 +312,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
             else
                 startTimeDifference = theSequence[step]->getTimeStamp()-theSequence[step-1]->getTimeStamp();
             //We need to have recomputed chord top steps here!!!
-            if (theSequence[step]->chordTopStep!=-1 || startTimeDifference<=interval)
+            if (/*theSequence[step]->chordTopStep!=-1 || */startTimeDifference<=interval)
             {
                 if (step>0)
                     theSequence[step-1]->triggers = step;

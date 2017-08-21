@@ -1048,8 +1048,8 @@ void ScrollingNoteViewer::makeNoteBars()
         if (processor->sequenceObject.chords.size()>0)
         {
             const int thisChordIndex = pSequence->at(index)->chordIndex;
-            if (index>25)
-                std::cout << "Step " << index << " chordIndex " <<thisChordIndex<<"\n";
+//            if (index>25)
+//                std::cout << "Step " << index << " chordIndex " <<thisChordIndex<<"\n";
             if (index==size-1 || (!(pSequence->at(index)->inChord) && prevInChord) || thisChordIndex!=prevChordIndex)
             { //Ended a chord so save its rectangle in ChordDetail
     //            std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
@@ -1062,15 +1062,15 @@ void ScrollingNoteViewer::makeNoteBars()
                 }
                 Rectangle<float> chordRect = rList.getBounds();
                 processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect.withWidth(1.0);
-                if (index>25)
-                {
-                    std::cout << "chordIndex " << prevChordIndex << " Chord rect "
-                    << chordRect.getTopLeft().getX()
-                    <<" "<<chordRect.getTopLeft().getY()
-                    <<" "<<chordRect.getBottomRight().getX()
-                    <<" "<<chordRect.getBottomRight().getY()
-                    <<"\n";
-                }
+//                if (index>25)
+//                {
+//                    std::cout << "chordIndex " << prevChordIndex << " Chord rect "
+//                    << chordRect.getTopLeft().getX()
+//                    <<" "<<chordRect.getTopLeft().getY()
+//                    <<" "<<chordRect.getBottomRight().getX()
+//                    <<" "<<chordRect.getBottomRight().getY()
+//                    <<"\n";
+//                }
             }
             if (pSequence->at(index)->inChord)
             {

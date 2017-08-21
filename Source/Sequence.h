@@ -585,8 +585,8 @@ public:
         {
             String noteId = String(chordNotes.at(i)->track)+"_"+String(chordNotes.at(i)->channel)+"_"+String(chordNotes.at(i)->noteNumber);
             
-            std::cout << i<< " chord notePointer: step " << chDet.notePointers[i]->currentStep
-            <<" ts " << chDet.notePointers[i]->timeStamp << "\n";
+//            std::cout << i<< " chord notePointer: step " << chDet.notePointers[i]->currentStep
+//            <<" ts " << chDet.notePointers[i]->timeStamp << "\n";
             
             const int offset = chordNotes.at(i)->timeStamp - chordNotes.front()->timeStamp;
             chDet.offsets.push_back(offset);
@@ -598,7 +598,7 @@ public:
             if (chords[chordIndex].timeStamp > chordNotes[0]->timeStamp)
                 break;
         }
-        std::cout << "raw chordIndex " << chordIndex << "\n";
+//        std::cout << "raw chordIndex " << chordIndex << "\n";
         
         if (chords.size()==0)
             chords.push_back(chDet);
