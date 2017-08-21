@@ -508,6 +508,7 @@ public:
     
     class ChordDetail {
         friend Sequence;
+    public:
         ChordDetail( )
         {
             timeStamp=-1;
@@ -517,7 +518,27 @@ public:
             timeRandSeed=1;
             velSpec="None"; //"None","Random',"Manual"
             velRandScale=1.0f;
+            notePointers.clear();
+            noteIds.clear();
+            offsets.clear();
             velRandSeed=1;
+            chordRect = Rectangle<float>();
+        }
+        ChordDetail(ChordDetail const &ch) :
+        timeStamp(ch.timeStamp),
+        scaleFactor(ch.scaleFactor),
+        timeSpec(ch.timeSpec),
+        timeRandScale(ch.timeRandScale),
+        
+        timeRandSeed(ch.timeRandSeed),
+        velSpec(ch.velSpec),
+        velRandScale(ch.velRandScale),
+        velRandSeed(ch.velRandSeed),
+        notePointers(ch.notePointers),
+        offsets(ch.offsets),
+        noteIds(ch.noteIds),
+        chordRect(ch.chordRect)
+        {
         }
     public:
         int timeStamp; //20
@@ -546,6 +567,16 @@ public:
         //Determine location of new chord in chords[] based on time stamp
         //Insert chDet into the chords array at the correct location
         //Determine the Return the chordIndex of the new chord in chords[ ]
+        int firstStep = INT_MAX;
+        int lastStep = INT_MIN;
+        for (int i=0; i<chordNotes.size();i++)
+        {
+            if (chordNotes[i]->currentStep < firstStep)
+                firstStep = chordNotes[i]->currentStep;
+            if (chordNotes[i]->currentStep > lastStep)
+                lastStep = chordNotes[i]->currentStep;
+        }
+        
         ChordDetail chDet;
         StringArray values;
         chDet.timeStamp = chordNotes.front()->timeStamp;
@@ -562,31 +593,36 @@ public:
             chDet.noteIds.push_back(noteId);
         }
         int chordIndex;
-        for (chordIndex=0;chordIndex<chordNotes.size();chordIndex++)
+        for (chordIndex=0;chordIndex<chords.size();chordIndex++)
         {
             if (chords[chordIndex].timeStamp > chordNotes[0]->timeStamp)
                 break;
         }
         std::cout << "raw chordIndex " << chordIndex << "\n";
         
-        chords.insert(chords.begin()+chordIndex,chDet);
+        if (chords.size()==0)
+            chords.push_back(chDet);
+        else
+            chords.insert(chords.begin()+chordIndex,chDet);
         
         //Also update each chord note's information about its membership in a chord:
         chordNotes[0]->chordTopStep=-1;
         chordNotes[0]->noteIndexInChord=-1;
 //        chordIndex -= 1;
         chordNotes[0]->chordIndex = chordIndex;
+        chordNotes[0]->inChord = true;
         for (int i=1; i<chordNotes.size(); i++)
         {
             chordNotes[i]->chordTopStep = chordNotes[0]->currentStep;
             chordNotes[i]->chordIndex = chordIndex;
             chordNotes[i]->noteIndexInChord = i;
+            chordNotes[i]->inChord = true;
         }
         
         //Adjust the chord index of each note after the notes of the inserted chord
-        for (int step=chordNotes.back()->currentStep+1; step<theSequence.size();step++)
+        for (int step=lastStep+1; step<theSequence.size();step++)
         {
-            if (theSequence[step]->chordIndex >= 0)
+            if (theSequence[step]->inChord)
                 theSequence[step]->chordIndex += 1;
         }
         return chordIndex;

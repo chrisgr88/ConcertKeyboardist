@@ -300,6 +300,7 @@ public:
     
 private:
     //==============================================================================
+    std::atomic_bool pauseProcessing;
     std::vector<NoteWithOffTime> listenSequence;
     double listenStep;
     MidiOutput *midiOutput;

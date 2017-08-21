@@ -504,11 +504,11 @@ ApplicationProperties& getAppProperties();
                     RecentlyOpenedFilesList recentFiles;
                     recentFiles.restoreFromString (getAppProperties().getUserSettings()
                                                    ->getValue ("recentConcertKeyboardistFiles"));
-                    int num1 = recentFiles.getNumFiles();
+//                    int num1 = recentFiles.getNumFiles();
                     recentFiles.removeFile(file);
                     getAppProperties().getUserSettings()
                     ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
-                    int num2 = recentFiles.getNumFiles();                    
+//                    int num2 = recentFiles.getNumFiles();                    
                     
 
 //                    std::cout <<"N files before, after"<<num1<<" "<<num2<<"\n";

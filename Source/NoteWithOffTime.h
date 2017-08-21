@@ -49,6 +49,7 @@ public:
     triggeredBy(-1),
     chainTrigger(-1),
     highestVelocityInChain(-1),
+    inChord(false),
     triggeredNote(false),
     triggeredOffNote(false),
     autoplayedNote(false),
@@ -86,6 +87,7 @@ public:
     triggeredBy(note.triggeredBy),
     chainTrigger(note.chainTrigger),
     highestVelocityInChain(note.highestVelocityInChain),
+    inChord(note.inChord),
     triggeredNote(note.triggeredNote),
     triggeredOffNote(note.triggeredOffNote),
     autoplayedNote(note.autoplayedNote),
@@ -123,6 +125,7 @@ public:
     triggeredBy(-1),
     chainTrigger(-1),
     highestVelocityInChain(-1),
+    inChord(false),
     triggeredNote(false),
     triggeredOffNote(false),
     autoplayedNote(false),
@@ -254,6 +257,7 @@ public:
     int triggeredBy; //The that step that directly triggers this note.  Set to -1 if first in group.
     int chainTrigger; //The shortest note starting at the SAME time as the firstInChain. There may be other longer notes starting at the exact same time as the chainTrigger. The chainTrigger is not necessarily the firstInChain. Every step has a chainTrigger property including the chainTrigger itself.  A step numbered the same as its chainTrigger property is definitely a group trigger step.
     float highestVelocityInChain; //Used for display of velocity graph.
+    bool inChord;
     bool triggeredNote; //triggeredNotes are played when the chain trigger is played.  They are steps that start no later than the triggeredNoteLimit from the chainTrigger.  Unless they are triggeredOffNotes they are held at least their full duration but are extended if the chainTrigger is held beyond their scheduled end time, in which case they are held until the chainTrigger is released.
     bool triggeredOffNote; //triggeredOffNotes are triggeredNotes that are forced off when their chainTrigger turns off.  triggeredOffNotes are defined as notes that end before the END of the next chainTrigger note.
     bool autoplayedNote; //Notes that start more than triggeredNoteLimit after the chainTrigger.

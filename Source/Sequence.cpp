@@ -223,7 +223,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             MidiMessage onMsg = MidiMessage::noteOn(allNotes[trk][step]->channel,
                                                   allNotes[trk][step]->noteNumber,
                                                   allNotes[trk][step]->velocity);
-            if (allNotes[trk][step]->chordIndex>=0) //If in a chord
+            if (allNotes[trk][step]->inChord) //If in a chord
                 onMsg.setTimeStamp(chords[allNotes[trk][step]->chordIndex].timeStamp); //Write the chords timestamp for all its notes
             else
                 onMsg.setTimeStamp(allNotes[trk][step]->getTimeStamp()); //Otherwise write the actual note's timestamp
@@ -684,8 +684,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 else if (key == "tnt") //targetNoteTimes
                 {
                     targetNoteTimes.add(value.getDoubleValue());
-                    if (targetNoteTimes.getLast()<1000)
-                        std::cout <<"target note time "<< targetNoteTimes.getLast() <<"\n";
+//                    if (targetNoteTimes.getLast()<1000)
+//                        std::cout <<"target note time "<< targetNoteTimes.getLast() <<"\n";
                 }
                 else if (key == "chordDetails") //Each chord
                 {
@@ -862,7 +862,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         }
     }
     
-    //End of reloading file ####################################################################################
+    //End of reloading file ###
 //    compareAllNotes("End of reloading file");
     theSequence.clear();
     
@@ -933,10 +933,9 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 //Set each found note's chordIndex to refer to this chord
                 //And give all non chord notes a different negative value for chordIndex
                 //We assume theSequence has been created and chords has been created or loaded from the file.  Both must be sorted by ascending timeStamp.
-                int negativeInt = -1;
                 for (int step=0;step<theSequence.size();step++)
                 {
-                    theSequence[step]->chordIndex = negativeInt--;
+                    theSequence[step]->inChord = false;
                 }
                 int chStartStep=0;
                 for (int chIndex=0;chIndex<chords.size();chIndex++)
@@ -962,6 +961,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             chords[chIndex].notePointers.push_back(theSequence[step]);
                             theSequence[step]->chordIndex = chIndex;
                             theSequence[step]->noteIndexInChord = ntIndex;
+                            theSequence[step]->inChord = true;
                         }
                     }
                 }
@@ -970,7 +970,6 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             {
                 chords.clear();
                 double thisChordTimeStamp;
-                int uniqueNonChordIndicator = -1;
                 for (int step=0; step<theSequence.size();step++)
                 {
                     thisChordTimeStamp = theSequence[step]->getTimeStamp();
@@ -990,7 +989,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         detail.notePointers[j]->noteIndexInChord = j; //Tell this note it's current index in the chord
                         //We mark every non chord note with a unique negative integer and every chord note with the index in chords[ ]  of its chord.
                         if (detail.notePointers.size()==1) //One note, so not a chord
-                            detail.notePointers[j]->chordIndex = uniqueNonChordIndicator--; //A negative id different for each non chord note
+                            detail.notePointers[j]->inChord = false; 
                         else
                         {
                             detail.notePointers[j]->chordIndex = chords.size();
@@ -1078,7 +1077,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             randAdd = r%temp/100.0;
 //                        chordNotes[i]->setTimeStamp(thisChordTimeStamp+randAdd);
                     }
-                    if (reVoiceChords)
+                    if (false && reVoiceChords)
                     {
                         const float topNoteVel = chordNotes[0]->originalVelocity;
                         const float userEditFactor = chordNotes[0]->velocity/topNoteVel;
@@ -1363,7 +1362,8 @@ void Sequence::dumpData(int start, int end, int nn)
     << " chainTrigger "
     << " triggered "
     << " triggeredOff "
-    << " chordTop "
+    << " inChord "
+    << " chordTopStep "
     << " chordIndex "
     << "\n";
     if (end>theSequence.size())
@@ -1388,6 +1388,7 @@ void Sequence::dumpData(int start, int end, int nn)
             << theSequence[i]->chainTrigger<<" "
             << theSequence[i]->triggeredNote<<" "
             << theSequence[i]->triggeredOffNote<<" "
+            << theSequence[i]->inChord<<" "
             << theSequence[i]->chordTopStep<<" "
             << theSequence[i]->chordIndex<<" "
             <<"\n";

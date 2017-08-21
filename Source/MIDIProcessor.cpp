@@ -10,6 +10,7 @@
 MIDIProcessor::MIDIProcessor() :
     noteOnOffFifo(FIFO_SIZE)
 {
+    pauseProcessing = false;
     sequenceObject.addChangeListener(this);
     undoMgr = new MyUndoManager();
     synthMessageCollectorIsReset = false;
@@ -233,7 +234,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 //            if (std::abs(sequenceObject.theSequence[step].timeStamp-time)<0.001 && sequenceObject.theSequence[step].triggeredBy==-1)
                 break;
         }
-        if (step==sequenceObject.theSequence.size())
+        if (step>=sequenceObject.theSequence.size())
             step = sequenceObject.theSequence.size() - 1;
         if (step==-1)
             step = 0;
@@ -559,7 +560,7 @@ void MIDIProcessor::addRemoveBookmark (int action)
 void MIDIProcessor::processBlock ()
 {
 //    std::vector<NoteWithOffTime*> * theSequence;
-    if (sequenceObject.loadingFile)
+    if (pauseProcessing || sequenceObject.loadingFile)
         return;
     if (panic)
     {
@@ -603,33 +604,12 @@ void MIDIProcessor::processBlock ()
 //            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
 //            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
         }
-//        if (metTimeInTicks > sequenceObject.getPPQ())
-//        {
-////            std::cout << "BEAT " << "\n";
-//            metronomeLighted = true;
-////            changeMessageType = CHANGE_MESSAGE_BEAT_CHANGED;
-////            sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
-//            metTimeInTicks = 0;
-////            MidiMessage noteOn = MidiMessage::noteOn(16, 40, (uint8) 100);
-////            sendMidiMessage(noteOn);
-//        }
-//        else if (metronomeLighted)
-//        {
-//            if (metTimeInTicks > sequenceObject.getPPQ()/32.0) //Turn off indicator after a 32nd note duration
-//            {
-////                std::cout << "BEAT OFF" << "\n";
-//                metronomeLighted = false;
-//                sendChangeMessage();
-////                MidiMessage noteOff = MidiMessage::noteOff(2, 40, (uint8) 0);
-////                sendMidiMessage(noteOff);
-//            }
-//            metTimeInTicks += timeIncrement;
-//        }
-//        else
-//            metTimeInTicks += timeIncrement;
     }
     else
+    {
+        pauseProcessing = false;
         return;
+    }
     
     if (isListening && listenSequence.size()>0)
     {
@@ -1221,6 +1201,7 @@ void MIDIProcessor::processBlock ()
 //    }
 //    else
         exprEvents.clear();
+    pauseProcessing = false;
 }
 
 void MIDIProcessor::catchUp()
@@ -1306,7 +1287,7 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
 
 void MIDIProcessor::addPedalChange(PedalType pType)
 {
-    sequenceObject.loadingFile = true; //Stops processing
+    pauseProcessing = true;
     if (copyOfSelectedNotes.size()<=1)
         return;
     std::vector<Sequence::PedalMessage> *pedalChanges;
@@ -1314,8 +1295,6 @@ void MIDIProcessor::addPedalChange(PedalType pType)
         pedalChanges = &sequenceObject.sustainPedalChanges;
     else if (pType==softPedal)
         pedalChanges = &sequenceObject.softPedalChanges;
-    else
-        return;
     
     double newStart = sequenceObject.theSequence[copyOfSelectedNotes.getFirst()]->getTimeStamp();
     double newEnd = sequenceObject.theSequence[copyOfSelectedNotes.getLast()]->getTimeStamp();
@@ -1431,12 +1410,12 @@ void MIDIProcessor::addPedalChange(PedalType pType)
     //        }
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
-    sequenceObject.loadingFile = false; //Starts processing
+    pauseProcessing = false;
 }
 
 void MIDIProcessor::deletePedalChange(PedalType pType)
 {
-    sequenceObject.loadingFile = true; //Stops processing
+    pauseProcessing = true;
     //        if (copyOfSelectedNotes.size()<=1)
     //            return;
     std::vector<Sequence::PedalMessage> *pedalChanges;
@@ -1444,8 +1423,6 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
         pedalChanges = &sequenceObject.sustainPedalChanges;
     else if (pType==softPedal)
         pedalChanges = &sequenceObject.softPedalChanges;
-    else
-        return;
     
     double currentZtlTime = timeInTicks-xInTicksFromViewer;
     int deleteBar = -1;
@@ -1462,7 +1439,7 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
     }
-    sequenceObject.loadingFile = false; //Starts processing
+    pauseProcessing = false;
 }
 
 void MIDIProcessor::createChord()
@@ -1470,8 +1447,9 @@ void MIDIProcessor::createChord()
 //    std::cout << "MidiProcessor create_chord: 1st selected note"<<sequenceObject.theSequence.at(copyOfSelectedNotes[0])->currentStep <<"\n";
     if (copyOfSelectedNotes.size()<=1)
         return;
+    pauseProcessing = true;
+
     deleteChords(false);
-    sequenceObject.loadingFile = true; //Stops processing
     
     std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes;
     //Put notes in selected range into the chord vector
@@ -1495,64 +1473,93 @@ void MIDIProcessor::createChord()
 //        chordNotes[i]->noteIndexInChord = i;
 //    }
     std::cout << "added chord at "<< chordIndex <<"\n";
-    for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
-        std::cout << "chord note: step "<< sequenceObject.chords[chordIndex].notePointers[i]->currentStep
-        <<"  timestamp " << sequenceObject.chords[chordIndex].notePointers[i]->timeStamp
-        << "\n";
+//    for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
+//    {
+//        if (
+//        std::cout << "chord note: step "<< sequenceObject.chords[chordIndex].notePointers[i]->currentStep
+//        <<"  timestamp " << sequenceObject.chords[chordIndex].notePointers[i]->timeStamp
+//        << "\n";
+//    }
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
-    sequenceObject.loadingFile = false; //Starts processing
+    pauseProcessing = false;
 }
 void MIDIProcessor::deleteChords(bool rebuild)
 {
-//    std::cout << "MidiProcessor delete_chord\n";
+    std::cout << "MidiProcessor START delete_chord\n";
     if (copyOfSelectedNotes.size()==0)
         return;
-    sequenceObject.loadingFile = true; //Stops processing
+    pauseProcessing = true;
+    int adjustedFirstStep = copyOfSelectedNotes.getFirst();;
+    int adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    if (sequenceObject.theSequence[copyOfSelectedNotes.getFirst()]->inChord)
+    {
+        const int chordIndex = sequenceObject.theSequence[copyOfSelectedNotes.getFirst()]->chordIndex;
+        adjustedFirstStep=INT_MAX;
+        adjustedLastStep=INT_MIN;
+        for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++) //Find lowest and highest note step in chord
+        {
+            if (sequenceObject.chords[chordIndex].notePointers[i]->currentStep < adjustedFirstStep)
+                adjustedFirstStep = sequenceObject.chords[chordIndex].notePointers[i]->currentStep;
+            if (sequenceObject.chords[chordIndex].notePointers[i]->currentStep > adjustedLastStep)
+                adjustedLastStep = sequenceObject.chords[chordIndex].notePointers[i]->currentStep;
+        }
+    }
+//    else
+//    {
+//        int adjustedFirstStep = copyOfSelectedNotes.getFirst();;
+//        int adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+//    }
+
+    
     Array<int> chordsToRemove;
-    for(int i=copyOfSelectedNotes.getFirst() ; i<=copyOfSelectedNotes.getLast(); i++)
+    for(int i=adjustedFirstStep ; i<=adjustedLastStep; i++)
     {
 //        std::cout << "MidiProcessor chord "<< i << "\n";
-        if (sequenceObject.theSequence[i]->chordIndex>=0)
+        if (sequenceObject.theSequence[i]->inChord)
         {
 //            std::cout << "Request removal of chord for step "<< i << " index " << sequenceObject.theSequence[i]->chordIndex << "\n";
             chordsToRemove.addIfNotAlreadyThere(sequenceObject.theSequence[i]->chordIndex);
             sequenceObject.theSequence[i]->chordIndex = -1;
             sequenceObject.theSequence[i]->chordTopStep = -1;
             sequenceObject.theSequence[i]->noteIndexInChord = -1;
+            sequenceObject.theSequence[i]->inChord = false;
         }
     }
     int chordAfterDeletions = chordsToRemove.getLast()+1;
     if (chordsToRemove.size()>0)
     {
         int nChordsDeleted = chordsToRemove.size();
-        const int lastStepChanged = sequenceObject.chords[chordsToRemove.getLast()].notePointers.back()->currentStep;
+//        const int firstStepChanged = sequenceObject.chords[chordsToRemove.getFirst()].notePointers.front()->currentStep;
+//        const int lastStepChanged = sequenceObject.chords[chordsToRemove.getLast()].notePointers.back()->currentStep;
+        std::cout << "chordsToRemove: first, last " << chordsToRemove.getFirst()<<" "<<chordsToRemove.getLast()<<"\n";
         sequenceObject.chords.erase(sequenceObject.chords.begin()+chordsToRemove.getFirst(),
                                     sequenceObject.chords.begin()+chordsToRemove.getLast()+1);
-        int nonIndex = -1;
-        int tempCount = 0;
-        for (auto step=sequenceObject.theSequence.begin();step!=sequenceObject.theSequence.end();step++)
-        {
-    //        std::cout << "A: chord removal cleanup: step "<< (*step)->currentStep<<" tempCount "<<tempCount<<"\n";
-            if ((*step)->chordIndex<0)
-                (*step)->chordIndex = nonIndex--;
-            else if ((*step)->chordIndex >= chordAfterDeletions)
-                (*step)->chordIndex -= nChordsDeleted;
-
-            if (copyOfSelectedNotes.getFirst()<=(*step)->currentStep && (*step)->currentStep<=lastStepChanged)
+//        if (chordsToRemove.size()<sequenceObject.chords.size() && adjustedLastStep<sequenceObject.theSequence.size())
+//        {
+            int tempCount = 0;
+            for (auto step=sequenceObject.theSequence.begin();step!=sequenceObject.theSequence.end();step++)
             {
-                (*step)->chordTopStep = -1;
-                (*step)->chordIndex = nonIndex--;
+                if ((*step)->chordIndex >= chordAfterDeletions)
+                    (*step)->chordIndex -= nChordsDeleted;
+
+                if (adjustedFirstStep<=(*step)->currentStep && (*step)->currentStep<=adjustedLastStep)
+                {
+                    (*step)->chordTopStep = -1;
+                    (*step)->chordIndex = -1;
+                    (*step)->inChord = false;
+                }
+                tempCount++;
             }
-            tempCount++;
-        }
+//        }
         if (rebuild)
         {
             catchUp();
             buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
         }
     }
-    sequenceObject.loadingFile = false; //Starts processing
+    pauseProcessing = false;
+    std::cout << "MidiProcessor END delete_chord\n";
 }
 
 Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection, double inverval)
