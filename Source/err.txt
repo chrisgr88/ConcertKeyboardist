@@ -1,1 +1,65 @@
-(information) Too many #ifdef configurations - cppcheck only checks 12 configurations. Use --force to check all configurations. For more details, use --enable=information.
+Chord toolbar
+
+Non-chord notes
+	- Step
+	- Target note
+	- Note name
+	- Time Stamp
+	- Velocity
+	- Beat/measure
+	- Duration
+	- Time to next note
+	- Overlap time
+	- Articulation
+
+
+Chord Notes
+	- Time offset
+	- Derived time
+	- Velocity offset
+	- Derived velocity
+	- Duration offset
+	- Derived duration
+	- Sustainable
+	- Position relative to root (inversions)
+
+	Minimum need to cover melodyne exports
+	- Velocity
+	- Duration
+	- Define chords for export to notation software
+	- Create and edit sustain
+
+	To Do For Chords
+	- DONE Connect add/delSustain, add/delSoft, and add/delChord to command manager & create keyboard shortcuts
+	- Autocreate chords based on chained notes from target notes (constrained by a settable maximum duration from target note)
+	- UI for above
+	- Hide chord toolbar by default
+	- Move icons to the right 
+	- Highlight chord notes (with selection rectangles) when hover on vertical bar
+	- Select all notes in chord upon a mouse-up on vertical bar
+	- Change chord bar colour (to yellow?) if all notes in the chord it are selected.  This marks the chord as selected.
+	- Drag chords by clicking on vertical bar and dragging on any note.  (Same group-drag mechanism as for any group of notes)
+	- Block dropping notes on a different chord
+	- Block dropping a chord overlapping a different chord
+	- Undo for chord creation/deletion
+	- Mark document changed on chord creation/deletion
+
+	- UI To Edit Chord Properties
+		- Chord note timing type (manual, random, arpeggiate & choose slope (and add random))
+		- Chord velocity type (original? , pattern, algorithm)
+
+	- Editing
+		- Mark document changed on drag editing
+		- Editing by dragging velocity, time or duration affects all selected notes (proportionally or literally?)
+		- Undo for drag editing velocity, time or duration
+		- Normalize velocities in a range
+
+	- Other
+		- Duplicate [ck] in file name on save as of file already with [ck] in its name
+
+
+
+
+
+
+

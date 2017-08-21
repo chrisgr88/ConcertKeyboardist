@@ -36,7 +36,15 @@ namespace CommandIDs
     static const int chainSelectedNotes         = 0x41020; //Needs a chaining interval argument
     static const int velHumanizeSelection       = 0x41030; //Needs a vel profile argument (currently use default one)
     static const int timeHumanizeSelection      = 0x41040; //Needs a time argument
-    static const int toggleBookmark             = 0x49000;
+    
+    static const int addSustain         = 0x42010;
+    static const int deleteSustain      = 0x42012;
+    static const int addSoft            = 0x42014;
+    static const int deleteSoft         = 0x42016;
+    static const int create_chord       = 0x43010;
+    static const int delete_chord       = 0x43012;
+    
+        static const int toggleBookmark             = 0x49000;
 //    static const int setPlayheadToHere          = 0x50000;
     static const int playPause                  = 0x50001;
 //    static const int playFromCurrentPlayhead   = 0x50002;

@@ -311,16 +311,42 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::chainSelectedNotes:
                 result.setInfo ("chainSelectedNotes", "chainSelectedNotes", category, 0);
-                result.addDefaultKeypress ('c', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('n', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::velHumanizeSelection:
                 result.setInfo ("velHumanizeSelection", "velHumanizeSelection", category, 0);
-                result.addDefaultKeypress ('4', ModifierKeys::commandModifier);
+                result.addDefaultKeypress ('8', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::timeHumanizeSelection:
                 result.setInfo ("timeHumanizeSelection", "timeHumanizeSelection", category, 0);
-                result.addDefaultKeypress ('5', ModifierKeys::commandModifier);
+                result.addDefaultKeypress ('9', ModifierKeys::commandModifier);
                 break;
+                
+            case CommandIDs::addSustain:
+                result.setInfo ("addSustain", "addSustain", category, 0);
+                result.addDefaultKeypress ('s', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::deleteSustain:
+                result.setInfo ("deleteSustain", "deleteSustain", category, 0);
+                result.addDefaultKeypress ('s', ModifierKeys::shiftModifier);
+                break;
+            case CommandIDs::addSoft:
+                result.setInfo ("addSoft", "addSoft", category, 0);
+                result.addDefaultKeypress ('f', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::deleteSoft:
+                result.setInfo ("deleteSoft", "deleteSoft", category, 0);
+                result.addDefaultKeypress ('f', ModifierKeys::shiftModifier);
+                break;
+            case CommandIDs::create_chord:
+                result.setInfo ("create_chord", "create_chord", category, 0);
+                result.addDefaultKeypress ('c', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::delete_chord:
+                result.setInfo ("delete_chord", "delete_chord", category, 0);
+                result.addDefaultKeypress ('c', ModifierKeys::shiftModifier);
+                break;
+                
             case CommandIDs::previousTargetNote:
                 result.setInfo ("PreviousTargetNote", "Go to Previous Target Note", category, 0);
                 result.addDefaultKeypress (KeyPress::leftKey, ModifierKeys::noModifiers);
@@ -455,6 +481,14 @@ ApplicationProperties& getAppProperties();
             CommandIDs::chainSelectedNotes,
             CommandIDs::velHumanizeSelection,
             CommandIDs::timeHumanizeSelection,
+            
+            CommandIDs::addSustain,
+            CommandIDs::deleteSustain,
+            CommandIDs::addSoft,
+            CommandIDs::deleteSoft,
+            CommandIDs::create_chord,
+            CommandIDs::delete_chord,
+            
             CommandIDs::rewind,
             CommandIDs::previousTargetNote,
             CommandIDs::previousMeasure,
@@ -685,6 +719,44 @@ ApplicationProperties& getAppProperties();
                 std::cout <<"timeHumanizeSelection\n";
                 //Command is currently performed in MainWindow::actionListenerCallback
                 break;
+                
+            case CommandIDs::addSustain:
+            {
+                std::cout <<"addSustain\n";
+                midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
+            }
+                break;
+            case CommandIDs::deleteSustain:
+            {
+                std::cout <<"deleteSustain\n";
+                midiProcessor.deletePedalChange(MIDIProcessor::sustPedal);
+            }
+                break;
+            case CommandIDs::addSoft:
+            {
+                std::cout <<"addSoft\n";
+                midiProcessor.addPedalChange(MIDIProcessor::softPedal);
+            }
+                break;
+            case CommandIDs::deleteSoft:
+            {
+                std::cout <<"deleteSoft\n";
+                midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
+            }
+                break;
+            case CommandIDs::create_chord:
+            {
+                std::cout <<"create_chord\n";
+                midiProcessor.createChord();
+            }
+                break;
+            case CommandIDs::delete_chord:
+            {
+                std::cout <<"delete_chord\n";
+                midiProcessor.deleteChords(true);
+            }
+                break;
+                
             case CommandIDs::toggleBookmark:
                 midiProcessor.catchUp();
                 midiProcessor.addRemoveBookmark (BOOKMARK_TOGGLE);
