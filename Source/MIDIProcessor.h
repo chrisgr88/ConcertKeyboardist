@@ -282,6 +282,7 @@ public:
     void deletePedalChange(PedalType pType);
     void createChord();
     void deleteChords(bool rebuild);
+    void autoCreateChords(double maxLength); //Based on notes chained to target notes in selection, limited to maxLength
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval);
     void setIndividualNotesActivity (Array<Sequence::StepActivity> act); //Used only to restore activity after undo
     bool getNoteActivity(int step);

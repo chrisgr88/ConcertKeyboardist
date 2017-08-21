@@ -1463,15 +1463,14 @@ void MIDIProcessor::createChord()
     } customCompare2;
     std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
     int chordIndex = sequenceObject.newChordFromSteps(chordNotes);
-    
-//    chordNotes[0]->chordTopStep=-1;
-//    chordNotes[0]->noteIndexInChord=-1;
-//    for (int i=1; i<chordNotes.size(); i++)
-//    {
-//        chordNotes[i]->chordTopStep = chordNotes[0]->currentStep;
-//        chordNotes[i]->chordIndex = chordIndex;
-//        chordNotes[i]->noteIndexInChord = i;
-//    }
+    chordNotes[0]->chordTopStep=-1;
+    chordNotes[0]->noteIndexInChord=-1;
+    for (int i=1; i<chordNotes.size(); i++)
+    {
+        chordNotes[i]->chordTopStep = chordNotes[0]->currentStep;
+        chordNotes[i]->chordIndex = chordIndex;
+        chordNotes[i]->noteIndexInChord = i;
+    }
 //    std::cout << "added chord at "<< chordIndex <<"\n";
 //    for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
 //    {
@@ -1484,33 +1483,44 @@ void MIDIProcessor::createChord()
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
     pauseProcessing = false;
 }
+
 void MIDIProcessor::deleteChords(bool rebuild)
 {
-//    std::cout << "MidiProcessor START delete_chord\n";
     if (copyOfSelectedNotes.size()==0)
         return;
     pauseProcessing = true;
     int adjustedFirstStep = copyOfSelectedNotes.getFirst();;
-    int adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    
     if (sequenceObject.theSequence[copyOfSelectedNotes.getFirst()]->inChord)
     {
         const int chordIndex = sequenceObject.theSequence[copyOfSelectedNotes.getFirst()]->chordIndex;
         adjustedFirstStep=INT_MAX;
-        adjustedLastStep=INT_MIN;
         for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++) //Find lowest and highest note step in chord
         {
             if (sequenceObject.chords[chordIndex].notePointers[i]->currentStep < adjustedFirstStep)
                 adjustedFirstStep = sequenceObject.chords[chordIndex].notePointers[i]->currentStep;
+        }
+    }
+    else
+    {
+        adjustedFirstStep = copyOfSelectedNotes.getFirst();;
+    }
+    
+    int adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    if (sequenceObject.theSequence[copyOfSelectedNotes.getLast()]->inChord)
+    {
+        const int chordIndex = sequenceObject.theSequence[copyOfSelectedNotes.getLast()]->chordIndex;
+        adjustedLastStep=INT_MIN;
+        for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++) //Find lowest and highest note step in chord
+        {
             if (sequenceObject.chords[chordIndex].notePointers[i]->currentStep > adjustedLastStep)
                 adjustedLastStep = sequenceObject.chords[chordIndex].notePointers[i]->currentStep;
         }
     }
-//    else
-//    {
-//        int adjustedFirstStep = copyOfSelectedNotes.getFirst();;
-//        int adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
-//    }
-
+    else
+    {
+        adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    }
     
     Array<int> chordsToRemove;
     for(int i=adjustedFirstStep ; i<=adjustedLastStep; i++)
@@ -1530,8 +1540,6 @@ void MIDIProcessor::deleteChords(bool rebuild)
     if (chordsToRemove.size()>0)
     {
         int nChordsDeleted = chordsToRemove.size();
-//        const int firstStepChanged = sequenceObject.chords[chordsToRemove.getFirst()].notePointers.front()->currentStep;
-//        const int lastStepChanged = sequenceObject.chords[chordsToRemove.getLast()].notePointers.back()->currentStep;
 //        std::cout << "chordsToRemove: first, last " << chordsToRemove.getFirst()<<" "<<chordsToRemove.getLast()<<"\n";
         sequenceObject.chords.erase(sequenceObject.chords.begin()+chordsToRemove.getFirst(),
                                     sequenceObject.chords.begin()+chordsToRemove.getLast()+1);
@@ -1560,6 +1568,19 @@ void MIDIProcessor::deleteChords(bool rebuild)
     }
     pauseProcessing = false;
 //    std::cout << "MidiProcessor END delete_chord\n";
+}
+
+void MIDIProcessor::autoCreateChords(double maxLength) //Based on notes chained to target notes in selection , limited to maxLength
+{
+    if (copyOfSelectedNotes.size()==0)
+        return;
+    for (int step=copyOfSelectedNotes.getFirst();step<=copyOfSelectedNotes.getLast();step++)
+    {
+        if (sequenceObject.theSequence.at(step)->triggeredBy==-1)
+        {
+            
+        }
+    }
 }
 
 Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection, double inverval)

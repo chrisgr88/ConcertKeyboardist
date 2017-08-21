@@ -1043,7 +1043,8 @@ void ScrollingNoteViewer::makeNoteBars()
 
 //        const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
         pSequence->at(index)->head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
-        
+        if (index<25)
+            std::cout << "Step " << index << " head X " <<pSequence->at(index)->head.getX()<<"\n";
         //Determine the cord rectangle, if part of a chord
         if (processor->sequenceObject.chords.size()>0)
         {

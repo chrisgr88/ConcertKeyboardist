@@ -128,27 +128,33 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "addSustain")
         {
-            midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
+//            midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
+            perform (CommandIDs::addSustain);
         }
         else if (message == "deleteSustain")
         {
-            midiProcessor.deletePedalChange(MIDIProcessor::sustPedal);
+//            midiProcessor.deletePedalChange(MIDIProcessor::sustPedal);
+            perform (CommandIDs::deleteSustain);
         }
         else if (message == "addSoft")
         {
-            midiProcessor.addPedalChange(MIDIProcessor::softPedal);
+            perform (CommandIDs::addSoft);
+//            midiProcessor.addPedalChange(MIDIProcessor::softPedal);
         }
         else if (message == "deleteSoft")
         {
-            midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
+            perform (CommandIDs::deleteSoft);
+//            midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
         }
         else if (message == "create_chord")
         {
-            midiProcessor.createChord();
+            perform (CommandIDs::create_chord);
+//            midiProcessor.createChord();
         }
         else if (message == "delete_chord")
         {
-            midiProcessor.deleteChords(true);
+            perform (CommandIDs::delete_chord);
+//            midiProcessor.deleteChords(true);
         }
     }
     

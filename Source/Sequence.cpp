@@ -987,12 +987,13 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     for (int j=0;j<detail.notePointers.size();j++)
                     {
                         detail.notePointers[j]->noteIndexInChord = j; //Tell this note it's current index in the chord
-                        //We mark every non chord note with a unique negative integer and every chord note with the index in chords[ ]  of its chord.
+                        //We mark every non chord note-1 and every chord note with the index in chords[ ]  of its chord.
                         if (detail.notePointers.size()==1) //One note, so not a chord
                             detail.notePointers[j]->inChord = false; 
                         else
                         {
                             detail.notePointers[j]->chordIndex = chords.size();
+                            detail.notePointers[j]->inChord = true;
                         }
                         //                    tempChordNotes.setUnchecked(j, tempChordNotes[j]);
                         
