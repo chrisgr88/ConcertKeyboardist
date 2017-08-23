@@ -222,6 +222,8 @@ public:
         displayedSelection.clear();
         newlySelectedNotes.clear();
         processor->setCopyOfSelectedNotes(selectedNotes);
+        for (int i=0;i<processor->sequenceObject.chords.size();i++)
+            processor->sequenceObject.chords[i].selected = false;
         repaint();
     }
     void selectAll()

@@ -163,7 +163,7 @@ private:
     
     Toolbar mainToolbar;
     Toolbar altToolbar;
-    bool altToolbarVisible = true;
+    bool altToolbarVisible = false;
     
 //==============================================================================
 //###
