@@ -171,13 +171,16 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         repaint();
         return;
     }
-    else if (hoverChord!=HOVER_NONE)
+    else if (hoverChord!=-1)
     {
         Array<int> chordNotes;
         for (int i=0;i<processor->sequenceObject.chords[hoverChord].notePointers.size();i++)
             chordNotes.add(processor->sequenceObject.chords[hoverChord].notePointers.at(i)->currentStep);
 //        setSelectedNotes(chordNotes);
         displayedSelection = chordNotes;
+//        selecting = true;
+        setSelectedNotes(chordNotes);
+        repaint();
     }
     stopTimer(TIMER_MOUSE_HOLD);
 //    const double x = event.position.getX();
@@ -324,7 +327,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
         int ch = -1;
         for (i=0;i<processor->sequenceObject.chords.size();i++)
         {
-            if (processor->sequenceObject.chords[i].chordRect.expanded(0.0, 3.0).contains(sequenceScaledX, scaledY))
+            if (processor->sequenceObject.chords[i].chordRect.expanded(2.5, 0.0).contains(sequenceScaledX, scaledY))
             {
                 ch = i;
                 break;
@@ -1821,20 +1824,20 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //                <<  "\n";
                 hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
                 +" width:"+String(maxSelNoteTime-minSelNoteTime);
-                for (int i=0;i<processor->sequenceObject.chords.size();i++)
-                {
-                    processor->sequenceObject.chords[i].selected = true;
-                    for (int j=0;j<processor->sequenceObject.chords[i].notePointers.size();j++)
-                    {
-                        if(!displayedSelection.contains(processor->sequenceObject.chords[i].notePointers[j]->currentStep))
-                        {
-                            processor->sequenceObject.chords[i].selected = false;
-                            break;
-                        }
-                    }
-//                    if (processor->sequenceObject.chords[i].selected)
-//                        std::cout <<  "selected chord "<< i <<  "\n";
-                }
+//                for (int i=0;i<processor->sequenceObject.chords.size();i++)
+//                {
+//                    processor->sequenceObject.chords[i].selected = true;
+//                    for (int j=0;j<processor->sequenceObject.chords[i].notePointers.size();j++)
+//                    {
+//                        if(!displayedSelection.contains(processor->sequenceObject.chords[i].notePointers[j]->currentStep))
+//                        {
+//                            processor->sequenceObject.chords[i].selected = false;
+//                            break;
+//                        }
+//                    }
+////                    if (processor->sequenceObject.chords[i].selected)
+////                        std::cout <<  "selected chord "<< i <<  "\n";
+//                }
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
                 repaint();
             }

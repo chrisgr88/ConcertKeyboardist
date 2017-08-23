@@ -325,7 +325,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             }
         }
     }
-    
+    pauseProcessing = false;
     changeMessageType = CHANGE_MESSAGE_REWIND;
     sendSynchronousChangeMessage();
 }

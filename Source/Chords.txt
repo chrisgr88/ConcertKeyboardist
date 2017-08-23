@@ -35,7 +35,7 @@ Chord Notes
 	- UI for above
 	- DONE Hide chord toolbar by default
 	- Move icons to the right 
-	- Select all notes in chord upon a mouse-up on vertical bar
+	- DONE Select all notes in chord upon a mouse-up on vertical bar
 	- DONE Change chord bar colour (to yellow?) if all notes in the chord are selected.  This marks the chord as selected.
 	- Drag chords by clicking on vertical bar and dragging on any note.  (Same group-drag mechanism as for any group of notes)
 	- Prevent dropping notes on a different chord

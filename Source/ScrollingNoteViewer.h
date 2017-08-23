@@ -211,6 +211,20 @@ public:
     {
         selectedNotes = sel;
         processor->setCopyOfSelectedNotes(selectedNotes);
+        for (int i=0;i<processor->sequenceObject.chords.size();i++)
+        {
+            processor->sequenceObject.chords[i].selected = true;
+            for (int j=0;j<processor->sequenceObject.chords[i].notePointers.size();j++)
+            {
+                if(!selectedNotes.contains(processor->sequenceObject.chords[i].notePointers[j]->currentStep))
+                {
+                    processor->sequenceObject.chords[i].selected = false;
+                    break;
+                }
+            }
+            //                    if (processor->sequenceObject.chords[i].selected)
+            //                        std::cout <<  "selected chord "<< i <<  "\n";
+        }
     }
     Array<int> getSelectedNotes()
     {
