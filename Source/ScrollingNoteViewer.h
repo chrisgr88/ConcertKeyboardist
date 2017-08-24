@@ -213,16 +213,16 @@ public:
         processor->setCopyOfSelectedNotes(selectedNotes);
         for (int i=0;i<processor->sequenceObject.chords.size();i++)
         {
-            processor->sequenceObject.chords[i].selected = true;
-            for (int j=0;j<processor->sequenceObject.chords[i].notePointers.size();j++)
+            processor->sequenceObject.chords.at(i).selected = true;
+            for (int j=0;j<processor->sequenceObject.chords.at(i).notePointers.size();j++)
             {
-                if(!selectedNotes.contains(processor->sequenceObject.chords[i].notePointers[j]->currentStep))
+                if(!selectedNotes.contains(processor->sequenceObject.chords.at(i).notePointers.at(j)->currentStep))
                 {
-                    processor->sequenceObject.chords[i].selected = false;
+                    processor->sequenceObject.chords.at(i).selected = false;
                     break;
                 }
             }
-            //                    if (processor->sequenceObject.chords[i].selected)
+            //                    if (processor->sequenceObject.chords.at(i).selected)
             //                        std::cout <<  "selected chord "<< i <<  "\n";
         }
     }
@@ -237,7 +237,7 @@ public:
         newlySelectedNotes.clear();
         processor->setCopyOfSelectedNotes(selectedNotes);
         for (int i=0;i<processor->sequenceObject.chords.size();i++)
-            processor->sequenceObject.chords[i].selected = false;
+            processor->sequenceObject.chords.at(i).selected = false;
         repaint();
     }
     void selectAll()
@@ -247,7 +247,7 @@ public:
         newlySelectedNotes.clear();
         for (int step=0;step<processor->sequenceObject.theSequence.size();step++)
         {
-//            if (processor->sequenceObject.isActiveTrack(processor->sequenceObject.theSequence[step]->track))
+//            if (processor->sequenceObject.isActiveTrack(processor->sequenceObject.theSequence.at(step)->track))
             selectedNotes.add(step);
             displayedSelection.add(step);
         }
@@ -291,6 +291,7 @@ private:
     float timeStartDrag;
     float offTimeStartDrag;
     double timeAfterDrag;
+    double deltaTimeDrag;
     float velocityAfterDrag;
     double offTimeAfterDrag;
     Point<int> selectionAnchor;

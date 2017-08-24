@@ -245,6 +245,10 @@ void ViewerFrame::buttonClicked (Button* button)
             resized();
             repaint();
         }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
+        {
+            std::cout << "_editVelocities\n";
+        }
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
         {
             std::cout << "addSustain\n";

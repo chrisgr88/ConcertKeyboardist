@@ -289,7 +289,7 @@ public:
     inline void setAsTargetNote(int step);
     inline void setAsNonTargetNote(int step);
     void changeNoteVelocity(int step, float velocity);
-    void changeNoteTime(int step, double time);
+    void changeNoteTimes(Array<int>, double time);
     void changeNoteOffTime(int step, double offTime);
     Array<int> copyOfSelectedNotes;
     void setCopyOfSelectedNotes(Array<int> sel);

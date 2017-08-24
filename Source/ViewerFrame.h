@@ -186,26 +186,27 @@ private:
             edit_undo       = 4,
             edit_redo       = 5,
             _makeActive     = 6,
-            _makeInactive    = 7,
+            _makeInactive   = 7,
             _chain          = 8,
             _humanizeTime   = 9,
-            _chordEditToggle    = 10,
-            _play           = 11,
-            _stop           = 12,
-            _playPause      = 13,
-            _rewind         = 14,
-            _listen         = 15,
-            customComboBox  = 16,
-            chainAmountBox  = 17,
-            scoreTempo      = 18,
-            tempoMultiplier = 19,
-            realTimeTempo   = 20,
-            humVelocityBox  = 21,
-            humTimeBox      = 22,
-            _addSustain      = 23,
-            _addSoft        = 24,
-            _deleteSustain   = 25,
-            _deleteSoft      = 26
+            _chordEditToggle = 10,
+            _editVelocities  = 11,
+            _play           = 12,
+            _stop           = 13,
+            _playPause      = 14,
+            _rewind         = 15,
+            _listen         = 16,
+            customComboBox  = 17,
+            chainAmountBox  = 18,
+            scoreTempo      = 19,
+            tempoMultiplier = 20,
+            realTimeTempo   = 21,
+            humVelocityBox  = 22,
+            humTimeBox      = 23,
+            _addSustain     = 24,
+            _addSoft        = 25,
+            _deleteSustain  = 26,
+            _deleteSoft     = 27
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -216,10 +217,6 @@ private:
         
         void getAllToolbarItemIds (Array<int>& ids) override
         {
-            // This returns the complete list of all item IDs that are allowed to
-            // go in our toolbar. Any items you might want to add must be listed here. The
-            // order in which they are listed will be used by the toolbar customisation panel.
-            
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
@@ -233,10 +230,12 @@ private:
             ids.add (_deleteSustain);
             ids.add (_deleteSoft);
             ids.add (_chordEditToggle);
+            ids.add (_editVelocities);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
             ids.add (humVelocityBox);
             ids.add (humTimeBox);
+            ids.add (_editVelocities);
             ids.add (scoreTempo);
             ids.add (tempoMultiplier);
             ids.add (realTimeTempo);
@@ -252,9 +251,6 @@ private:
         
         void getDefaultItemSet (Array<int>& ids) override
         {
-            // This returns an ordered list of the set of items that make up a
-            // toolbar's default set. Not all items need to be on this list, and
-            // items can appear multiple times (e.g. the separators used here).
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
@@ -305,11 +301,8 @@ private:
             ids.add (_chain);
             ids.add (chainAmountBox);
             ids.add (separatorBarId);
+            ids.add (_editVelocities);            
             ids.add (_chordEditToggle);
-//            ids.add (humVelocityBox);
-            ids.add (separatorBarId);
-//            ids.add (_humanizeTime);
-//            ids.add (humTimeBox);
             ids.add (separatorBarId);
             ids.add (_addSustain);
             ids.add (_deleteSustain);
@@ -338,6 +331,7 @@ private:
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
                 case _chordEditToggle: return createButtonFromZipFileSVG (itemId, "Show/Hide Chord Toolbar", "chordEditToggle.svg");
+                case _editVelocities: return createButtonFromZipFileSVG (itemId, "Edit Note Velocities", "editVelocities.svg");                    
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
                     
@@ -371,7 +365,7 @@ private:
                     txtBox->textBox.setTooltip("Amount of Time Randomization");
                     return txtBox;
                 }
-                
+                    
                 case scoreTempo:
                 {
                     ScoreTempo *txtBox = new ScoreTempo (itemId);

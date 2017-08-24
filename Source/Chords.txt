@@ -30,6 +30,12 @@ Chord Notes
 	- Create and edit sustain
 
 	To Do For Chords
+	- Assign note timing properties to chords
+		- Manual note times adjustable by dragging 
+		- Arpeggiated & randomized note times (arpeggiation slope (+/-), randomization amplitude, randomization seed)
+	- Assign velocities to chord notes
+		- Manual velocities settable by drag in drag bar UI displayed to left of chord
+		- Algorithmic velocities based on pattern of factors (from on top note, or from weighted total chord amplitude?)
 	- DONE Connect add/delSustain, add/delSoft, and add/delChord to command manager & create keyboard shortcuts
 	- Autocreate chords from chained notes: chords start at firstInChain, constrained by a maximum time after firstInChain)
 	- UI for above

@@ -346,14 +346,14 @@ public:
         int counter = tempoChanges.size();
         while (counter-- > 0)
         {
-            if (tempoChanges[tempoChangeIndex].getTimeStamp()<=currentTime && currentTime<tempoChanges[tempoChangeIndex+1].getTimeStamp())
+            if (tempoChanges.at(tempoChangeIndex).getTimeStamp()<=currentTime && currentTime<tempoChanges.at(tempoChangeIndex+1).getTimeStamp())
                 break;
             tempoChangeIndex++;
             if (tempoChangeIndex>=tempoChanges.size()) //If we didn't find it in the up-search restart at the bottom
                 tempoChangeIndex = 0;
         }
 
-        double curTempo = 60.0/tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote();
+        double curTempo = 60.0/tempoChanges.at(tempoChangeIndex).getTempoSecondsPerQuarterNote();
 //        const double increment =  tempoMultiplier * 96.0*curTempo/60000.0;
 //        std::cout
 //        << " tempoChangeIndex " << tempoChangeIndex
@@ -573,10 +573,10 @@ public:
         int lastStep = INT_MIN;
         for (int i=0; i<chordNotes.size();i++)
         {
-            if (chordNotes[i]->currentStep < firstStep)
-                firstStep = chordNotes[i]->currentStep;
-            if (chordNotes[i]->currentStep > lastStep)
-                lastStep = chordNotes[i]->currentStep;
+            if (chordNotes.at(i)->currentStep < firstStep)
+                firstStep = chordNotes.at(i)->currentStep;
+            if (chordNotes.at(i)->currentStep > lastStep)
+                lastStep = chordNotes.at(i)->currentStep;
         }
         
         ChordDetail chDet;
@@ -587,8 +587,8 @@ public:
         {
             String noteId = String(chordNotes.at(i)->track)+"_"+String(chordNotes.at(i)->channel)+"_"+String(chordNotes.at(i)->noteNumber);
             
-//            std::cout << i<< " chord notePointer: step " << chDet.notePointers[i]->currentStep
-//            <<" ts " << chDet.notePointers[i]->timeStamp << "\n";
+//            std::cout << i<< " chord notePointer: step " << chDet.notePointers.at(i)->currentStep
+//            <<" ts " << chDet.notePointers.at(i)->timeStamp << "\n";
             
             const int offset = chordNotes.at(i)->timeStamp - chordNotes.front()->timeStamp;
             chDet.offsets.push_back(offset);
@@ -597,7 +597,7 @@ public:
         int chordIndex;
         for (chordIndex=0;chordIndex<chords.size();chordIndex++)
         {
-            if (chords[chordIndex].timeStamp > chordNotes[0]->timeStamp)
+            if (chords.at(chordIndex).timeStamp > chordNotes.at(0)->timeStamp)
                 break;
         }
 //        std::cout << "raw chordIndex " << chordIndex << "\n";
@@ -608,24 +608,24 @@ public:
             chords.insert(chords.begin()+chordIndex,chDet);
         
         //Also update each chord note's information about its membership in a chord:
-        chordNotes[0]->chordTopStep=-1;
-        chordNotes[0]->noteIndexInChord=-1;
+        chordNotes.at(0)->chordTopStep=-1;
+        chordNotes.at(0)->noteIndexInChord=-1;
 //        chordIndex -= 1;
-        chordNotes[0]->chordIndex = chordIndex;
-        chordNotes[0]->inChord = true;
+        chordNotes.at(0)->chordIndex = chordIndex;
+        chordNotes.at(0)->inChord = true;
         for (int i=1; i<chordNotes.size(); i++)
         {
-            chordNotes[i]->chordTopStep = chordNotes[0]->currentStep;
-            chordNotes[i]->chordIndex = chordIndex;
-            chordNotes[i]->noteIndexInChord = i;
-            chordNotes[i]->inChord = true;
+            chordNotes.at(i)->chordTopStep = chordNotes.at(0)->currentStep;
+            chordNotes.at(i)->chordIndex = chordIndex;
+            chordNotes.at(i)->noteIndexInChord = i;
+            chordNotes.at(i)->inChord = true;
         }
         
         //Adjust the chord index of each note after the notes of the inserted chord
         for (int step=lastStep+1; step<theSequence.size();step++)
         {
-            if (theSequence[step]->inChord)
-                theSequence[step]->chordIndex += 1;
+            if (theSequence.at(step)->inChord)
+                theSequence.at(step)->chordIndex += 1;
         }
         return chordIndex;
     }

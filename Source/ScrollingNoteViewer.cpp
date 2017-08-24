@@ -148,7 +148,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     int ch = -1;
     for (i=0;i<processor->sequenceObject.chords.size();i++)
     {
-        if (processor->sequenceObject.chords[i].chordRect.expanded(0.0, 3.0).contains(sequenceScaledX, scaledY))
+        if (processor->sequenceObject.chords.at(i).chordRect.expanded(0.0, 3.0).contains(sequenceScaledX, scaledY))
         {
             ch = i;
             break;
@@ -174,8 +174,8 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     else if (hoverChord!=-1)
     {
         Array<int> chordNotes;
-        for (int i=0;i<processor->sequenceObject.chords[hoverChord].notePointers.size();i++)
-            chordNotes.add(processor->sequenceObject.chords[hoverChord].notePointers.at(i)->currentStep);
+        for (int i=0;i<processor->sequenceObject.chords.at(hoverChord).notePointers.size();i++)
+            chordNotes.add(processor->sequenceObject.chords.at(hoverChord).notePointers.at(i)->currentStep);
 //        setSelectedNotes(chordNotes);
         displayedSelection = chordNotes;
 //        selecting = true;
@@ -187,8 +187,15 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
 //    const double y = event.position.getY();
     if (draggingTime)
     {
-        if (timeAfterDrag != -1)
-            processor->changeNoteTime(hoverStep, timeAfterDrag);
+        if (deltaTimeDrag != -1)
+        {
+            Array<int> steps;
+            if (selectedNotes.size()>0)
+                steps = selectedNotes;
+            else
+                steps.add(hoverStep);
+            processor->changeNoteTimes(steps, deltaTimeDrag);
+        }
     }
     else if (draggingVelocity)
     {
@@ -327,7 +334,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
         int ch = -1;
         for (i=0;i<processor->sequenceObject.chords.size();i++)
         {
-            if (processor->sequenceObject.chords[i].chordRect.expanded(2.5, 0.0).contains(sequenceScaledX, scaledY))
+            if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.5, 0.0).contains(sequenceScaledX, scaledY))
             {
                 ch = i;
                 break;
@@ -942,8 +949,8 @@ void ScrollingNoteViewer::makeNoteBars()
     rebuidingGLBuffer = true;
 //    std::cout
 //    << "MNB: theSequence.size " << processor->sequenceObject.theSequence.size()
-//    << " first track " << processor->sequenceObject.theSequence[0]->track
-//    << " first noteNumber " << processor->sequenceObject.theSequence[0]->noteNumber
+//    << " first track " << processor->sequenceObject.theSequence.at(0)->track
+//    << " first noteNumber " << processor->sequenceObject.theSequence.at(0)->noteNumber
 //    << "\n";
     if (processor->initialWindowHeight<topMargin)
         return;
@@ -1079,9 +1086,9 @@ void ScrollingNoteViewer::makeNoteBars()
             { //Ended a chord so save its rectangle in ChordDetail
     //            std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
                 RectangleList<float> rList;
-                for (int i=0;i<processor->sequenceObject.chords[prevChordIndex].notePointers.size();i++)
+                for (int i=0;i<processor->sequenceObject.chords.at(prevChordIndex).notePointers.size();i++)
                 {
-                    Rectangle<float> head = processor->sequenceObject.chords[prevChordIndex].notePointers.at(i)->head;
+                    Rectangle<float> head = processor->sequenceObject.chords.at(prevChordIndex).notePointers.at(i)->head;
     //                head.setWidth(0.5);
                     rList.add(head);
                 }
@@ -1304,7 +1311,7 @@ void ScrollingNoteViewer::makeNoteBars()
     //Position of next note to play
     if (processor->lastPlayedSeqStep+1 < processor->sequenceObject.theSequence.size())
     {
-        const double x = processor->sequenceObject.theSequence[processor->lastPlayedSeqStep+1]->getTimeStamp()*pixelsPerTick;
+        const double x = processor->sequenceObject.theSequence.at(processor->lastPlayedSeqStep+1)->getTimeStamp()*pixelsPerTick;
         nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
     }
     rebuidingGLBuffer = false;
@@ -1392,11 +1399,11 @@ void ScrollingNoteViewer::paint (Graphics& g)
         {
             for (int ch=0;ch<processor->sequenceObject.chords.size();ch++)
             {
-                const Rectangle<float> rct = processor->sequenceObject.chords[ch].chordRect.expanded(0.3, 0.0);
-//                if(processor->sequenceObject.chords[ch].timeStamp<100)
+                const Rectangle<float> rct = processor->sequenceObject.chords.at(ch).chordRect.expanded(0.3, 0.0);
+//                if(processor->sequenceObject.chords.at(ch).timeStamp<100)
 //                    std::cout << "rct xLeft, xRight " << rct.getX() << " " << rct.getRight()<<"\n";
                 float widthFactor;
-                if (hoverChord==ch || processor->sequenceObject.chords[ch].selected)
+                if (hoverChord==ch || processor->sequenceObject.chords.at(ch).selected)
                 {
                     if (hoverChord==ch)
                         g.setColour (Colours::yellow);
@@ -1414,13 +1421,13 @@ void ScrollingNoteViewer::paint (Graphics& g)
                                rct.getY()*verticalScale,
                                rct.getWidth()*horizontalScale * widthFactor,
                                rct.getHeight()*verticalScale);
-//                if(processor->sequenceObject.chords[ch].timeStamp<100)
+//                if(processor->sequenceObject.chords.at(ch).timeStamp<100)
 //                    std::cout << "chordRect xLeft, xRight " << chordRect.getX() << " " << chordRect.getRight()<<"\n";
                 g.fillRect(chordRect);
                 
-                for (int np=0;np<processor->sequenceObject.chords[ch].notePointers.size();np++)
+                for (int np=0;np<processor->sequenceObject.chords.at(ch).notePointers.size();np++)
                 {
-                    Rectangle<float> headRct = processor->sequenceObject.chords[ch].notePointers[np]->head;
+                    Rectangle<float> headRct = processor->sequenceObject.chords.at(ch).notePointers.at(np)->head;
                     headRct = Rectangle<float>(
                                                                         headRct.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
                                                                         headRct.getY()*verticalScale,
@@ -1429,7 +1436,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                     Rectangle<float> connectorRect = Rectangle<float>(chordRect.getX(), headRct.getBottom()-1.0*verticalScale,
                                                         headRct.getRight()-chordRect.getX(),1.0*verticalScale);
                     connectorRect.setLeft(chordRect.getTopLeft().getX());
-//                    if(processor->sequenceObject.chords[ch].timeStamp<100)
+//                    if(processor->sequenceObject.chords.at(ch).timeStamp<100)
 //                        std::cout << "connectorRect xLeft, xRight " << connectorRect.getX() << " " << connectorRect.getRight()<<"\n";
                     g.fillRect(connectorRect);
                 }
@@ -1826,16 +1833,16 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 +" width:"+String(maxSelNoteTime-minSelNoteTime);
 //                for (int i=0;i<processor->sequenceObject.chords.size();i++)
 //                {
-//                    processor->sequenceObject.chords[i].selected = true;
-//                    for (int j=0;j<processor->sequenceObject.chords[i].notePointers.size();j++)
+//                    processor->sequenceObject.chords.at(i).selected = true;
+//                    for (int j=0;j<processor->sequenceObject.chords.at(i).notePointers.size();j++)
 //                    {
-//                        if(!displayedSelection.contains(processor->sequenceObject.chords[i].notePointers[j]->currentStep))
+//                        if(!displayedSelection.contains(processor->sequenceObject.chords.at(i).notePointers.at(j)->currentStep))
 //                        {
 //                            processor->sequenceObject.chords[i].selected = false;
 //                            break;
 //                        }
 //                    }
-////                    if (processor->sequenceObject.chords[i].selected)
+////                    if (processor->sequenceObject.chords.at(i).selected)
 ////                        std::cout <<  "selected chord "<< i <<  "\n";
 //                }
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
@@ -1849,6 +1856,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 {
                     velocityAfterDrag = -1;
                     timeAfterDrag = -1;
+                    deltaTimeDrag = -1;
                     offTimeAfterDrag = -1;
                     if (std::abs(deltaX)>std::abs(deltaY))
                     {
@@ -1884,7 +1892,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 {
                     timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/5.0));
                     timeAfterDrag = std::min(processor->sequenceObject.seqDurationInTicks, timeAfterDrag);
-//                    std::cout << "onTime, offTime " << timeAfterDrag <<" " << offTimeAfterDrag << "\n";
+                    std::cout << "deltaTimeDrag " << deltaTimeDrag  << "\n";
+                    deltaTimeDrag = -(deltaX/5.0);
                     repaint();
                 }
                 else if (draggingOffTime)

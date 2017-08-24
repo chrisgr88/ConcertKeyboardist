@@ -137,9 +137,9 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
 //        timeSpec="TimeSpec"; timeRandScale=1.0f; timeRandSeed=1;
 //        velSpec="VelSpec"; velRandScale=1.0f; velRandSeed=1;
         //Property "chordDetails"
-        String propertyStr = String("chordDetails:")+String(chords[chIndex].timeStamp) +" "+String(chords[chIndex].scaleFactor)+
-        +" "+chords[chIndex].timeSpec+" "+String(chords[chIndex].timeRandScale)+" "+String(chords[chIndex].timeRandSeed)
-        +" "+chords[chIndex].velSpec+" "+String(chords[chIndex].velRandScale)+" "+String(chords[chIndex].velRandSeed);
+        String propertyStr = String("chordDetails:")+String(chords.at(chIndex).timeStamp) +" "+String(chords.at(chIndex).scaleFactor)+
+        +" "+chords.at(chIndex).timeSpec+" "+String(chords.at(chIndex).timeRandScale)+" "+String(chords.at(chIndex).timeRandSeed)
+        +" "+chords.at(chIndex).velSpec+" "+String(chords.at(chIndex).velRandScale)+" "+String(chords.at(chIndex).velRandSeed);
         int len = propertyStr.length();
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
@@ -148,13 +148,13 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
 //            std::cout << " Write sysex chordDetails - "<<chIndex<<" "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
         //Property "chNote" : The notes in this chord
-        for (int note=0;note<chords[chIndex].notePointers.size();note++)
+        for (int note=0;note<chords.at(chIndex).notePointers.size();note++)
         {
             //A unique signature for the note at this exact timeStamp
-            String noteId = String(chords[chIndex].notePointers[note]->track)
-                                            +"_"+String(chords[chIndex].notePointers[note]->channel)
-                                            +"_"+String(chords[chIndex].notePointers[note]->noteNumber);
-            const int offset = chords[chIndex].notePointers[note]->getTimeStamp() - chords[chIndex].timeStamp;
+            String noteId = String(chords.at(chIndex).notePointers.at(note)->track)
+                                            +"_"+String(chords.at(chIndex).notePointers.at(note)->channel)
+                                            +"_"+String(chords.at(chIndex).notePointers.at(note)->noteNumber);
+            const int offset = chords.at(chIndex).notePointers.at(note)->getTimeStamp() - chords.at(chIndex).timeStamp;
             
             String propertyStr = String("chordNote:")+String(chIndex)+" "+String(offset)+" "+noteId;
             int len = propertyStr.length();
@@ -207,31 +207,31 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             int channel = trackDetails[firstTrkWithPedals].originalChannel;
             for (int i=0;i<sustainPedalChanges.size();i++)
             {
-                MidiMessage msg=MidiMessage::controllerEvent(channel, 64, sustainPedalChanges[i].pedalOn?127:0);
-                msg.setTimeStamp(sustainPedalChanges[i].timeStamp);
+                MidiMessage msg=MidiMessage::controllerEvent(channel, 64, sustainPedalChanges.at(i).pedalOn?127:0);
+                msg.setTimeStamp(sustainPedalChanges.at(i).timeStamp);
                 trackSeq.addEvent(msg);
             }
             for (int i=0;i<softPedalChanges.size();i++)
             {
-                MidiMessage msg=MidiMessage::controllerEvent(channel, 67, softPedalChanges[i].pedalOn?127:0);
-                msg.setTimeStamp(softPedalChanges[i].timeStamp);
+                MidiMessage msg=MidiMessage::controllerEvent(channel, 67, softPedalChanges.at(i).pedalOn?127:0);
+                msg.setTimeStamp(softPedalChanges.at(i).timeStamp);
                 trackSeq.addEvent(msg);
             }
         }
-        for (int step=0;step<allNotes[trk].size();step++)
+        for (int step=0;step<allNotes.at(trk).size();step++)
         {
-            MidiMessage onMsg = MidiMessage::noteOn(allNotes[trk][step]->channel,
-                                                  allNotes[trk][step]->noteNumber,
-                                                  allNotes[trk][step]->velocity);
-            if (allNotes[trk][step]->inChord) //If in a chord
-                onMsg.setTimeStamp(chords[allNotes[trk][step]->chordIndex].timeStamp); //Write the chords timestamp for all its notes
+            MidiMessage onMsg = MidiMessage::noteOn(allNotes.at(trk).at(step)->channel,
+                                                  allNotes.at(trk).at(step)->noteNumber,
+                                                  allNotes.at(trk).at(step)->velocity);
+            if (allNotes.at(trk).at(step)->inChord) //If in a chord
+                onMsg.setTimeStamp(chords.at(allNotes.at(trk).at(step)->chordIndex).timeStamp); //Write the chords timestamp for all its notes
             else
-                onMsg.setTimeStamp(allNotes[trk][step]->getTimeStamp()); //Otherwise write the actual note's timestamp
+                onMsg.setTimeStamp(allNotes.at(trk).at(step)->getTimeStamp()); //Otherwise write the actual note's timestamp
             trackSeq.addEvent(onMsg);
-            MidiMessage offMsg = MidiMessage::noteOff(allNotes[trk][step]->channel,
-                                                  allNotes[trk][step]->noteNumber,
+            MidiMessage offMsg = MidiMessage::noteOff(allNotes.at(trk).at(step)->channel,
+                                                  allNotes.at(trk).at(step)->noteNumber,
                                                   0.0f);
-            offMsg.setTimeStamp(allNotes[trk][step]->offTime);
+            offMsg.setTimeStamp(allNotes.at(trk).at(step)->offTime);
             trackSeq.addEvent(offMsg);
         }
         trackSeq.sort();
@@ -294,8 +294,8 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
         }
     }
 
-    theSequence[0]->firstInChain = 0;
-    theSequence[0]->triggeredBy = -1;
+    theSequence.at(0)->firstInChain = 0;
+    theSequence.at(0)->triggeredBy = -1;
     int firstInThisChain = 0;
     int firstStep = -1;
     for (int step=0;step<theSequence.size();step++)
@@ -310,29 +310,29 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
             if (step==0)
                 startTimeDifference = DBL_MAX;
             else
-                startTimeDifference = theSequence[step]->getTimeStamp()-theSequence[step-1]->getTimeStamp();
+                startTimeDifference = theSequence.at(step)->getTimeStamp()-theSequence.at(step-1)->getTimeStamp();
             //We need to have recomputed chord top steps here!!!
-            if (/*theSequence[step]->chordTopStep!=-1 || */startTimeDifference<=interval)
+            if (/*theSequence.at(step)->chordTopStep!=-1 || */startTimeDifference<=interval)
             {
                 if (step>0)
-                    theSequence[step-1]->triggers = step;
-                theSequence[step]->triggeredBy = step-1;
-                theSequence[step]->firstInChain = firstInThisChain;
+                    theSequence.at(step-1)->triggers = step;
+                theSequence.at(step)->triggeredBy = step-1;
+                theSequence.at(step)->firstInChain = firstInThisChain;
             }
             else
             {
                 if (step>0)
-                    theSequence[step-1]->triggers = -1;//The last note in a chain triggers nothing
-                theSequence[step]->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
+                    theSequence.at(step-1)->triggers = -1;//The last note in a chain triggers nothing
+                theSequence.at(step)->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
                 firstInThisChain = step;
-                theSequence[step]->firstInChain = step;
-                targetNoteTimes.add(theSequence[step]->getTimeStamp());
+                theSequence.at(step)->firstInChain = step;
+                targetNoteTimes.add(theSequence.at(step)->getTimeStamp());
     //            std::cout << "firstInChain " << step << " time " << targetNoteTimes.getLast() << "\n";
             }
         }
     }
     if (firstStep!=-1)
-        targetNoteTimes.addIfNotAlreadyThere(theSequence[firstStep]->getTimeStamp()); //First must always be a target note
+        targetNoteTimes.addIfNotAlreadyThere(theSequence.at(firstStep)->getTimeStamp()); //First must always be a target note
     return stepActivityList;
 }
 
@@ -717,8 +717,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     const String noteId = values[2];
                     if (chordIndex<chords.size())
                     {
-                        chords[chordIndex].offsets.push_back(offset);
-                        chords[chordIndex].noteIds.push_back(noteId);
+                        chords.at(chordIndex).offsets.push_back(offset);
+                        chords.at(chordIndex).noteIds.push_back(noteId);
                     }
                 }
                 else
@@ -785,7 +785,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         const double ot = 96.0*msg->offTime/ppq;
                         msg->offTime = ot;
                         msg->indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));
-                        allNotes[trkNumber].push_back(msg);
+                        allNotes.at(trkNumber).push_back(msg);
                         noteCount++;
                     }
                 }
@@ -869,7 +869,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //      Transfer tracks to "theSequence"
     for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
     {
-        const int numEvents = allNotes[trkNumber].size();
+        const int numEvents = allNotes.at(trkNumber).size();
 //        std::cout
 //        << "Loading track "<< trkNumber;
         //Notes
@@ -907,16 +907,16 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         std::shared_ptr<NoteWithOffTime> pPrevMsg = NULL;
         for (int step=0; step<theSequence.size();step++)
         {
-            if (pPrevMsg!=NULL && pPrevMsg->channel==theSequence[step]->channel &&
-                    pPrevMsg->noteNumber==theSequence[step]->noteNumber &&
-                    pPrevMsg->getTimeStamp()==theSequence[step]->getTimeStamp())
+            if (pPrevMsg!=NULL && pPrevMsg->channel==theSequence.at(step)->channel &&
+                    pPrevMsg->noteNumber==theSequence.at(step)->noteNumber &&
+                    pPrevMsg->getTimeStamp()==theSequence.at(step)->getTimeStamp())
                 theSequence.erase(theSequence.begin()+step);
             else
                 pPrevMsg = theSequence[step];
         }
         for (int step=0;step<theSequence.size();step++)
         {
-            theSequence[step]->currentStep = step;
+            theSequence.at(step)->currentStep = step;
         }
         seqDurationInTicks = theSequence.back()->getTimeStamp(); //We update this here so that it reflects currently active tracks
 
@@ -935,33 +935,33 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 //We assume theSequence has been created and chords has been created or loaded from the file.  Both must be sorted by ascending timeStamp.
                 for (int step=0;step<theSequence.size();step++)
                 {
-                    theSequence[step]->inChord = false;
+                    theSequence.at(step)->inChord = false;
                 }
                 int chStartStep=0;
                 for (int chIndex=0;chIndex<chords.size();chIndex++)
                 {
-                    while (chStartStep<theSequence.size() && theSequence[chStartStep]->getTimeStamp()!=chords[chIndex].timeStamp)
+                    while (chStartStep<theSequence.size() && theSequence.at(chStartStep)->getTimeStamp()!=chords.at(chIndex).timeStamp)
                         chStartStep++;
                     //We are now at the start of the next chord
-                    for (int ntIndex=0;ntIndex<chords[chIndex].offsets.size();ntIndex++)
+                    for (int ntIndex=0;ntIndex<chords.at(chIndex).offsets.size();ntIndex++)
                     {
                         int step;
                         for (step=chStartStep;step<theSequence.size();step++)
                         {
-                            String noteId = String(theSequence[step]->track)
-                            +"_"+String(theSequence[step]->channel)
-                            +"_"+String(theSequence[step]->noteNumber);
-                            if (chords[chIndex].noteIds[ntIndex]==noteId)
+                            String noteId = String(theSequence.at(step)->track)
+                            +"_"+String(theSequence.at(step)->channel)
+                            +"_"+String(theSequence.at(step)->noteNumber);
+                            if (chords.at(chIndex).noteIds.at(ntIndex)==noteId)
                                 break;
                         }
                         if (step<theSequence.size())
                         {
-                            const double noteTimeStamp = chords[chIndex].timeStamp+chords[chIndex].offsets[ntIndex];
-                            theSequence[step]->setTimeStamp(noteTimeStamp);
-                            chords[chIndex].notePointers.push_back(theSequence[step]);
-                            theSequence[step]->chordIndex = chIndex;
-                            theSequence[step]->noteIndexInChord = ntIndex;
-                            theSequence[step]->inChord = true;
+                            const double noteTimeStamp = chords.at(chIndex).timeStamp+chords.at(chIndex).offsets[ntIndex];
+                            theSequence.at(step)->setTimeStamp(noteTimeStamp);
+                            chords.at(chIndex).notePointers.push_back(theSequence.at(step));
+                            theSequence.at(step)->chordIndex = chIndex;
+                            theSequence.at(step)->noteIndexInChord = ntIndex;
+                            theSequence.at(step)->inChord = true;
                         }
                     }
                 }
@@ -972,10 +972,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 double thisChordTimeStamp;
                 for (int step=0; step<theSequence.size();step++)
                 {
-                    thisChordTimeStamp = theSequence[step]->getTimeStamp();
+                    thisChordTimeStamp = theSequence.at(step)->getTimeStamp();
     //                std::vector<std::shared_ptr<NoteWithOffTime>> tempChordNotes;
                     ChordDetail detail;
-                    while (step<theSequence.size() && theSequence[step]->getTimeStamp() == thisChordTimeStamp)
+                    while (step<theSequence.size() && theSequence.at(step)->getTimeStamp() == thisChordTimeStamp)
                     {
                         //                    nt.indexOfChordDetail = chords.size();
                         //                    nt.indexOfChordDetail = -1; //Mark as not in a chord for now
@@ -986,14 +986,14 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     
                     for (int j=0;j<detail.notePointers.size();j++)
                     {
-                        detail.notePointers[j]->noteIndexInChord = j; //Tell this note it's current index in the chord
+                        detail.notePointers.at(j)->noteIndexInChord = j; //Tell this note it's current index in the chord
                         //We mark every non chord note-1 and every chord note with the index in chords[ ]  of its chord.
                         if (detail.notePointers.size()==1) //One note, so not a chord
-                            detail.notePointers[j]->inChord = false; 
+                            detail.notePointers.at(j)->inChord = false;
                         else
                         {
-                            detail.notePointers[j]->chordIndex = chords.size();
-                            detail.notePointers[j]->inChord = true;
+                            detail.notePointers.at(j)->chordIndex = chords.size();
+                            detail.notePointers.at(j)->inChord = true;
                         }
                         //                    tempChordNotes.setUnchecked(j, tempChordNotes[j]);
                         
@@ -1008,14 +1008,14 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     
                     if (detail.notePointers.size()>1)
                     {
-                        detail.timeStamp = detail.notePointers[0]->getTimeStamp();
+                        detail.timeStamp = detail.notePointers.at(0)->getTimeStamp();
                         detail.timeSpec = "Random";
                         chords.push_back(detail);
 //                        std::cout <<"Next chord: chordNum "<<chords.size()-1
 //                        <<" timeStamp " <<detail.timeStamp
 //                        << " nNotes "<< detail.notePointers.size();
 //                        if (detail.notePointers.size()>0)
-//                            std::cout << " firstIndex " << detail.notePointers[0]->getTimeStamp();
+//                            std::cout << " firstIndex " << detail.notePointers.at(0)->getTimeStamp();
 //                        std::cout <<"\n";
                     }
                 }
@@ -1029,11 +1029,11 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         for (int step=0; step<theSequence.size();step++)
         {
             //All sequential notes with the same chordIndex are assumed to be part of this chord (if any)
-            int thisStepChordNoteIndex = theSequence[step]->chordIndex;
+            int thisStepChordNoteIndex = theSequence.at(step)->chordIndex;
             int nextStepChordNoteIndex;
             if (step+1<theSequence.size())
             {
-                nextStepChordNoteIndex = theSequence[step+1]->chordIndex;
+                nextStepChordNoteIndex = theSequence.at(step+1)->chordIndex;
             }
             else
                 nextStepChordNoteIndex = INT32_MAX;
@@ -1054,21 +1054,21 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
                     
 //                    if (step<=6)
-//                        std::cout <<"Found chord " <<theSequence[step]->timeStamp<<" "<< chord.size() <<"\n";
-                    thisChordTimeStamp = theSequence[chordTopStep]->getTimeStamp();
+//                        std::cout <<"Found chord " <<theSequence.at(step)->timeStamp<<" "<< chord.size() <<"\n";
+                    thisChordTimeStamp = theSequence.at(chordTopStep)->getTimeStamp();
                     //Rand seed based on thisStepChordNoteIndex different for all chords but constant for a chord
                     srand(thisStepChordNoteIndex);
                     
                     double timeToNextNote;
                     if (step<theSequence.size()-1)
-                        timeToNextNote = theSequence[step+1]->getTimeStamp()-thisChordTimeStamp;
+                        timeToNextNote = theSequence.at(step+1)->getTimeStamp()-thisChordTimeStamp;
                     else
                         timeToNextNote = DBL_MAX;
                     double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
                     
                     for (int i=1; i<chordNotes.size(); i++)
                     {
-                        chordNotes[i]->chordTopStep = chordTopStep;
+                        chordNotes.at(i)->chordTopStep = chordTopStep;
                         const int temp = localTimeFuzz*100;
                         double randAdd;
                         unsigned r = rand();
@@ -1076,39 +1076,39 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             randAdd = 0;
                         else
                             randAdd = r%temp/100.0;
-//                        chordNotes[i]->setTimeStamp(thisChordTimeStamp+randAdd);
+//                        chordNotes.at(i)->setTimeStamp(thisChordTimeStamp+randAdd);
                     }
                     if (false && reVoiceChords)
                     {
-                        const float topNoteVel = chordNotes[0]->originalVelocity;
-                        const float userEditFactor = chordNotes[0]->velocity/topNoteVel;
+                        const float topNoteVel = chordNotes.at(0)->originalVelocity;
+                        const float userEditFactor = chordNotes.at(0)->velocity/topNoteVel;
                         if (chordNotes.size()==2)
                         {
-                            const float originalVel = chordNotes[1]->originalVelocity;
+                            const float originalVel = chordNotes.at(1)->originalVelocity;
                             const float ckVel = 0.7f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            chordNotes[1]->setVelocity(proRatedVel*userEditFactor);
+                            chordNotes.at(1)->setVelocity(proRatedVel*userEditFactor);
                         }
                         else // (chord.size()>2)
                         {
                             for (int j=1;j<chordNotes.size()-1;j++)
                             {
-                                const float originalVel = chordNotes[j]->originalVelocity;
+                                const float originalVel = chordNotes.at(j)->originalVelocity;
                                 const float ckVel = 0.6f * topNoteVel;
                                 const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                                chordNotes[j]->setVelocity(proRatedVel*userEditFactor);
+                                chordNotes.at(j)->setVelocity(proRatedVel*userEditFactor);
                             }
 //                            int step =  chord[chord.size()-1];
-                            const float originalVel = chordNotes[chordNotes.size()-1]->originalVelocity;
+                            const float originalVel = chordNotes.at(chordNotes.size()-1)->originalVelocity;
                             const float ckVel = 0.8f * topNoteVel;
                             const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            chordNotes[chordNotes.size()-1]->setVelocity(proRatedVel*userEditFactor);
+                            chordNotes.at(chordNotes.size()-1)->setVelocity(proRatedVel*userEditFactor);
                         }
                     }
-                    chordNotes[0]->chordTopStep=-1;
+                    chordNotes.at(0)->chordTopStep=-1;
                 }
                 else
-                    theSequence[step]->chordTopStep=-1;
+                    theSequence.at(step)->chordTopStep=-1;
                 chordNotes.clear();
             }
             else
@@ -1119,7 +1119,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //            std::cout << "Chord "<<i<<" "<<chords[i].timeStamp<<" "<<chords[i].nNotes<<"\n";
         std::sort(theSequence.begin(), theSequence.end(), customCompare);
         for (int step=0;step<theSequence.size();step++)
-            theSequence[step]->currentStep = step;
+            theSequence.at(step)->currentStep = step;
         //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
         if(targetNoteTimes.size()>0) //If loaded from ck file or previously created for midi file by chain ()
         {
@@ -1128,30 +1128,26 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //            std::cout<< "Chain in loadSequence " << "\n";
             for (int step=0; step<theSequence.size();step++)
             {
-//                if (step<14)
-//                    std::cout<< step
-//                    << " ts " << theSequence[step].timeStamp
-//                    << " firstInChain " << targetNoteTimes.contains(theSequence[step].timeStamp) << "\n";
-                if (prevTS != theSequence[step]->getTimeStamp() && targetNoteTimes.contains(theSequence[step]->getTimeStamp()))
+                if (prevTS != theSequence.at(step)->getTimeStamp() && targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
                 {
                     if (step>0)
-                        theSequence[step-1]->triggers = -1;//Last note in chain triggers nothing
-                    theSequence[step]->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
+                        theSequence.at(step-1)->triggers = -1;//Last note in chain triggers nothing
+                    theSequence.at(step)->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
                     firstInThisChain = step;
-                    theSequence[step]->firstInChain = step;
+                    theSequence.at(step)->firstInChain = step;
                 }
                 else
                 {
                     if (step>0)
                     {
-                        theSequence[step-1]->triggers = step;
-                        theSequence[step]->triggeredBy = step-1;
+                        theSequence.at(step-1)->triggers = step;
+                        theSequence.at(step)->triggeredBy = step-1;
                     }
                     else
-                        theSequence[step]->triggeredBy = step-1;
-                    theSequence[step]->firstInChain = firstInThisChain;
+                        theSequence.at(step)->triggeredBy = step-1;
+                    theSequence.at(step)->firstInChain = firstInThisChain;
                 }
-                prevTS = theSequence[step]->getTimeStamp();
+                prevTS = theSequence.at(step)->getTimeStamp();
             }
         }
         else
@@ -1167,15 +1163,15 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         while (step < theSequence.size())
         {
             //If this step is a firstInChain scan all notes with time stamp equal to that of the firstInChain for the shortest note
-            if (theSequence[step]->triggeredBy==-1 && theSequence[step]->chordTopStep==-1)
+            if (theSequence.at(step)->triggeredBy==-1 && theSequence.at(step)->chordTopStep==-1)
             {
                 chainTrigger = step;
 //                int highestNote = -1;
                 int stepOfhighestNote = step;
                 int subStep = step;
-                while (subStep<theSequence.size()-1 && theSequence[subStep]->getTimeStamp()==theSequence[theSequence[step]->firstInChain]->getTimeStamp())
+                while (subStep<theSequence.size()-1 && theSequence.at(subStep)->getTimeStamp()==theSequence.at(theSequence.at(step)->firstInChain)->getTimeStamp())
                 {
-                    if (theSequence[subStep]->noteNumber >= theSequence[stepOfhighestNote]->noteNumber)
+                    if (theSequence.at(subStep)->noteNumber >= theSequence.at(stepOfhighestNote)->noteNumber)
                     {
                         stepOfhighestNote = subStep;
                     }
@@ -1184,7 +1180,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 chainTrigger = stepOfhighestNote;
             }
             assert(0<=chainTrigger && chainTrigger<theSequence.size());
-            theSequence[step]->chainTrigger = chainTrigger;
+            theSequence.at(step)->chainTrigger = chainTrigger;
             step++;
         }
 
@@ -1195,11 +1191,11 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             float highestVelocity = -1;
             int firstStep = step;
             bool enteredLoop = false;
-            while (step<theSequence.size() && theSequence[step]->firstInChain==firstInChain)
+            while (step<theSequence.size() && theSequence.at(step)->firstInChain==firstInChain)
             {
                 enteredLoop = true;
-                if (theSequence[step]->velocity > highestVelocity)
-                    highestVelocity = theSequence[step]->velocity;
+                if (theSequence.at(step)->velocity > highestVelocity)
+                    highestVelocity = theSequence.at(step)->velocity;
                 step++;
             }
             if (enteredLoop)
@@ -1208,7 +1204,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             //Store highest velocity in this chain in every step of this chain
             for (int i=firstStep; i<=step; i++ )
             {
-                theSequence[i]->highestVelocityInChain = highestVelocity;
+                theSequence.at(i)->highestVelocityInChain = highestVelocity;
             }
         }
         
@@ -1217,41 +1213,41 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         //triggeredOffNotes are triggeredNotes that end before the END of the next chainTrigger note.
         for (int step=0; step<theSequence.size();step++)
         {
-            if ( theSequence[step]->getTimeStamp() <= theSequence[theSequence[step]->chainTrigger]->getTimeStamp()+triggeredNoteLimit)
+            if ( theSequence.at(step)->getTimeStamp() <= theSequence.at(theSequence.at(step)->chainTrigger)->getTimeStamp()+triggeredNoteLimit)
             {
-                theSequence[step]->triggeredNote=true;
+                theSequence.at(step)->triggeredNote=true;
                 //Scan for nextFirstInChain
-                int nextFirstInChain = theSequence[step]->firstInChain+1;
-                while (nextFirstInChain<theSequence.size()-1 && theSequence[nextFirstInChain]->triggeredBy != -1)
+                int nextFirstInChain = theSequence.at(step)->firstInChain+1;
+                while (nextFirstInChain<theSequence.size()-1 && theSequence.at(nextFirstInChain)->triggeredBy != -1)
                     nextFirstInChain++;
                 
                 //Two cases for a step to be a triggeredOffNote:
                 //1) Where a the step ends before the next chain trigger
                 //2) Where the step's offtime is no more than the start of any triggered note of the chain that starts after it)
                 if (nextFirstInChain<theSequence.size()-1
-                    && theSequence[step]->triggeredNote && theSequence[step]->offTime < theSequence[nextFirstInChain]->getTimeStamp())
-                    theSequence[step]->triggeredOffNote = true;
+                    && theSequence.at(step)->triggeredNote && theSequence.at(step)->offTime < theSequence.at(nextFirstInChain)->getTimeStamp())
+                    theSequence.at(step)->triggeredOffNote = true;
                 else
-                    theSequence[step]->triggeredOffNote = false;
+                    theSequence.at(step)->triggeredOffNote = false;
                 
                 //Scan for case (2) above
                 int i = nextFirstInChain;
                 bool shouldSustain = false;
-                while (i<theSequence.size() && theSequence[i]->getTimeStamp()<= theSequence[nextFirstInChain]->getTimeStamp()+triggeredNoteLimit) //All triggered notes in next chain
+                while (i<theSequence.size() && theSequence.at(i)->getTimeStamp()<= theSequence.at(nextFirstInChain)->getTimeStamp()+triggeredNoteLimit) //All triggered notes in next chain
                 {
-                    if (theSequence[step]->offTime>theSequence[i]->getTimeStamp())
+                    if (theSequence.at(step)->offTime>theSequence.at(i)->getTimeStamp())
                     {
                         shouldSustain = true;
                         break;
                     }
                     i++;
                 }
-                theSequence[step]->triggeredOffNote = !shouldSustain;
-                theSequence[step]->autoplayedNote = false;
+                theSequence.at(step)->triggeredOffNote = !shouldSustain;
+                theSequence.at(step)->autoplayedNote = false;
             }
             else
             {
-                theSequence[step]->autoplayedNote = true;
+                theSequence.at(step)->autoplayedNote = true;
             }
         }
     }
@@ -1371,27 +1367,27 @@ void Sequence::dumpData(int start, int end, int nn)
         end = theSequence.size();
     for (int i=start; i<theSequence.size() && i<=end;i++)
     {
-        if (nn==-1 || theSequence[i]->noteNumber==nn )
+        if (nn==-1 || theSequence.at(i)->noteNumber==nn )
         {
-            String note = MidiMessage::getMidiNoteName (theSequence[i]->noteNumber, true, true, 3);
+            String note = MidiMessage::getMidiNoteName (theSequence.at(i)->noteNumber, true, true, 3);
             std::cout
             << i <<" "
-            << (int)theSequence[i]->track <<" "
-            << theSequence[i]->channel <<" "
-            << theSequence[i]->noteNumber <<" "
+            << (int)theSequence.at(i)->track <<" "
+            << theSequence.at(i)->channel <<" "
+            << theSequence.at(i)->noteNumber <<" "
             << note<<" "
-            << std::round(theSequence[i]->velocity*127.0) <<" "
-            << theSequence[i]->getTimeStamp()<<" "
-            << theSequence[i]->offTime<<" "
-            << theSequence[i]->firstInChain<<" "
-            << theSequence[i]->triggers<<" "
-            << theSequence[i]->triggeredBy<<" "
-            << theSequence[i]->chainTrigger<<" "
-            << theSequence[i]->triggeredNote<<" "
-            << theSequence[i]->triggeredOffNote<<" "
-            << theSequence[i]->inChord<<" "
-            << theSequence[i]->chordTopStep<<" "
-            << theSequence[i]->chordIndex<<" "
+            << std::round(theSequence.at(i)->velocity*127.0) <<" "
+            << theSequence.at(i)->getTimeStamp()<<" "
+            << theSequence.at(i)->offTime<<" "
+            << theSequence.at(i)->firstInChain<<" "
+            << theSequence.at(i)->triggers<<" "
+            << theSequence.at(i)->triggeredBy<<" "
+            << theSequence.at(i)->chainTrigger<<" "
+            << theSequence.at(i)->triggeredNote<<" "
+            << theSequence.at(i)->triggeredOffNote<<" "
+            << theSequence.at(i)->inChord<<" "
+            << theSequence.at(i)->chordTopStep<<" "
+            << theSequence.at(i)->chordIndex<<" "
             <<"\n";
         }
     }
