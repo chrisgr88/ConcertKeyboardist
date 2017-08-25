@@ -247,7 +247,15 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
         {
-            std::cout << "_editVelocities\n";
+            mainToolbar.getItemComponent(id)->setToggleState(!mainToolbar.getItemComponent(id)->getToggleState(),
+                                                             NotificationType::dontSendNotification);
+            noteViewer.editingVelocities = mainToolbar.getItemComponent(id)->getToggleState();
+            if (noteViewer.editingVelocities)
+                mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonOver);
+            else
+                mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonNormal);
+            noteViewer.repaint();
+            std::cout << "_editVelocities "<<noteViewer.editingVelocities<<"\n";
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
         {

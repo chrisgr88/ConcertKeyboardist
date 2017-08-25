@@ -255,13 +255,13 @@ public:
         repaint();
     }
     
+    
+    bool editingVelocities; //Edit velocity mode, toggled by editVelocities toolbar button
     bool showingChords;
     
 private:
     MIDIProcessor *processor;
-    
-    
-    
+
 //    int stepToReset; //Keeps track of next step to reset during render.
 //    int lastStepToReset;
     int leadTimeInTicks;

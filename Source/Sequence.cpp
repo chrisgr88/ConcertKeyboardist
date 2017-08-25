@@ -775,15 +775,15 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         msg->channel = theTrack->getEventPointer(i)->message.getChannel();
                         msg->noteNumber = theTrack->getEventPointer(i)->message.getNoteNumber();
                         msg->velocity = theTrack->getEventPointer(i)->message.getFloatVelocity();
-                        msg->offTime = theTrack->getTimeOfMatchingKeyUp(i);
+                        msg->setOfftime(theTrack->getTimeOfMatchingKeyUp(i));
                         
                         if (msg->offTime <= msg->getTimeStamp()) //In a correct sequence this should not happen
-                            msg->offTime = msg->getTimeStamp()+50; //But if it does, turn it into a short note  with non neg duration
+                            msg->setOfftime(msg->getTimeStamp()+50); //But if it does, turn it into a short note  with non neg duration
                         const double ts = msg->getTimeStamp();
                         msg->setTimeStamp(96.0*ts/ppq);
                         msg->originalVelocity = msg->velocity;
                         const double ot = 96.0*msg->offTime/ppq;
-                        msg->offTime = ot;
+                        msg->setOfftime(ot);
                         msg->indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));
                         allNotes.at(trkNumber).push_back(msg);
                         noteCount++;

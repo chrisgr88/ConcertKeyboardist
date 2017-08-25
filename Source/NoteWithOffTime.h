@@ -204,11 +204,31 @@ public:
         return timeStamp;
     }
     
+    inline void setOfftime(double time)
+    {
+        //        if (currentStep<15)
+        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+        offTime =  time;
+    }
+    
+    inline double getOffTime()
+    {
+        //        if (currentStep<15)
+        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+        return offTime;
+    }
+    
     inline void setVelocity(float vel)
     {
 //        if (currentStep<15)
 //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
         velocity = vel;
+    }
+    inline float getVelocity()
+    {
+        //        if (currentStep<15)
+        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+        return velocity;
     }
     
     int getTrack() {return track;}

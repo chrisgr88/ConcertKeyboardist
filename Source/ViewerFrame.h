@@ -331,7 +331,12 @@ private:
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
                 case _chordEditToggle: return createButtonFromZipFileSVG (itemId, "Show/Hide Chord Toolbar", "chordEditToggle.svg");
-                case _editVelocities: return createButtonFromZipFileSVG (itemId, "Edit Note Velocities", "editVelocities.svg");                    
+                case _editVelocities:
+                {
+                    ToolbarButton *editVelButton = createButtonFromZipFileSVG (itemId, "Edit Note Velocities", "editVelocities.svg");
+                    editVelButton->setClickingTogglesState(true);
+                    return editVelButton;
+                }
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
                     

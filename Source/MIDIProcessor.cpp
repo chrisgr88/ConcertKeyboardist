@@ -165,6 +165,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 //    std::cout << "Rewind: time " << time
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
 //    << "\n";
+    try {
     
     listenStep = 0;
     if (listenSequence.size()>0)
@@ -210,7 +211,12 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     noteOnOffFifo.reset();
     onNotes.clear();
     scheduledNotes.clear();
+    } catch (const std::out_of_range& ex) {
+        std::cout << " error 1 in rewind " << "\n";
+    }
     
+    try {
+
     int step = 0;
     if (time==0)
     {
@@ -228,6 +234,8 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     }
     else //Set to position
     {
+        std::cout << "rewind Set to position 1  " << "\n";
+
         for (step=0;step<sequenceObject.theSequence.size();step++)
         {
             if (sequenceObject.theSequence.at(step)->getTimeStamp()>=(time-0.001) && sequenceObject.theSequence.at(step)->triggeredBy==-1)
@@ -238,7 +246,10 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             step = sequenceObject.theSequence.size() - 1;
         if (step==-1)
             step = 0;
+        std::cout << "rewind Set to position: step =  " <<step<< "\n";
+
         sequenceReadHead = sequenceObject.theSequence.at(step)->getTimeStamp();
+        std::cout << "rewind Set read head " <<"\n";
         currentSeqStep = step-1;
         lastPlayedNoteStep = currentSeqStep;
         timeInTicks = time;
@@ -252,6 +263,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 //    << "\n";
     
 //    startTimer(tempInterval);
+    std::cout << "rewind autoPlaySustains  " << "\n";
     if (sequenceObject.autoPlaySustains)
     {
         int k=0; //This will be the value if there are no sustainPedalChanges.  i.e. One step past the the last, which is 0
@@ -269,7 +281,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             }
             //        if (k<sequenceObject.sustainPedalChanges.size())
             nextSustainStep = k; //Note that this could be past the end of sustainPedalChanges[ ] if there are no more events
-            if(nextSustainStep-1 >= 0)
+            if(nextSustainStep<sequenceObject.sustainPedalChanges.size() && nextSustainStep-1 >= 0)
             {
                 if (sequenceObject.sustainPedalChanges.at(k-1).pedalOn)
                 {
@@ -286,6 +298,8 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             }
         }
     }
+    std::cout << "rewind autoPlaySofts  " << "\n";
+        
     if (sequenceObject.autoPlaySofts)
     {
         int k=0; //This will be the value if there are no softPedalChanges.  i.e. One step past the the last, which is 0
@@ -303,7 +317,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             }
             //        if (k<softPedalChanges())
             nextSoftStep = k; //Note that this could be past the end of softPedalChanges[ ] if there are no more events
-            if(nextSoftStep-1>=0)
+            if(nextSoftStep<sequenceObject.softPedalChanges.size() && nextSoftStep-1>=0)
             {
 //                sendMidiMessage(sequenceObject.softPedalChanges[nextSoftStep-1]);
 //                std::cout
@@ -327,7 +341,17 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     }
     pauseProcessing = false;
     changeMessageType = CHANGE_MESSAGE_REWIND;
-    sendSynchronousChangeMessage();
+    } catch (const std::out_of_range& ex) {
+        
+        std::cout << " error 2 in rewind " << ex.what()<<"\n";
+    }
+        
+    try {
+        sendSynchronousChangeMessage();
+    } catch (const std::out_of_range& ex) {
+        std::cout << " error 3 in rewind " << "\n";
+    }
+    std::cout << " leaving rewind " << "\n";
 }
 
 void MIDIProcessor::listenToSelection()
@@ -1717,7 +1741,7 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
             timeStamp += delta;
             offTime += delta;
             sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
-            sequenceObject.theSequence.at(steps[i])->offTime = offTime;
+            sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
             setAsTargetNote(steps[i]); //Retore as target note
         }
         else
@@ -1733,7 +1757,7 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
 void MIDIProcessor::changeNoteOffTime(int step, double offTime)
 {
     std::cout << "changeNoteOffTime "<<step<<" "<< time<<"\n";
-    sequenceObject.theSequence.at(step)->offTime = offTime;
+    sequenceObject.theSequence.at(step)->setOfftime(offTime);
     sequenceObject.setChangedFlag(true);
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
