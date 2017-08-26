@@ -37,6 +37,24 @@ struct Vertex  // class storing the information about a single vertex
     float colour[3];
 };
 
+class NoteTimeComparator
+{
+public:
+    NoteTimeComparator(MIDIProcessor *proc) :
+    p(proc)
+    {}
+    
+    int compareElements (int first, int second)
+    {
+        std::cout << "first, second" << first<<" "<<second <<"\n";
+        return (p->sequenceObject.theSequence.at(first) < p->sequenceObject.theSequence.at(second) ?
+                -1
+                : (p->sequenceObject.theSequence.at(second) < p->sequenceObject.theSequence.at(first)) ? 1 : 0);
+    }
+    int foo;
+    MIDIProcessor *p;
+};
+
 //==============================================================================
 /**
  //[Comments]
@@ -53,6 +71,7 @@ class ScrollingNoteViewer  :
     public ChangeBroadcaster,
     public ChangeListener
 {
+    friend NoteTimeComparator;
 public:
     //==============================================================================
     ScrollingNoteViewer (MIDIProcessor *p);

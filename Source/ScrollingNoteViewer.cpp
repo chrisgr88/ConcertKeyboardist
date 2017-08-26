@@ -1412,7 +1412,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             setSelectedNotes(processor->sequenceObject.undoneOrRedoneSteps);
             processor->undoMgr->inRedo = false;
         }
-        if (draggingVelocity && hoverStep>=0)
+        if (((hoveringOver == HOVER_NOTEHEAD && editingVelocities) || draggingVelocity) && hoverStep>=0)
         {
             const float vel = pSequence->at(hoverStep)->velocity;
             const float graphHeight = getHeight() - topMargin;//(300.0-15.0)-toolbarHeight;
@@ -1423,6 +1423,13 @@ void ScrollingNoteViewer::paint (Graphics& g)
                                                      velY,
                                                      velX+6.0f*horizontalScale,
                                                      velY);
+            const float fontHeight = jmin (14.0f, trackVerticalSize * 8.0f);
+            Font f = Font (fontHeight).withHorizontalScale (0.95f);
+            f.setStyleFlags(Font::FontStyleFlags::bold);
+            g.setFont (f);
+            g.setColour (Colours::white);
+            const String velString = String (std::round(vel*127.0));
+            g.drawText (velString, velX-32.0, velY-3.0, 28.0, 8.0, Justification::centredRight, false);
             g.setColour (Colours::seagreen);
             g.drawLine(velLine, 6.0f);
         }
@@ -1475,7 +1482,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
             }
         }
         
-//        std::cout << "Paint "<< "\n";
+//        std::cout << "Paint "<< "\n"
+        Point<float> prevVelPoint;
         for (int i=0;i<displayedSelection.size();i++)
         {
 //            std::cout << "At A displayedSelection index"<< i<<"\n";
@@ -1492,16 +1500,18 @@ void ScrollingNoteViewer::paint (Graphics& g)
             {
                 std::cout << "drawingVelocity\n";
                 const float vel = pSequence->at(displayedSelection[i])->velocity;
-                const float graphHeight = getHeight() - topMargin;//(300.0-15.0)-toolbarHeight;
+                const float graphHeight = getHeight() - topMargin;
                 const float velY = ((1.0-vel) * graphHeight) + toolbarHeight - topMargin/verticalScale;
                 const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
-                const Line<float> velLine = Line<float> (velX-5.0f*horizontalScale,
-                                                         velY,
-                                                         velX+10.0f*horizontalScale,
-                                                         velY);
-                g.setColour (Colours::seagreen.brighter().brighter());
-                if (displayedSelection[i] != hoverStep)
-                    g.drawLine(velLine, 8.0f);
+                Point<float> velPoint(velX, velY);
+                if (i>0)
+                {
+                    const Line<float> velLine = Line<float> (prevVelPoint, velPoint);
+                    g.setColour (Colours::seagreen.brighter().brighter());
+                    if (displayedSelection[i] != hoverStep)
+                        g.drawLine(velLine, 2.5f);
+                }
+                prevVelPoint = velPoint;
             }
         }
         
@@ -1871,7 +1881,10 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     if (!newlySelectedNotes.contains(selectedNotes[i]))
                         displayedSelection.add(selectedNotes[i]);
                 }
-                
+
+                NoteTimeComparator comparator(processor);
+                displayedSelection.sort(comparator);
+
 //                std::cout
 //                <<  " selected "<<selectedNotes.size()
 //                <<  " newlySelected "<<newlySelectedNotes.size()
