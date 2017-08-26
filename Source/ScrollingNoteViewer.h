@@ -318,12 +318,13 @@ private:
     int hoverChord; //Chord over which mouse pointer hovers.  -1 if none.
     String hoverInfo;
 #define HOVER_NONE 0
-#define HOVER_NOTEBAR 1
-#define HOVER_NOTETRACK 2
-#define HOVER_ZEROTIMEHANDLE 3
-#define HOVER_ZEROTIMELINE 4
-#define HOVER_TOPBAR 5
-#define HOVER_CHORD 6
+#define HOVER_NOTEHEAD 1
+#define HOVER_NOTEBAR 2
+#define HOVER_NOTETRACK 3
+#define HOVER_ZEROTIMEHANDLE 4
+#define HOVER_ZEROTIMELINE 5
+#define HOVER_TOPBAR 6
+#define HOVER_CHORD 7
     int hoveringOver;
     Point<float> hoverPosition;
     

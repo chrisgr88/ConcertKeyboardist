@@ -108,7 +108,7 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
 //    std::cout  <<" hover step "<< hoverStep <<" "<<displayedSelection.contains(hoverStep)<<"\n";
     if (!ModifierKeys::getCurrentModifiers().isCommandDown() && hoveringOver != HOVER_NONE)
     {
-        if (hoveringOver == HOVER_NOTEBAR && !selectedNotes.contains(hoverStep))
+        if ((hoveringOver == HOVER_NOTEHEAD || hoveringOver == HOVER_NOTEBAR) && !selectedNotes.contains(hoverStep))
         {
             displayedSelection.clear();
             clearSelectedNotes();
@@ -124,7 +124,7 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
     if (e.position.getY()<topMargin*verticalScale) { //Test mouse position
         zoomDragStarting = true;
     }
-    else if (hoveringOver != HOVER_NOTEBAR && hoveringOver != HOVER_ZEROTIMELINE)
+    else if (hoveringOver != HOVER_NOTEHEAD && hoveringOver != HOVER_NOTEBAR && hoveringOver != HOVER_ZEROTIMELINE)
     {
         selectionAnchor = Point<int>(e.getPosition().getX(),e.getPosition().getY());
         startTimer(TIMER_MOUSE_HOLD, 1);
@@ -224,10 +224,18 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
 //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
         int i;
         int step = -1;
+        bool inHead;
         for (i=0;i<pSequence->size();i++)
         {
             if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
             {
+                inHead = true;
+                step = i;
+                break;
+            }
+            else if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
+            {
+                inHead = false;
                 step = i;
                 break;
             }
@@ -236,7 +244,10 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         if (step!=-1)
         {
             hoverStep = step;
-            hoveringOver = HOVER_NOTEBAR;
+            if (inHead)
+                hoveringOver = HOVER_NOTEHEAD;
+            else
+                hoveringOver = HOVER_NOTEBAR;
         }
     }
     
@@ -252,7 +263,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             processor->addRemoveBookmark(BOOKMARK_TOGGLE);
         }
     }
-    else if (hoveringOver == HOVER_NOTEBAR)
+    else if (hoveringOver == HOVER_NOTEHEAD)
     {
         //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
         if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() && hoverStep>=0)
@@ -367,13 +378,21 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
         const int nn = maxNote - vert + 1;
         int i;
         int step = -1;
+        bool inHead;
         for (i=0;i<pSequence->size();i++)
         {
             if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
-                {
-                    step = i;
-                    break;
-                }
+            {
+                step = i;
+                inHead = true;
+                break;
+            }
+            else if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
+            {
+                step = i;
+                inHead = false;
+                break;
+            }
         }
         hoverStep = step;
         if (step==-1)
@@ -391,7 +410,10 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
         else// if (step)
         {
 //            std::cout << "mouseMove found step " << step <<"\n";
-            hoveringOver = HOVER_NOTEBAR;
+            if (inHead)
+                hoveringOver = HOVER_NOTEHEAD;
+            else
+                hoveringOver = HOVER_NOTEBAR;
             hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
             + "[" + String::String(nn) +"]"
             + " tr:" +String::String(pSequence->at(i)->track)
@@ -1078,6 +1100,7 @@ void ScrollingNoteViewer::makeNoteBars()
         const float vel = pSequence->at(index)->velocity;
         const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
         pSequence->at(index)->head = Rectangle<float>(x, y-(headHeight-h)/2.0,headWidth,headHeight);
+        pSequence->at(index)->bar = Rectangle<float>(x, y-(headHeight-h)/2.0,w,headHeight);
 //        if (index<25)
 //            std::cout << "Step " << index << " head X " <<pSequence->at(index)->head.getX()<<"\n";
         //Determine the cord rectangle, if part of a chord
@@ -1885,7 +1908,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     offTimeAfterDrag = -1;
                     if (std::abs(deltaX)>std::abs(deltaY))
                     {
-                        if (ModifierKeys::getCurrentModifiers().isCommandDown())
+                        if (hoveringOver == HOVER_NOTEBAR || ModifierKeys::getCurrentModifiers().isCommandDown())
                         {
                             draggingOffTime = true;
                         }
@@ -1897,7 +1920,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                         timeStartDrag = pSequence->at(hoverStep)->getTimeStamp();
                         offTimeStartDrag = pSequence->at(hoverStep)->offTime;
                     }
-                    else if (std::abs(deltaX)<std::abs(deltaY))
+                    else if (hoveringOver != HOVER_NOTEBAR && std::abs(deltaX)<std::abs(deltaY))
                     {
 //                        if (pSequence->at(hoverStep)->chordTopStep==-1)
 //                        {

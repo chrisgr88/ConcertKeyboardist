@@ -62,6 +62,7 @@ public:
     chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
+    bar(Rectangle<float>()),
     timetoNextNote(-1),
     chordIndex(-1),
     noteIndexInChord(-1)
@@ -100,6 +101,7 @@ public:
     chordTopStep(note.chordTopStep),
     muted(note.muted),
     head(note.head),
+    bar(note.bar),
     timetoNextNote(note.timetoNextNote),
     chordIndex(note.chordIndex),
     noteIndexInChord(note.noteIndexInChord)
@@ -138,6 +140,7 @@ public:
     chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
+    bar(Rectangle<float>()),
     timetoNextNote(-1),
     chordIndex(-1),
     noteIndexInChord(-1)
@@ -147,35 +150,6 @@ public:
     ~NoteWithOffTime()
     {
     };
-    
-//    void restoreDefaults()
-//    {
-////        velocity=0;
-//        scheduledOnTime=0;
-//        scheduledOffTime=0;
-//        adjustedVelocity=0.0f;
-//        currentStep=-1;
-//        firstInChain=-1;
-//        triggers=-1;
-//        triggeredBy=-1;
-//        chainTrigger=-1;
-//        highestVelocityInChain=-1;
-//        triggeredNote=false;
-//        triggeredOffNote=false;
-//        autoplayedNote=false;
-//        noteOffNow=false;
-//        sustaining=false;
-//        rectBar=-1;
-//        rectHead=-1;
-//        triggeringExprNote=-1;
-//        selected=false;
-//        chordTopStep=-2;
-//        muted=false;
-//        head=Rectangle<float>();
-//        timetoNextNote=-1;
-//        chordIndex=-1;
-//    }
-    
     void selectStep(bool sel)
     {
         selected = sel;
@@ -290,6 +264,7 @@ public:
     int chordTopStep; //Highest note in a group of notes grouped as a chord. For highest is -1, and if not in chord.
     bool muted;
     Rectangle<float> head;
+    Rectangle<float> bar;
     double timetoNextNote;
     int chordIndex;  //Index in chords[ ] of this note's chord, if any. This may change depending on which tracks are active.
     int noteIndexInChord; //The current position of this note in the ChordDetail
