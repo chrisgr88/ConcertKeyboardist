@@ -342,6 +342,9 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
 void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 {
+    try {
+        
+        
     if (retainEdits == doNotRetainEdits)
     {
         targetNoteTimes.clear();
@@ -1255,6 +1258,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //    dumpData(0, 20, -1);
     //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
 //    compareAllNotes("End of loadSequence");
+
+    } catch (const std::out_of_range& ex) {
+        std::cout << " error in load sequence " << "\n";
+    }
 } //End of loadSequence
 
 SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)

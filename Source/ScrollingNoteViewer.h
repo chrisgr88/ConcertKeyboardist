@@ -258,6 +258,12 @@ public:
     
     bool editingVelocities; //Edit velocity mode, toggled by editVelocities toolbar button
     bool showingChords;
+    void setShowingChords(bool showing)
+    {
+        showingChords = showing;
+        std::cout << "showingChords " << showingChords<<"\n";
+        repaint();
+    }
     
 private:
     MIDIProcessor *processor;

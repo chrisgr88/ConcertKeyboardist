@@ -584,6 +584,9 @@ void MIDIProcessor::addRemoveBookmark (int action)
 void MIDIProcessor::processBlock ()
 {
 //    std::vector<NoteWithOffTime*> * theSequence;
+    try {
+        
+
     if (pauseProcessing || sequenceObject.loadingFile)
         return;
     if (panic)
@@ -1226,6 +1229,10 @@ void MIDIProcessor::processBlock ()
 //    else
         exprEvents.clear();
     pauseProcessing = false;
+
+    } catch (const std::out_of_range& ex) {
+        std::cout << " error in process block " << "\n";
+    }
 }
 
 void MIDIProcessor::catchUp()

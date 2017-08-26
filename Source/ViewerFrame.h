@@ -206,7 +206,9 @@ private:
             _addSustain     = 24,
             _addSoft        = 25,
             _deleteSustain  = 26,
-            _deleteSoft     = 27
+            _deleteSoft     = 27,
+            create_chord        = 28,
+            delete_chord        = 29
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -230,6 +232,8 @@ private:
             ids.add (_deleteSustain);
             ids.add (_deleteSoft);
             ids.add (_chordEditToggle);
+            ids.add (create_chord);
+            ids.add (delete_chord);
             ids.add (_editVelocities);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
@@ -270,15 +274,6 @@ private:
             ids.add (spacerId);
             ids.add (spacerId);
             ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
             
             ids.add (separatorBarId);
             ids.add (spacerId);
@@ -301,13 +296,18 @@ private:
             ids.add (_chain);
             ids.add (chainAmountBox);
             ids.add (separatorBarId);
-            ids.add (_editVelocities);            
+            ids.add (_editVelocities);
+            ids.add (separatorBarId);
             ids.add (_chordEditToggle);
+            ids.add (create_chord);
+            ids.add (delete_chord);
             ids.add (separatorBarId);
             ids.add (_addSustain);
             ids.add (_deleteSustain);
             ids.add (_addSoft);
             ids.add (_deleteSoft);
+            ids.add (_humanizeTime);
+            ids.add (humTimeBox);
             ids.add (flexibleSpacerId);
         }
         
@@ -330,10 +330,21 @@ private:
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
                 case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
-                case _chordEditToggle: return createButtonFromZipFileSVG (itemId, "Show/Hide Chord Toolbar", "chordEditToggle.svg");
+                case _chordEditToggle:
+                {
+                    ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Edit Chords",
+                                                                                 "chordEditToggle.svg", "chordEditToggle-pressed.svg");
+                    chordEditButton->setClickingTogglesState(true);
+                    return chordEditButton;
+                }
+                    
+                case create_chord: return  createButtonFromZipFileSVG (itemId, "Create Chord", "createChord.svg");
+                case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete Chord", "deleteChord.svg");
+                    
                 case _editVelocities:
                 {
-                    ToolbarButton *editVelButton = createButtonFromZipFileSVG (itemId, "Edit Note Velocities", "editVelocities.svg");
+                    ToolbarButton *editVelButton = createButtonFromZipFileSVG (itemId, "Edit Note Velocities",
+                                                                               "editVelocities.svg", "editVelocities-pressed.svg");
                     editVelButton->setClickingTogglesState(true);
                     return editVelButton;
                 }
@@ -402,7 +413,8 @@ private:
         
         // This is a little utility to create a button with one of the SVG images in
         // our embedded ZIP file "icons.zip"
-        ToolbarButton* createButtonFromZipFileSVG (const int itemId, const String& text, const String& filename)
+        ToolbarButton* createButtonFromZipFileSVG (const int itemId, const String& text,
+                                                   const String& filename, const String& filenamePressed = "")
         {
             if (iconsFromZipFile.size() == 0)
             {
@@ -419,12 +431,22 @@ private:
 //                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
                         iconNames.add (icons.getEntry(i)->filename);
                         iconsFromZipFile.add (Drawable::createFromImageDataStream (*svgFileStream));
+                        
+                        if (filenamePressed.length()>0)
+                        {
+                            iconNames.add (icons.getEntry(i)->filename);
+                            iconsFromZipFile.add (Drawable::createFromImageDataStream (*svgFileStream));
+                        }
                     }
                 }
             }
             
             Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
-            ToolbarButton * tb = new ToolbarButton (itemId, text, image, 0);
+            Drawable* imagePressed = NULL;
+            if (filenamePressed.length()>0)
+                imagePressed = iconsFromZipFile [iconNames.indexOf (filenamePressed)]->createCopy();
+
+            ToolbarButton * tb = new ToolbarButton (itemId, text, image, imagePressed);
             tb->setTooltip(text);
             return tb;//new ToolbarButton (itemId, text, image, 0);
         }

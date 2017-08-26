@@ -946,7 +946,7 @@ void ScrollingNoteViewer::makeKeyboard()
 //makeNoteBars (highlighted as of time of sequenceReadHead)
 void ScrollingNoteViewer::makeNoteBars()
 {
-//    try {
+    try {
 
 
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
@@ -1320,9 +1320,9 @@ void ScrollingNoteViewer::makeNoteBars()
     }
     rebuidingGLBuffer = false;
         
-//    } catch (...) {
-//        std::cout << "Error in note bars"<<"\n";
-//    }
+    } catch (...) {
+        std::cout << "Error in make note bars"<<"\n";
+    }
     std::cout << "Exit MNB: theSequence.size " << "\n";
 }
 

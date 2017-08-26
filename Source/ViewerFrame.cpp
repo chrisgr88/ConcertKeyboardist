@@ -79,7 +79,7 @@ altToolbarFactory(this)
     scoreTempoInfo.setColour (Label::textColourId, Colours::grey);
     
     addAndMakeVisible (hoverStepInfo);
-    hoverStepInfo.setFont (Font (18.00f, Font::plain));
+    hoverStepInfo.setFont (Font (14.00f, Font::bold));
     hoverStepInfo.setJustificationType (Justification::left);
     hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
@@ -239,9 +239,9 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
         {
-            altToolbarVisible = !altToolbarVisible;
-            noteViewer.showingChords = altToolbarVisible;
-            altToolbar.setVisible(altToolbarVisible);
+//            altToolbarVisible = !altToolbarVisible;
+            noteViewer.setShowingChords(!noteViewer.showingChords);
+//            altToolbar.setVisible(altToolbarVisible);
             resized();
             repaint();
         }
@@ -277,20 +277,17 @@ void ViewerFrame::buttonClicked (Button* button)
             std::cout << "deleteSoft\n";
             sendActionMessage("deleteSoft");
         }
-    }
-    else if (button->getParentComponent() == (juce::Component*) &altToolbar)
-    {
-        if (AltToolbarItemFactory::ToolbarItemIds::create_chord == id)
+        else if (MainToolbarItemFactory::ToolbarItemIds::create_chord == id)
         {
             std::cout << "create_chord\n";
             sendActionMessage("create_chord");
         }
-        else if(AltToolbarItemFactory::ToolbarItemIds::delete_chord == id)
+        else if(MainToolbarItemFactory::ToolbarItemIds::delete_chord == id)
         {
             std::cout << "delete_chord\n";
             sendActionMessage("delete_chord");
         }
-        else if(AltToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
+        else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
         {
             humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
             sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
@@ -436,5 +433,5 @@ void ViewerFrame::resized()
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight()*tbHeightMultiplier,
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*tbHeightMultiplier);
     hoverStepInfo.setBounds(95, 0, 340, noteViewer.getToolbarHeight()-1);
-    scoreTempoInfo.setBounds(95+340+16, 1, 40, noteViewer.getToolbarHeight()-1);
+    scoreTempoInfo.setBounds(95+205+16, 1, 40, noteViewer.getToolbarHeight()-1);
 }
