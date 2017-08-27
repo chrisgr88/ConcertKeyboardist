@@ -421,7 +421,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             + " vel:" + String(127.0*pSequence->at(i)->velocity)
             + " dur:" + String((pSequence->at(i)->offTime-pSequence->at(i)->getTimeStamp()))+
             + " tick:" + String(pSequence->at(i)->getTimeStamp())
-            + "/"+String::String(hoverStep);
+            + " step:"+String::String(hoverStep);
 //            repaint();
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";

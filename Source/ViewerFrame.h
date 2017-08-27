@@ -166,7 +166,7 @@ private:
     bool altToolbarVisible = false;
     
 //==============================================================================
-//###
+//### Ends after line 760
     class MainToolbarItemFactory   : public ToolbarItemFactory, public ComboBoxListener, public ChangeBroadcaster
     {
     public:
@@ -191,16 +191,16 @@ private:
             _humanizeTime   = 9,
             _chordEditToggle = 10,
             _editVelocities  = 11,
-            _play           = 12,
-            _stop           = 13,
-            _playPause      = 14,
-            _rewind         = 15,
-            _listen         = 16,
-            customComboBox  = 17,
+//            _play           = 12,
+//            _stop           = 13,
+//            _playPause      = 14,
+//            _rewind         = 15,
+//            _listen         = 16,
+//            customComboBox  = 17,
             chainAmountBox  = 18,
-            scoreTempo      = 19,
-            tempoMultiplier = 20,
-            realTimeTempo   = 21,
+//            scoreTempo      = 19,
+//            tempoMultiplier = 20,
+//            realTimeTempo   = 21,
             humVelocityBox  = 22,
             humTimeBox      = 23,
             _addSustain     = 24,
@@ -240,14 +240,14 @@ private:
             ids.add (humVelocityBox);
             ids.add (humTimeBox);
             ids.add (_editVelocities);
-            ids.add (scoreTempo);
-            ids.add (tempoMultiplier);
-            ids.add (realTimeTempo);
-            ids.add (_play);
-            ids.add (_stop);
-            ids.add (_rewind);
-            ids.add (_playPause);
-            ids.add (_listen);
+//            ids.add (scoreTempo);
+//            ids.add (tempoMultiplier);
+//            ids.add (realTimeTempo);
+//            ids.add (_play);
+//            ids.add (_stop);
+//            ids.add (_rewind);
+//            ids.add (_playPause);
+//            ids.add (_listen);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -259,31 +259,18 @@ private:
             ids.add (doc_save);
             ids.add (doc_saveAs);
             ids.add (separatorBarId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
-            ids.add (spacerId);
+            for (int n=0;n<30;n++)
+                ids.add (spacerId);
             
-            ids.add (separatorBarId);
-            ids.add (spacerId);
-            ids.add (spacerId);            
-            ids.add (realTimeTempo);
-            ids.add (separatorBarId);
-            ids.add (_rewind);
-            ids.add (_play);
-            ids.add (_stop);
-            ids.add (_listen);
+//            ids.add (separatorBarId);
+//            ids.add (spacerId);
+//            ids.add (spacerId);            
+////            ids.add (realTimeTempo);
+//            ids.add (separatorBarId);
+//            ids.add (_rewind);
+//            ids.add (_play);
+//            ids.add (_stop);
+//            ids.add (_listen);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (separatorBarId);
@@ -348,18 +335,6 @@ private:
                     editVelButton->setClickingTogglesState(true);
                     return editVelButton;
                 }
-                case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
-                case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
-                    
-                case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
-                case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
-                    
-//                case customComboBox:
-//                {
-//                    CustomToolbarComboBox *ccb = new CustomToolbarComboBox (itemId);
-//                    ccb->setTooltip("CustomToolbarComboBox");
-//                    return ccb;
-//                }
                     
                 case chainAmountBox:
                 {
@@ -381,29 +356,9 @@ private:
                     txtBox->textBox.setTooltip("Amount of Time Randomization");
                     return txtBox;
                 }
-                    
-                case scoreTempo:
-                {
-                    ScoreTempo *txtBox = new ScoreTempo (itemId);
-                    txtBox->setTooltip("Tempo");
-                    return txtBox;
-                }
-                    
-                case tempoMultiplier:
-                {
-                    TempoMultiplier *tempoMultiplier = new TempoMultiplier (itemId);
-                    tempoMultiplier->setTooltip("Tempo Multiplier");
-                    return tempoMultiplier;
-                }
-                case realTimeTempo:
-                {
-                    RealTimeTempo *realTimeTempo = new RealTimeTempo (itemId);
-                    realTimeTempo->setTooltip("Actual Tempo");
-                    return realTimeTempo;
-                }
-                default:                break;
+                default:
+                    break;
             }
-            
             return nullptr;
         }
         
@@ -761,7 +716,7 @@ private:
     };
     
     //==============================================================================
-    //###
+    //### Ends after line 1200
     class AltToolbarItemFactory   : public ToolbarItemFactory, public ComboBoxListener, public ChangeBroadcaster
     {
     public:
@@ -775,16 +730,13 @@ private:
         // are the ones we'll use in this demo.
         enum ToolbarItemIds
         {
-            create_chord        = 1,
-            delete_chord        = 2,
-//            doc_saveAs      = 3,
-//            edit_undo       = 4,
-//            edit_redo       = 5,
-//            _makeActive     = 6,
-//            _makeInactive    = 7,
-//            _chain          = 8,
-            _humanizeTime   = 9,
-            humTimeBox      = 10,
+            _play           = 1,
+            _stop           = 2,
+            _playPause      = 3,
+            _rewind         = 4,
+            _listen         = 5,
+            scoreTempo      = 6,
+            realTimeTempo   = 7
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -799,10 +751,13 @@ private:
             // go in our toolbar. Any items you might want to add must be listed here. The
             // order in which they are listed will be used by the toolbar customisation panel.
             
-            ids.add (create_chord);
-            ids.add (delete_chord);
-            ids.add (_humanizeTime);
-            ids.add (humTimeBox);
+            ids.add (_play);
+            ids.add (_stop);
+            ids.add (_playPause);
+            ids.add (_rewind);
+            ids.add (_listen);
+            ids.add (scoreTempo);
+            ids.add (realTimeTempo);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -813,91 +768,44 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);
-            
-            ids.add (create_chord);
-            ids.add (delete_chord);
+            for (int n=0;n<30;n++)
+                ids.add (spacerId);
             ids.add (separatorBarId);
-            ids.add (_humanizeTime);
-            ids.add (humTimeBox);
-            ids.add (flexibleSpacerId);
+            ids.add (scoreTempo);
+            ids.add (realTimeTempo);
+            ids.add (separatorBarId);
+            ids.add (_play);
+            ids.add (_stop);
+            ids.add (_playPause);
+            ids.add (_rewind);
+            ids.add (separatorBarId);
+            ids.add (_listen);
         }
         
         ToolbarItemComponent* createItem (int itemId) override
         {
             switch (itemId)
             {
-                case create_chord: return  createButtonFromZipFileSVG (itemId, "Create Chord", "createChord.svg");
-                case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete Chord", "deleteChord.svg");
-                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Start Times", "humanizeStartTimes.svg");
-                case humTimeBox:
+                case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
+                case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
+                    
+                case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
+                case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
+                case scoreTempo:
                 {
-                    ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Amount of Time Randomization");
+                    ScoreTempo *txtBox = new ScoreTempo (itemId);
+                    txtBox->setTooltip("Tempo");
                     return txtBox;
+                }
+                case realTimeTempo:
+                {
+                    RealTimeTempo *realTimeTempo = new RealTimeTempo (itemId);
+                    realTimeTempo->setTooltip("Actual Tempo");
+                    return realTimeTempo;
                 }
                 default:
                     break;
             }
-            
             return nullptr;
         }
         
@@ -1247,9 +1155,9 @@ private:
     AltToolbarItemFactory altToolbarFactory;
     //    MainToolbarItemFactory::CustomToolbarComboBox *pCCB;
     MainToolbarItemFactory::ChainAmountBox *pChainAmountBox;
-    MainToolbarItemFactory::ScoreTempo *pScoreTempo;
+    AltToolbarItemFactory::ScoreTempo *pScoreTempo;
     MainToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
-    MainToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
+    AltToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
     AltToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     
