@@ -46,12 +46,11 @@ public:
     
     int compareElements (int first, int second)
     {
-        std::cout << "first, second" << first<<" "<<second <<"\n";
-        return (p->sequenceObject.theSequence.at(first) < p->sequenceObject.theSequence.at(second) ?
-                -1
-                : (p->sequenceObject.theSequence.at(second) < p->sequenceObject.theSequence.at(first)) ? 1 : 0);
+        return (p->sequenceObject.theSequence.at(first)->getTimeStamp() < p->sequenceObject.theSequence.at(second)->getTimeStamp() ?
+            -1
+            : (p->sequenceObject.theSequence.at(second)->getTimeStamp() < p->sequenceObject.theSequence.at(first)->getTimeStamp()) ?
+                1 : 0);
     }
-    int foo;
     MIDIProcessor *p;
 };
 

@@ -1429,7 +1429,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
             g.setFont (f);
             g.setColour (Colours::white);
             const String velString = String (std::round(vel*127.0));
-            g.drawText (velString, velX-32.0, velY-3.0, 28.0, 8.0, Justification::centredRight, false);
+            double textY = noteYs[pSequence->at(hoverStep)->noteNumber]+(topMargin+0.0)*verticalScale;
+            g.drawText (velString, velX-32.0, textY, 28.0, 8.0, Justification::centredRight, false);
             g.setColour (Colours::seagreen);
             g.drawLine(velLine, 6.0f);
         }
@@ -1498,7 +1499,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
             
             if (editingVelocities)
             {
-                std::cout << "drawingVelocity\n";
                 const float vel = pSequence->at(displayedSelection[i])->velocity;
                 const float graphHeight = getHeight() - topMargin;
                 const float velY = ((1.0-vel) * graphHeight) + toolbarHeight - topMargin/verticalScale;
@@ -1508,8 +1508,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 {
                     const Line<float> velLine = Line<float> (prevVelPoint, velPoint);
                     g.setColour (Colours::seagreen.brighter().brighter());
-                    if (displayedSelection[i] != hoverStep)
-                        g.drawLine(velLine, 2.5f);
+                    g.drawLine(velLine, 2.5f);
                 }
                 prevVelPoint = velPoint;
             }
