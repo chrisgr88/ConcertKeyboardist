@@ -485,7 +485,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     if (msg.isController())
                     {
                         if (msg.isSustainPedalOn())
+                        {
+//                            std::cout << "Sustain on" << trk << "\n";
                             nSustains++;
+                        }
                         if (msg.isSostenutoPedalOn()) nSostenutos++;
                         if (msg.isSoftPedalOn())
                             nSofts++;
@@ -817,17 +820,32 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         bool sustainOn;
         bool softOn;
         int trackWithSustains = -1;
+        int maxSustainsInATrack = -1;
+        for (int trk=0;trk<trackDetails.size();trk++)
+        {
+            if (trackDetails[trk].nSustains>maxSustainsInATrack)
+            {
+                maxSustainsInATrack = trackDetails[trk].nSustains;
+                trackWithSustains = trk;
+            }
+        }
         int trackWithSofts = -1;
+        int maxSoftsInATrack = -1;
+        for (int trk=0;trk<trackDetails.size();trk++)
+        {
+            if (trackDetails[trk].nSofts>maxSoftsInATrack)
+            {
+                maxSoftsInATrack = trackDetails[trk].nSofts;
+                trackWithSofts = trk;
+            }
+        }
         for (int i=0;i<theControllers.size();i++)
         {
             ControllerMessage ctrMsg = theControllers[i];
             ctrMsg.setTimeStamp(96.0*ctrMsg.getTimeStamp()/ppq);
-            if ((trackWithSustains==-1||ctrMsg.track==trackWithSustains) &&
-                ctrMsg.getControllerNumber()==64)   //Sustain pedal
+            if (ctrMsg.track==trackWithSustains && ctrMsg.getControllerNumber()==64)   //Sustain pedal
             {
 //                std::cout<< ctrMsg.getTimeStamp()<<" sust Track " << ctrMsg.track<<" "<<ctrMsg.getControllerValue()<<"\n";
-                if (trackWithSustains==-1)
-                    sustainOn = ctrMsg.isSustainPedalOn();
                 if ((ctrMsg.isSustainPedalOn() && !sustainOn)||trackWithSustains==-1)
                 {
                     Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
@@ -840,14 +858,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     sustainPedalChanges.push_back(pedalMsg);
                     sustainOn = false;
                 }
-                if (trackWithSustains==-1)
-                    trackWithSustains = ctrMsg.track;
             }
-            else if (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff())  //Soft pedal
+            else if (ctrMsg.track==trackWithSofts && (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff()))  //Soft pedal
             {
-                if (trackWithSustains==-1)
-                    softOn = ctrMsg.isSoftPedalOn();
-                if ((ctrMsg.isSoftPedalOn() && !softOn)||trackWithSofts==-1)
+                if ((ctrMsg.isSoftPedalOn() && !softOn))
                 {
                     Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
                     softPedalChanges.push_back(pedalMsg);
@@ -859,8 +873,6 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     softPedalChanges.push_back(pedalMsg);
                     softOn = false;
                 }
-                if (trackWithSofts==-1)
-                    trackWithSofts = ctrMsg.track;
             }
         }
     }
@@ -934,7 +946,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 //For each chord in the chords Array, and for each note in its chordNotes list,
                 //find notes with that timeStamp in theSequence
                 //Set each found note's chordIndex to refer to this chord
-                //And give all non chord notes a different negative value for chordIndex
+                //Set each chord note's inChord to true
                 //We assume theSequence has been created and chords has been created or loaded from the file.  Both must be sorted by ascending timeStamp.
                 for (int step=0;step<theSequence.size();step++)
                 {

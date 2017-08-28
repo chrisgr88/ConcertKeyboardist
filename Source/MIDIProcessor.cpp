@@ -1768,6 +1768,7 @@ void MIDIProcessor::changeNoteOffTime(int step, double offTime)
     sequenceObject.setChangedFlag(true);
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    std::cout << "changeNoteOffTime after buildSequence"<<"\n";
 }
 void MIDIProcessor::setCopyOfSelectedNotes(Array<int> sel)
 {

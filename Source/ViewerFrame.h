@@ -259,20 +259,8 @@ private:
             ids.add (doc_save);
             ids.add (doc_saveAs);
             ids.add (separatorBarId);
-            for (int n=0;n<30;n++)
+            for (int n=0;n<28;n++)
                 ids.add (spacerId);
-            
-//            ids.add (separatorBarId);
-//            ids.add (spacerId);
-//            ids.add (spacerId);            
-////            ids.add (realTimeTempo);
-//            ids.add (separatorBarId);
-//            ids.add (_rewind);
-//            ids.add (_play);
-//            ids.add (_stop);
-//            ids.add (_listen);
-            ids.add (separatorBarId);
-            ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
@@ -768,7 +756,7 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
-            for (int n=0;n<30;n++)
+            for (int n=0;n<34;n++)
                 ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (scoreTempo);
@@ -1159,7 +1147,7 @@ private:
     MainToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
     AltToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
-    AltToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
+    MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     
     double chainAmount;
     double humanizeVelocityAmount;

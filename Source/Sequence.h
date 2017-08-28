@@ -226,33 +226,6 @@ public:
     void dumpData(Array<int>);
     void dumpData(int start, int end, int nn);
     
-    enum UserPlaysWhat {both, primary, secondary, autonomousPlaying};
-    void setUserPlaysWhat(UserPlaysWhat what)
-    {
-        String st;
-        if (what == both)
-            st = "both";
-        else if (what == primary)
-            st = "primary";
-        else if (what == secondary)
-            st = "secondary";
-        else if (what == autonomousPlaying)
-            st = "autonomousPlaying";
-        sequenceProps.setValue("userPlaysWhat", st);
-    }
-    UserPlaysWhat getUserPlaysWhat()
-    {
-        String p = sequenceProps.getValue("userPlaysWhat");
-        if (p == "both")
-            return both;
-        else if (p == "primary")
-            return primary;
-        else if (p == "secondary")
-            return secondary;
-        else //(p == "autonomousPlaying")
-            return autonomousPlaying;
-    }
-    
     void setChordTimeHumanize(double value, bool documentReallyChanged)
     {
         chordTimeHumanize = value;
@@ -641,7 +614,6 @@ public:
     bool reVoiceChords;
     bool allVelocitiesFromScore;
     bool deriveSecVelocityFromPrimary;
-    int userPlaysWhat;
     double ppq;
     
 //    String headerStringAsB64;

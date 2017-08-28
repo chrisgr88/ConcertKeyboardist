@@ -43,6 +43,15 @@ altToolbarFactory(this)
             pChainAmountBox->textBox.setText("12");
             chainAmount = 12.0;
         }
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::humTimeBox)
+        {
+            
+            pHumanizeStartTime =
+            (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
+            pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
+            pHumanizeStartTime->textBox.setText("3");
+            humanizeTimeAmount = 3.0;
+        }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
             pScoreTempo = (AltToolbarItemFactory::ScoreTempo *) altToolbar.getItemComponent(i);
@@ -72,7 +81,7 @@ altToolbarFactory(this)
     scoreTempoInfo.setColour (Label::textColourId, Colours::darkgrey);
     
     addAndMakeVisible (hoverStepInfo);
-    hoverStepInfo.setFont (Font (20.00f, Font::bold));
+    hoverStepInfo.setFont (Font (16.00f, Font::bold));
     hoverStepInfo.setJustificationType (Justification::left);
     hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
@@ -129,14 +138,14 @@ void ViewerFrame::timerCallback()
 //        pHumanizeVelocity->returnPressed = false;
 //    }
     
-//    if (pHumanizeStartTime->returnPressed)
-//    {
+    if (pHumanizeStartTime->returnPressed)
+    {
 //        std::cout << "HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
-//        humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
-//        sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
-//        grabKeyboardFocus();
-//        pHumanizeStartTime->returnPressed = false;
-//    }
+        humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+        sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+        grabKeyboardFocus();
+        pHumanizeStartTime->returnPressed = false;
+    }
     double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
     if (pRealTimeTempo->changed)
     {
@@ -360,6 +369,6 @@ void ViewerFrame::resized()
 //    int tbHeightMultiplier = altToolbarVisible?2:1;
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
-    hoverStepInfo.setBounds(20, getHeight()-30, 340, noteViewer.getToolbarHeight()-1);
-    scoreTempoInfo.setBounds(95+205+148, getHeight()-30, 40, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(20, getHeight()-30, 500, noteViewer.getToolbarHeight()-1);
+    scoreTempoInfo.setBounds(508, getHeight()-30, 40, noteViewer.getToolbarHeight()-1);
 }
