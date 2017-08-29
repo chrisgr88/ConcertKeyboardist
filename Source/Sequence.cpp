@@ -205,6 +205,9 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         if (trk==firstTrkWithPedals)
         {
             int channel = trackDetails[firstTrkWithPedals].originalChannel;
+            if (channel==-1)
+                channel = trackDetails[firstTrkWithNotes].originalChannel;
+//            if (channel==-1) channel =
             for (int i=0;i<sustainPedalChanges.size();i++)
             {
                 MidiMessage msg=MidiMessage::controllerEvent(channel, 64, sustainPedalChanges.at(i).pedalOn?127:0);
