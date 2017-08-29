@@ -48,6 +48,7 @@ public:
     triggers(-1),
     triggeredBy(-1),
     chainTrigger(-1),
+    targetNote(false),
     highestVelocityInChain(-1),
     inChord(false),
     triggeredNote(false),
@@ -87,6 +88,7 @@ public:
     triggers(note.triggers),
     triggeredBy(note.triggeredBy),
     chainTrigger(note.chainTrigger),
+    targetNote(note.targetNote),
     highestVelocityInChain(note.highestVelocityInChain),
     inChord(note.inChord),
     triggeredNote(note.triggeredNote),
@@ -126,6 +128,7 @@ public:
     triggers(-1),
     triggeredBy(-1),
     chainTrigger(-1),
+    targetNote(false),
     highestVelocityInChain(-1),
     inChord(false),
     triggeredNote(false),
@@ -250,6 +253,7 @@ public:
     int triggers; //The step that this note triggers.  Set to -1 if last in group.
     int triggeredBy; //The that step that directly triggers this note.  Set to -1 if first in group.
     int chainTrigger; //The shortest note starting at the SAME time as the firstInChain. There may be other longer notes starting at the exact same time as the chainTrigger. The chainTrigger is not necessarily the firstInChain. Every step has a chainTrigger property including the chainTrigger itself.  A step numbered the same as its chainTrigger property is definitely a group trigger step.
+    bool targetNote; //Tag this step as a target note even if its time changes.  For use during sequence rebuilding.
     float highestVelocityInChain; //Used for display of velocity graph.
     bool inChord;
     bool triggeredNote; //triggeredNotes are played when the chain trigger is played.  They are steps that start no later than the triggeredNoteLimit from the chainTrigger.  Unless they are triggeredOffNotes they are held at least their full duration but are extended if the chainTrigger is held beyond their scheduled end time, in which case they are held until the chainTrigger is released.

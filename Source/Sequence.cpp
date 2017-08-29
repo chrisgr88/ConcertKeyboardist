@@ -276,8 +276,6 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
         {
             if (!selection.contains(step))
                 continue;
-//            if ((startTime<=theSequence.at(step).timeStamp && theSequence.at(step).timeStamp<=endTime))
-//            {
                 const int index = targetNoteTimes.indexOf(theSequence.at(step)->getTimeStamp());
                 if (index>=0)
                 {
@@ -290,7 +288,6 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
                     const StepActivity act = {step, false};
                     stepActivityList.add(act);
                 }
-//            }
         }
     }
 
@@ -1038,6 +1035,19 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         }
         
         //###Humanize chord note start times and velocities
+        //  First, save the active note steps, to be restored after chord note times adjustments
+        Array<int> activeSteps;
+        double prevTimeStamp = -1;
+        for (int step=0;step<theSequence.size();step++)
+        {
+            const double timeStamp = theSequence.at(step)->getTimeStamp();
+            if (timeStamp != prevTimeStamp)
+            {
+                if (targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
+                    activeSteps.add(step);
+            }
+            prevTimeStamp = timeStamp;
+        }
         double thisChordTimeStamp;
         std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes;
         int chordTopStep;
@@ -1058,8 +1068,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 chordTopStep=step;
             if (thisStepChordNoteIndex != nextStepChordNoteIndex)
             {
-                if (chordNotes.size()>1)
+                if (chordNotes.size()>1 & thisStepChordNoteIndex!=-1)
                 {
+                    //We are now at the start of the next chord and chordNotes[ ] contains pointers to its notes, and
+                    // thisStepChordNoteIndex is the chord's index
                     struct {
                         bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
                         {
@@ -1068,12 +1080,11 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     } customCompare2;
                     std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
                     
-//                    if (step<=6)
-//                        std::cout <<"Found chord " <<theSequence.at(step)->timeStamp<<" "<< chord.size() <<"\n";
                     thisChordTimeStamp = theSequence.at(chordTopStep)->getTimeStamp();
                     //Rand seed based on thisStepChordNoteIndex different for all chords but constant for a chord
                     srand(thisStepChordNoteIndex);
-                    
+                    chords[thisStepChordNoteIndex].timeRandSeed = thisStepChordNoteIndex;
+                    chords[thisStepChordNoteIndex].timeSpec = "arp";
                     double timeToNextNote;
                     if (step<theSequence.size()-1)
                         timeToNextNote = theSequence.at(step+1)->getTimeStamp()-thisChordTimeStamp;
@@ -1081,7 +1092,12 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         timeToNextNote = DBL_MAX;
                     double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
                     
-                    for (int i=1; i<chordNotes.size(); i++)
+                    chords[thisStepChordNoteIndex].notePointers.clear();
+                    chords[thisStepChordNoteIndex].offsets.clear();
+                    chordNotes.at(0)->chordTopStep = chordTopStep;
+                    chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(0));
+                    chords[thisStepChordNoteIndex].offsets.push_back(0);
+                    for (int i=1; i<chordNotes.size(); i++) //Don't change first notes, so start at 1
                     {
                         chordNotes.at(i)->chordTopStep = chordTopStep;
                         const int temp = localTimeFuzz*100;
@@ -1091,8 +1107,20 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                             randAdd = 0;
                         else
                             randAdd = r%temp/100.0;
-//                        chordNotes.at(i)->setTimeStamp(thisChordTimeStamp+randAdd);
+                        const double duration = chordNotes.at(i)->offTime-chordNotes.at(i)->getTimeStamp();
+                        chordNotes.at(i)->setTimeStamp(thisChordTimeStamp+randAdd);
+                        chordNotes.at(i)->offTime = chordNotes.at(i)->getTimeStamp()+duration;
+                        chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(i));
+                        const int offset = chordNotes.at(i)->timeStamp - chordNotes.front()->timeStamp;
+                        chords[thisStepChordNoteIndex].offsets.push_back(offset);
                     }
+                    //Restore target note times (which now includes any steps adjusted by chord note time adjustment)
+                    targetNoteTimes.clear();
+                    for (int i=0;i<activeSteps.size();i++)
+                    {
+                        targetNoteTimes.add(theSequence.at(activeSteps[i])->getTimeStamp());
+                    }
+                    
                     if (false && reVoiceChords)
                     {
                         const float topNoteVel = chordNotes.at(0)->originalVelocity;
@@ -1127,7 +1155,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 chordNotes.clear();
             }
             else
-                ;//Do nothing
+                ;//chordNotes.clear();
         }
         
 //        for (int i=0;i<chords.size();i++)

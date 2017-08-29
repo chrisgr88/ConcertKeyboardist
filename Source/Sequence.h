@@ -319,7 +319,8 @@ public:
         int counter = tempoChanges.size();
         while (counter-- > 0)
         {
-            if (tempoChanges.at(tempoChangeIndex).getTimeStamp()<=currentTime && currentTime<tempoChanges.at(tempoChangeIndex+1).getTimeStamp())
+            if ((tempoChangeIndex+1)<tempoChanges.size() &&
+                (tempoChanges.at(tempoChangeIndex).getTimeStamp()<=currentTime && currentTime<tempoChanges.at(tempoChangeIndex+1).getTimeStamp()) )
                 break;
             tempoChangeIndex++;
             if (tempoChangeIndex>=tempoChanges.size()) //If we didn't find it in the up-search restart at the bottom

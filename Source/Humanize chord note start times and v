@@ -1,0 +1,88 @@
+        //###Humanize chord note start times and velocities
+        double thisChordTimeStamp;
+        std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes;
+        int chordTopStep;
+        for (int step=0; step<theSequence.size();step++)
+        {
+            //All sequential notes with the same chordIndex are assumed to be part of this chord (if any)
+            int thisStepChordNoteIndex = theSequence.at(step)->chordIndex;
+            int nextStepChordNoteIndex;
+            if (step+1<theSequence.size())
+            {
+                nextStepChordNoteIndex = theSequence.at(step+1)->chordIndex;
+            }
+            else
+                nextStepChordNoteIndex = INT32_MAX;
+        
+            chordNotes.push_back(theSequence[step]);
+            if (chordNotes.size()==1)  //If there's one step it's always the chord top
+                chordTopStep=step;
+            if (thisStepChordNoteIndex != nextStepChordNoteIndex)
+            {
+                if (chordNotes.size()>1 & thisStepChordNoteIndex!=-1)
+                {
+                    //We are now at the start of the next chord and chordNotes[ ] contains pointers to its notes, and
+                    // thisStepChordNoteIndex is the chord's index
+                    struct {
+                        bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+                        {
+                            return a->noteNumber > b->noteNumber;
+                        }
+                    } customCompare2;
+                    std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
+                    
+                    thisChordTimeStamp = theSequence.at(chordTopStep)->getTimeStamp();
+                    //Rand seed based on thisStepChordNoteIndex different for all chords but constant for a chord
+                    srand(thisStepChordNoteIndex);
+                    chords[thisStepChordNoteIndex].timeRandSeed = thisStepChordNoteIndex;
+                    chords[thisStepChordNoteIndex].timeSpec = "arp";
+                    double timeToNextNote;
+                    if (step<theSequence.size()-1)
+                        timeToNextNote = theSequence.at(step+1)->getTimeStamp()-thisChordTimeStamp;
+                    else
+                        timeToNextNote = DBL_MAX;
+                    double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
+                    
+                    chords[thisStepChordNoteIndex].notePointers.clear();
+                    chords[thisStepChordNoteIndex].offsets.clear();
+                    chordNotes.at(0)->chordTopStep = chordTopStep;
+                    chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(0));
+                    chords[thisStepChordNoteIndex].offsets.push_back(0);
+                    for (int i=1; i<chordNotes.size(); i++) //Don't change first notes, so start at 1
+                    {
+                        chordNotes.at(i)->chordTopStep = chordTopStep;
+                        const int temp = localTimeFuzz*100;
+                        double randAdd;
+                        unsigned r = rand();
+                        if (temp==0)
+                            randAdd = 0;
+                        else
+                            randAdd = r%temp/100.0;
+                        const double duration = chordNotes.at(i)->offTime-chordNotes.at(i)->getTimeStamp();
+                        chordNotes.at(i)->setTimeStamp(thisChordTimeStamp+randAdd);
+                        chordNotes.at(i)->offTime = chordNotes.at(i)->getTimeStamp()+duration;
+                        chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(i));
+                        const int offset = chordNotes.at(i)->timeStamp - chordNotes.front()->timeStamp;
+                        chords[thisStepChordNoteIndex].offsets.push_back(offset);
+                        
+                        
+                        //TODO Move setAsTargetNote, setAsNonTargetNote and setIndividualNotesActivity to Sequence so it can be used here
+                        //and in MidiProcessor.
+//                        if (targetNoteTimes.indexOf(chordNotes.at(i)->getTimeStamp())>=0)
+//                        {
+//                            setAsNonTargetNote(chordNotes.at(i)->currentStep);
+//                            double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
+//                            double offTime = sequenceObject.theSequence.at(steps[i])->offTime;
+//                            timeStamp += delta;
+//                            offTime += delta;
+//                            sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
+//                            sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
+//                            setAsTargetNote(steps[i]); //Retore as target note
+//                        }
+//                        else
+//                        {
+//                            sequenceObject.theSequence.at(steps[i])->setTimeStamp(sequenceObject.theSequence.at(steps[i])->getTimeStamp() + delta);
+//                            sequenceObject.theSequence.at(steps[i])->offTime += delta;
+//                        }
+                        
+                    }
