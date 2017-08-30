@@ -234,7 +234,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     }
     else //Set to position
     {
-        std::cout << "rewind Set to position 1  " << "\n";
+        std::cout << "rewind start Set to position" << "\n";
 
         for (step=0;step<sequenceObject.theSequence.size();step++)
         {
@@ -263,7 +263,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 //    << "\n";
     
 //    startTimer(tempInterval);
-    std::cout << "rewind autoPlaySustains  " << "\n";
+//    std::cout << "rewind autoPlaySustains  " << "\n";
     if (sequenceObject.autoPlaySustains)
     {
         int k=0; //This will be the value if there are no sustainPedalChanges.  i.e. One step past the the last, which is 0
@@ -298,7 +298,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             }
         }
     }
-    std::cout << "rewind autoPlaySofts  " << "\n";
+//    std::cout << "rewind autoPlaySofts  " << "\n";
         
     if (sequenceObject.autoPlaySofts)
     {
@@ -351,7 +351,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     } catch (const std::out_of_range& ex) {
         std::cout << " error 3 in rewind " << "\n";
     }
-    std::cout << " leaving rewind " << "\n";
+//    std::cout << " leaving rewind " << "\n";
 }
 
 void MIDIProcessor::listenToSelection()
@@ -1684,9 +1684,11 @@ inline void MIDIProcessor::setAsNonTargetNote(int step)
 
 void MIDIProcessor::changeNoteVelocity(int step, float velocity)
 {
+//    std::cout << "changeNoteVelocity before catchUp "<<step<<"\n";
     catchUp();
     //        if (copyOfSelectedNotes.size()<=1)
     //        {
+//    std::cout << "changeNoteVelocity after catchUp "<<step<<"\n";
     sequenceObject.theSequence.at(step)->velocity = velocity;
     //        }
     //        else

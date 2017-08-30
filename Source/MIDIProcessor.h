@@ -109,7 +109,8 @@ public:
     //enum LoadType {loadFile, reAnalyzeOnly};
     void buildSequenceAsOf(Sequence::LoadType type, Sequence::Retain retainEdits, double time)
     {
-        pauseGLRendering = true; 
+//        std::cout << "entering buildSequenceAsOf \n";
+        pauseGLRendering = true;
         HighResolutionTimer::stopTimer();
         if (type==Sequence::loadFile)
             lastUserPlayedSeqStep=-1;

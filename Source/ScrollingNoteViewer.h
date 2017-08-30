@@ -310,6 +310,7 @@ private:
     bool drawingVelocity; //Dragging on background to set multiple notes velocities
     bool draggingTime;
     bool draggingOffTime;
+    int noteBeingDraggedOn;
 //    bool showVelocityIndicator; //If true, the velocity tick mark indicator of the hoverStep is to be painted
     float velStartDrag;
     float timeStartDrag;

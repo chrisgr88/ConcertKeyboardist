@@ -342,6 +342,8 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
 void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 {
+//    std::cout << "entering loadSequence \n";
+    
     try {
         
         
@@ -362,6 +364,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
     
     if (fileToLoad.getFileName().length() > 0 && loadFile == Sequence::loadFile)
     {
+//        std::cout << "entering loadSequence: load file \n";
         if (!fileToLoad.exists()) {
             std::cout << "File " << fileToLoad.getFileName() << " does not exist.\n";
             return;
@@ -882,6 +885,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
     theSequence.clear();
     
 //      Transfer tracks to "theSequence"
+//        std::cout << "Transfer tracks to theSequence \n";
     for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
     {
         const int numEvents = allNotes.at(trkNumber).size();
@@ -938,7 +942,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         //###
         //Build the chords list if we either loaded a midi file or loaded a ckf file (and probably read a chords list)
         //Issue - What if sequence does not include all tracks?
-        if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
+//        std::cout << "Build the chords list \n";
+                if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
         {
             if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
                 chords.size()>0)  //It Was a ckf file so finish creating the chords list loaded from the file
@@ -1037,7 +1042,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             }
         }
         
-        //###Humanize chord note start times and velocities
+        //###
+//        std::cout << "Humanize chords \n";
         //  First, save the active note steps, to be restored after chord note times adjustments
         Array<int> activeSteps;
         double prevTimeStamp = -1;
@@ -1203,6 +1209,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
     
         
         //Find chainTriggers and set this property for all steps in a given chain
+//        std::cout <<"Find chainTriggers \n";
         assert (theSequence.size()>0);
         int step = 0;
         int chainTrigger = 0;
@@ -1257,6 +1264,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         //Determine which steps are triggeredNotes and triggeredOffNotes
         //triggeredNotes are steps that start no later than the triggeredNoteLimit from the chainTrigger.
         //triggeredOffNotes are triggeredNotes that end before the END of the next chainTrigger note.
+//        std::cout << "Determine which steps are triggered notes \n";
+
         for (int step=0; step<theSequence.size();step++)
         {
             if ( theSequence.at(step)->getTimeStamp() <= theSequence.at(theSequence.at(step)->chainTrigger)->getTimeStamp()+triggeredNoteLimit)
@@ -1305,6 +1314,8 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
     } catch (const std::out_of_range& ex) {
         std::cout << " error in load sequence " << "\n";
     }
+//    std::cout << "End of loadSequence \n";
+
 } //End of loadSequence
 
 SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)
