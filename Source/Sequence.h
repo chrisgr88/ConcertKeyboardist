@@ -80,7 +80,8 @@ public:
     File getSuggestedSaveAsFile	(	const File & 	defaultFile	) override
     {
         File newFile;
-        if (defaultFile.getFullPathName().endsWith("[ck].mid"))
+        String foo = defaultFile.getFullPathName();
+        if (defaultFile.getFullPathName().endsWith("[ck]"))
             newFile = defaultFile;
         else
             newFile = File(defaultFile.getFullPathName()+"[ck].mid");
@@ -192,7 +193,9 @@ public:
     uint decodeVarint(uint8* input, uint inputSize);
     int myConvertFromBase64 (OutputStream& binaryOutput, StringRef base64TextInput);
     uint varintLength(char* input, uint inputSize);
-    int getSeqDurationInTicks() {return seqDurationInTicks;}
+    int getSeqDurationInTicks() {
+        return seqDurationInTicks;
+    }
 //    std::vector<NoteWithOffTime*> getNotesInTimeRange(double minTimeStamp, double maxTimeStamp);
     Array<MidiMessage> getCurrentTimeSig(double timeStamp);
     SortedSet<int> getNotesUsed(int &minNote, int &maxNote);

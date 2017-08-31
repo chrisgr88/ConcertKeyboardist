@@ -933,17 +933,20 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             else
                 pPrevMsg = theSequence[step];
         }
+        seqDurationInTicks = 0.0;
         for (int step=0;step<theSequence.size();step++)
         {
             theSequence.at(step)->currentStep = step;
+            if (theSequence.at(step)->offTime > seqDurationInTicks)
+                seqDurationInTicks = theSequence.at(step)->offTime;
         }
-        seqDurationInTicks = theSequence.back()->getTimeStamp(); //We update this here so that it reflects currently active tracks
+        //seqDurationInTicks = theSequence.back()->getTimeStamp(); //We update this here so that it reflects currently active tracks
 
         //###
         //Build the chords list if we either loaded a midi file or loaded a ckf file (and probably read a chords list)
         //Issue - What if sequence does not include all tracks?
 //        std::cout << "Build the chords list \n";
-                if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
+        if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
         {
             if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
                 chords.size()>0)  //It Was a ckf file so finish creating the chords list loaded from the file

@@ -977,7 +977,6 @@ void ScrollingNoteViewer::makeNoteBars()
 {
     try {
 
-
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     rebuidingGLBuffer = true;
 //    std::cout
@@ -1032,7 +1031,7 @@ void ScrollingNoteViewer::makeNoteBars()
     if (seqSize==0)
         return;
     //Velocity graph
-    const double graphHeight = (300.0-15.0)-toolbarHeight; //(300.0-15.0) the original viewer height set in MainComponent.cpp
+    const double graphHeight = (300.0-15.0)-2*toolbarHeight; //(300.0-15.0) the original viewer height set in MainComponent.cpp
 
     double prevY = graphHeight * pSequence->at(0)->highestVelocityInChain;
     double prevX = -1;
@@ -1240,8 +1239,8 @@ void ScrollingNoteViewer::makeNoteBars()
                 {
                     const double barLeft = sustainBars[sustainBarNum].getX();
                     const double barRight = sustainBars[sustainBarNum].getRight();
-                    const float y = noteYs[highestNote]*rescaleHeight + topMargin - 1.3*trackVerticalSize;
-                    addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,2.0, Colour(Colours::orange).brighter());
+                    const float y = noteYs[highestNote]*rescaleHeight + topMargin - 0.*trackVerticalSize;
+                    addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,1.5, Colour(Colours::orange).brighter());
                     sustainBarNum++;
                 }
                 else if (msgTimeStamp>=barLeft)
@@ -1252,8 +1251,8 @@ void ScrollingNoteViewer::makeNoteBars()
             else if (inSustainBar && msgTimeStamp >= barRight)
             {
                 inSustainBar = false;
-                const float y = noteYs[highestNote]*rescaleHeight + topMargin - 2.3*trackVerticalSize;
-                addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,2.0, Colour(Colours::orange).brighter());
+                const float y = noteYs[highestNote]*rescaleHeight + topMargin - 0.5*trackVerticalSize;
+                addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,1.5, Colour(Colours::orange).brighter());
                 sustainBarNum++;
                 if (msgTimeStamp > barRight)
                     highestNote = pSequence->at(step)->noteNumber;
@@ -1304,7 +1303,7 @@ void ScrollingNoteViewer::makeNoteBars()
                     const double barRight = softBars[softBarNum].getRight();
                     const float y = noteYs[highestNote]*rescaleHeight + topMargin - 2.3*trackVerticalSize;
                     countSofts++;
-                    addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,2.0, Colour(Colours::lightblue).brighter());
+                    addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,1.5, Colour(Colours::lightblue).brighter());
                     softBarNum++;
                 }
                 else if (msgTimeStamp>=barLeft)
@@ -1423,8 +1422,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
         if (((hoveringOver == HOVER_NOTEHEAD && editingVelocities) || draggingVelocity) && hoverStep>=0)
         {
             const float vel = pSequence->at(hoverStep)->velocity;
-            const float graphHeight = getHeight() - topMargin;//(300.0-15.0)-toolbarHeight;
-            const float velY = ((1.0-vel) * graphHeight) + toolbarHeight - topMargin/verticalScale;
+            const float graphHeight = getHeight() - topMargin*verticalScale;
+            const float velY = ((1.0-vel) * graphHeight) + topMargin*verticalScale;
             const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
             const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
             const Line<float> velLine = Line<float> (velX,
@@ -1440,7 +1439,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             double textY = noteYs[pSequence->at(hoverStep)->noteNumber]+(topMargin+0.0)*verticalScale;
             g.drawText (velString, velX-32.0, textY, 28.0, 8.0, Justification::centredRight, false);
             g.setColour (Colours::seagreen);
-            g.drawLine(velLine, 6.0f);
+            g.drawLine(velLine, 5.0f);
         }
         //###
         if (showingChords)
@@ -1508,8 +1507,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
             if (editingVelocities)
             {
                 const float vel = pSequence->at(displayedSelection[i])->velocity;
-                const float graphHeight = getHeight() - topMargin;
-                const float velY = ((1.0-vel) * graphHeight) + toolbarHeight - topMargin/verticalScale;
+                const float graphHeight = getHeight() - topMargin*verticalScale;
+                const float velY = ((1.0-vel) * graphHeight) + topMargin*verticalScale;
                 const float velX = scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
                 Point<float> velPoint(velX, velY);
                 if (i>0)

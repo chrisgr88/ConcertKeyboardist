@@ -78,6 +78,8 @@ void MIDIProcessor::play (bool ply, String fromWhere)
 //    std::cout << "xInTicksFromViewer " << xInTicksFromViewer <<"\n";
     if (sequenceObject.theSequence.size()==0)
         return;
+//    if (!ply)
+//         std::cout << "stopped playing " << timeInTicks <<"\n";
     if (!isPlaying && ply)
     {
         if (xInTicksFromViewer !=0)
@@ -144,10 +146,22 @@ void MIDIProcessor::play (bool ply, String fromWhere)
     {
         changeMessageType = CHANGE_MESSAGE_STOP_PLAYING;
         sendSynchronousChangeMessage();
+        for (int i=0; i<onNotes.size(); i++)
+        {
+            const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
+                                                             sequenceObject.theSequence.at(onNotes[i])->noteNumber,
+                                                             sequenceObject.theSequence.at(onNotes[i])->getVelocity());
+            sendMidiMessage(noteOff);
+        }
+        onNotes.clear();
         for (int chan=1;chan<=16;chan++)
         {
             MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
             sendMidiMessage(allNotesOff);
+            const MidiMessage sustOff = MidiMessage::controllerEvent(chan, 64, 0);
+            sendMidiMessage(sustOff);
+            const MidiMessage softOff = MidiMessage::controllerEvent(chan, 67, 0);
+            sendMidiMessage(softOff);
         }
         HighResolutionTimer::stopTimer();
         listenSequence.clear();
@@ -167,6 +181,15 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 //    << "\n";
     try {
     
+    for (int i=0; i<onNotes.size(); i++)
+    {
+        const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
+                                                         sequenceObject.theSequence.at(onNotes[i])->noteNumber,
+                                                         sequenceObject.theSequence.at(onNotes[i])->getVelocity());
+        sendMidiMessage(noteOff);
+    }
+    onNotes.clear();
+        
     listenStep = 0;
     if (listenSequence.size()>0)
     {
@@ -209,7 +232,6 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
         sequenceObject.theSequence.at(i)->selected = false;
     }
     noteOnOffFifo.reset();
-    onNotes.clear();
     scheduledNotes.clear();
     } catch (const std::out_of_range& ex) {
         std::cout << " error 1 in rewind " << "\n";
@@ -234,7 +256,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     }
     else //Set to position
     {
-        std::cout << "rewind start Set to position" << "\n";
+//        std::cout << "rewind start Set to position" << "\n";
 
         for (step=0;step<sequenceObject.theSequence.size();step++)
         {
@@ -246,10 +268,10 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
             step = sequenceObject.theSequence.size() - 1;
         if (step==-1)
             step = 0;
-        std::cout << "rewind Set to position: step =  " <<step<< "\n";
+//        std::cout << "rewind Set to position: step =  " <<step<< "\n";
 
         sequenceReadHead = sequenceObject.theSequence.at(step)->getTimeStamp();
-        std::cout << "rewind Set read head " <<"\n";
+//        std::cout << "rewind Set read head " <<"\n";
         currentSeqStep = step-1;
         lastPlayedNoteStep = currentSeqStep;
         timeInTicks = time;
@@ -727,6 +749,7 @@ void MIDIProcessor::processBlock ()
                 if (nextNoteOn==-1 || sequenceObject.theSequence.at(nextNoteOn)->getTimeStamp()>timeInTicks)
                 { //No need for legato so do noteoff now
                     MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,sequenceObject.theSequence.at(step)->noteNumber,(uint8) 0);
+//                    std::cout<<"at 1 noteOff "<<step<<"\n";
                     sendMidiMessage(noteOff);
                     sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber, sequenceObject.theSequence.at(step)->channel, false);
                     onNotes.remove(onNoteIndex);
@@ -741,7 +764,7 @@ void MIDIProcessor::processBlock ()
                     sequenceObject.theSequence.at(step)->noteOffNow = false;
                     sequenceObject.theSequence.at(step)->sustaining = true;
                     const double newOffTime = timeInTicks+keyOverlapTimeTicks;
-                    if (newOffTime<sequenceObject.getSeqDurationInTicks())
+                    if (newOffTime<=sequenceObject.getSeqDurationInTicks())
                         sequenceObject.theSequence.at(step)->scheduledOffTime = timeInTicks+keyOverlapTimeTicks;
                 }
             }
@@ -749,6 +772,7 @@ void MIDIProcessor::processBlock ()
             {
                 MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,
                                                           sequenceObject.theSequence.at(step)->noteNumber,(uint8) 0);
+//                std::cout<<"at 2 noteOff "<<step<<"\n";
                 sendMidiMessage(noteOff);
                 sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber,sequenceObject.theSequence.at(step)->channel, false);
                 onNotes.remove(onNoteIndex);
@@ -1007,12 +1031,20 @@ void MIDIProcessor::processBlock ()
                 while (triggeredStep < sequenceObject.theSequence.size() && (triggeredStep != -1))
                 {
                     availableNotes.add(triggeredStep);
-//                    if (sequenceObject.isPrimaryTrack(theSequence->at(triggeredStep)->track))
-//                    {
-                        nPrimaryNotes++;
-                        sumPrimaryVel += sequenceObject.theSequence.at(triggeredStep)->velocity;
-//                    }
-                    triggeredStep = sequenceObject.theSequence.at(triggeredStep)->triggers;
+                    nPrimaryNotes++;
+                    sumPrimaryVel += sequenceObject.theSequence.at(triggeredStep)->velocity;
+                    if (sequenceObject.theSequence.at(triggeredStep)->triggers>triggeredStep)
+                        triggeredStep = sequenceObject.theSequence.at(triggeredStep)->triggers;
+                    else //if (sequenceObject.theSequence.at(triggeredStep)->triggers !=-1)
+                    //To catch cases where the chain ending note has been moved to be before the chain trigger note
+                    {
+                        if (sequenceObject.theSequence.at(triggeredStep)->triggers != -1)
+                        {
+                            std::cout <<"Chain end before chain trigger! curTriggeredStep, nextTriggeredStep "
+                            << triggeredStep<<" " <<sequenceObject.theSequence.at(triggeredStep)->triggers<<"\n";
+                        }
+                        break;
+                    }
                 }
             }
 
