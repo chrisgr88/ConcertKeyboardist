@@ -1,0 +1,283 @@
+GeoSonix Quickstart Guide – Part 1
+--------------------
+
+This is a guide help new users of Geosonix learn the basics quickly and start making music 
+right away.  Therefore I will focus only on using MIDI (not Open Sound Control) and will use
+Ableton Live as an example.  I will assume that you as an early user of Geosonix already 
+have software or hardware synthesizers and know enough to adapt what's in this guide 
+to your situation.
+
+### What Is Geosonix
+
+* GeoSonix 2 (*GX2* for short) is a graphical open-source sequencer and live performance environment. 
+It is a tool for creating and playing *Scores*.  
+* *Scores* are 2D or 3D workspaces containing *Curve*, *Cursor* and *Trigger* objects.
+* To make any sound with Geosonix, you must provide one or more software or hardware synthesizers controllable by MIDI or Open Sound Control messages, and route the messages from Geosonix to them.
+* When a score is played, objects in it generate MIDI or OSC messages by calling *Message Functions* which are short Javascript functions called each time an object is *Trigged*. 
+
+Before going into more detail, let's get Geosonix installed get it playing a few notes.  
+
+### Installation on a Mac
+
+Geosonix is compatible with Mac OS X 10.6+ or higher (and in the future, Windows 7 though 10). 
+
+* Download and open the Geosonix.dmg file from *here*.
+* Drag the Geosonix application into your Applications folder.
+* Double click the application to run it.
+* If you wish to keep it in the Dock right click on it and choose "Options - Keep in Dock". 
+* The first time you run Geosonix it will create a "GX Scores" folder in Documents directory.  
+This will be the place where by default Geosonix stores score files.
+* Geosonix will also copy a few sample scores to the folder although many more are available in the Geosonix documentation and in the online score library.
+
+### Quick Survey of the User Interface
+
+Open Geosonix and familiarize yourself with the user interface.  Here are some things to look for:
+
+* The largest area is the **Workspace**.  This is where the objects of a score reside.  Multiple scores can be open at the same time, and at the top of the workspace are tabs for choosing which score you see in the workspace.  
+* The **Property Inspector** is on the left side of the window. It has three panes selectable by tabs. Click on each tab to get a feel for what's in its pane:  
+	* The **Object Properties Tab** includes fields to edit all the properties of Geosonix score objects, and properties for the score itself.  Fields not applicable in a given situation are disabled and greyed out.  Review the types of properties available.  They all have ToolTips with more explanation.  There is no need to try and remember all the details as we will return to it.  For now, the goal get a feel for what's there.
+	* The **Script Tab** includes the main script editor frame at the top, a command text output frame below it, and at the very bottom buttons to evaluate portions of the script in the editor, to halt a runaway script, and to clear the output area.  To see something simple happen, type *print("Hello World");* in the editor and click the *All* button at the bottom of the *Scripts* pane.  You should see the friendly greeting in the text output frame.  
+	* The **Message Monitor Tab** tab is where you'll find a log of recently sent and received MIDI and OSC messages.  For efficiency, no messages are logged unless logging is enabled by the checkbox at the top.
+* The **Transport** is at the bottom of the window.  There are Play and Rewind buttons, a position indicator, controls to set the playing speed, and controls to sync to an external clock source.
+* The **Menu Bar** is of course the top of the screen.  You will use the File and Edit by far the most often, and you'll probably find them very similar to those of many other desktop applications you've used.  For example in the *File* menu there's *New*, *Open...*, and *Open Recent...*, and in the *Edit* menu there's *Cut*, *Copy*, *Paste* and *Duplicate*.  They all work pretty much as you'd expect so I won't go into more detail in the quick start guide.
+* The **Toolbar** is across the top of the window.  Hover the mouse pointer over the buttons to see ToolTips describing what the buttons do.  You'll find tools to add objects to the workspace, tools to make only certain types of objects selectable in the workspace, a tool for muting all objects except those that are selected, and tools for interacting with the score.
+
+### Let's Making Some Sound
+
+* Open the **Patchbay**:  Choose *Edit Patchbay* from the File menu.  Geosonix supports up to four MIDI output channels and one MIDI input channel (and the equivalent for OSC).  These are mapped to virtual ports such as "vMidi1" and "vMidi2" that are used in Geosonix scripts.  For now all need to do is ensure that the port next to vMidi1 is where you want to send output from Geosonix.  (For example, in my copy of Ableton Live I have *geosonixout* set as an input in the MIDI Preferences Pane. All of Track, Sync and Remote are also set to ON.
+* Ensure that you have a MIDI synth set up and armed to play on the same output port that Geosonix vMidi1 is mapped to in the Patchbay.  For initial testing a pitched percussive sound works well, for example a piano patch.  Preferably the patch should also responds at least note velocity, bend and some controller like Mod Wheel (CC 1).
+
+
+*** Tutorial 1 
+* "Chord Changer.score"
+* "3D Henon Map GX2.score"
+* "Drag Drop Changes Rhythm.score"
+* "Script sample - Rosette - Four Trigges.score"
+* Melody and Harmony.score
+
+*** End of What's Completed
+
+* You can use the Geosonix *Patchbay* to route messages from Geosonix objects to MIDI ports on your computer.  On a Mac Geosonix also creates virtual ports - geosonixout and geosonixin - which is the easiest way to route messages to softsynths.
+* The Geosonix *Property Inspector* has a *Properties* tab to edit object properties, and a *Script* tab which is a Javascript editor for viewing and editing the script incuding any *Message Functions*.
+* *Message Functions* send messages or carry out other actions mapped from features of an object's state at the instant a message is *Trigged*.  You determine which features are used and how the function maps them into messages.
+* Examples of an object's properties include its position, size, how it moves in the score, how it interacts with other objects, MIDI channel and port, notes and harmony settings, and the name of the function(s) it calls when *Trigged*.  
+* Examples of global *Score* properties including its zoom level, the background image, and harmony settings that are used if an object doesn't have its own harmony settings. 
+* For example in a message function the x position of an object might be mapped to the note number it sends, the y position might be mapped to the velocity and the angle it's moving might be mapped to the note duration.
+* The score may also include a *Background Image*. The pixel color behind an object when it's trigged can be used in the message function.  For example the pitch of a note can be mapped from the red component of the pixel, the velocity from the green and the duration from the blue.
+* You don't necessarily have to write your own *Message Functions* because Geosonix will auto-create some very useful functions to get you started.  A library of other functions will be available in the future.
+* When you press the Play button in the Geosonix *Transport* it animates the objects in the score which move and interact according to their properties. 
+* Object *collisions* cause them to be *Trigged* calling their message functions, sending messages to your synths.  
+* You can also define an *autoMessage Function* for any object, which can be set to *Trig* at regular intervals synced to the tempo. (for example, one message per quarter note beat)
+* You can also "play" a score in real time like a musical instrument by changing object properties and even their message functions while the score is playing.
+
+
+### More Details
+
+**The Geosonix User Interface** is much like other desktop applications: 
+
+* A main workspace where you view, build, modify, scores. 
+* A File menu with commands such as *New*, *Open*, *Open Recent*, *Save*, *Save-As* and *Close*. 
+* An Edit menu with commands such as *Cut*, *Copy*, *Paste*, *Duplicate*, *Undo*, and *Redo*. 
+* A toolbar with buttons for creating and working with objects and the score.
+* A property inspector to the left of the workspace to view and edit properties of selected objects in the score. 
+* A transport at the bottom of the Geosonix window is a transport control with controls to start, stop,
+rewind and change the playing speed of the score.
+
+**The Workspace** is a 2D or 3D arrangment of the objects
+such as curves, cursors and triggers in the graphical view of the
+score application. The score file contains a snapshot of the objects and
+their properties that were in the graphical view when the score file was
+last saved.
+
+**The Script** is Javascript code in the script tab of the property inspector.
+A script can consist few or many lines of code which may
+include few or many function definitions - almost any type of Javascript
+code. The Script tab is not only a place to see scripts - it's a syntax
+highlighting code editor. In the Script editor you can execute all or
+any part of the script. When you execute script code you will
+immediately see the results, possibly in the graphics view, or as
+response text below the editor.
+
+**Geosonix Score Files**: 
+
+* All Geosonix scores are saved in files of type ".score". 
+* Multiple scores can be open at a time and you can switch among them with tabs 
+above the workspace. 
+* Open scores do not interact in any way and one score can be playing at a
+time. 
+* A .score file saves the location and properties of all objects in the score, the global properties of the score, and the script that is in the script tab.
+* By default the script is *evaluated* when a score is loaded.  This causes any functions it contains to become defined in the global Javascript context.    
+* Any commands that are **not** in functions are executed immediately on loading.  This is useful, but be careful as it can change the workspace from the score was saved.  For example if there is a clear() command in the script the entire score can appear blank when reloaded!  More about this later.
+
+**Messages:** Messages are generated by interactions among graphical
+objects. For example a cursor colliding with triggers can generate
+messages based on features like the location of the collision, which
+objects participated in the collision, the time of the collision, and
+the colors of the image pixel behind the collision point. Typical MIDI
+messages would be note-ons and note-offs, bend and continuous
+controllers. A typical OSC message may include score parameters such as
+the score time and the x, y, and z coordinates of a moving cursor.
+
+**Generating Sound:** Geosonix does not generate sound. Its messages are
+designed to trigger sound or effects in other audio applications or
+synthesizers. Message values such as MIDI note numbers, velocities and
+durations may be generated as a function of the parameters of the "score
+context" at the exact moment the message is generated. This provides an
+extremely rich source of sound patterns that you are unlikely to hear
+from any conventional sequencer. You define the messages and what
+aspects the score context they depend on, mapped using Javascript
+functions and code, and route them to an external music environment or
+synthesizer to generate sound.
+
+**The GeoSonix Scripting Language:** The scripting language is standard
+Javascript and includes large number of predefined functions and objects
+with which you can define the messages sent by objects, customize object
+behavior, and modify or build scores. The advantage of using a script to
+build a score is that you can automate steps that would be tedious by
+hand, difficult to coordinate the relationships between the parts, or
+build different versions based on changes in a few parameters. You can
+parameterize scripts so that you can easily explore variations on an
+idea without having to make careful manual modifications to copies of
+scores.
+
+**Messages Are Javascript Functions:** You can build almost all of a
+score without scripting, but a script functions must be used to define
+object messages. Messages are the way that objects make anything happen,
+musically such as playing notes, or graphically such as changing or
+moving other objects. One of the properties of an object is the name of
+a Javascript function that it calls when it's triggered to send a
+message. Message functions are defined just like other Javascript
+functions in the script buffer with normal syntax (unlike GX1 which had
+a custom language for defining messages).
+
+A advantage of messages as functions is that they can related to one or
+more objects by being named in each object as its message function.
+Multiple objects can share the same function making it much easier than
+in GX1 (and Iannix) to maintain consistent object behavior, and much
+easier to edit message functions while the score is playing, for example
+as way of experimenting with ideas and as a performance technique.
+
+Another advantage of messages being real Javascript is that they can do
+far more, far more easily - almost anything you can do in Javascript.
+Yet another advantage of the new design is that all messages share the
+same execution environment, and the same environment as the script that
+may have built the score, opening up the potential for interaction among
+them that was exxtrememly difficult or impossible in GX1. For example
+the message of one object can access or alter properties of other
+objects, or alter shared properties that alter the behavior of an entire
+group of objects.
+
+**The Script Editor:** The editor is a syntax highlighting Javascript editor that
+is tightly integrated into the rest of Geosonix.  It's also what programmers would call
+a *REPL:* A read-evaluate-print-loop.  This is a place where a you can type Geosonix 
+commands, evaluate them, and immediately see any text output printed in a scrollable area
+below the editor.  
+
+You don't have to execute all the script code every time. It can be executed 
+a line at a time, a range of selected code, any single function, or the entire script. 
+ here are buttons just below the editor to execute these types of code blocks and
+keyboard shortcuts to quickly execute code as you write it. Button names include 
+reminders of the keyboard shortcuts. The script is also auto executed when a score 
+file is loaded.
+
+The editor a great way to learn scripting or explore new Geosonix commands because evaluating 
+a command will also immediately affect the score itself. You can enter commands and execute them one at a time, and immediately see
+the results. For example if you type a command to add or delete 
+an object and execute that line, the object will instantly appear in the Score.  
+If you execute a command to print some object property the result will appear 
+as as text in the output buffer below the script editor. Also, if you add a line 
+to a message function, when the score plays the function will to print the value 
+property in the output area each time the object is *Trigged*.  This is very 
+useful for testing.
+
+Another advantage of the REPL is that one or a more lines of script can
+be written and executed repeatedly to do complex things that would be a
+lot of work to do manually. If you have created useful fragments of
+script, they get saved with the score file and are available next time
+you open the score. The REPL is also great for debugging. Having live
+script editing with all of Javascript and all Geosonix objects and
+scripting commands at your fingertips allows you to enter diagnostics
+such as print statements to write intermediate results to the output
+buffer to see what's happening, and immediately change it as needed. In
+the future a complete Javascript debugger may be available.
+
+Finally, the REPL can allow Geosonix to be used as a live performance or
+"Live Coding" performance environment. For more on Live Coding look it
+up in Wikipedia or see the Toplap web site.
+
+**Geosonix Scores as Performance Instruments:** A Geosonix score is not
+just something where you press the play button and passively listen. You
+can alter scores as they play through the Geosonix user interfaces or
+though through external MIDI or OSC controllers such as Leap Motion,
+Microsoft Kinect, Monome, Ableton Push and many others. The output of a
+score may sound rich and complex, but it is completely deterministic to
+its layout and inputs, and varying the inputs in real time can instantly
+vary the outputs in very interesting ways, not unlike playing a
+convertional musical instrument. You can in effect treat any given score
+as an instrument and with a little practise "play" or improvise on it in
+a performance.
+
+### MIDI
+
+GeoSonix provides extensive support for sending MIDI messages, being
+controlled by MIDI, and is capable of being slaved to MIDI hosts through
+MIDI Time Code and MIDI Clock. On Mac OS X it creates GeoSonixIn and
+GeoSonixOut virtual MIDI Ports as well as being able to access other
+virtual MIDI ports you can create with OSX "Audio and MIDI Manager".
+(Search the Internet for instructions if you need them.) GeoSonix can of
+course also send MIDI to, and receive MIDI from, external hardware
+devices through conventional hardware MIDI ports you may have available.
+
+Windows (note yet supported) does not provide built-in support for an
+application to create virtual MIDI ports. However, an increasing number
+of alternatives (some free) are available that allow the creation ov
+virtual MIDI ports for routing messages between GeoSonix and softsynths
+on the same computer. One example is
+[LoopBe](http://nerds.de/en/loopbe1.html).
+
+Windows also provides the built in "Microsoft GS Wavetable Synth".
+Simply choose it as the output for vMidi1 in the patchbay and play a
+GeoSonix MIDI example. We can't say it sounds great but it's a really
+quick way to get started making some sound.
+
+### MIDI Examples
+
+Geosonix includes example score files. These can be opened from........
+documentation to be continued.
+
+To use the MIDI examples to make music use the GeoSonix patchbay to set
+GeoSonix port vMidi1 to the MIDI port of some hardware or software synth
+you have available, and start the score playing. Try different patches
+on your synth and different synths to hear a wide range of results from
+any score. Then you can start to modify the examples a little at a time
+to create your own variations. We suggest you when you modify sample
+scores used the "File-Save As" command to save changed versions so you
+retain the originals for future reference.
+
+### Open Sound Control
+
+Geosonix can also use Open Sound Control (OSC) to send messages to
+external sound generators. Open Sound Control is a communication
+protocol that operates over the IP network (i.e. Ethernet, Wi-Fi,
+Internet). It is recognized by all operating systems and requires no
+drivers or network configuration. It is possible that it could be
+blocked by firewalls but if you have this problem you you may either
+know what to do about it or you will have to consult a network
+administrator. However it's usually fast and reliable sending OSC to a
+synth running on the same computer as Geosonix.
+
+The golden rule about OSC is to match IP addresses and ports: a message
+sent by GeoSonix to `127.0.0.1:57120` means that it is sent to the local
+machine on port  57120. The software that has to receive this message
+will have to open port 57120.
+
+The patchbay also supports OSC. You can assign each of vOsc1 through
+vOsc4 to a different network address and port. If you use the vOsc style
+virtual names in places of OSC addresses scripts and scores they will be
+more easily portable across different system setups.
+
+when executed during loading the score.  *This can cause the score to appear different from when it was saved.* * Having the script change the score when loaded can be very useful  or very confusing depending on whether you understand what's going on. 
+	+ A example of it being useful is a score file with a script that builds the entire score when loaded.  This can allow you to create complex scores that would be difficult or tedious to build manually.  
+	+ An example it being confusing is that if you load a score such as the above, make changes in the workspace and save again, the script will rebuild the original score.  It will look like you lost your changes  However there is a way get them back as they were actually saved but overwritten on loading.
+
+

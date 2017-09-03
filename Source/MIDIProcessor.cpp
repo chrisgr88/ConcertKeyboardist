@@ -879,10 +879,9 @@ void MIDIProcessor::processBlock ()
 //                std::cout << " forceOff" << stepToTurnOff<< "\n";
                 if (stepToTurnOff!=-1)
                 {
-                    
                     MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(stepToTurnOff)->channel,
                                                               sequenceObject.theSequence.at(stepToTurnOff)->noteNumber, (uint8) 0);
-//                    String note = MidiMessage::getMidiNoteName (theSequence->at(stepToTurnOff).getNoteNumber(), true, true, 3);
+                    String note = MidiMessage::getMidiNoteName(sequenceObject.theSequence.at(stepToTurnOff)->noteNumber,true,true,3);
 //                    std::cout << timeInTicks << " Repeated note forced noteOff " << step << " " << note
 //                    << " triggeredBy "<<theSequence->at(stepToTurnOff).triggeredBy
 //                    << " timeStamp "<<theSequence->at(stepToTurnOff).timeStamp
@@ -894,6 +893,8 @@ void MIDIProcessor::processBlock ()
 //                    noteOff.setTimeStamp(99.0);
 //                    synthMessageCollector.addMessageToQueue (noteOff);
                     sendMidiMessage(noteOff);
+//                    std::cout<<"at 3 noteOff "<<stepToTurnOff<<"\n";
+                    
                     sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber,
                                                  sequenceObject.theSequence.at(step)->channel, false);
                     const int index = onNotes.indexOf(stepToTurnOff);

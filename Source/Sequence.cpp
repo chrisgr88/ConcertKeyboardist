@@ -340,7 +340,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
  <#loadSequence#>
  */
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
-void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
+bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 {
 //    std::cout << "entering loadSequence \n";
     
@@ -367,7 +367,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //        std::cout << "entering loadSequence: load file \n";
         if (!fileToLoad.exists()) {
             std::cout << "File " << fileToLoad.getFileName() << " does not exist.\n";
-            return;
+            return false;
         }
         String fileName = fileToLoad.getFileName();
         setScoreFile(fileToLoad); //This is just used by the file name display
@@ -682,7 +682,10 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     StringArray values;
                     values.addTokens(value, " ", "\"");
                     const int track = values[0].getIntValue();
-                    const int playability = values[1].getIntValue();
+                    int playability = values[1].getIntValue();
+//                    std::cout << "track " << track <<" playability " << playability <<" "<<trackDetails[track].nNotes<<"\n";
+                    if (playability==TrackTypes::Track_Autoplay)
+                        playability = TrackTypes::Track_Play;
                     const int assignedChannel = values[2].getIntValue();
                     TrackDetail trkDet = trackDetails[track];
                     trkDet.playability = playability;
@@ -1219,7 +1222,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         while (step < theSequence.size())
         {
             //If this step is a firstInChain scan all notes with time stamp equal to that of the firstInChain for the shortest note
-            if (theSequence.at(step)->triggeredBy==-1 && theSequence.at(step)->chordTopStep==-1)
+            if (theSequence.at(step)->triggeredBy==-1)// && theSequence.at(step)->chordTopStep==-1)
             {
                 chainTrigger = step;
 //                int highestNote = -1;
@@ -1318,7 +1321,7 @@ void Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         std::cout << " error in load sequence " << "\n";
     }
 //    std::cout << "End of loadSequence \n";
-
+    return (theSequence.size()>0);
 } //End of loadSequence
 
 SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)
@@ -1423,6 +1426,7 @@ void Sequence::dumpData(int start, int end, int nn)
     << " chainTrigger "
     << " triggered "
     << " triggeredOff "
+    << " autoPlayed "
     << " inChord "
     << " chordTopStep "
     << " chordIndex "
@@ -1449,6 +1453,7 @@ void Sequence::dumpData(int start, int end, int nn)
             << theSequence.at(i)->chainTrigger<<" "
             << theSequence.at(i)->triggeredNote<<" "
             << theSequence.at(i)->triggeredOffNote<<" "
+            << theSequence.at(i)->autoplayedNote<<" "
             << theSequence.at(i)->inChord<<" "
             << theSequence.at(i)->chordTopStep<<" "
             << theSequence.at(i)->chordIndex<<" "

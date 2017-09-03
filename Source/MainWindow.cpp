@@ -87,8 +87,8 @@ ApplicationProperties& getAppProperties();
         
         else if (message == "play")
             perform (CommandIDs::playPause);
-        else if (message == "pause")
-            perform (CommandIDs::pause);
+//        else if (message == "pause")
+//            perform (CommandIDs::pause);
         else if (message == "rewind")
             perform (CommandIDs::rewind);
         
@@ -252,7 +252,7 @@ ApplicationProperties& getAppProperties();
                 result.addDefaultKeypress ('s', ModifierKeys::commandModifier|ModifierKeys::shiftModifier);
                 break;
             case CommandIDs::playPause:
-                result.setInfo ("playPause", "playPause", category, 0);
+                result.setInfo ("Play/Pause", "Play or pause", category, 0);
                 result.defaultKeypresses.add (KeyPress (' ', ModifierKeys::noModifiers, 0));
                 break;
 //            case CommandIDs::playFromCurrentPlayhead:
@@ -284,7 +284,7 @@ ApplicationProperties& getAppProperties();
                 result.defaultKeypresses.add (KeyPress ('1', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::scoreSettings:
-                result.setInfo ("Score Settings...", "Settings for this score", category, 0);
+                result.setInfo ("Tracks...", "Tracks in this score", category, 0);
                 result.addDefaultKeypress ('t', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::editUndo:
@@ -425,7 +425,7 @@ ApplicationProperties& getAppProperties();
             //            menu.addCommandItem (&getCommandManager(), CommandIDs::setPlayheadToHere);
             menu.addCommandItem (&getCommandManager(), CommandIDs::playPause);
 //            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromCurrentPlayhead);
-            menu.addCommandItem (&getCommandManager(), CommandIDs::pause);
+//            menu.addCommandItem (&getCommandManager(), CommandIDs::pause);
 //            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
             menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }

@@ -114,9 +114,11 @@ public:
         HighResolutionTimer::stopTimer();
         if (type==Sequence::loadFile)
             lastUserPlayedSeqStep=-1;
-        sequenceObject.loadSequence(type, retainEdits);
-        HighResolutionTimer::startTimer(timerIntervalInMS);
-        rewind(time);  //Note that rewind now does a sendChangeMessage
+        if (sequenceObject.loadSequence(type, retainEdits))
+        {
+            HighResolutionTimer::startTimer(timerIntervalInMS);
+            rewind(time);  //Note that rewind now does a sendChangeMessage
+        }
     }
 
     std::vector<NoteWithOffTime> upcomingNoteGroup; //Group of notes just past the "nextAvailable" group. Used for highlighting them.
