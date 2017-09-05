@@ -55,15 +55,16 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:
 
 ## Quick Start to Playing
 * **Load a file:**  You can use the File-Open menu, the toolbar button, or Cmd+O.  A good introductory example is "Minuet in G[ck].mid" which is included with Concert Keyboardist.  It should look something like the above image.
-* **Prepare to play:**  Press the spacebar.  This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play.  As soon as you press a key in this mode, the first note sounds and notes start scrolling to the left according to the tempo.
-* **Trigger Notes:** On your computer keyboard press any letter key except "r", "s" and "f", or any of the characters "[ ] ; ' < > and /".  On an English language keyboard these are the rows from "q" to "]", from "a" to " ' " and from "z" to "/".
-* **Note Timing:** Press one of these keys whenever the next target note reaches the Current Time Line.  You can play with one finger, or two or more to play faster or smoother.  
-* **Stopping Playing:** Press the spacebar again, press 'r' for rewind, or roll the mouse wheel to scroll left or right.
+* **Prepare to play:**  Press the spacebar.  This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play.  In this mode as soon as you press a key the note at the CTL is played and the note bars start scrolling to the left.  The scroll rate is based on the tempo.
+* **Triggering Notes:** On your computer keyboard press any letter key except "r", "s" and "f", or any of the characters "[ ] ; ' < > and /".  On an English language keyboard these are the rows from "q" to "]", from "a" to " ' " and from "z" to "/".  If you are using a midi keyboard playing **any** note triggers the next target note.
+* **Note Timing:** To play at the original tempo and rhythm press a key each time a target note reaches the Current Time Line.  You can play with one finger, or two or more fingers to play faster or smoother.  
+* **Stopping:** Press the spacebar again, or press the 'r' key for rewind, or roll the mouse wheel to scroll left or right.
 * **Yellow note heads** are those that are currently sounding.  As you play, notice that long notes continue sounding even as you trigger shorter simultaneous notes.
-* **Chords:** The top notes of chords are often target notes with other possibly simultaneous chord notes chained from them.  This allows chords to be triggered by one note like other chained notes.  Notes of broken chords can be configured to play individually if you choose.  
-* **Trills** are also like any other chained notes.  For example in bar 8 of Minuet in G the notes are chained making them easier to play.  However you can configure them as individual target notes if you choose.
+* **Chords:** In the "Minuet in G" example the top notes of chords are target notes.  Simultaneous chord notes are chained from them, like any other chained notes.  This allows chords to be triggered by one note..
+* **Trills** are also like any other chained notes.  For example in bar 8 of Minuet in G the notes are chained making them easier to play.
 * **Rewind:** Press the 'r' key.  The first time you press "r" the transport rewinds to the place you most recently started.  A second press returns to the start.  You can also press "r" while the transport is running to stop and transport and rewind in one step.
-* **Playing legato notes** This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions.  If you play with at least two fingers you can overlap the on and off times of successive notes, playing legato as in normal piano playing.  
+* **Basic Editing** You can edit which notes are target notes.  Click on the head a note to toggle its target vs chained status. Setting a note to be chained causes it to be added to the chain of the preceding target note.
+* **Playing legato notes** This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions.  If you play with at least two fingers you can overlap the on and off times of successive notes to create legato as in normal piano playing.  
 * **The Relative Time Line:** This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played this note.  In playing expressively you may be triggering notes before or after the Current Time Line.  It's helpful to have a relative time marker showing when notes were actually played, not when they were suggested to be played.  Experiment with playing notes before or after the Current Time Line to understand this better.  The yellow line remains after you stop playing to mark the last note played before stopping.
 
 ## Transport Toolbar
@@ -78,9 +79,22 @@ Some of these commands act on "selected notes".  To select some notes move the m
 
 <img src="../Common/img/CKEditingTools.jpg" alt="CK" style="float:left;width:100%;margin:0 0px 10px 0">
 
+## Editing Note Details
+### Start Times and Durations
+### Velocities
+
+## Navigation
+
+Here are some shortcut keys to help you move backward and foreward through the score:
+
+* **The Right and Left arrow keys** step you one target note at a time forward or backward in the score.
+* **The Shift+Right and Shift+Left arrow keys** step you one measure at a time forward or backward in the score.
+* **Bookmarks:** You can create a bookmark at the position of the Current Time Line by pressing Cmd+b.  To delete a bookmark go to it and press Cmd+b again.
+* **The Cmd+Right and Cmd+Left arrow keys** step you one bookmark at a time forward or backward in the score.
+
 There is much more to know about editing.  More detail will be included in a future version of this document.
 
-### Menu Commands
+## Menu Commands
 
 * File Menu
 

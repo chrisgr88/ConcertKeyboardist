@@ -16,6 +16,8 @@
 #include "MainComponent.h"
 #include "ViewerFrame.h"
 #include "TracksComponent.h"
+#include <string>
+#include <regex>
 
 namespace CommandIDs
 {

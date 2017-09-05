@@ -50,17 +50,17 @@
 <h2 id="quick-start-to-playing">Quick Start to Playing</h2>
 <ul>
 <li><strong>Load a file:</strong> You can use the File-Open menu, the toolbar button, or Cmd+O. A good introductory example is &quot;Minuet in G[ck].mid&quot; which is included with Concert Keyboardist. It should look something like the above image.</li>
-<li><strong>Prepare to play:</strong> Press the spacebar. This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play. As soon as you press a key in this mode, the first note sounds and notes start scrolling to the left according to the tempo.</li>
-<li><strong>Trigger Notes:</strong> On your computer keyboard press any letter key except &quot;r&quot;, &quot;s&quot; and &quot;f&quot;, or any of the characters &quot;[ ] ; ' &lt; &gt; and /&quot;. On an English language keyboard these are the rows from &quot;q&quot; to &quot;]&quot;, from &quot;a&quot; to &quot; ' &quot; and from &quot;z&quot; to &quot;/&quot;.</li>
-<li><strong>Note Timing:</strong> Press one of these keys whenever the next target note reaches the Current Time Line. You can play with one finger, or two or more to play faster or smoother.<br />
+<li><strong>Prepare to play:</strong> Press the spacebar. This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play. In this mode as soon as you press a key the note at the CTL is played and the note bars start scrolling to the left. The scroll rate is based on the tempo.</li>
+<li><strong>Triggering Notes:</strong> On your computer keyboard press any letter key except &quot;r&quot;, &quot;s&quot; and &quot;f&quot;, or any of the characters &quot;[ ] ; ' &lt; &gt; and /&quot;. On an English language keyboard these are the rows from &quot;q&quot; to &quot;]&quot;, from &quot;a&quot; to &quot; ' &quot; and from &quot;z&quot; to &quot;/&quot;. If you are using a midi keyboard playing <strong>any</strong> note triggers the next target note.</li>
+<li><strong>Note Timing:</strong> To play at the original tempo and rhythm press a key each time a target note reaches the Current Time Line. You can play with one finger, or two or more fingers to play faster or smoother.<br />
 </li>
-<li><strong>Stopping Playing:</strong> Press the spacebar again, press 'r' for rewind, or roll the mouse wheel to scroll left or right.</li>
+<li><strong>Stopping:</strong> Press the spacebar again, or press the 'r' key for rewind, or roll the mouse wheel to scroll left or right.</li>
 <li><strong>Yellow note heads</strong> are those that are currently sounding. As you play, notice that long notes continue sounding even as you trigger shorter simultaneous notes.</li>
-<li><strong>Chords:</strong> The top notes of chords are often target notes with other possibly simultaneous chord notes chained from them. This allows chords to be triggered by one note like other chained notes. Notes of broken chords can be configured to play individually if you choose.<br />
-</li>
-<li><strong>Trills</strong> are also like any other chained notes. For example in bar 8 of Minuet in G the notes are chained making them easier to play. However you can configure them as individual target notes if you choose.</li>
+<li><strong>Chords:</strong> In the &quot;Minuet in G&quot; example the top notes of chords are target notes. Simultaneous chord notes are chained from them, like any other chained notes. This allows chords to be triggered by one note..</li>
+<li><strong>Trills</strong> are also like any other chained notes. For example in bar 8 of Minuet in G the notes are chained making them easier to play.</li>
 <li><strong>Rewind:</strong> Press the 'r' key. The first time you press &quot;r&quot; the transport rewinds to the place you most recently started. A second press returns to the start. You can also press &quot;r&quot; while the transport is running to stop and transport and rewind in one step.</li>
-<li><strong>Playing legato notes</strong> This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions. If you play with at least two fingers you can overlap the on and off times of successive notes, playing legato as in normal piano playing.<br />
+<li><strong>Basic Editing</strong> You can edit which notes are target notes. Click on the head a note to toggle its target vs chained status. Setting a note to be chained causes it to be added to the chain of the preceding target note.</li>
+<li><strong>Playing legato notes</strong> This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions. If you play with at least two fingers you can overlap the on and off times of successive notes to create legato as in normal piano playing.<br />
 </li>
 <li><strong>The Relative Time Line:</strong> This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played this note. In playing expressively you may be triggering notes before or after the Current Time Line. It's helpful to have a relative time marker showing when notes were actually played, not when they were suggested to be played. Experiment with playing notes before or after the Current Time Line to understand this better. The yellow line remains after you stop playing to mark the last note played before stopping.</li>
 </ul>
@@ -69,7 +69,19 @@
 <h2 id="editing-toolbar">Editing Toolbar</h2>
 <p>Some of these commands act on &quot;selected notes&quot;. To select some notes move the mouse pointer to anywhere not on a note bar, press the left mouse button, drag over the heads of the notes to be selected and release the mouse button. The head of each selected note will be surrounded by a white box. To clear the selection click anywhere there is not a note bar.</p>
 <p><img src="../Common/img/CKEditingTools.jpg" alt="CK" style="float:left;width:100%;margin:0 0px 10px 0"></p>
-<h3 id="menu-commands">Menu Commands</h3>
+<h2 id="editing-note-details">Editing Note Details</h2>
+<h3 id="start-times-and-durations">Start Times and Durations</h3>
+<h3 id="velocities">Velocities</h3>
+<h2 id="navigation">Navigation</h2>
+<p>Here are some shortcut keys to help you move backward and foreward through the score:</p>
+<ul>
+<li><strong>The Right and Left arrow keys</strong> step you one target note at a time forward or backward in the score.</li>
+<li><strong>The Shift+Right and Shift+Left arrow keys</strong> step you one measure at a time forward or backward in the score.</li>
+<li><strong>Bookmarks:</strong> You can create a bookmark at the position of the Current Time Line by pressing Cmd+b. To delete a bookmark go to it and press Cmd+b again.</li>
+<li><strong>The Cmd+Right and Cmd+Left arrow keys</strong> step you one bookmark at a time forward or backward in the score.</li>
+</ul>
+<p>There is much more to know about editing. More detail will be included in a future version of this document.</p>
+<h2 id="menu-commands">Menu Commands</h2>
 <ul>
 <li><p>File Menu</p>
 <p>About... : Information about Concert Keyboardist (currently not implemented)</p>

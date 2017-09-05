@@ -40,6 +40,7 @@ altToolbarFactory(this)
         {
             pChainAmountBox = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pChainAmountBox->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
+            pChainAmountBox->setWidth(35);
             pChainAmountBox->textBox.setText("12");
             chainAmount = 12.0;
         }
@@ -48,9 +49,10 @@ altToolbarFactory(this)
             
             pHumanizeStartTime =
             (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
+            pHumanizeStartTime->setWidth(65);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("3");
-            humanizeTimeAmount = 3.0;
+            humanizeTimeAmount = "3";
         }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
@@ -141,8 +143,8 @@ void ViewerFrame::timerCallback()
     if (pHumanizeStartTime->returnPressed)
     {
 //        std::cout << "HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
-        humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
-        sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+//        humanizeTimeAmount = pHumanizeStartTime->textBox.getText();
+        sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
         grabKeyboardFocus();
         pHumanizeStartTime->returnPressed = false;
     }
@@ -232,8 +234,8 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
         {
-            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
-            sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+//            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+            sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
         {
@@ -287,8 +289,8 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
         {
-            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
-            sendActionMessage("humanizeTime:"+String(humanizeTimeAmount));
+//            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+            sendActionMessage("humanizeTime:"+String(pHumanizeStartTime->textBox.getText()));
         }
     }
     else //in alt toolbar

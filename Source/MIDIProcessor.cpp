@@ -1664,6 +1664,66 @@ Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection,
     return stepActivity;
 }
 
+void MIDIProcessor::humanizeChordNoteTimes ()
+{
+//    sequenceObject.chordTimeHumanize;
+    std::cout << "humanizeChordNoteTimes: params = " <<sequenceObject.chordTimeHumanize<<"\n";
+    if (copyOfSelectedNotes.size()==0)
+        return;
+    pauseProcessing = true;
+    int adjustedFirstStep = copyOfSelectedNotes.getFirst();
+    
+    if (sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->inChord)
+    {
+        const int chordIndex = sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->chordIndex;
+        adjustedFirstStep=INT_MAX;
+        for (int i=0;i<sequenceObject.chords.at(chordIndex).notePointers.size();i++) //Find lowest and highest note step in chord
+        {
+            if (sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep < adjustedFirstStep)
+                adjustedFirstStep = sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep;
+        }
+    }
+    else
+    {
+        adjustedFirstStep = copyOfSelectedNotes.getFirst();;
+    }
+    
+    int adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    if (sequenceObject.theSequence.at(copyOfSelectedNotes.getLast())->inChord)
+    {
+        const int chordIndex = sequenceObject.theSequence.at(copyOfSelectedNotes.getLast())->chordIndex;
+        adjustedLastStep=INT_MIN;
+        for (int i=0;i<sequenceObject.chords.at(chordIndex).notePointers.size();i++) //Find lowest and highest note step in chord
+        {
+            if (sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep > adjustedLastStep)
+                adjustedLastStep = sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep;
+        }
+    }
+    else
+    {
+        adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    }
+    
+    Array<int> chordsToHumanize;
+    for(int i=adjustedFirstStep ; i<=adjustedLastStep; i++)
+    {
+        //        std::cout << "MidiProcessor chord "<< i << "\n";
+        if (sequenceObject.theSequence.at(i)->inChord)
+        {
+            chordsToHumanize.addIfNotAlreadyThere(sequenceObject.theSequence.at(i)->chordIndex);
+        }
+    }
+    for (int i=0;i<chordsToHumanize.size();i++)
+    {
+        sequenceObject.chords[chordsToHumanize[i]].timeSpec = "h:"+sequenceObject.chordTimeHumanize;
+        std::cout << "Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
+    }
+    catchUp();
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    
+    pauseProcessing = false;
+}
+
 void MIDIProcessor::setIndividualNotesActivity (Array<Sequence::StepActivity> act) //Used only to restore activity after undo
 {
     for (int i=0;i<act.size();i++)

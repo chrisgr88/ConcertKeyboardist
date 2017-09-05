@@ -229,15 +229,11 @@ public:
     void dumpData(Array<int>);
     void dumpData(int start, int end, int nn);
     
-    void setChordTimeHumanize(double value, bool documentReallyChanged)
+    void setChordTimeHumanize(String value, bool documentReallyChanged)
     {
         chordTimeHumanize = value;
         sequenceProps.setValue("chordTimeHumanize", chordTimeHumanize);//How much to randomize simultaneous notes
         setChangedFlag (documentReallyChanged);
-    }
-    inline double getChordTimeHumanize()
-    {
-        return chordTimeHumanize;
     }
     
     void setChordVelocityHumanize(double value, bool documentReallyChanged)
@@ -469,7 +465,7 @@ public:
 //    double timeIncrement; //Amount to increase time at each tick, based on ppq of 96.  Adjusted based on actual ppq of this midi file.
     int rightHandStartsHere = 1;
     
-    double chordTimeHumanize;
+    String chordTimeHumanize;
     double chordVelocityHumanize;
     double exprVelToScoreVelRatio;
     Array<double> chordVoicing;

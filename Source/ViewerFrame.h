@@ -415,15 +415,19 @@ private:
                 textBox.setBounds (180, 40, 20, 20);
 //                textBox.setTooltip("Chaining Interval in Ticks");
             }
+            void setWidth(int w=35)
+            {
+                width = w;
+            }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
             {
                 if (isVertical)
                     return false;
                 
-                preferredSize = 35;
-                minSize = 35;
-                maxSize = 35;
+                preferredSize = width;
+                minSize = width;
+                maxSize = width;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
@@ -445,6 +449,7 @@ private:
                 textBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
             }
             TextEditor textBox;
+            int width;
             bool returnPressed = false;
         };
         
@@ -1099,45 +1104,8 @@ private:
             bool changed = false;
         }; //RealTimeTempo
         
-        //=================================================
-        class CustomIncDecBox : public ToolbarItemComponent
-        {
-        public:
-            CustomIncDecBox (const int toolbarItemId)
-            : ToolbarItemComponent (toolbarItemId, "Chaining Interval", false)
-            {
-                ToolbarItemComponent::addAndMakeVisible (incDecBox);
-                
-                incDecBox.setRange (0, 600.0, 1);
-                incDecBox.setValue (12, dontSendNotification);
-                incDecBox.setSliderStyle (Slider::IncDecButtons);
-                incDecBox.setBounds (180, 40, 20, 20);
-                incDecBox.setTextBoxStyle(Slider::TextBoxLeft, false, 30, 20);
-            }
-            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
-                                      int& preferredSize, int& minSize, int& maxSize) override
-            {
-                if (isVertical)
-                    return false;
-                
-                preferredSize = 90;
-                minSize = 90;
-                maxSize =90;
-                return true;
-            }
-            void paintButtonArea (Graphics&, int, int, bool, bool) override
-            {
-            }
-            void contentAreaChanged (const Rectangle<int>& newArea) override
-            {
-                incDecBox.setSize (newArea.getWidth() - 2, jmin (newArea.getHeight() - 2, 22));
-                incDecBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
-            }
-            Slider incDecBox;
-        };
-        
         ViewerFrame *pViewerFrame;
-    }; //CustomIncDecBox
+    };
     
     MainToolbarItemFactory mainFactory;
     AltToolbarItemFactory altToolbarFactory;
@@ -1151,7 +1119,7 @@ private:
     
     double chainAmount;
     double humanizeVelocityAmount;
-    double humanizeTimeAmount;
+    String humanizeTimeAmount;
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
 };
 

@@ -144,8 +144,8 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        if (chIndex<5)
-//            std::cout << " Write sysex chordDetails - "<<chIndex<<" "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        if (chIndex<5)
+            std::cout << " Write sysex chordDetails - "<<chIndex<<" "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
         //Property "chNote" : The notes in this chord
         for (int note=0;note<chords.at(chIndex).notePointers.size();note++)
@@ -161,8 +161,8 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             char buffer[128];
             propertyStr.copyToUTF8(buffer,128);
             MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//            if (chIndex<5)
-//                std::cout << " Write chord note - "<<propertyStr <<" "<<propertyStr.length() << "\n";
+            if (chIndex<5)
+                std::cout << " Write chord note - "<<propertyStr <<" "<<propertyStr.length() << "\n";
             sysexSeq.addEvent(sysex);
         }
     }
@@ -710,7 +710,9 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     values.addTokens(value, " ", "\"");
                     chDet.timeStamp = values[0].getIntValue();
                     chDet.scaleFactor=values[1].getFloatValue();
-                    chDet.timeSpec=values[2];
+                    chDet.timeSpec = values[2];
+                    if (chDet.timeSpec=="random" || chDet.timeSpec=="arp") //Ignore obsolete property names
+                        chDet.timeSpec = "manual";
                     chDet.timeRandScale=values[3].getFloatValue();
                     chDet.timeRandSeed=values[4].getIntValue();
                     chDet.velSpec=values[5];
@@ -745,14 +747,14 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             sequenceProps.setValue("chordVelocityHumanize", var(1.0));
             sequenceProps.setValue("autoPlaySustains", var(true));
             sequenceProps.setValue("autoPlaySofts", var(true));
-            sequenceProps.setValue("reVoiceChords", var(true));
+            sequenceProps.setValue("reVoiceChords", var(false));
             sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
             
             sequenceProps.setValue("horizontalScale", var(1.0));
         }
         //Get values from sequenceProps
         setTempoMultiplier(sequenceProps.getDoubleValue("tempoMultiplier"), false);
-        chordTimeHumanize = sequenceProps.getDoubleValue("chordTimeHumanize", var(1.0));
+        chordTimeHumanize = sequenceProps.getValue("chordTimeHumanize", var("1.0"));
         chordVelocityHumanize = sequenceProps.getDoubleValue("chordVelocityHumanize", var(1.0));
         autoPlaySustains = sequenceProps.getBoolValue("autoPlaySustains", var(true));
         autoPlaySofts = sequenceProps.getBoolValue("autoPlaySofts", var(true));
@@ -1035,7 +1037,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     if (detail.notePointers.size()>1)
                     {
                         detail.timeStamp = detail.notePointers.at(0)->getTimeStamp();
-                        detail.timeSpec = "Random";
+                        detail.timeSpec = "manual";
                         chords.push_back(detail);
 //                        std::cout <<"Next chord: chordNum "<<chords.size()-1
 //                        <<" timeStamp " <<detail.timeStamp
@@ -1087,90 +1089,107 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 {
                     //We are now at the start of the next chord and chordNotes[ ] contains pointers to its notes, and
                     // thisStepChordNoteIndex is the chord's index
-                    struct {
-                        bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
-                        {
-                            return a->noteNumber > b->noteNumber;
-                        }
-                    } customCompare2;
-                    std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
-                    
-                    thisChordTimeStamp = theSequence.at(chordTopStep)->getTimeStamp();
-                    //Rand seed based on thisStepChordNoteIndex different for all chords but constant for a chord
-                    srand(thisStepChordNoteIndex);
-                    chords[thisStepChordNoteIndex].timeRandSeed = thisStepChordNoteIndex;
-                    chords[thisStepChordNoteIndex].timeSpec = "arp";
-                    double timeToNextNote;
-                    if (step<theSequence.size()-1)
-                        timeToNextNote = theSequence.at(step+1)->getTimeStamp()-thisChordTimeStamp;
-                    else
-                        timeToNextNote = DBL_MAX;
-                    double localTimeFuzz = std::min(timeToNextNote*0.33,chordTimeHumanize);
-                    
-                    chords[thisStepChordNoteIndex].notePointers.clear();
-                    chords[thisStepChordNoteIndex].offsets.clear();
-                    chordNotes.at(0)->chordTopStep = chordTopStep;
-                    chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(0));
-                    chords[thisStepChordNoteIndex].offsets.push_back(0);
-                    for (int i=1; i<chordNotes.size(); i++) //Don't change first notes, so start at 1
+//                    std::cout << thisStepChordNoteIndex<< " "<<step<<" timeSpec before "
+//                    <<chords[thisStepChordNoteIndex].timeSpec<<"\n";
+                    String timeSpec = chords[thisStepChordNoteIndex].timeSpec;
+                    chords[thisStepChordNoteIndex].timeSpec.startsWith("h:");
+                    if (timeSpec.startsWith("h:"))
                     {
-                        chordNotes.at(i)->chordTopStep = chordTopStep;
-                        const int temp = localTimeFuzz*100;
-                        double randAdd;
-                        unsigned r = rand();
-                        if (temp==0)
-                            randAdd = 0;
-                        else
-                            randAdd = r%temp/100.0;
-                        const double duration = chordNotes.at(i)->offTime-chordNotes.at(i)->getTimeStamp();
-                        chordNotes.at(i)->setTimeStamp(thisChordTimeStamp+randAdd);
-                        chordNotes.at(i)->offTime = chordNotes.at(i)->getTimeStamp()+duration;
-                        chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(i));
-                        const int offset = chordNotes.at(i)->timeStamp - chordNotes.front()->timeStamp;
-                        chords[thisStepChordNoteIndex].offsets.push_back(offset);
-                    }
-                    //Restore target note times (which now includes any steps adjusted by chord note time adjustment)
-                    targetNoteTimes.clear();
-                    for (int i=0;i<activeSteps.size();i++)
-                    {
-                        targetNoteTimes.add(theSequence.at(activeSteps[i])->getTimeStamp());
-                    }
-                    
-                    if (false && reVoiceChords)
-                    {
-                        const float topNoteVel = chordNotes.at(0)->originalVelocity;
-                        const float userEditFactor = chordNotes.at(0)->velocity/topNoteVel;
-                        if (chordNotes.size()==2)
-                        {
-                            const float originalVel = chordNotes.at(1)->originalVelocity;
-                            const float ckVel = 0.7f * topNoteVel;
-                            const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            chordNotes.at(1)->setVelocity(proRatedVel*userEditFactor);
-                        }
-                        else // (chord.size()>2)
-                        {
-                            for (int j=1;j<chordNotes.size()-1;j++)
+                        timeSpec = timeSpec.fromFirstOccurrenceOf(":", false, true);
+                        const String randomness = timeSpec.initialSectionContainingOnly("0123456789");
+                        String slopeStr =  timeSpec.getLastCharacters(timeSpec.length()-randomness.length());
+                        String seedStr = slopeStr.fromFirstOccurrenceOf(":", false, true);
+                        slopeStr = slopeStr.upToFirstOccurrenceOf(":", false, true).substring(1,999);
+                        double humanizeRandomness = randomness.getDoubleValue();
+                        double slope = slopeStr.getDoubleValue();
+                        slope = slope * (timeSpec.containsAnyOf("/")?1:-1);
+                        int seed = seedStr.length()>0 ? seedStr.getIntValue() : step;
+                        struct {
+                            bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
                             {
-                                const float originalVel = chordNotes.at(j)->originalVelocity;
-                                const float ckVel = 0.6f * topNoteVel;
-                                const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                                chordNotes.at(j)->setVelocity(proRatedVel*userEditFactor);
+                                return a->noteNumber > b->noteNumber;
                             }
-//                            int step =  chord[chord.size()-1];
-                            const float originalVel = chordNotes.at(chordNotes.size()-1)->originalVelocity;
-                            const float ckVel = 0.8f * topNoteVel;
-                            const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
-                            chordNotes.at(chordNotes.size()-1)->setVelocity(proRatedVel*userEditFactor);
+                        } customCompare2;
+                        std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
+                        
+                        thisChordTimeStamp = theSequence.at(chordTopStep)->getTimeStamp();
+                        srand(step);
+                        chords[thisStepChordNoteIndex].timeRandSeed = seed;
+    //                    chords[thisStepChordNoteIndex].timeSpec = "arp";
+                        double timeToNextNote;
+                        if (step<theSequence.size()-1)
+                            timeToNextNote = theSequence.at(step+1)->getTimeStamp()-thisChordTimeStamp;
+                        else
+                            timeToNextNote = DBL_MAX;
+                        
+                        //TODO : set randAmplitude to fit (randomness + slope) into the space available
+                        // Increment the start time of each note from top to bottom based on "slope"
+                        double randAmplitude = std::min(timeToNextNote*0.33,humanizeRandomness);
+                        
+                        chords[thisStepChordNoteIndex].notePointers.clear();
+                        chords[thisStepChordNoteIndex].offsets.clear();
+                        chordNotes.at(0)->chordTopStep = chordTopStep;
+                        chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(0));
+                        chords[thisStepChordNoteIndex].offsets.push_back(0);
+                        for (int i=1; i<chordNotes.size(); i++) //Don't change first notes, so start at 1
+                        {
+                            chordNotes.at(i)->chordTopStep = chordTopStep;
+                            const int temp = randAmplitude*100;
+                            double randAdd;
+                            unsigned r = rand();
+                            if (temp==0)
+                                randAdd = 0;
+                            else
+                                randAdd = r%temp/100.0;
+                            const double duration = chordNotes.at(i)->offTime-chordNotes.at(i)->getTimeStamp();
+                            chordNotes.at(i)->setTimeStamp(thisChordTimeStamp+randAdd);
+                            chordNotes.at(i)->offTime = chordNotes.at(i)->getTimeStamp()+duration;
+                            chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(i));
+                            const int offset = chordNotes.at(i)->timeStamp - chordNotes.front()->timeStamp;
+                            chords[thisStepChordNoteIndex].offsets.push_back(offset);
+                        }
+                        //Restore target note times (which now includes any steps adjusted by chord note time adjustment)
+                        targetNoteTimes.clear();
+                        for (int i=0;i<activeSteps.size();i++)
+                        {
+                            targetNoteTimes.add(theSequence.at(activeSteps[i])->getTimeStamp());
+                        }
+                        
+                        if (false && reVoiceChords)
+                        {
+                            const float topNoteVel = chordNotes.at(0)->originalVelocity;
+                            const float userEditFactor = chordNotes.at(0)->velocity/topNoteVel;
+                            if (chordNotes.size()==2)
+                            {
+                                const float originalVel = chordNotes.at(1)->originalVelocity;
+                                const float ckVel = 0.7f * topNoteVel;
+                                const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
+                                chordNotes.at(1)->setVelocity(proRatedVel*userEditFactor);
+                            }
+                            else // (chord.size()>2)
+                            {
+                                for (int j=1;j<chordNotes.size()-1;j++)
+                                {
+                                    const float originalVel = chordNotes.at(j)->originalVelocity;
+                                    const float ckVel = 0.6f * topNoteVel;
+                                    const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
+                                    chordNotes.at(j)->setVelocity(proRatedVel*userEditFactor);
+                                }
+    //                            int step =  chord[chord.size()-1];
+                                const float originalVel = chordNotes.at(chordNotes.size()-1)->originalVelocity;
+                                const float ckVel = 0.8f * topNoteVel;
+                                const float proRatedVel = ckVel * chordVelocityHumanize + originalVel * (1.0f - chordVelocityHumanize);
+                                chordNotes.at(chordNotes.size()-1)->setVelocity(proRatedVel*userEditFactor);
+                            }
                         }
                     }
+//                    std::cout << thisStepChordNoteIndex<< " timeSpec after " <<chords[thisStepChordNoteIndex].timeSpec<<"\n";
                     chordNotes.at(0)->chordTopStep=-1;
                 }
                 else
                     theSequence.at(step)->chordTopStep=-1;
                 chordNotes.clear();
             }
-            else
-                ;//chordNotes.clear();
         }
         
 //        for (int i=0;i<chords.size();i++)

@@ -109,22 +109,39 @@ ApplicationProperties& getAppProperties();
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVel")
         {
             const double hV = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
-//            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
+            //            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
             if (0 <= hV && hV <= 1.0)
                 midiProcessor.sequenceObject.setChordVelocityHumanize(hV, false);
-            midiProcessor.catchUp();
-            midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
+            perform(CommandIDs::velHumanizeSelection);
+//            midiProcessor.catchUp();
+//            midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
         }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeTime")
         {
-            const double hT = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
-//            std::cout << "Performing HumanizeStartTime " <<hT<<"\n";
-            if (0 <= hT)
+            std::string htSpec = message.fromFirstOccurrenceOf(":", false, true).toStdString();
+            std::regex justRand("^\\d+$");
+            std::regex randAndSlope("^\\d+[//\\\\]\\d+$");
+            std::regex randAndSlopeAndSeed("^\\d+[//\\\\]\\d+:\\d+$");
+            std::regex randAndSeed("^\\d+:\\d+$");
+            int slopeSign = 1;
+            if (std::regex_match(htSpec, randAndSlope) || std::regex_match(htSpec, randAndSlopeAndSeed))
             {
-                midiProcessor.catchUp();
-                midiProcessor.sequenceObject.setChordTimeHumanize(hT, true);
-                midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
+                if (message.fromFirstOccurrenceOf(":", false, true).containsAnyOf("/"))
+                    slopeSign = 1;
+                else
+                    slopeSign = -1;
             }
+            std::cout << htSpec << ": " << std::regex_match(htSpec, justRand) << " Matches justRand"<< '\n';
+            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlope) << " Matches randAndSlope"<<" "<<slopeSign<< '\n';
+            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlopeAndSeed)<<" Matches randAndSlopeAndSeed"<<" "<<slopeSign<< '\n';
+            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSeed) << " Matches randAndSeed"<< '\n';
+            
+            if (std::regex_match(htSpec, justRand) || std::regex_match(htSpec, randAndSlope) ||
+                std::regex_match(htSpec, randAndSlopeAndSeed) || std::regex_match(htSpec, randAndSeed))
+                midiProcessor.sequenceObject.setChordTimeHumanize(htSpec, true);
+            perform(CommandIDs::timeHumanizeSelection);
+//            midiProcessor.catchUp();
+//            midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
         }
         else if (message == "addSustain")
         {
@@ -722,10 +739,12 @@ ApplicationProperties& getAppProperties();
                 //Command is currently performed in MainWindow::actionListenerCallback
                 break;
             case CommandIDs::timeHumanizeSelection:
+            {
                 std::cout <<"timeHumanizeSelection\n";
-                //Command is currently performed in MainWindow::actionListenerCallback
+                //ToDo replace this with midiProcessor.timeHumanizeSelection(), similar to:
+                midiProcessor.humanizeChordNoteTimes();
+            }
                 break;
-                
             case CommandIDs::addSustain:
             {
                 std::cout <<"addSustain\n";
