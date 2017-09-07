@@ -4,28 +4,28 @@
     <g id="background" transform="matrix(0.484619,0,0,0.536785,6.5,6.4)">
         <rect x="0" y="0" width="32" height="32" style="fill:none;"/>
     </g>
-    <g id="stop" transform="matrix(0.205792,0,0,0.178928,6.10944,6.06869)">
+    <g id="stop" transform="matrix(0.207887,0,0,0.178928,6.10106,6.06869)">
         <rect x="4" y="4" width="24" height="24" style="fill:rgb(251,0,251);"/>
     </g>
-    <g id="stop1" transform="matrix(0.401653,0,0,0.178928,10.2249,6.09145)">
+    <g id="stop1" transform="matrix(0.495314,0,0,0.178928,9.90009,6.09145)">
         <rect x="4" y="4" width="24" height="24" style="fill:rgb(164,122,160);"/>
     </g>
-    <g id="stop2" transform="matrix(0.205792,0,0,0.178928,9.64636,10.9314)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(191,179,191);"/>
+    <g id="stop2" transform="matrix(0.205792,0,0,0.178928,10.6464,10.9314)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(161,148,161);"/>
     </g>
-    <g id="stop11" transform="matrix(0.294928,0,0,0.178928,14.1887,10.9542)">
+    <g id="stop11" transform="matrix(0.279989,0,0,0.178928,15.2484,10.9542)">
         <rect x="4" y="4" width="24" height="24" style="fill:rgb(162,121,158);"/>
     </g>
     <g id="stop3" transform="matrix(0.205792,0,0,0.178928,6.76967,15.7073)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(191,179,191);"/>
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(161,148,161);"/>
     </g>
-    <g id="stop12" transform="matrix(0.500345,0,0,0.178928,10.4903,15.7433)">
+    <g id="stop12" transform="matrix(0.497555,0,0,0.178928,10.5015,15.7433)">
         <rect x="4" y="4" width="24" height="24" style="fill:rgb(162,121,158);"/>
     </g>
-    <g id="stop4" transform="matrix(0.205792,0,0,0.178928,8.60718,20.5289)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(191,179,191);"/>
+    <g id="stop4" transform="matrix(0.205792,0,0,0.178928,9.60718,20.5289)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(161,148,161);"/>
     </g>
-    <g id="stop13" transform="matrix(0.433659,0,0,0.178928,12.5946,20.5649)">
+    <g id="stop13" transform="matrix(0.359987,0,0,0.178928,13.8893,20.5649)">
         <rect x="4" y="4" width="24" height="24" style="fill:rgb(162,121,158);"/>
     </g>
 </svg>

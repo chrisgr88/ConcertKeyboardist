@@ -106,15 +106,12 @@ ApplicationProperties& getAppProperties();
             midiProcessor.sequenceObject.chainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
             perform (CommandIDs::chainSelectedNotes);
         }
-        else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVel")
+        else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeVelocity")
         {
-            const double hV = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
-            //            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
-            if (0 <= hV && hV <= 1.0)
-                midiProcessor.sequenceObject.setChordVelocityHumanize(hV, false);
+            const String hV = String(message.fromLastOccurrenceOf(":", false, true));
+//            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
+            midiProcessor.sequenceObject.setChordVelocityHumanize(hV, false);
             perform(CommandIDs::velHumanizeSelection);
-//            midiProcessor.catchUp();
-//            midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
         }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeTime")
         {
@@ -172,6 +169,11 @@ ApplicationProperties& getAppProperties();
         {
             perform (CommandIDs::delete_chord);
 //            midiProcessor.deleteChords(true);
+        }
+        else if (message == "help")
+        {
+            perform (CommandIDs::help);
+            //            midiProcessor.deleteChords(true);
         }
     }
     
@@ -398,6 +400,9 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("NextBookmark", "Go to Next Bookmark", category, 0);
                 result.addDefaultKeypress (KeyPress::rightKey, ModifierKeys::commandModifier);
                 break;
+            case CommandIDs::help:
+                result.setInfo ("Help", "Open Help in Browser", category, 0);
+                break;
             case CommandIDs::dumpData:
                 result.setInfo ("dumpData", "dumpData", category, 0);
                 result.addDefaultKeypress ('d', ModifierKeys::commandModifier);
@@ -520,6 +525,7 @@ ApplicationProperties& getAppProperties();
             CommandIDs::toggleBookmark,
             CommandIDs::previousBookmark,
             CommandIDs::nextBookmark,
+            CommandIDs::help,
             CommandIDs::dumpData
         };
         commands.addArray (ids, numElementsInArray (ids));
@@ -734,16 +740,14 @@ ApplicationProperties& getAppProperties();
                 }
             }
                 break;
-            case CommandIDs::velHumanizeSelection:
-                std::cout <<"velHumanizeSelection\n";
-                //Command is currently performed in MainWindow::actionListenerCallback
-                break;
             case CommandIDs::timeHumanizeSelection:
-            {
                 std::cout <<"timeHumanizeSelection\n";
                 //ToDo replace this with midiProcessor.timeHumanizeSelection(), similar to:
                 midiProcessor.humanizeChordNoteTimes();
-            }
+                break;
+            case CommandIDs::velHumanizeSelection:
+                std::cout <<"velHumanizeSelection\n";
+                midiProcessor.humanizeChordNoteVelocities();
                 break;
             case CommandIDs::addSustain:
             {
@@ -828,6 +832,17 @@ ApplicationProperties& getAppProperties();
                     midiProcessor.catchUp();
                 midiProcessor.bookmarkForwardBack(true);
                 //                pViewerFrame->setPlayheadToHere();
+                break;
+            }
+            case CommandIDs::help:
+            {
+                std::cout <<"Get Help\n";
+                File::getSpecialLocation(File::currentApplicationFile);
+                String docPath = File::getSpecialLocation(File::currentApplicationFile). getSiblingFile("ckdoc.html").getFullPathName();
+                docPath = "file://" + docPath;
+                std::cout << "doc path " << docPath << "\n";
+                URL docURL = URL(docPath);
+                docURL.launchInDefaultBrowser();
                 break;
             }
             case CommandIDs::dumpData:

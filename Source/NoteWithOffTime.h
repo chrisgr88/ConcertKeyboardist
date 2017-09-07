@@ -169,8 +169,8 @@ public:
     
     inline void setTimeStamp(double ts)
     {
-        //        if (currentStep<15)
-        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+//        if (ts>200000 || ts<-200000)
+//            std::cout << "setTimeStamp "<<currentStep<<" "<<ts<<"\n";
         timeStamp =  ts;
     }
     
@@ -183,15 +183,15 @@ public:
     
     inline void setOfftime(double time)
     {
-        //        if (currentStep<15)
-        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+//        if (time<0 || time>200000)
+//            std::cout << "setOfftime "<<currentStep<<" "<<time<<"\n";
         offTime =  time;
     }
     
     inline double getOffTime()
     {
-        //        if (currentStep<15)
-        //            std::cout << "setVelocty "<<currentStep<<" "<<vel*127<<"\n";
+//        if (offTime<0 || offTime>200000)
+//            std::cout << "getOffTime "<<currentStep<<" "<<offTime<<"\n";
         return offTime;
     }
     

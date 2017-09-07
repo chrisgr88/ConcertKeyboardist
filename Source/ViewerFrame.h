@@ -188,27 +188,20 @@ private:
             _makeActive     = 6,
             _makeInactive   = 7,
             _chain          = 8,
-            _humanizeTime   = 9,
-            _chordEditToggle = 10,
-            _editVelocities  = 11,
-//            _play           = 12,
-//            _stop           = 13,
-//            _playPause      = 14,
-//            _rewind         = 15,
-//            _listen         = 16,
-//            customComboBox  = 17,
-            chainAmountBox  = 18,
-//            scoreTempo      = 19,
-//            tempoMultiplier = 20,
-//            realTimeTempo   = 21,
-            humVelocityBox  = 22,
-            humTimeBox      = 23,
-            _addSustain     = 24,
-            _addSoft        = 25,
-            _deleteSustain  = 26,
-            _deleteSoft     = 27,
-            create_chord        = 28,
-            delete_chord        = 29
+            _chordEditToggle = 9,
+            _editVelocities  = 10,
+            chainAmountBox  = 11,
+            _addSustain     = 12,
+            _addSoft        = 13,
+            _deleteSustain  = 14,
+            _deleteSoft     = 15,
+            create_chord    = 16,
+            delete_chord        = 17,
+            _humanizeTime       = 18,
+            _humanizeTimeBox    = 19,
+            _humanizeVelocity   = 20,
+            _humanizeVelocityBox = 21,
+            _help                = 22
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -237,8 +230,9 @@ private:
             ids.add (_editVelocities);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
-            ids.add (humVelocityBox);
-            ids.add (humTimeBox);
+            ids.add (_humanizeVelocity);
+            ids.add (_humanizeTimeBox);
+            ids.add (_humanizeVelocityBox);
             ids.add (_editVelocities);
 //            ids.add (scoreTempo);
 //            ids.add (tempoMultiplier);
@@ -249,6 +243,7 @@ private:
 //            ids.add (_playPause);
 //            ids.add (_listen);
             ids.add (separatorBarId);
+            ids.add (_help);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
         }
@@ -259,7 +254,7 @@ private:
             ids.add (doc_save);
             ids.add (doc_saveAs);
             ids.add (separatorBarId);
-            for (int n=0;n<28;n++)
+            for (int n=0;n<20;n++)
                 ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
@@ -281,8 +276,14 @@ private:
             ids.add (_deleteSustain);
             ids.add (_addSoft);
             ids.add (_deleteSoft);
+            ids.add (separatorBarId);
             ids.add (_humanizeTime);
-            ids.add (humTimeBox);
+            ids.add (_humanizeTimeBox);
+            ids.add (separatorBarId);
+            ids.add (_humanizeVelocity);
+            ids.add (_humanizeVelocityBox);
+            ids.add (separatorBarId);
+            ids.add(_help);
             ids.add (flexibleSpacerId);
         }
         
@@ -304,7 +305,8 @@ private:
                 case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
-                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize Chord Note Times", "humanizeStartTimes.svg");
+                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Adjust Chord Note Times", "humanizeStartTimes.svg");
+                case _humanizeVelocity: return createButtonFromZipFileSVG (itemId, "Adjust Note Velocities", "humanizeVelocities.svg");
                 case _chordEditToggle:
                 {
                     ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Edit Chords",
@@ -331,19 +333,21 @@ private:
                     return txtBox;
                 }
                     
-                case humVelocityBox:
+                case _humanizeVelocityBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
                     txtBox->textBox.setTooltip("Amount of Velocity Humanization");
                     return txtBox;
                 }
                     
-                case humTimeBox:
+                case _humanizeTimeBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
                     txtBox->textBox.setTooltip("Amount of Time Randomization");
                     return txtBox;
                 }
+                    
+                case _help: return createButtonFromZipFileSVG (itemId, "Open Help in Browser", "help.svg");
                 default:
                     break;
             }
@@ -1118,7 +1122,7 @@ private:
     MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     
     double chainAmount;
-    double humanizeVelocityAmount;
+    String humanizeVelocityAmount;
     String humanizeTimeAmount;
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
 };

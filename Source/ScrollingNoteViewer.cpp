@@ -150,7 +150,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     {
         for (i=0;i<processor->sequenceObject.chords.size();i++)
         {
-            if (processor->sequenceObject.chords.at(i).chordRect.expanded(0.0, 3.0).contains(sequenceScaledX, scaledY))
+            if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.0, 0.0).contains(sequenceScaledX, scaledY))
             {
                 ch = i;
                 break;
@@ -266,7 +266,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             processor->addRemoveBookmark(BOOKMARK_TOGGLE);
         }
     }
-    else if (hoveringOver == HOVER_NOTEHEAD)
+    else if ((hoverChord<0) && hoveringOver == HOVER_NOTEHEAD)
     {
         //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
         if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() && hoverStep>=0)
@@ -341,42 +341,36 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
     const float scaledY = y/verticalScale;
     preDragXinTicks = mouseXinTicks;
     hoverChord = -1;
-    if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a chord
+    if (showingChords)
     {
-        //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
-//        const int nn = maxNote - vert + 1;
-        int i;
-        int ch = -1;
-        if (showingChords)
+        if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a chord
         {
-            for (i=0;i<processor->sequenceObject.chords.size();i++)
+            //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
+    //        const int nn = maxNote - vert + 1;
+            int i;
+            int ch = -1;
+            if (showingChords)
             {
-                if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.5, 0.0).contains(sequenceScaledX, scaledY))
+                for (i=0;i<processor->sequenceObject.chords.size();i++)
                 {
-                    ch = i;
-                    break;
+                    if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.0, 0.0).contains(sequenceScaledX, scaledY))
+                    {
+                        ch = i;
+                        break;
+                    }
                 }
+                hoverChord = ch;
             }
-            hoverChord = ch;
+            if (ch==-1)
+                hoverChord = -1;
+            else
+            {
+                //            std::cout << "mouseMove found step " << step <<"\n";
+                hoverChord = ch;
+            }
+//            std::cout << "in mouseMove hoverChord " << hoverChord << "\n";
+            sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
         }
-        if (ch==-1)
-            hoverChord = -1;
-        else
-        {
-            //            std::cout << "mouseMove found step " << step <<"\n";
-            hoverChord = ch;
-//            hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
-//            + "[" + String::String(nn) +"]"
-//            + " tr:" +String::String(pSequence->at(i)->track)
-//            + " ch:" + String::String(pSequence->at(i)->channel)
-//            + " vel:" + String(127.0*pSequence->at(i)->velocity)
-//            + " dur:" + String((pSequence->at(i)->offTime-pSequence->at(i)->getTimeStamp()))+
-//            + " tick:" + String(pSequence->at(i)->getTimeStamp())
-//            + "/"+String::String(hoverStep);
-//            repaint();
-        }
-        //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
-        sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
     }
     if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a note bar
     {
@@ -426,7 +420,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             + " trk:" +String::String(pSequence->at(i)->track)
             + " channel:" + String::String(pSequence->at(i)->channel)
             + " velocity:" + String(127.0*pSequence->at(i)->velocity)
-            + " length:" + String((pSequence->at(i)->offTime-pSequence->at(i)->getTimeStamp()))+
+            + " length:" + String((pSequence->at(i)->getOffTime()-pSequence->at(i)->getTimeStamp()))+
             + " tick:" + String(pSequence->at(i)->getTimeStamp())
             + " step:"+String::String(hoverStep);
 //            repaint();
@@ -1068,9 +1062,9 @@ void ScrollingNoteViewer::makeNoteBars()
 //        if (index>=21 && index<=31)
 //            std::cout<< "noteBar: step, ts "<< index<<" "<<pSequence->at(index)->getTimeStamp()<< "\n";
         const double startPixel = pSequence->at(index)->getTimeStamp()*pixelsPerTick;
-        double endPixel = pSequence->at(index)->offTime*pixelsPerTick;
+        double endPixel = pSequence->at(index)->getOffTime()*pixelsPerTick;
         const int noteNumber = pSequence->at(index)->noteNumber;
-        const double thisEndTime = pSequence->at(index)->offTime;
+        const double thisEndTime = pSequence->at(index)->getOffTime();
         const float y = noteYs[noteNumber]*rescaleHeight + topMargin;
         int indexOfNextSameNote = -1;
         const double minSpacing = 1.0;
@@ -1127,7 +1121,7 @@ void ScrollingNoteViewer::makeNoteBars()
                 }
                 Rectangle<float> chordRect = rList.getBounds();
                 chordRect.translate(-1.0, 0.0);
-                processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect.withWidth(1.1);
+                processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect.withWidth(1.5);
 //                if (index>25)
 //                {
 //                    std::cout << "chordIndex " << prevChordIndex << " Chord rect "
@@ -1446,7 +1440,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
         {
             for (int ch=0;ch<processor->sequenceObject.chords.size();ch++)
             {
-                const Rectangle<float> rct = processor->sequenceObject.chords.at(ch).chordRect.expanded(0.3, 0.0);
+                const Rectangle<float> rct = processor->sequenceObject.chords.at(ch).chordRect.expanded(0.15, 0.0);
 //                if(processor->sequenceObject.chords.at(ch).timeStamp<100)
 //                    std::cout << "rct xLeft, xRight " << rct.getX() << " " << rct.getRight()<<"\n";
                 float widthFactor;
@@ -1941,7 +1935,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                             noteBeingDraggedOn = hoverStep;
                         }
                         timeStartDrag = pSequence->at(hoverStep)->getTimeStamp();
-                        offTimeStartDrag = pSequence->at(hoverStep)->offTime;
+                        offTimeStartDrag = pSequence->at(hoverStep)->getOffTime();
                     }
                     else if (hoveringOver != HOVER_NOTEBAR && std::abs(deltaX)<std::abs(deltaY))
                     {
@@ -1956,6 +1950,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     velocityAfterDrag = std::min(1.0,velStartDrag + (deltaY/3.0)/127.0);
                     velocityAfterDrag = std::max((float)(1.001/127.0), velocityAfterDrag); //No less than midi velocity 1
                     processor->changeNoteVelocity(noteBeingDraggedOn, velocityAfterDrag);
+                    
                     repaint();
 //                    std::cout << "fVel " << deltaY<<" "<<velStartDrag <<" "<< velocityAfterDrag  <<  "\n";
                 }

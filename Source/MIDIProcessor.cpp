@@ -939,7 +939,7 @@ void MIDIProcessor::processBlock ()
 //            <<" "<<theSequence.at(step).adjustedVelocity
 //            <<" "<<theSequence.at(step).scheduledOffTime
 //            <<"\n";
-            const double duration = sequenceObject.theSequence.at(step)->offTime - sequenceObject.theSequence.at(step)->getTimeStamp();
+            const double duration = sequenceObject.theSequence.at(step)->getOffTime() - sequenceObject.theSequence.at(step)->getTimeStamp();
             sequenceObject.theSequence.at(step)->scheduledOffTime = duration+timeInTicks;
             onNotes.add(step);
             highlightSteps.add(step+1);
@@ -1192,7 +1192,7 @@ void MIDIProcessor::processBlock ()
                 sequenceObject.theSequence.at(step)->scheduledOnTime = scheduledOnTime;
                 sequenceObject.theSequence.at(step)->adjustedVelocity = velocity;
                 sequenceObject.theSequence.at(step)->scheduledOffTime = scheduledOnTime +
-                     (sequenceObject.theSequence.at(step)->offTime-sequenceObject.theSequence.at(step)->getTimeStamp());
+                     (sequenceObject.theSequence.at(step)->getOffTime()-sequenceObject.theSequence.at(step)->getTimeStamp());
                 if (sequenceObject.theSequence.at(step)->triggeredNote)
                     sequenceObject.theSequence.at(step)->triggeringExprNote = exprEvents[exprEventIndex].getNoteNumber();
                 else
@@ -1244,7 +1244,6 @@ void MIDIProcessor::processBlock ()
     }
 //    loopStartTick = 300.0;
 //    loopEndStep = 50;
-//    loopEndTickOffset = 50.0;  //Number of ticks past time stamp of loopEndStep that the time should be returned to loopStartTick.
 //    loopEndTick = DBL_MAX;
 //    if (currentSeqStep>=loopEndStep)
 //    {
@@ -1664,9 +1663,9 @@ Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection,
     return stepActivity;
 }
 
+//This sets the humanize properties of chords.  Actual time adjustment is done in buildSequenceAsOf
 void MIDIProcessor::humanizeChordNoteTimes ()
 {
-//    sequenceObject.chordTimeHumanize;
     std::cout << "humanizeChordNoteTimes: params = " <<sequenceObject.chordTimeHumanize<<"\n";
     if (copyOfSelectedNotes.size()==0)
         return;
@@ -1716,7 +1715,67 @@ void MIDIProcessor::humanizeChordNoteTimes ()
     for (int i=0;i<chordsToHumanize.size();i++)
     {
         sequenceObject.chords[chordsToHumanize[i]].timeSpec = "h:"+sequenceObject.chordTimeHumanize;
-        std::cout << "Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
+//        std::cout << "Time Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
+    }
+    catchUp();
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    
+    pauseProcessing = false;
+}
+
+//This sets the velocity properties of chords.  Actual time adjustment is done in buildSequenceAsOf
+void MIDIProcessor::humanizeChordNoteVelocities ()
+{
+//    std::cout << "humanizeChordNoteVelocities: params = " <<sequenceObject.chordVelocityHumanize<<"\n";
+    if (copyOfSelectedNotes.size()==0)
+        return;
+    pauseProcessing = true;
+    int adjustedFirstStep = copyOfSelectedNotes.getFirst();
+    
+    if (sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->inChord)
+    {
+        const int chordIndex = sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->chordIndex;
+        adjustedFirstStep=INT_MAX;
+        for (int i=0;i<sequenceObject.chords.at(chordIndex).notePointers.size();i++) //Find lowest and highest note step in chord
+        {
+            if (sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep < adjustedFirstStep)
+                adjustedFirstStep = sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep;
+        }
+    }
+    else
+    {
+        adjustedFirstStep = copyOfSelectedNotes.getFirst();;
+    }
+    
+    int adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    if (sequenceObject.theSequence.at(copyOfSelectedNotes.getLast())->inChord)
+    {
+        const int chordIndex = sequenceObject.theSequence.at(copyOfSelectedNotes.getLast())->chordIndex;
+        adjustedLastStep=INT_MIN;
+        for (int i=0;i<sequenceObject.chords.at(chordIndex).notePointers.size();i++) //Find lowest and highest note step in chord
+        {
+            if (sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep > adjustedLastStep)
+                adjustedLastStep = sequenceObject.chords.at(chordIndex).notePointers.at(i)->currentStep;
+        }
+    }
+    else
+    {
+        adjustedLastStep = adjustedLastStep = copyOfSelectedNotes.getLast();
+    }
+    
+    Array<int> chordsToHumanize;
+    for(int i=adjustedFirstStep ; i<=adjustedLastStep; i++)
+    {
+        //        std::cout << "MidiProcessor chord "<< i << "\n";
+        if (sequenceObject.theSequence.at(i)->inChord)
+        {
+            chordsToHumanize.addIfNotAlreadyThere(sequenceObject.theSequence.at(i)->chordIndex);
+        }
+    }
+    for (int i=0;i<chordsToHumanize.size();i++)
+    {
+        sequenceObject.chords[chordsToHumanize[i]].velSpec = "h:"+sequenceObject.chordVelocityHumanize;
+//        std::cout << "Vel Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
     }
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
@@ -1835,22 +1894,35 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
 {
     for (int i=0;i<steps.size();i++)
     {
-        if (getNoteActivity(steps[i]))
-        {
+        bool wasTargetNote = getNoteActivity(steps[i]);
+        if (wasTargetNote)
             setAsNonTargetNote(steps[i]);
-            double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
-            double offTime = sequenceObject.theSequence.at(steps[i])->offTime;
-            timeStamp += delta;
-            offTime += delta;
-            sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
-            sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
-            setAsTargetNote(steps[i]); //Retore as target note
-        }
-        else
+        
+        double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
+        double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime();
+        timeStamp += delta;
+        offTime += delta;
+        if (sequenceObject.theSequence.at(steps[i])->inChord)
         {
-            sequenceObject.theSequence.at(steps[i])->setTimeStamp(sequenceObject.theSequence.at(steps[i])->getTimeStamp() + delta);
-            sequenceObject.theSequence.at(steps[i])->offTime += delta;
+            if (steps[i] == sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].notePointers[0]->currentStep)
+            {
+                //If it's the chord's top step change the chord timestamp
+                sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].chordTimeStamp = timeStamp;
+            }
+            else
+            {
+                if (sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].timeSpec != "manual")
+                {
+                    //If it's not the top note, change the chord timeSpec type to manual
+                    sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].timeSpec = "manual";
+                }
+            }
         }
+        sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
+        sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
+
+        if (wasTargetNote)
+            setAsTargetNote(steps[i]);
     }
     sequenceObject.setChangedFlag(true);
     catchUp();

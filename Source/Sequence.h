@@ -236,15 +236,11 @@ public:
         setChangedFlag (documentReallyChanged);
     }
     
-    void setChordVelocityHumanize(double value, bool documentReallyChanged)
+    void setChordVelocityHumanize(String value, bool documentReallyChanged)
     {
         chordVelocityHumanize = value;
-        sequenceProps.setValue("chordVelocityHumanize", chordVelocityHumanize);//How much to randomize note velocities
+//        sequenceProps.setValue("chordVelocityHumanize", chordVelocityHumanize);//How much to randomize note velocities
         setChangedFlag (documentReallyChanged);
-    }
-    inline double getChordVelocityHumanize()
-    {
-        return chordVelocityHumanize;
     }
     void setExprVelToOriginalValRatio(double value, bool documentReallyChanged)
     {
@@ -466,7 +462,7 @@ public:
     int rightHandStartsHere = 1;
     
     String chordTimeHumanize;
-    double chordVelocityHumanize;
+    String chordVelocityHumanize;
     double exprVelToScoreVelRatio;
     Array<double> chordVoicing;
     
@@ -484,22 +480,22 @@ public:
     public:
         ChordDetail( )
         {
-            timeStamp=-1;
+            chordTimeStamp=-1;
             scaleFactor=1.0f;
-            timeSpec="None";
-            timeRandScale=1.0f;
-            timeRandSeed=1;
-            velSpec="None"; //"None","Random',"Manual"
-            velRandScale=1.0f;
+            timeSpec = "Manual";
+            timeRandScale = 1.0f;
+            timeRandSeed = 1;
+            velSpec = "Manual"; //"None","Random',"Manual"
+            velRandScale = 1.0f;
             notePointers.clear();
             noteIds.clear();
             offsets.clear();
-            velRandSeed=1;
+            velRandSeed = 1;
             chordRect = Rectangle<float>();
             selected = false;
         }
         ChordDetail(ChordDetail const &ch) :
-        timeStamp(ch.timeStamp),
+        chordTimeStamp(ch.chordTimeStamp),
         scaleFactor(ch.scaleFactor),
         timeSpec(ch.timeSpec),
         timeRandScale(ch.timeRandScale),
@@ -515,7 +511,7 @@ public:
         {
         }
     public:
-        int timeStamp; //20
+        int chordTimeStamp; //20
         float scaleFactor; //10
         String timeSpec; //20
         float  timeRandScale; //10
@@ -524,7 +520,7 @@ public:
         float  velRandScale; //10
         int velRandSeed; //10
         std::vector<std::shared_ptr<NoteWithOffTime>> notePointers; //Pointers to chord's notes
-        std::vector<int> offsets; //Offsets from timeStamp of chord top note
+        std::vector<int> offsets; //Offsets from timeStamp of chord top note (or from chord time stamp????)
         std::vector<String> noteIds; //String(track)+"_"+String(channel)+"_"+String(noteNumber)
         Rectangle<float> chordRect; //Rectangle surrounding chord for display and hit testing. Value defined in makeNoteBars.
         bool selected;
@@ -544,17 +540,24 @@ public:
         //Determine the Return the chordIndex of the new chord in chords[ ]
         int firstStep = INT_MAX;
         int lastStep = INT_MIN;
+        int highestNoteNumber = -1;
+        int highestNoteIndex = -1;
         for (int i=0; i<chordNotes.size();i++)
         {
             if (chordNotes.at(i)->currentStep < firstStep)
                 firstStep = chordNotes.at(i)->currentStep;
             if (chordNotes.at(i)->currentStep > lastStep)
                 lastStep = chordNotes.at(i)->currentStep;
+            if (chordNotes.at(i)->noteNumber > highestNoteNumber)
+            {
+                highestNoteIndex = i;
+                highestNoteNumber = chordNotes.at(i)->noteNumber;
+            }
         }
         
         ChordDetail chDet;
         StringArray values;
-        chDet.timeStamp = chordNotes.front()->timeStamp;
+        chDet.chordTimeStamp = chordNotes.at(highestNoteIndex)->getTimeStamp();
         chDet.notePointers = chordNotes;
         for (int i=0;i<chordNotes.size();i++)
         {
@@ -567,14 +570,13 @@ public:
             chDet.offsets.push_back(offset);
             chDet.noteIds.push_back(noteId);
         }
+        //Find where to insert chord into chords array and insert it
         int chordIndex;
         for (chordIndex=0;chordIndex<chords.size();chordIndex++)
         {
-            if (chords.at(chordIndex).timeStamp > chordNotes.at(0)->timeStamp)
+            if (chords.at(chordIndex).chordTimeStamp > chordNotes.at(0)->timeStamp)
                 break;
         }
-//        std::cout << "raw chordIndex " << chordIndex << "\n";
-        
         if (chords.size()==0)
             chords.push_back(chDet);
         else
@@ -611,7 +613,6 @@ public:
     bool waitForFirstNote; //If true when play is started, Processor::waitingForFirstNote is set true & nxt unplayed note is moved to ztl.
     bool autoPlaySustains;
     bool autoPlaySofts;
-    bool reVoiceChords;
     bool allVelocitiesFromScore;
     bool deriveSecVelocityFromPrimary;
     double ppq;

@@ -288,6 +288,7 @@ public:
     void autoCreateChords(double maxLength); //Based on notes chained to target notes in selection, limited to maxLength
     Array<Sequence::StepActivity> chainCommand (Array<int> selection, double inverval);
     void humanizeChordNoteTimes ();
+    void humanizeChordNoteVelocities ();
     void setIndividualNotesActivity (Array<Sequence::StepActivity> act); //Used only to restore activity after undo
     bool getNoteActivity(int step);
     inline void setAsTargetNote(int step);

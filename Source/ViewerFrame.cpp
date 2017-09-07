@@ -44,7 +44,7 @@ altToolbarFactory(this)
             pChainAmountBox->textBox.setText("12");
             chainAmount = 12.0;
         }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::humTimeBox)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeTimeBox)
         {
             
             pHumanizeStartTime =
@@ -53,6 +53,16 @@ altToolbarFactory(this)
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("3");
             humanizeTimeAmount = "3";
+        }
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeVelocityBox)
+        {
+            
+            pHumanizeVelocity =
+            (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
+            pHumanizeVelocity->setWidth(65);
+            pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
+            pHumanizeVelocity->textBox.setText(".6,.8");
+            humanizeVelocityAmount = ".6,.8";
         }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
@@ -131,23 +141,28 @@ void ViewerFrame::timerCallback()
         pChainAmountBox->returnPressed = false;
     }
     
-//    if (pHumanizeVelocity->returnPressed)
-//    {
-//        std::cout << "Return pressed - HumanizeVelocity " <<pHumanizeVelocity->textBox.getText().getDoubleValue()<<"\n";
-//        humanizeVelocityAmount = pHumanizeVelocity->textBox.getText().getDoubleValue();
-//        sendActionMessage("humanizeVel:"+String(humanizeVelocityAmount));
-//        grabKeyboardFocus();
-//        pHumanizeVelocity->returnPressed = false;
-//    }
-    
     if (pHumanizeStartTime->returnPressed)
     {
-//        std::cout << "HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
-//        humanizeTimeAmount = pHumanizeStartTime->textBox.getText();
+        //        std::cout << "HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
+        //        humanizeTimeAmount = pHumanizeStartTime->textBox.getText();
         sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
         grabKeyboardFocus();
         pHumanizeStartTime->returnPressed = false;
     }
+    if (pHumanizeVelocity->returnPressed)
+    {
+        std::cout << "Return pressed - HumanizeVelocity " <<pHumanizeVelocity->textBox.getText().getDoubleValue()<<"\n";
+        String temp = pHumanizeVelocity->textBox.getText();
+        humanizeVelocityAmount.clear();
+        for (int i=0;i<temp.length();i++)
+            if (temp.substring(i,i+1).containsAnyOf(".0123456789,"))
+                humanizeVelocityAmount.append(temp.substring(i,i+1), 1);
+                
+        sendActionMessage("humanizeVelocity:"+String(humanizeVelocityAmount));
+        grabKeyboardFocus();
+        pHumanizeVelocity->returnPressed = false;
+    }
+
     double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
     if (pRealTimeTempo->changed)
     {
@@ -213,7 +228,9 @@ void ViewerFrame::buttonClicked (Button* button)
     {
         int id = mainToolbar.getItemId(i);
         if (MainToolbarItemFactory::ToolbarItemIds::doc_open == id)
+        {
             sendActionMessage("fileOpen");
+        }
         else if(MainToolbarItemFactory::ToolbarItemIds::doc_save == id)
             sendActionMessage("fileSave");
         else if(MainToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
@@ -236,6 +253,11 @@ void ViewerFrame::buttonClicked (Button* button)
         {
 //            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
             sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeVelocity == id)
+        {
+            //            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+            sendActionMessage("humanizeVelocity:"+pHumanizeVelocity->textBox.getText());
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
         {
@@ -291,6 +313,11 @@ void ViewerFrame::buttonClicked (Button* button)
         {
 //            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
             sendActionMessage("humanizeTime:"+String(pHumanizeStartTime->textBox.getText()));
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_help == id)
+        {
+            //            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
+            sendActionMessage("help");
         }
     }
     else //in alt toolbar
