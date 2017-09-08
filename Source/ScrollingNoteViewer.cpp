@@ -1892,22 +1892,14 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //                <<  " newlySelected "<<newlySelectedNotes.size()
 //                <<  " displayedSelection "<<displayedSelection.size()
 //                <<  "\n";
-                hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
-                +" width:"+String(maxSelNoteTime-minSelNoteTime);
-//                for (int i=0;i<processor->sequenceObject.chords.size();i++)
-//                {
-//                    processor->sequenceObject.chords.at(i).selected = true;
-//                    for (int j=0;j<processor->sequenceObject.chords.at(i).notePointers.size();j++)
-//                    {
-//                        if(!displayedSelection.contains(processor->sequenceObject.chords.at(i).notePointers.at(j)->currentStep))
-//                        {
-//                            processor->sequenceObject.chords[i].selected = false;
-//                            break;
-//                        }
-//                    }
-////                    if (processor->sequenceObject.chords.at(i).selected)
-////                        std::cout <<  "selected chord "<< i <<  "\n";
-//                }
+                if (newlySelectedNotes.size()==0)
+                    hoverInfo.clear();
+                else
+                    {
+                        hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
+                        +" width:"+String(maxSelNoteTime-minSelNoteTime);
+                    }
+
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
                 repaint();
             }

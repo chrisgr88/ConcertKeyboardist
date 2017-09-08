@@ -143,8 +143,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-        if (chIndex<5)
-            std::cout << " Write sysex chordDetails - "<<chIndex<<" "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
         //Property "chNote" : The notes in this chord
         for (int note=0;note<chords.at(chIndex).notePointers.size();note++)

@@ -838,7 +838,7 @@ ApplicationProperties& getAppProperties();
             {
                 std::cout <<"Get Help\n";
                 File::getSpecialLocation(File::currentApplicationFile);
-                String docPath = File::getSpecialLocation(File::currentApplicationFile). getSiblingFile("ckdoc.html").getFullPathName();
+                String docPath = File::getSpecialLocation(File::currentApplicationFile).getChildFile("Contents/Resources/Documentation/EN/ckdoc.html").getFullPathName();
                 docPath = "file://" + docPath;
                 std::cout << "doc path " << docPath << "\n";
                 URL docURL = URL(docPath);

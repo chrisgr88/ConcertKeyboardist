@@ -23,7 +23,8 @@ You can also edit loaded midi files to make them playable according to your pref
 Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install: 
 
 * Copy the Concert keyboardist application to your Applications folder.  
-* Copy the included folder of example files to anywhere you choose.  Possibly your Desktop, Documents folder, or a folder where you keep midi files.
+* Copy the ckdoc folder to the same place you copied the application.
+* Copy the included folder of example files to anywhere you choose.  Possibly your Desktop, Documents folder, or a folder where you keep midi files. 
 * Concert keyboardist currently does not make sound of its own.  It sends midi messages and you need to route theme to a software synthesizer (or hardware synthesizer).  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  Also GarageBand automatically received midi message from all output ports on you system so it automatically receives from the Concert Keyboardist default output.
 * Setup with GarageBand: 
     * Download and install GarageBand (it's free to Mac owners).  
@@ -39,7 +40,7 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:
 
 <!-- ![](../Common/img/ConcertKeyboardistWindowOverview.jpg) -->
 
-<img src="../Common/img/ConcertKeyboardistWindowOverview.jpg" alt="CK" style="float:right;width:70%;margin:0 0px 10px 0">
+<img src="../Common/img/ConcertKeyboardistWindowOverview.jpg" alt="CK" style="float:right;width:80%;margin:0 0px 10px 0">
 
 ## Main Window
 
@@ -69,19 +70,37 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:
 
 ## Transport Toolbar
 
-<img src="../Common/img/CKTransportToolbar.jpg" alt="CK" style="float:left;width:100%;margin:0 0px 10px 0">
+<img src="../Common/img/CKTransportToolbar.jpg" alt="CK" style="float:right;width:70%;margin:0 0px 10px 0">
 
+The Transport Toolbar is at the bottom of the screen and includes:
+
+* **Tempo**:  Concert Keyboardist shows two tempo numbers on the transport bar. The first is the original tempo from the midi file and the second is the actual playing tempo.  You can set the playing tempo to be faster or slower than the original tempo by dragging up or down on the number.  The tempo from the midi file can vary with position in the score and as the transport moves the displayed playing tempo is maintained at a constant ratio to the original tempo.
+* **Play**, **Stop**, **Rewind**: Pressing the Play button turns the Current Time Line orange.  The next key you press will play the note at the Current Time Line and start the display scrolling.  Pressing Stop halts the display and also ends notes that were sounding.  Pressing Rewind once moves the display back to the first note you played.  Pressing Rewind again moves the display to the start of the score.  Pressing it again returns again to the first note you played.  You will actually find it much easier to use the keyboard shortcuts for these buttons.  Pressing the Spacebar when not playing is equivalent to pressing the Play button.  Pressing the Spacebar when playing is equivalent to pressing the Stop button.  Pressing the "r" key is equivalent to pressing the Rewind button.
+* **Listen**:  The Listen button lets you hear the music starting at the Current Time Line.  Press the Spacebar to stop listening and return to where listening started.  While listening the display scrolls and you can hear the notes, but in this version sounding notes are not marked in yellow as they would be while actually playing.
+* **Information Area**:  Hover the mouse pointer over a note and the the left side of the Transport Bar shows details on the note.  Hover over a light or dark grey note track shows the note name and octave of that track.  Drag on the display to select a range of notes and the left side of the toolbar shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.
 
 
 ## Editing Toolbar
 
-Some of these commands act on "selected notes".  To select some notes move the mouse pointer to anywhere not on a note bar, press the left mouse button, drag over the heads of the notes to be selected and release the mouse button.  The head of each selected note will be surrounded by a white box.  To clear the selection click anywhere there is not a note bar.
+This documentation is work in progress...
 
-<img src="../Common/img/CKEditingTools.jpg" alt="CK" style="float:left;width:100%;margin:0 0px 10px 0">
+<img src="../Common/img/CKEditingTools.jpg" alt="CK" style="float:right;width:70%;margin:0 0px 10px 0">
 
-## Editing Note Details
-### Start Times and Durations
-### Velocities
+The Editing Toolbar includes commands to:
+
+* Adjust note chaining
+* Show or hide note velocities for editing
+* Show or hide chords
+* Group and ungroup notes into chords
+* Add or remove regions where the sustain or soft pedal are pressed
+* Automatically adjust the start times of chord notes with respect to top chord note
+* Automatically adjust chord note velocities with respect to top chord note
+* Get Help - Open the Concert keyboardist documentation in your default web browser.
+
+**Selecting Notes**: Many commands act on "selected notes".  To select a range of notes move the mouse pointer to anywhere not on a note bar, press the left mouse button and drag over the heads of notes to be selected and release the mouse button.  The head of each selected note will be surrounded by a white box.  To clear the selection click anywhere there is not a note bar.
+
+### Editing Note Start Times and Durations
+### Editing Note Velocities
 
 ## Navigation
 
@@ -98,7 +117,7 @@ There is much more to know about editing.  More detail will be included in a fut
 
 * File Menu
 
-    About... : Information about Concert Keyboardist (currently not implemented)
+    About... : Information about Concert Keyboardist (currently unimplemented)
 
     Open... : Open a file. Either normal midi files, extension .mid, or Concert Keyboardist files can be opened.  A CK file also has an extension of .mid but has [ck] added just before the extension.
 
