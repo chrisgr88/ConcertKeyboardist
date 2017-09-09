@@ -43,6 +43,8 @@ namespace CommandIDs
     static const int deleteSustain      = 0x42012;
     static const int addSoft            = 0x42014;
     static const int deleteSoft         = 0x42016;
+    static const int showChords         = 0x42018;
+    static const int editVelocities     = 0x42019;
     static const int create_chord       = 0x43010;
     static const int delete_chord       = 0x43012;
     

@@ -179,9 +179,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         Array<int> chordNotes;
         for (int i=0;i<processor->sequenceObject.chords.at(hoverChord).notePointers.size();i++)
             chordNotes.add(processor->sequenceObject.chords.at(hoverChord).notePointers.at(i)->currentStep);
-//        setSelectedNotes(chordNotes);
         displayedSelection = chordNotes;
-//        selecting = true;
         setSelectedNotes(chordNotes);
         repaint();
     }
@@ -1683,7 +1681,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     {
         stopTimer(TIMER_MOUSE_HOLD);
 //        std::cout << "Here - mouse hold " << selectionAnchor.getY() << "\n";
-        if (hoverChord<0)
+        if (hoverChord<0 && !editingVelocities)
             selecting = true;
     }
     else if (timerID == TIMER_MOUSE_UP)
@@ -1701,7 +1699,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         double yy = Desktop::getInstance().getMousePosition().getY();
         double y = curDragPosition.getY();
         double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
-        if (!drawingVelocity && ModifierKeys::getCurrentModifiers().isAltDown())
+        if (!drawingVelocity && editingVelocities)//ModifierKeys::getCurrentModifiers().isAltDown())
         {
             drawingVelocity = true;
         }

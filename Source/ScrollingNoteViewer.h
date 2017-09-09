@@ -76,6 +76,14 @@ public:
     ScrollingNoteViewer (MIDIProcessor *p);
     ~ScrollingNoteViewer();
     
+    juce::Image getVelocityCursor() {
+        juce::Image img =  juce::Image(juce::Image::ARGB, 32, 32, false);
+        
+        Graphics g(img);
+        createImageFromZipFileSVG("editVelocityCursor.svg")->draw(g, 1.0f);
+        return img;
+    }
+    
     void changeListenerCallback (ChangeBroadcaster* broadcaster) override;    
     virtual void mouseDown (const MouseEvent& event) override;
     virtual void mouseUp (const MouseEvent& event) override;
@@ -396,6 +404,32 @@ private:
     Colour colourPrimaryNoteBar;
     Colour colourNoteOn;
     Colour colourInactiveNoteHead;
+    
+    StringArray iconNames;
+    OwnedArray<Drawable> iconsFromZipFile;
+    Drawable* createImageFromZipFileSVG (const String& filename)
+    {
+        if (iconsFromZipFile.size() == 0)
+        {
+            // If we've not already done so, load all the images from the zip file..
+            MemoryInputStream iconsFileStream (BinaryData::icons_zip, BinaryData::icons_zipSize, false);
+            ZipFile icons (&iconsFileStream, false);
+            
+            for (int i = 0; i < icons.getNumEntries(); ++i)
+            {
+                ScopedPointer<InputStream> svgFileStream (icons.createStreamForEntry (i));
+                
+                if (svgFileStream != nullptr)
+                {
+                    //                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
+                    iconNames.add (icons.getEntry(i)->filename);
+                    iconsFromZipFile.add (Drawable::createFromImageDataStream (*svgFileStream));
+                }
+            }
+        }
+        Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
+        return image;
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScrollingNoteViewer)
 };

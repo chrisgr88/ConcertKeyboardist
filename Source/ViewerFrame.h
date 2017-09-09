@@ -42,6 +42,28 @@ public:
     double prevTimeInTicks = -1.0;
     ModifierKeys mods;
     
+    bool getVelocityButton()
+    {
+        return mainToolbar.getItemComponent(mainFactory._editVelocities)->getToggleState();
+    }
+    void toggleVelocityButton()
+    {
+        int id = mainFactory._editVelocities;
+        mainToolbar.getItemComponent(id)->setToggleState(!mainToolbar.getItemComponent(id)->getToggleState(),
+                                                         NotificationType::dontSendNotification);
+        noteViewer.editingVelocities = mainToolbar.getItemComponent(id)->getToggleState();
+        if (noteViewer.editingVelocities)
+            noteViewer.setMouseCursor(MouseCursor(noteViewer.getVelocityCursor(),0,0));
+        else
+            noteViewer.setMouseCursor(MouseCursor::NormalCursor);
+        if (noteViewer.editingVelocities)
+            mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonOver);
+        else
+            mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonNormal);
+        noteViewer.repaint();
+        std::cout << "_editVelocities in viewerframe "<<noteViewer.editingVelocities<<"\n";
+    }
+    
     void timerCallback() override;
     
 //    void setPlayheadToHere()
@@ -139,6 +161,7 @@ public:
     ScrollingNoteViewer noteViewer;
     
     int toolbarHeight = 60;
+    Toolbar mainToolbar;
 private:
     MIDIProcessor *processor;
     
@@ -161,7 +184,6 @@ private:
 //    ScopedPointer<ResizableCornerComponent> resizer;
     ComponentBoundsConstrainer resizeLimits;
     
-    Toolbar mainToolbar;
     Toolbar altToolbar;
     bool altToolbarVisible = false;
     
@@ -1110,7 +1132,7 @@ private:
         
         ViewerFrame *pViewerFrame;
     };
-    
+
     MainToolbarItemFactory mainFactory;
     AltToolbarItemFactory altToolbarFactory;
     //    MainToolbarItemFactory::CustomToolbarComboBox *pCCB;

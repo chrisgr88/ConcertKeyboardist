@@ -261,23 +261,11 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
         {
-//            altToolbarVisible = !altToolbarVisible;
-            noteViewer.setShowingChords(!noteViewer.showingChords);
-//            altToolbar.setVisible(altToolbarVisible);
-            resized();
-            repaint();
+            sendActionMessage("_showChords");
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
         {
-            mainToolbar.getItemComponent(id)->setToggleState(!mainToolbar.getItemComponent(id)->getToggleState(),
-                                                             NotificationType::dontSendNotification);
-            noteViewer.editingVelocities = mainToolbar.getItemComponent(id)->getToggleState();
-            if (noteViewer.editingVelocities)
-                mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonOver);
-            else
-                mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonNormal);
-            noteViewer.repaint();
-            std::cout << "_editVelocities "<<noteViewer.editingVelocities<<"\n";
+            toggleVelocityButton();
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
         {

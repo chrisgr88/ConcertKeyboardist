@@ -142,23 +142,33 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "addSustain")
         {
-//            midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
             perform (CommandIDs::addSustain);
         }
         else if (message == "deleteSustain")
         {
-//            midiProcessor.deletePedalChange(MIDIProcessor::sustPedal);
             perform (CommandIDs::deleteSustain);
         }
         else if (message == "addSoft")
         {
             perform (CommandIDs::addSoft);
-//            midiProcessor.addPedalChange(MIDIProcessor::softPedal);
         }
         else if (message == "deleteSoft")
         {
             perform (CommandIDs::deleteSoft);
-//            midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
+        }
+        else if (message == "_showChords")
+        {
+            perform (CommandIDs::showChords);
+        }
+        else if (message.upToFirstOccurrenceOf(":",false,true) == "_editVelocities")
+        {
+//            const String editvel = String(message.fromLastOccurrenceOf(":", false, true));
+//            //            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
+//            pViewerFrame->noteViewer.editingVelocities = (editvel=="1");
+//            
+//            
+//            pViewerFrame->noteViewer.repaint();
+            perform (CommandIDs::editVelocities);
         }
         else if (message == "create_chord")
         {
@@ -363,6 +373,15 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("deleteSoft", "deleteSoft", category, 0);
                 result.addDefaultKeypress ('f', ModifierKeys::shiftModifier);
                 break;
+                
+            case CommandIDs::showChords:
+                result.setInfo ("showChords", "showChords", category, 0);
+                break;
+            case CommandIDs::editVelocities:
+                result.setInfo ("editVelocities", "Edit Velocities", category, 0);
+                result.addDefaultKeypress ('v', ModifierKeys::noModifiers);
+                break;
+                
             case CommandIDs::create_chord:
                 result.setInfo ("create_chord", "create_chord", category, 0);
                 result.addDefaultKeypress ('c', ModifierKeys::noModifiers);
@@ -514,6 +533,8 @@ ApplicationProperties& getAppProperties();
             CommandIDs::deleteSustain,
             CommandIDs::addSoft,
             CommandIDs::deleteSoft,
+            CommandIDs::showChords,
+            CommandIDs::editVelocities,
             CommandIDs::create_chord,
             CommandIDs::delete_chord,
             
@@ -762,30 +783,31 @@ ApplicationProperties& getAppProperties();
             }
                 break;
             case CommandIDs::addSoft:
-            {
                 std::cout <<"addSoft\n";
                 midiProcessor.addPedalChange(MIDIProcessor::softPedal);
-            }
                 break;
             case CommandIDs::deleteSoft:
-            {
                 std::cout <<"deleteSoft\n";
                 midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
-            }
+                break;
+            case CommandIDs::showChords:
+                std::cout <<"showChords\n";
+                pViewerFrame->noteViewer.setShowingChords(!pViewerFrame->noteViewer.showingChords);
+                pViewerFrame->resized();
+                pViewerFrame->repaint();
+                break;
+            case CommandIDs::editVelocities:
+                std::cout <<"editVelocities\n";
+                pViewerFrame->toggleVelocityButton();
                 break;
             case CommandIDs::create_chord:
-            {
                 std::cout <<"create_chord\n";
                 midiProcessor.createChord();
-            }
                 break;
             case CommandIDs::delete_chord:
-            {
                 std::cout <<"delete_chord\n";
                 midiProcessor.deleteChords(true);
-            }
                 break;
-                
             case CommandIDs::toggleBookmark:
                 midiProcessor.catchUp();
                 midiProcessor.addRemoveBookmark (BOOKMARK_TOGGLE);

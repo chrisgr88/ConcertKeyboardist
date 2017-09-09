@@ -7,7 +7,7 @@
     <g transform="matrix(1.11111,0,0,1.25226,0.135922,6.06075)">
         <ellipse cx="14.246" cy="7.949" rx="8.987" ry="7.975" style="fill:rgb(101,155,201);"/>
     </g>
-    <g transform="matrix(1.56892,0,0,1.64776,-8.86296,9.267)">
-        <text x="14.255px" y="7.281px" style="font-family:'Athelas-BoldItalic', 'Athelas';font-weight:700;font-style:italic;font-size:12px;fill:white;">i</text>
+    <g transform="matrix(1.56892,0,0,1.64776,-10.1683,10.5872)">
+        <text x="14.255px" y="7.281px" style="font-family:'AbadiMT-CondensedExtraBold', 'Abadi MT Condensed Extra Bold', sans-serif;font-stretch:condensed;font-size:12px;fill:white;">?</text>
     </g>
 </svg>

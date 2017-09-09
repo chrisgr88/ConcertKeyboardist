@@ -9,7 +9,7 @@
 namespace BinaryData
 {
     extern const char*   icons_zip;
-    const int            icons_zipSize = 110438;
+    const int            icons_zipSize = 117503;
 
     extern const char*   juce_module_info;
     const int            juce_module_infoSize = 1404;
