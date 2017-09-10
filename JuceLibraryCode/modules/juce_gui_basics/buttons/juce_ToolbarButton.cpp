@@ -96,6 +96,8 @@ Drawable* ToolbarButton::getImageToUse() const
 {
     if (getStyle() == Toolbar::textOnly)
         return nullptr;
+    
+    if (toggledOnImage != nullptr)
 
     if (getToggleState() && toggledOnImage != nullptr)
         return toggledOnImage;

@@ -17,6 +17,7 @@
 #include "ScrollingNoteViewer.h"
 #include "Sequence.h"
 
+//    static Value editVelocitiesFlag;
 //==============================================================================
 /**
  */
@@ -46,23 +47,16 @@ public:
     {
         return mainToolbar.getItemComponent(mainFactory._editVelocities)->getToggleState();
     }
-    void toggleVelocityButton()
-    {
-        int id = mainFactory._editVelocities;
-        mainToolbar.getItemComponent(id)->setToggleState(!mainToolbar.getItemComponent(id)->getToggleState(),
-                                                         NotificationType::dontSendNotification);
-        noteViewer.editingVelocities = mainToolbar.getItemComponent(id)->getToggleState();
-        if (noteViewer.editingVelocities)
-            noteViewer.setMouseCursor(MouseCursor(noteViewer.getVelocityCursor(),0,0));
-        else
-            noteViewer.setMouseCursor(MouseCursor::NormalCursor);
-        if (noteViewer.editingVelocities)
-            mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonOver);
-        else
-            mainToolbar.getItemComponent(id)->setState(juce::Button::ButtonState::buttonNormal);
-        noteViewer.repaint();
-        std::cout << "_editVelocities in viewerframe "<<noteViewer.editingVelocities<<"\n";
-    }
+//    void toggleVelocityButton()
+//    {
+//        if (noteViewer.editingVelocities.getValue())
+//            noteViewer.editingVelocities.setValue(false);
+//        else
+//            noteViewer.editingVelocities.setValue(true);
+//        
+//        noteViewer.repaint();
+//        std::cout << "_editVelocities in viewerframe "<<(bool)noteViewer.editingVelocities.getValue()<<"\n";
+//    }
     
     void timerCallback() override;
     
@@ -197,6 +191,8 @@ private:
         {
 //            std::cout << "pViewerFrame " << pViewerFrame << "\n";
         }
+        
+        ScrollingNoteViewer *pViewer;
         //==============================================================================
         // Each type of item a toolbar can contain must be given a unique ID. These
         // are the ones we'll use in this demo.
@@ -344,6 +340,7 @@ private:
                 {
                     ToolbarButton *editVelButton = createButtonFromZipFileSVG (itemId, "Edit Note Velocities",
                                                                                "editVelocities.svg", "editVelocities-pressed.svg");
+                    editVelButton->getToggleStateValue().referTo(pViewer->editingVelocities);
                     editVelButton->setClickingTogglesState(true);
                     return editVelButton;
                 }

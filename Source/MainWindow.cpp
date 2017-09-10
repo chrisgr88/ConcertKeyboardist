@@ -162,12 +162,6 @@ ApplicationProperties& getAppProperties();
         }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "_editVelocities")
         {
-//            const String editvel = String(message.fromLastOccurrenceOf(":", false, true));
-//            //            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
-//            pViewerFrame->noteViewer.editingVelocities = (editvel=="1");
-//            
-//            
-//            pViewerFrame->noteViewer.repaint();
             perform (CommandIDs::editVelocities);
         }
         else if (message == "create_chord")
@@ -798,7 +792,10 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::editVelocities:
                 std::cout <<"editVelocities\n";
-                pViewerFrame->toggleVelocityButton();
+                if (pViewerFrame->noteViewer.editingVelocities.getValue())
+                    pViewerFrame->noteViewer.editingVelocities = false;
+                else
+                    pViewerFrame->noteViewer.editingVelocities = true;
                 break;
             case CommandIDs::create_chord:
                 std::cout <<"create_chord\n";

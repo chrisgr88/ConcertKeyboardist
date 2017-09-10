@@ -17,6 +17,7 @@ processor(p),
 mainFactory(this),
 altToolbarFactory(this)
 {
+    mainFactory.pViewer = &noteViewer;
     noteViewer.addChangeListener(this);
     p->addChangeListener(this);
     addAndMakeVisible(noteViewer);
@@ -265,7 +266,7 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
         {
-            toggleVelocityButton();
+            noteViewer.repaint();
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
         {

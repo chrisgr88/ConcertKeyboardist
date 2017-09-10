@@ -149,6 +149,7 @@ public:
 #define TIMER_MOUSE_DRAG 3
 #define TIMER_REPAINT_SELECTION 4
 #define TIMER_MOUSE_UP 5
+#define TIMER_PERIODIC 6
     Point<int> curDragPosition;
     
     void timerCallback (int timerID) override;
@@ -282,7 +283,18 @@ public:
     }
     
     
-    bool editingVelocities; //Edit velocity mode, toggled by editVelocities toolbar button
+    Value editingVelocities; //Edit velocity mode, toggled by editVelocities toolbar button
+    bool altKeyPressed; //Holding this key enables editingVelocities
+//    void setEditingVelocities(bool editing)
+//    {
+//        editingVelocities = editing;
+//        if (editingVelocities.getValue())
+//            setMouseCursor(MouseCursor(getVelocityCursor(),0,0));
+//        else
+//            setMouseCursor(MouseCursor::NormalCursor);
+//        repaint();
+//    }
+    
     bool showingChords;
     void setShowingChords(bool showing)
     {

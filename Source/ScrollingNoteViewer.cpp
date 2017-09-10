@@ -82,6 +82,8 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     colourInactiveNoteHead = Colour (0xffbbbbbb);
     colourNoteOn = Colour(0xffFFFF55);
     nSteps = -1;
+    altKeyPressed = ModifierKeys::getCurrentModifiers().isAltDown();
+    startTimer (TIMER_PERIODIC, 200);
 }
 
 ScrollingNoteViewer::~ScrollingNoteViewer()
@@ -1411,7 +1413,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             setSelectedNotes(processor->sequenceObject.undoneOrRedoneSteps);
             processor->undoMgr->inRedo = false;
         }
-        if (((hoveringOver == HOVER_NOTEHEAD && editingVelocities) || draggingVelocity) && hoverStep>=0)
+        if (((hoveringOver == HOVER_NOTEHEAD && editingVelocities.getValue()) || draggingVelocity) && hoverStep>=0)
         {
             const float vel = pSequence->at(hoverStep)->velocity;
             const float graphHeight = getHeight() - topMargin*verticalScale;
@@ -1496,7 +1498,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             g.setColour (Colours::whitesmoke);
             g.drawRect(head, 1.5);
             
-            if (editingVelocities)
+            if (editingVelocities.getValue())
             {
                 const float vel = pSequence->at(displayedSelection[i])->velocity;
                 const float graphHeight = getHeight() - topMargin*verticalScale;
@@ -1646,7 +1648,26 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
 void ScrollingNoteViewer::timerCallback (int timerID)
 {
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
-    if (timerID == TIMER_TWEEN)
+    if (timerID == TIMER_PERIODIC)
+    {
+        if (ModifierKeys::getCurrentModifiers().isAltDown())
+        {
+            editingVelocities = true;
+            altKeyPressed = true;
+        }
+        else
+        {
+            if (altKeyPressed)
+                editingVelocities = false;
+            altKeyPressed = false;
+        }
+        if (editingVelocities.getValue())
+            setMouseCursor(MouseCursor(getVelocityCursor(),0,0));
+        else
+            setMouseCursor(MouseCursor::NormalCursor);
+        repaint();
+    }
+    else if (timerID == TIMER_TWEEN)
     {
         processor->setTimeInTicks(timeInTicksTweens[animationStep]);
         setHorizontalShift(horizontalShiftTweens[animationStep]);
@@ -1681,7 +1702,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     {
         stopTimer(TIMER_MOUSE_HOLD);
 //        std::cout << "Here - mouse hold " << selectionAnchor.getY() << "\n";
-        if (hoverChord<0 && !editingVelocities)
+        if (hoverChord<0 && !editingVelocities.getValue())
             selecting = true;
     }
     else if (timerID == TIMER_MOUSE_UP)
@@ -1699,7 +1720,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         double yy = Desktop::getInstance().getMousePosition().getY();
         double y = curDragPosition.getY();
         double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
-        if (!drawingVelocity && editingVelocities)//ModifierKeys::getCurrentModifiers().isAltDown())
+        if (!drawingVelocity && editingVelocities.getValue())//ModifierKeys::getCurrentModifiers().isAltDown())
         {
             drawingVelocity = true;
         }
