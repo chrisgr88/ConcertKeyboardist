@@ -80,7 +80,7 @@ public:
         juce::Image img =  juce::Image(juce::Image::ARGB, 32, 32, false);
         
         Graphics g(img);
-        createImageFromZipFileSVG("editVelocityCursor.svg")->draw(g, 1.0f);
+        iconsFromZipFile[createImageFromZipFileSVG("editVelocityCursor.svg")]->draw(g, 1.0f);
         return img;
     }
     
@@ -419,7 +419,7 @@ private:
     
     StringArray iconNames;
     OwnedArray<Drawable> iconsFromZipFile;
-    Drawable* createImageFromZipFileSVG (const String& filename)
+    int createImageFromZipFileSVG (const String& filename)
     {
         if (iconsFromZipFile.size() == 0)
         {
@@ -439,8 +439,8 @@ private:
                 }
             }
         }
-        Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
-        return image;
+//        Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
+        return iconNames.indexOf (filename);
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScrollingNoteViewer)

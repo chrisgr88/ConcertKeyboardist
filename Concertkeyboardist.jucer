@@ -9,6 +9,7 @@
       <FILE id="GcQUY3" name="TracksComponent.h" compile="0" resource="0"
             file="Source/TracksComponent.h"/>
       <GROUP id="{EC8297D7-1F95-3949-37E8-625A410B096D}" name="Resources">
+        <FILE id="iIotgF" name="AppIcon.png" compile="0" resource="1" file="Resources/AppIcon.png"/>
         <FILE id="NfcAew" name="icons.zip" compile="0" resource="1" file="Resources/icons.zip"/>
         <FILE id="OuTkJX" name="juce_module_info" compile="0" resource="1"
               file="Resources/juce_module_info"/>
@@ -35,7 +36,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="iIotgF" documentExtensions=".mid">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="10.10 SDK" osxArchitecture="default"
                        isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>

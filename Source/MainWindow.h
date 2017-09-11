@@ -83,7 +83,8 @@ public ApplicationCommandTarget,
 public KeyListener,
 public ActionListener,
 public ActionBroadcaster,
-public Timer
+public Timer,
+public FileDragAndDropTarget
 {
 public:
     MainWindow (String name);
@@ -98,6 +99,20 @@ public:
     TooltipWindow tooltipWindow;    
     
     bool ckBlockClosing;
+    
+    bool isInterestedInFileDrag (const StringArray& files) override
+    {
+        return true;
+    }
+    
+    void filesDropped (const StringArray& files, int x, int y) override
+    {
+        std::cout << "itemDropped " <<files[0] << "\n";
+        String path = files[0];
+        String withNoQuotes = path.removeCharacters("\"");
+        File f = File::getCurrentWorkingDirectory().getChildFile(withNoQuotes);
+        midiProcessor.loadSpecifiedFile(f);
+    }
     
     void actionListenerCallback (const String& message) override;
     

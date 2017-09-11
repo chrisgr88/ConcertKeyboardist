@@ -363,7 +363,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
     {
 //        std::cout << "entering loadSequence: load file \n";
         if (!fileToLoad.exists()) {
-            std::cout << "File " << fileToLoad.getFileName() << " does not exist.\n";
+            std::cout << "File " << fileToLoad.getFullPathName() << " does not exist.\n";
             return false;
         }
         String fileName = fileToLoad.getFileName();

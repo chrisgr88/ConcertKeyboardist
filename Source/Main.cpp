@@ -77,6 +77,13 @@ public:
         getAppProperties().getUserSettings()->setValue ("defaultSoundFont", "/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
         getAppProperties().getUserSettings()->setValue ("defaultlugIn", "Massive"); //Plugin name
     }
+    
+    void anotherInstanceStarted (const String& commandLine) override
+    {
+        String withNoQuotes = commandLine.removeCharacters("\"");
+        File f = File::getCurrentWorkingDirectory().getChildFile(withNoQuotes);
+        mainWindow->midiProcessor.loadSpecifiedFile(f);
+    }
 
     void shutdown() override
     {
