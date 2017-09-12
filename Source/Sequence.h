@@ -35,6 +35,7 @@ public:
     std::vector<std::shared_ptr<NoteWithOffTime>> theSequence;
     
     bool loadedCkfFile;
+    bool alreadyChained; //Either loaded from ckf file or first chaining of midi file has been completed
     bool propertiesChanged = false;
     
     String getDocumentTitle() override

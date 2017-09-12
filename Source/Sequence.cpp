@@ -43,7 +43,6 @@ Sequence::~Sequence()
 /*=============================================================
  <#saveSequence#>
  */
-//TODO: Add calls to the new setter functions to set these properties
 void Sequence::saveSequence(File fileToSave)// String  name = "")
 {
     //TODO Save these:
@@ -91,6 +90,11 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
+    
+    targetNoteTimes.clear();
+    for (int step = 0;step<theSequence.size();step++)
+        if (theSequence.at(step)->targetNote)
+            targetNoteTimes.add(theSequence.at(step)->getTimeStamp());
     
     for (int i=0;i<targetNoteTimes.size();i++)
     {
@@ -267,7 +271,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
             selection.add(step);
     }
     
-    //For steps in selection, construct stepActivityList from the targetNoteTimes array.
+    //For steps in selection, construct stepActivityList
     //Entries in stepActivityList are {int step; bool active}
     Array<Sequence::StepActivity> stepActivityList;
     if (!getLoadingFile())
@@ -276,10 +280,9 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
         {
             if (!selection.contains(step))
                 continue;
-                const int index = targetNoteTimes.indexOf(theSequence.at(step)->getTimeStamp());
-                if (index>=0)
+                if (theSequence.at(step)->targetNote)
                 {
-                    targetNoteTimes.remove(index);
+//                    theSequence.at(step)->targetNote = false;
                     const Sequence::StepActivity act = {step, true};
                     stepActivityList.add(act);
                 }
@@ -315,6 +318,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
                     theSequence.at(step-1)->triggers = step;
                 theSequence.at(step)->triggeredBy = step-1;
                 theSequence.at(step)->firstInChain = firstInThisChain;
+                theSequence.at(step)->targetNote = false;
             }
             else
             {
@@ -323,13 +327,12 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
                 theSequence.at(step)->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
                 firstInThisChain = step;
                 theSequence.at(step)->firstInChain = step;
-                targetNoteTimes.add(theSequence.at(step)->getTimeStamp());
-    //            std::cout << "firstInChain " << step << " time " << targetNoteTimes.getLast() << "\n";
+                theSequence.at(step)->targetNote = true;
             }
         }
     }
     if (firstStep!=-1)
-        targetNoteTimes.addIfNotAlreadyThere(theSequence.at(firstStep)->getTimeStamp()); //First must always be a target note
+        theSequence.at(firstStep)->targetNote = true; //First must always be a target note
     return stepActivityList;
 }
 
@@ -340,13 +343,12 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 {
 //    std::cout << "entering loadSequence \n";
-    
+    targetNoteTimes.clear();
     try {
         
         
     if (retainEdits == doNotRetainEdits)
     {
-        targetNoteTimes.clear();
         chainingInterval = 12.0;
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
@@ -617,6 +619,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         MidiMessageSequence ckfSysex; //All sysex records from our app's "properties" track
     //    std::cout << "nTracks " << numTracks << "\n";
         loadedCkfFile = false;
+        alreadyChained = false;
         if (midiFile.getNumTracks()>1)
         {
             midiFile.getTrack(numTracks-1)->extractSysExMessages(ckfSysex);
@@ -643,6 +646,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     {
 //                        std::cout <<"This is a ckf file."<<"\n";
                         loadedCkfFile = true;
+                        alreadyChained = true;
                         numTracks -= 1; //Don't read sysex track into sequence
                     }
 //                    else
@@ -690,11 +694,9 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                     trackDetails.set(track, trkDet);
 //                    std::cout << "loadedTrack " <<track <<" playability "<<playability <<" assignedChannel "<<assignedChannel <<"\n";
                 }
-                else if (key == "tnt") //targetNoteTimes
+                else if (key == "tnt") //target Note Times
                 {
                     targetNoteTimes.add(value.getDoubleValue());
-//                    if (targetNoteTimes.getLast()<1000)
-//                        std::cout <<"target note time "<< targetNoteTimes.getLast() <<"\n";
                 }
                 else if (key == "chordDetails") //Each chord
                 {
@@ -1053,20 +1055,23 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         }
         
         //###
-//        std::cout << "Humanize chords \n";
-        //  First, save the active note steps, to be restored after chord note times adjustments
-        Array<int> activeSteps;
-        double prevTimeStamp = -1;
-        for (int step=0;step<theSequence.size();step++)
+//        std::cout << "rds \n";
+        if (targetNoteTimes.size()>0)
         {
-            const double timeStamp = theSequence.at(step)->getTimeStamp();
-            if (timeStamp != prevTimeStamp)
+            double prevTimeStamp = -1;
+            for (int step=0;step<theSequence.size();step++)
             {
-                if (targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
-                    activeSteps.add(step);
+                const double timeStamp = theSequence.at(step)->getTimeStamp();
+                theSequence.at(step)->targetNote = false;
+                if (timeStamp != prevTimeStamp)
+                {
+                    if (targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
+                        theSequence.at(step)->targetNote = true;
+                }
+                prevTimeStamp = timeStamp;
             }
-            prevTimeStamp = timeStamp;
         }
+        
         double thisChordTimeStamp;
         std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes;
         int chordTopStep;
@@ -1192,11 +1197,6 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         //- rationalize saving of random seed
                         //- display of chord properties
                         //- save original note times?
-                        
-                        //Restore target note times (which now includes any steps adjusted by chord note time adjustment)
-                        targetNoteTimes.clear();
-                        for (int i=0;i<activeSteps.size();i++)
-                            targetNoteTimes.add(theSequence.at(activeSteps[i])->getTimeStamp());
                     }
                     String velSpec = chords[thisStepChordNoteIndex].velSpec;
                     if (velSpec.startsWith("h:"))
@@ -1248,14 +1248,14 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         for (int step=0;step<theSequence.size();step++)
             theSequence.at(step)->currentStep = step;
         //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
-        if(targetNoteTimes.size()>0) //If loaded from ck file or previously created for midi file by chain ()
+        if(alreadyChained) //If loaded from ck file or previously created for this new midi file by chain ()
         {
             int firstInThisChain = 0;
             double prevTS = -1.0;
 //            std::cout<< "Chain in loadSequence " << "\n";
             for (int step=0; step<theSequence.size();step++)
             {
-                if (prevTS != theSequence.at(step)->getTimeStamp() && targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
+                if (prevTS != theSequence.at(step)->getTimeStamp() && theSequence.at(step)->targetNote)
                 {
                     if (step>0)
                         theSequence.at(step-1)->triggers = -1;//Last note in chain triggers nothing
@@ -1280,6 +1280,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         else
         {
             chain(Array<int>(),chainingInterval); //This is used only for when a plain midi file is loaded
+            alreadyChained = true;
         }
     
         
@@ -1291,7 +1292,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         while (step < theSequence.size())
         {
             //If this step is a firstInChain scan all notes with time stamp equal to that of the firstInChain for the shortest note
-            if (theSequence.at(step)->triggeredBy==-1)// && theSequence.at(step)->chordTopStep==-1)
+            if (theSequence.at(step)->targetNote)
             {
                 chainTrigger = step;
 //                int highestNote = -1;

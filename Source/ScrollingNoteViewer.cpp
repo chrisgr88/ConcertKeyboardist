@@ -198,6 +198,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             else
                 steps.add(noteBeingDraggedOn);
             processor->changeNoteTimes(steps, deltaTimeDrag);
+            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
         }
     }
     else if (draggingVelocity)
@@ -1033,7 +1034,7 @@ void ScrollingNoteViewer::makeNoteBars()
     {
         const double startPixel = pSequence->at(index)->getTimeStamp()*pixelsPerTick;
         double x = startPixel;
-        if (pSequence->at(index)->triggeredBy==-1)
+        if (pSequence->at(index)->targetNote)
         {
             float velocityOfTargetNote = pSequence->at(index)->velocity;
             const double scaledVelocity = graphHeight * velocityOfTargetNote;
@@ -1139,12 +1140,10 @@ void ScrollingNoteViewer::makeNoteBars()
         }
         
 //        std::cout << "makeNoteBars at step "<<index;
-        if (pSequence->at(index)->triggeredBy==-1) //If it's a target note
+        if (pSequence->at(index)->targetNote) //If it's a target note
         {
             if (processor->getNotesEditable() || pSequence->at(index)->getTimeStamp()>=readHead)
             {
-//                sequence->at(index)->rectBar = addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,
-//                                                        colourActiveNoteHead, vBasedNoteBar);
                 NoteBarDescription nbd;
                 nbd.seqIndex = index;
                 nbd.x = x;
@@ -1152,10 +1151,12 @@ void ScrollingNoteViewer::makeNoteBars()
                 nbd.w = w;
                 nbd.headWidth = headWidth;
                 nbd.headHeight = headHeight+1.0;
-                nbd.colHead = colourActiveNoteHead;
+                if (index>0 && (pSequence->at(index)->getTimeStamp()==pSequence->at(index-1)->getTimeStamp()))
+                    nbd.colHead = colourActiveNoteHead.darker().darker();
+                else
+                    nbd.colHead = colourActiveNoteHead;
                 nbd.colBar = vBasedNoteBar;
                 deferredNoteBars.add(nbd);
-//                std::cout <<" Editable, colourActiveNoteHead, ";
             }
             else
             {
@@ -1687,6 +1688,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         processor->undoMgr->beginNewTransaction();
         MIDIProcessor::ActionSetNoteActivity* action;
         bool setNotesActive = !processor->getNoteActivity(hoverStep);
+//        std::cout << "setNotesActive " << setNotesActive << "\n";
         if (selectedNotes.size()==0)
         {
             Array<int> oneStep;
@@ -1696,6 +1698,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         }
         else
             action = new MIDIProcessor::ActionSetNoteActivity(*processor, setNotesActive, selectedNotes);
+//        std::cout << "setNoteActivity " << setNotesActive <<" step "<<selectedNotes[0]<< "\n";
         processor->undoMgr->perform(action);
     }
     else if (timerID == TIMER_MOUSE_HOLD)

@@ -291,8 +291,6 @@ public:
     void humanizeChordNoteVelocities ();
     void setIndividualNotesActivity (Array<Sequence::StepActivity> act); //Used only to restore activity after undo
     bool getNoteActivity(int step);
-    inline void setAsTargetNote(int step);
-    inline void setAsNonTargetNote(int step);
     void changeNoteVelocity(int step, float velocity);
     void changeNoteTimes(Array<int>, double time);
     void changeNoteOffTime(int step, double offTime);

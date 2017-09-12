@@ -107,7 +107,6 @@ public:
     
     void filesDropped (const StringArray& files, int x, int y) override
     {
-        std::cout << "itemDropped " <<files[0] << "\n";
         String path = files[0];
         String withNoQuotes = path.removeCharacters("\"");
         File f = File::getCurrentWorkingDirectory().getChildFile(withNoQuotes);

@@ -260,8 +260,8 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 
         for (step=0;step<sequenceObject.theSequence.size();step++)
         {
-            if (sequenceObject.theSequence.at(step)->getTimeStamp()>=(time-0.001) && sequenceObject.theSequence.at(step)->triggeredBy==-1)
-//            if (std::abs(sequenceObject.theSequence.at(step).timeStamp-time)<0.001 && sequenceObject.theSequence.at(step)triggeredBy==-1)
+            if (sequenceObject.theSequence.at(step)->getTimeStamp()>=(time-0.001) &&
+                sequenceObject.theSequence.at(step)->targetNote)
                 break;
         }
         if (step>=sequenceObject.theSequence.size())
@@ -427,7 +427,7 @@ void MIDIProcessor::playableStepForwardBack(bool direction)
     if (!direction)
     {
         for (int step=currentSeqStep; 0<=step ; step--)
-            if (sequenceObject.theSequence.at(step)->triggeredBy == -1)
+            if (sequenceObject.theSequence.at(step)->targetNote)
             {
 //                rewind(sequenceObject.theSequence.at(step).timeStamp, true);
                 tweenMove(sequenceObject.theSequence.at(step)->getTimeStamp(), 5.0);
@@ -442,7 +442,7 @@ void MIDIProcessor::playableStepForwardBack(bool direction)
         else
             nextStep = currentSeqStep+1;
         for (int step=nextStep; step<sequenceObject.theSequence.size()-1; step++)
-            if (sequenceObject.theSequence.at(step)->triggeredBy == -1)
+            if (sequenceObject.theSequence.at(step)->targetNote)
             {
 //                rewind(sequenceObject.theSequence.at(step).timeStamp, true);
                 tweenMove(sequenceObject.theSequence.at(step)->getTimeStamp(), 5.0);
@@ -1292,20 +1292,17 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
     {
         for (int i=0;i<steps.size();i++)
         {
-            const double ts = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
-            const int index = sequenceObject.targetNoteTimes.indexOf(ts);
-            if (index>=0)
+            if (sequenceObject.theSequence.at(steps[i])->targetNote)
             {
                 const Sequence::StepActivity act = {steps[i], true};
                 stepActivityList.add(act);
             }
             else
             {
-//                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
-                    sequenceObject.targetNoteTimes.add(ts);
                 const Sequence::StepActivity act = {steps[i], false};
                 stepActivityList.add(act);
             }
+            sequenceObject.theSequence.at(steps[i])->targetNote = true;
         }
     }
     else //set Notes inActive
@@ -1315,12 +1312,8 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
             firstStep = 1; //Start at 1 because step 0 must always be active
         for (int i=firstStep;i<steps.size();i++) //Start at 1 because step 0 must always be active
         {
-            const double ts = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
-            const int index = sequenceObject.targetNoteTimes.indexOf (ts);
-            if (index>=0)
+            if (sequenceObject.theSequence.at(steps[i])->targetNote)
             {
-//                if (sequenceObject.theSequence.at(steps[i])->chordTopStep==-1)
-                    sequenceObject.targetNoteTimes.remove(index);
                 const Sequence::StepActivity act = {steps[i], true};
                 stepActivityList.add(act);
             }
@@ -1329,6 +1322,7 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
                 const Sequence::StepActivity act = {steps[i], false};
                 stepActivityList.add(act);
             }
+            sequenceObject.theSequence.at(steps[i])->targetNote = false;
         }
     }
     if (undoMgr->inUndo || undoMgr->inRedo)
@@ -1342,9 +1336,6 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
     changeMessageType = CHANGE_MESSAGE_UNDO;
     sequenceObject.undoneOrRedoneSteps = steps;
     sendSynchronousChangeMessage(); //To viewer
-    sequenceObject.targetNoteTimes.sort();
-    //        for (int w=0;w<sequenceObject.targetNoteTimes.size()&&w<20;w++)
-    //            std::cout << "tnt " <<sequenceObject.targetNoteTimes[w]<<"\n";
     return stepActivityList;
 }
 
@@ -1639,7 +1630,7 @@ void MIDIProcessor::autoCreateChords(double maxLength) //Based on notes chained 
         return;
     for (int step=copyOfSelectedNotes.getFirst();step<=copyOfSelectedNotes.getLast();step++)
     {
-        if (sequenceObject.theSequence.at(step)->triggeredBy==-1)
+        if (sequenceObject.theSequence.at(step)->targetNote)
         {
             
         }
@@ -1786,12 +1777,7 @@ void MIDIProcessor::humanizeChordNoteVelocities ()
 void MIDIProcessor::setIndividualNotesActivity (Array<Sequence::StepActivity> act) //Used only to restore activity after undo
 {
     for (int i=0;i<act.size();i++)
-    {
-        if (act[i].active)
-            setAsTargetNote(act[i].step);
-        else
-            setAsNonTargetNote(act[i].step);
-    }
+        sequenceObject.theSequence.at(act[i].step)->targetNote = act[i].active;
     if(undoMgr->inUndo)
     {
         Array<int> steps;
@@ -1810,28 +1796,7 @@ void MIDIProcessor::setIndividualNotesActivity (Array<Sequence::StepActivity> ac
 
 bool MIDIProcessor::getNoteActivity(int step)
 {
-    const double ts = sequenceObject.theSequence.at(step)->getTimeStamp();
-    const int index = sequenceObject.targetNoteTimes.indexOf(ts);
-    if (index>=0)
-        return true;
-    else
-        return false;
-}
-
-inline void MIDIProcessor::setAsTargetNote(int step)
-{
-    const double ts = sequenceObject.theSequence.at(step)->getTimeStamp();
-    const int index = sequenceObject.targetNoteTimes.indexOf(ts);
-    if (index==-1)
-        sequenceObject.targetNoteTimes.add(ts);
-}
-
-inline void MIDIProcessor::setAsNonTargetNote(int step)
-{
-    const double ts = sequenceObject.theSequence.at(step)->getTimeStamp();
-    const int index = sequenceObject.targetNoteTimes.indexOf(ts);
-    if (index>-1)
-        sequenceObject.targetNoteTimes.remove(index);
+    return sequenceObject.theSequence.at(step)->targetNote;
 }
 
 void MIDIProcessor::changeNoteVelocity(int step, float velocity)
@@ -1894,9 +1859,15 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
 {
     for (int i=0;i<steps.size();i++)
     {
-        bool wasTargetNote = getNoteActivity(steps[i]);
-        if (wasTargetNote)
-            setAsNonTargetNote(steps[i]);
+//        bool wasTargetNote = getNoteActivity(steps[i]);
+//        if (wasTargetNote)
+//            setAsNonTargetNote(steps[i]);
+        std::vector<std::shared_ptr<NoteWithOffTime>> pSelectedNotes;
+        for (int s=0;s<steps.size();s++)
+        {
+            sequenceObject.theSequence.at(s)->targetNote = getNoteActivity(steps[s]);
+            pSelectedNotes.push_back(sequenceObject.theSequence.at(s));
+        }
         
         double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
         double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime();
@@ -1921,8 +1892,14 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
         sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
         sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
 
-        if (wasTargetNote)
-            setAsTargetNote(steps[i]);
+//        for (int i=0;i<pSelectedNotes.size();i++)
+//            if (pSelectedNotes.at(i)->targetNote)
+                //Won't work - note times change on rebuild sort.  How to retain target status??
+            
+//        if (wasTargetNote)
+//            setAsTargetNote(steps[i]);
+        
+        
     }
     sequenceObject.setChangedFlag(true);
     catchUp();
@@ -1971,7 +1948,7 @@ double MIDIProcessor::getStartTimeOfNextStep()
     int step;
     for (step=currentSeqStep;step<sequenceObject.theSequence.size();step++)
     {
-        if (sequenceObject.theSequence.at(step)->triggeredBy==-1)
+        if (sequenceObject.theSequence.at(step)->targetNote)
             break;
     }
     return sequenceObject.theSequence.at(step)->getTimeStamp();
