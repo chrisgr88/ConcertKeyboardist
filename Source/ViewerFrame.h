@@ -203,8 +203,10 @@ private:
             doc_saveAs      = 3,
             edit_undo       = 4,
             edit_redo       = 5,
-            _makeActive     = 6,
-            _makeInactive   = 7,
+            _toggleActivity     = 25,
+            _polygonalLasso   = 7,
+            _markTargetNotes  = 23,
+            _clearTargetNotes = 24,
             _chain          = 8,
             _chordEditToggle = 9,
             _editVelocities  = 10,
@@ -235,8 +237,10 @@ private:
             ids.add (doc_saveAs);
             ids.add (edit_undo);
             ids.add (edit_redo);
-            ids.add (_makeActive);
-            ids.add (_makeInactive);
+            ids.add (_toggleActivity);
+            ids.add (_polygonalLasso);
+            ids.add (_markTargetNotes);
+            ids.add (_clearTargetNotes);
             ids.add (_chain);
             ids.add (_addSustain);
             ids.add (_addSoft);
@@ -272,14 +276,16 @@ private:
             ids.add (doc_save);
             ids.add (doc_saveAs);
             ids.add (separatorBarId);
-            for (int n=0;n<20;n++)
+            for (int n=0;n<16;n++)
                 ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
+            ids.add (_polygonalLasso);
+//            ids.add (_markTargetNotes);
+//            ids.add (_clearTargetNotes);
             ids.add (separatorBarId);
-            ids.add (_makeActive);
-            ids.add (_makeInactive);
+            ids.add (_toggleActivity);
             ids.add (separatorBarId);
             ids.add (_chain);
             ids.add (chainAmountBox);
@@ -315,9 +321,9 @@ private:
                 case edit_undo:         return createButtonFromZipFileSVG (itemId, "Undo", "edit-undo.svg");
                 case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
                     
-                case _makeActive:        return createButtonFromZipFileSVG (itemId, "Set as Target Notes", "makeActive.svg");
-                case _makeInactive:        return createButtonFromZipFileSVG (itemId, "Set as Non Target Notes", "makeInactive.svg");
-                    
+                case _toggleActivity:        return createButtonFromZipFileSVG (itemId, "Toggle Target Notes", "toggleActivityTool.svg");
+                case _markTargetNotes:        return createButtonFromZipFileSVG (itemId, "Set as Target Notes", "makeActive-pressed.svg");
+                case _clearTargetNotes:        return createButtonFromZipFileSVG (itemId, "Set as Non Target Notes", "makeInactive-pressed.svg");
                 case _chain:        return createButtonFromZipFileSVG (itemId, "Chain Notes at Given Interval", "chain.svg");
                 case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
                 case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
@@ -328,18 +334,23 @@ private:
                 case _chordEditToggle:
                 {
                     ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Edit Chords",
-                                                                                 "chordEditToggle.svg", "chordEditToggle-pressed.svg");
+                        "chordEditToggle.svg", "chordEditToggle-pressed.svg");
                     chordEditButton->setClickingTogglesState(true);
                     return chordEditButton;
                 }
-                    
                 case create_chord: return  createButtonFromZipFileSVG (itemId, "Create Chord", "createChord.svg");
                 case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete Chord", "deleteChord.svg");
-                    
+                case _polygonalLasso:
+                {
+                    ToolbarButton *polygonalLasso = createButtonFromZipFileSVG (itemId, "Polygonal Lasso Tool", "PolygonalLassoTool.svg", "PolygonalLassoTool-Pressed.svg");
+                    polygonalLasso->getToggleStateValue().referTo(pViewer->lassoSelectMode);
+                    polygonalLasso->setClickingTogglesState(true);
+                    return polygonalLasso;
+                }
                 case _editVelocities:
                 {
                     ToolbarButton *editVelButton = createButtonFromZipFileSVG (itemId, "Edit Note Velocities",
-                                                                               "editVelocities.svg", "editVelocities-pressed.svg");
+                        "editVelocities.svg", "editVelocities-pressed.svg");
                     editVelButton->getToggleStateValue().referTo(pViewer->editingVelocities);
                     editVelButton->setClickingTogglesState(true);
                     return editVelButton;

@@ -1165,7 +1165,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         //- add randomness to each note adjusting the resulting time to be between prevNoteTime & nextNoteTime
                         srand(seed);
                         chords[thisStepChordNoteIndex].timeRandSeed = seed;
-                        double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
+                        //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
                         for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
                         {
                             int foo;
@@ -1182,7 +1182,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //                            std::cout << step << " randomAdd " << randomAdd << std::endl;
 
                             proposedNoteTime += randomAdd;
-                            const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
+//                            const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
                             if (proposedNoteTime>=seqDurationInTicks)
                                 proposedNoteTime = seqDurationInTicks - 1;
                             chordNotes.at(i)->setTimeStamp(proposedNoteTime);

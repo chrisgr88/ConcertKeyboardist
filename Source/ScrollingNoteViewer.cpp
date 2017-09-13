@@ -82,7 +82,12 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     colourInactiveNoteHead = Colour (0xffbbbbbb);
     colourNoteOn = Colour(0xffFFFF55);
     nSteps = -1;
+    editingVelocities.setValue(false);
+    lassoSelectMode.setValue(false);
     altKeyPressed = ModifierKeys::getCurrentModifiers().isAltDown();
+    editVelocityCursor = getMouseCursorFromZipFile("editVelocityCursor.svg");
+    markTargetNotesCursor = getCircleCursor(colourActiveNoteHead.withAlpha(0.8f), 0.25f);
+    clearTargetNotesCursor = getCircleCursor(colourInactiveNoteHead.withAlpha(0.8f), 0.25f);
     startTimer (TIMER_PERIODIC, 200);
 }
 
@@ -1663,7 +1668,12 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             altKeyPressed = false;
         }
         if (editingVelocities.getValue())
-            setMouseCursor(MouseCursor(getVelocityCursor(),0,0));
+        {
+//            if (getMouseCursor()!=editVelocityCursor)
+                setMouseCursor(editVelocityCursor);
+        }
+        else if (lassoSelectMode.getValue())
+            setMouseCursor(markTargetNotesCursor);
         else
             setMouseCursor(MouseCursor::NormalCursor);
         repaint();

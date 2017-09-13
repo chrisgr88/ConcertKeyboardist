@@ -84,7 +84,8 @@ ApplicationProperties& getAppProperties();
         
         else if (message == "editRedo")
             perform (CommandIDs::editRedo);
-        
+        else if (message == "polygonalLasso")
+            perform (CommandIDs::polygonalLasso);
         else if (message == "play")
             perform (CommandIDs::playPause);
 //        else if (message == "pause")
@@ -97,10 +98,8 @@ ApplicationProperties& getAppProperties();
 //        else if (message == "playFromPreviousStart")
 //            perform (CommandIDs::playFromPreviousStart);
         
-        else if (message == "setSelectedNotesActive")
-            perform (CommandIDs::setSelectedNotesActive);
-        else if (message == "setSelectedNotesInactive")
-            perform (CommandIDs::setSelectedNotesInactive);
+        else if (message == "toggleActivity")
+            perform (CommandIDs::toggleSelectedNotesActive);
         else if (message.upToFirstOccurrenceOf(":",false,true) == "chain")
         {
             midiProcessor.sequenceObject.chainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
@@ -160,7 +159,11 @@ ApplicationProperties& getAppProperties();
         {
             perform (CommandIDs::showChords);
         }
-        else if (message.upToFirstOccurrenceOf(":",false,true) == "_editVelocities")
+        else if (message == "_polygonalLasso")
+        {
+            perform (CommandIDs::polygonalLasso);;
+        }
+        else if (message == "_editVelocities")
         {
             perform (CommandIDs::editVelocities);
         }
@@ -367,15 +370,17 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("deleteSoft", "deleteSoft", category, 0);
                 result.addDefaultKeypress ('f', ModifierKeys::shiftModifier);
                 break;
-                
             case CommandIDs::showChords:
                 result.setInfo ("showChords", "showChords", category, 0);
+                break;
+            case CommandIDs::polygonalLasso:
+                result.setInfo ("PolygonalLasso", "PolygonalLasso", category, 0);
+                result.addDefaultKeypress ('l', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::editVelocities:
                 result.setInfo ("editVelocities", "Edit Velocities", category, 0);
                 result.addDefaultKeypress ('v', ModifierKeys::noModifiers);
                 break;
-                
             case CommandIDs::create_chord:
                 result.setInfo ("create_chord", "create_chord", category, 0);
                 result.addDefaultKeypress ('c', ModifierKeys::noModifiers);
@@ -384,7 +389,6 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("delete_chord", "delete_chord", category, 0);
                 result.addDefaultKeypress ('c', ModifierKeys::shiftModifier);
                 break;
-                
             case CommandIDs::previousTargetNote:
                 result.setInfo ("PreviousTargetNote", "Go to Previous Target Note", category, 0);
                 result.addDefaultKeypress (KeyPress::leftKey, ModifierKeys::noModifiers);
@@ -514,6 +518,7 @@ ApplicationProperties& getAppProperties();
             CommandIDs::scoreSettings,
             CommandIDs::editUndo,
             CommandIDs::editRedo,
+            CommandIDs::polygonalLasso,
             CommandIDs::clearSelection,
             CommandIDs::selectAll,
             CommandIDs::toggleSelectedNotesActive,
@@ -551,56 +556,63 @@ ApplicationProperties& getAppProperties();
         switch (info.commandID)
         {
             case CommandIDs::appAboutBox:
-                std::cout <<"About\n";
+                if (!midiProcessor.isPlaying)
+                    std::cout <<"About\n";
                 break;
-                
             case CommandIDs::audioMidiSettings:
-                showAudioSettings();
-                Component::toFront(true);
+                if (!midiProcessor.isPlaying)
+                {
+                    showAudioSettings();
+                    Component::toFront(true);
+                }
                 break;
-                
             case CommandIDs::fileOpen:
-                ckBlockClosing = true;
-                if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
-                    midiProcessor.loadFromUserSpecifiedFile();
-                Component::toFront(true);
-                ckBlockClosing = false;
+                if (!midiProcessor.isPlaying)
+                {
+                    ckBlockClosing = true;
+                    if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
+                        midiProcessor.loadFromUserSpecifiedFile();
+                    Component::toFront(true);
+                    ckBlockClosing = false;
+                }
                 break;
-                
             case CommandIDs::fileRecent:
                 //                std::cout <<"openRecent\n";
                 break;
-                
             case CommandIDs::fileSave:
-            {
-                File file = midiProcessor.sequenceObject.getLastDocumentOpened();
-                if (!file.getFullPathName().endsWith("[ck].mid"))
+                if (!midiProcessor.isPlaying)
                 {
-                    midiProcessor.sequenceObject.saveAs(File(), true, true, true);
+                    File file = midiProcessor.sequenceObject.getLastDocumentOpened();
+                    if (!file.getFullPathName().endsWith("[ck].mid"))
+                    {
+                        midiProcessor.sequenceObject.saveAs(File(), true, true, true);
 
-                    
-                    RecentlyOpenedFilesList recentFiles;
-                    recentFiles.restoreFromString (getAppProperties().getUserSettings()
-                                                   ->getValue ("recentConcertKeyboardistFiles"));
-//                    int num1 = recentFiles.getNumFiles();
-                    recentFiles.removeFile(file);
-                    getAppProperties().getUserSettings()
-                    ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
-//                    int num2 = recentFiles.getNumFiles();                    
-                    
+                        
+                        RecentlyOpenedFilesList recentFiles;
+                        recentFiles.restoreFromString (getAppProperties().getUserSettings()
+                                                       ->getValue ("recentConcertKeyboardistFiles"));
+    //                    int num1 = recentFiles.getNumFiles();
+                        recentFiles.removeFile(file);
+                        getAppProperties().getUserSettings()
+                        ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
+    //                    int num2 = recentFiles.getNumFiles();                    
+                        
 
-//                    std::cout <<"N files before, after"<<num1<<" "<<num2<<"\n";
+    //                    std::cout <<"N files before, after"<<num1<<" "<<num2<<"\n";
+                    }
+                    else
+                        midiProcessor.sequenceObject.saveDocument(midiProcessor.sequenceObject.getLastDocumentOpened());
+                    Component::toFront(true);
                 }
-                else
-                    midiProcessor.sequenceObject.saveDocument(midiProcessor.sequenceObject.getLastDocumentOpened());
-                Component::toFront(true);
                 break;
-            }
             case CommandIDs::fileSaveAs:
             {
-                File file = midiProcessor.sequenceObject.getLastDocumentOpened();
-                midiProcessor.sequenceObject.saveAs(File(), true, true, true);
-                Component::toFront(true);
+                if (!midiProcessor.isPlaying)
+                {
+                    File file = midiProcessor.sequenceObject.getLastDocumentOpened();
+                    midiProcessor.sequenceObject.saveAs(File(), true, true, true);
+                    Component::toFront(true);
+                }
                 break;
             }
                 
@@ -665,8 +677,11 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::scoreSettings:
                 std::cout <<"tracksWindow\n";
-                showScoreSettings();
-                midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+                if (!midiProcessor.isPlaying)
+                {
+                    showScoreSettings();
+                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+                }
                 break;
             case CommandIDs::editUndo:
                 std::cout <<"editUndo\n";
@@ -735,76 +750,103 @@ ApplicationProperties& getAppProperties();
                 }
                 break;
             case CommandIDs::chainSelectedNotes:
-            {
                 std::cout <<"chainSelectedNotes\n";
                 if (!midiProcessor.isPlaying)
                 {
-                    midiProcessor.undoMgr->beginNewTransaction();
-                    MIDIProcessor::ActionChain* action;
-                    // Passing -1 causes the chain command to use the interval from the toolbar
-                    action = new MIDIProcessor::ActionChain(midiProcessor, -1, midiProcessor.copyOfSelectedNotes);
-                    midiProcessor.undoMgr->perform(action);
-                    midiProcessor.sequenceObject.setChangedFlag(true);
-                    midiProcessor.catchUp();
-//                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
-//                                                    Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+                    {
+                        midiProcessor.undoMgr->beginNewTransaction();
+                        MIDIProcessor::ActionChain* action;
+                        // Passing -1 causes the chain command to use the interval from the toolbar
+                        action = new MIDIProcessor::ActionChain(midiProcessor, -1, midiProcessor.copyOfSelectedNotes);
+                        midiProcessor.undoMgr->perform(action);
+                        midiProcessor.sequenceObject.setChangedFlag(true);
+                        midiProcessor.catchUp();
+    //                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
+    //                                                    Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+                    }
                 }
-            }
                 break;
             case CommandIDs::timeHumanizeSelection:
                 std::cout <<"timeHumanizeSelection\n";
                 //ToDo replace this with midiProcessor.timeHumanizeSelection(), similar to:
-                midiProcessor.humanizeChordNoteTimes();
+                if (!midiProcessor.isPlaying)
+                    midiProcessor.humanizeChordNoteTimes();
                 break;
             case CommandIDs::velHumanizeSelection:
                 std::cout <<"velHumanizeSelection\n";
-                midiProcessor.humanizeChordNoteVelocities();
+                if (!midiProcessor.isPlaying)
+                    midiProcessor.humanizeChordNoteVelocities();
                 break;
             case CommandIDs::addSustain:
-            {
-                std::cout <<"addSustain\n";
-                midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
-            }
+                {
+                    std::cout <<"addSustain\n";
+                    if (!midiProcessor.isPlaying)
+                        midiProcessor.addPedalChange(MIDIProcessor::sustPedal);
+                }
                 break;
             case CommandIDs::deleteSustain:
-            {
-                std::cout <<"deleteSustain\n";
-                midiProcessor.deletePedalChange(MIDIProcessor::sustPedal);
-            }
+                {
+                    std::cout <<"deleteSustain\n";
+                    if (!midiProcessor.isPlaying)
+                        midiProcessor.deletePedalChange(MIDIProcessor::sustPedal);
+                }
                 break;
             case CommandIDs::addSoft:
                 std::cout <<"addSoft\n";
-                midiProcessor.addPedalChange(MIDIProcessor::softPedal);
+                if (!midiProcessor.isPlaying)
+                    midiProcessor.addPedalChange(MIDIProcessor::softPedal);
                 break;
             case CommandIDs::deleteSoft:
                 std::cout <<"deleteSoft\n";
-                midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
+                if (!midiProcessor.isPlaying)
+                    midiProcessor.deletePedalChange(MIDIProcessor::softPedal);
                 break;
             case CommandIDs::showChords:
                 std::cout <<"showChords\n";
-                pViewerFrame->noteViewer.setShowingChords(!pViewerFrame->noteViewer.showingChords);
-                pViewerFrame->resized();
-                pViewerFrame->repaint();
+                if (!midiProcessor.isPlaying)
+                {
+                    pViewerFrame->noteViewer.setShowingChords(!pViewerFrame->noteViewer.showingChords);
+                    pViewerFrame->resized();
+                    pViewerFrame->repaint();
+                }
+                break;
+            case CommandIDs::polygonalLasso:
+                std::cout <<"polygonalLasso\n";
+                if (!midiProcessor.isPlaying)
+                {
+                    if (pViewerFrame->noteViewer.lassoSelectMode.getValue())
+                        pViewerFrame->noteViewer.lassoSelectMode = false;
+                    else
+                        pViewerFrame->noteViewer.lassoSelectMode = true;
+                }
                 break;
             case CommandIDs::editVelocities:
                 std::cout <<"editVelocities\n";
-                if (pViewerFrame->noteViewer.editingVelocities.getValue())
-                    pViewerFrame->noteViewer.editingVelocities = false;
-                else
-                    pViewerFrame->noteViewer.editingVelocities = true;
+                if (!midiProcessor.isPlaying)
+                {
+                    if (pViewerFrame->noteViewer.editingVelocities.getValue())
+                        pViewerFrame->noteViewer.editingVelocities = false;
+                    else
+                        pViewerFrame->noteViewer.editingVelocities = true;
+                }
                 break;
             case CommandIDs::create_chord:
                 std::cout <<"create_chord\n";
-                midiProcessor.createChord();
+                if (!midiProcessor.isPlaying)
+                    midiProcessor.createChord();
                 break;
             case CommandIDs::delete_chord:
                 std::cout <<"delete_chord\n";
-                midiProcessor.deleteChords(true);
+                if (!midiProcessor.isPlaying)
+                    midiProcessor.deleteChords(true);
                 break;
             case CommandIDs::toggleBookmark:
-                midiProcessor.catchUp();
-                midiProcessor.addRemoveBookmark (BOOKMARK_TOGGLE);
-                std::cout <<"toggleBookmark\n";
+                if (!midiProcessor.isPlaying)
+                {
+                    midiProcessor.catchUp();
+                    midiProcessor.addRemoveBookmark (BOOKMARK_TOGGLE);
+                    std::cout <<"toggleBookmark\n";
+                }
                 break;
                 /////////////////////////
             case CommandIDs::previousTargetNote:
@@ -852,12 +894,15 @@ ApplicationProperties& getAppProperties();
             case CommandIDs::help:
             {
                 std::cout <<"Get Help\n";
-                File::getSpecialLocation(File::currentApplicationFile);
-                String docPath = File::getSpecialLocation(File::currentApplicationFile).getChildFile("Contents/Resources/Documentation/EN/ckdoc.html").getFullPathName();
-                docPath = "file://" + docPath;
-                std::cout << "doc path " << docPath << "\n";
-                URL docURL = URL(docPath);
-                docURL.launchInDefaultBrowser();
+                if (!midiProcessor.isPlaying)
+                {
+                    File::getSpecialLocation(File::currentApplicationFile);
+                    String docPath = File::getSpecialLocation(File::currentApplicationFile).getChildFile("Contents/Resources/Documentation/EN/ckdoc.html").getFullPathName();
+                    docPath = "file://" + docPath;
+                    std::cout << "doc path " << docPath << "\n";
+                    URL docURL = URL(docPath);
+                    docURL.launchInDefaultBrowser();
+                }
                 break;
             }
             case CommandIDs::dumpData:

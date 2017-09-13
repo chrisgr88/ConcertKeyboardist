@@ -5,9 +5,9 @@
         <rect x="0" y="0" width="32" height="32" style="fill:none;"/>
     </g>
     <g transform="matrix(1.11111,0,0,1.25226,0.135922,6.06075)">
-        <ellipse cx="14.246" cy="7.949" rx="8.987" ry="7.975" style="fill:rgb(101,155,201);"/>
+        <ellipse cx="14.246" cy="7.949" rx="8.987" ry="7.975" style="fill:rgb(101,155,201);fill-opacity:0;stroke:rgb(101,155,201);stroke-width:1.69px;"/>
     </g>
-    <g transform="matrix(1.56892,0,0,1.64776,-10.1683,10.5872)">
-        <text x="14.255px" y="7.281px" style="font-family:'AbadiMT-CondensedExtraBold', 'Abadi MT Condensed Extra Bold', sans-serif;font-stretch:condensed;font-size:12px;fill:white;">?</text>
+    <g transform="matrix(1.56892,0,0,1.64776,12.1967,22.5845)">
+        <text x="0px" y="0px" style="font-family:'AbadiMT-CondensedExtraBold', 'Abadi MT Condensed Extra Bold', sans-serif;font-stretch:condensed;font-size:12px;fill:rgb(101,155,201);">?</text>
     </g>
 </svg>

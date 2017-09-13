@@ -30,6 +30,7 @@ namespace CommandIDs
     static const int scoreSettings              = 0x40060;
     static const int editUndo                   = 0x40010;
     static const int editRedo                   = 0x40020;
+    static const int polygonalLasso             = 0x40025;
     static const int clearSelection             = 0x40030;
     static const int selectAll                  = 0x40032;
     static const int toggleSelectedNotesActive  = 0x41000;
@@ -49,11 +50,8 @@ namespace CommandIDs
     static const int delete_chord       = 0x43012;
     
         static const int toggleBookmark             = 0x49000;
-//    static const int setPlayheadToHere          = 0x50000;
     static const int playPause                  = 0x50001;
-//    static const int playFromCurrentPlayhead   = 0x50002;
     static const int pause                      = 0x50003;
-//    static const int playFromPreviousStart      = 0x50005;
     static const int listenToSelection          = 0x50006;
     static const int rewind                     = 0x50010;
     static const int increaseTempo              = 0x50020;

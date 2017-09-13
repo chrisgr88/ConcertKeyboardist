@@ -236,15 +236,12 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("fileSave");
         else if(MainToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
             sendActionMessage("fileSaveAs");
-        
         else if(MainToolbarItemFactory::ToolbarItemIds::edit_undo == id)
             sendActionMessage("editUndo");
         else if(MainToolbarItemFactory::ToolbarItemIds::edit_redo == id)
             sendActionMessage("editRedo");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_makeActive == id)
-            sendActionMessage("setSelectedNotesActive");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_makeInactive == id)
-            sendActionMessage("setSelectedNotesInactive");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_toggleActivity == id)
+            sendActionMessage("toggleActivity");
         else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
         {
             chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
@@ -256,18 +253,13 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeVelocity == id)
-        {
-            //            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
             sendActionMessage("humanizeVelocity:"+pHumanizeVelocity->textBox.getText());
-        }
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
-        {
             sendActionMessage("_showChords");
-        }
-        else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
-        {
+        else if(MainToolbarItemFactory::ToolbarItemIds::_polygonalLasso == id)
             noteViewer.repaint();
-        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
+            noteViewer.repaint();
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
         {
             std::cout << "addSustain\n";
