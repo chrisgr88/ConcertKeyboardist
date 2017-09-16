@@ -65,6 +65,18 @@ altToolbarFactory(this)
             pHumanizeVelocity->textBox.setText(".6,.8");
             humanizeVelocityAmount = ".6,.8";
         }
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_markTargetNotes)
+        {
+            pMarkTargetNotes = mainToolbar.getItemComponent(i);
+            pMarkTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            mainToolbar.getItemComponent(i)->addListener(this);
+        }
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_clearTargetNotes)
+        {
+            pClearTargetNotes = mainToolbar.getItemComponent(i);
+            pClearTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            mainToolbar.getItemComponent(i)->addListener(this);
+        }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
             pScoreTempo = (AltToolbarItemFactory::ScoreTempo *) altToolbar.getItemComponent(i);
@@ -242,6 +254,41 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("editRedo");
         else if(MainToolbarItemFactory::ToolbarItemIds::_toggleActivity == id)
             sendActionMessage("toggleActivity");
+        else if(MainToolbarItemFactory::ToolbarItemIds::_markTargetNotes == id)
+        {
+            bool foo = pMarkTargetNotes->getToggleState();
+//            std::cout << "at 2 pMarkTargetNotes toggleState " << foo<<"\n";
+            if(foo)
+            {
+                pMarkTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingTargetNotes = false;
+                noteViewer.markingTargetNotes = false;
+            }
+            else
+            {
+                pClearTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                pMarkTargetNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+                noteViewer.markingTargetNotes = true;
+                noteViewer.clearingTargetNotes = false;
+            }
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_clearTargetNotes == id)
+        {
+//            std::cout << "at 2 ClearTargetNotes toggleState " << pClearTargetNotes->getToggleState()<<"\n";
+            if(pClearTargetNotes->getToggleState())
+            {
+                pClearTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingTargetNotes = false;
+                noteViewer.markingTargetNotes = false;
+            }
+            else
+            {
+                pMarkTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                pClearTargetNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingTargetNotes = true;
+                noteViewer.markingTargetNotes = false;
+            }
+        }
         else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
         {
             chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
@@ -256,8 +303,8 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("humanizeVelocity:"+pHumanizeVelocity->textBox.getText());
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
             sendActionMessage("_showChords");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_polygonalLasso == id)
-            noteViewer.repaint();
+//        else if(MainToolbarItemFactory::ToolbarItemIds::_lasso == id)
+//            noteViewer.repaint();
         else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
             noteViewer.repaint();
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)

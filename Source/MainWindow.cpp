@@ -84,8 +84,8 @@ ApplicationProperties& getAppProperties();
         
         else if (message == "editRedo")
             perform (CommandIDs::editRedo);
-        else if (message == "polygonalLasso")
-            perform (CommandIDs::polygonalLasso);
+//        else if (message == "lasso")
+//            perform (CommandIDs::Lasso);
         else if (message == "play")
             perform (CommandIDs::playPause);
 //        else if (message == "pause")
@@ -159,10 +159,10 @@ ApplicationProperties& getAppProperties();
         {
             perform (CommandIDs::showChords);
         }
-        else if (message == "_polygonalLasso")
-        {
-            perform (CommandIDs::polygonalLasso);;
-        }
+//        else if (message == "_lasso")
+//        {
+//            perform (CommandIDs::Lasso);;
+//        }
         else if (message == "_editVelocities")
         {
             perform (CommandIDs::editVelocities);
@@ -329,6 +329,14 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("SelectAll", "SelectAll", category, 0);
                 result.addDefaultKeypress ('a', ModifierKeys::commandModifier);
                 break;
+            case CommandIDs::markTargetNotes:
+                result.setInfo ("markTargetNotes", "markTargetNotes", category, 0);
+                result.addDefaultKeypress ('t', ModifierKeys::shiftModifier);
+                break;
+            case CommandIDs::clearTargetNotes:
+                result.setInfo ("clearTargetNotes", "clearTargetNotes", category, 0);
+                result.addDefaultKeypress ('t', ModifierKeys::commandModifier|ModifierKeys::shiftModifier);
+                break;
             case CommandIDs::toggleSelectedNotesActive:
                 result.setInfo ("toggleSelectedNotesActive", "toggleSelectedNotesActive", category, 0);
                 result.addDefaultKeypress ('t', ModifierKeys::noModifiers);
@@ -373,10 +381,10 @@ ApplicationProperties& getAppProperties();
             case CommandIDs::showChords:
                 result.setInfo ("showChords", "showChords", category, 0);
                 break;
-            case CommandIDs::polygonalLasso:
-                result.setInfo ("PolygonalLasso", "PolygonalLasso", category, 0);
-                result.addDefaultKeypress ('l', ModifierKeys::noModifiers);
-                break;
+//            case CommandIDs::Lasso:
+//                result.setInfo ("Lasso", "Lasso", category, 0);
+//                result.addDefaultKeypress ('l', ModifierKeys::noModifiers);
+//                break;
             case CommandIDs::editVelocities:
                 result.setInfo ("editVelocities", "Edit Velocities", category, 0);
                 result.addDefaultKeypress ('v', ModifierKeys::noModifiers);
@@ -518,10 +526,12 @@ ApplicationProperties& getAppProperties();
             CommandIDs::scoreSettings,
             CommandIDs::editUndo,
             CommandIDs::editRedo,
-            CommandIDs::polygonalLasso,
+//            CommandIDs::Lasso,
             CommandIDs::clearSelection,
             CommandIDs::selectAll,
             CommandIDs::toggleSelectedNotesActive,
+            CommandIDs::markTargetNotes,
+            CommandIDs::clearTargetNotes,
             CommandIDs::setSelectedNotesActive,
             CommandIDs::setSelectedNotesInactive,
             CommandIDs::chainSelectedNotes,
@@ -810,8 +820,28 @@ ApplicationProperties& getAppProperties();
                     pViewerFrame->repaint();
                 }
                 break;
-            case CommandIDs::polygonalLasso:
-                std::cout <<"polygonalLasso\n";
+//            case CommandIDs::Lasso:
+//                std::cout <<"Lasso\n";
+//                if (!midiProcessor.isPlaying)
+//                {
+//                    if (pViewerFrame->noteViewer.lassoSelectMode.getValue())
+//                        pViewerFrame->noteViewer.lassoSelectMode = false;
+//                    else
+//                        pViewerFrame->noteViewer.lassoSelectMode = true;
+//                }
+//                break;
+            case CommandIDs::markTargetNotes:
+                std::cout <<"markTargetNotes\n";
+                if (!midiProcessor.isPlaying)
+                {
+                    if (pViewerFrame->noteViewer.lassoSelectMode.getValue())
+                        pViewerFrame->noteViewer.lassoSelectMode = false;
+                    else
+                        pViewerFrame->noteViewer.lassoSelectMode = true;
+                }
+                break;
+            case CommandIDs::clearTargetNotes:
+                std::cout <<"clearTargetNotes\n";
                 if (!midiProcessor.isPlaying)
                 {
                     if (pViewerFrame->noteViewer.lassoSelectMode.getValue())

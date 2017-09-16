@@ -30,16 +30,17 @@ namespace CommandIDs
     static const int scoreSettings              = 0x40060;
     static const int editUndo                   = 0x40010;
     static const int editRedo                   = 0x40020;
-    static const int polygonalLasso             = 0x40025;
+    static const int Lasso                      = 0x40025;
     static const int clearSelection             = 0x40030;
     static const int selectAll                  = 0x40032;
     static const int toggleSelectedNotesActive  = 0x41000;
     static const int setSelectedNotesActive     = 0x41001;
     static const int setSelectedNotesInactive   = 0x41002;
+    static const int markTargetNotes            = 0x41003;
+    static const int clearTargetNotes           = 0x41004;
     static const int chainSelectedNotes         = 0x41020; //Needs a chaining interval argument
     static const int velHumanizeSelection       = 0x41030; //Needs a vel profile argument (currently use default one)
     static const int timeHumanizeSelection      = 0x41040; //Needs a time argument
-    
     static const int addSustain         = 0x42010;
     static const int deleteSustain      = 0x42012;
     static const int addSoft            = 0x42014;

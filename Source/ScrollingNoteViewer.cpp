@@ -84,10 +84,13 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     nSteps = -1;
     editingVelocities.setValue(false);
     lassoSelectMode.setValue(false);
+    markingTargetNotes = false; //Not in marking mode
+    clearingTargetNotes = false; //If we were in marking mode we would be makring them active
     altKeyPressed = ModifierKeys::getCurrentModifiers().isAltDown();
     editVelocityCursor = getMouseCursorFromZipFile("editVelocityCursor.svg");
-    markTargetNotesCursor = getCircleCursor(colourActiveNoteHead.withAlpha(0.8f), 0.25f);
-    clearTargetNotesCursor = getCircleCursor(colourInactiveNoteHead.withAlpha(0.8f), 0.25f);
+    selectionUnMarkerCursor = getMouseCursorFromZipFile("SelectionUnMarkerCursor.svg");
+    selectionMarkerCursor = getMouseCursorFromZipFile("SelectionMarkerCursor.svg");
+    lassoCursor = getMouseCursorFromZipFile("LassoCursor.svg");
     startTimer (TIMER_PERIODIC, 200);
 }
 
@@ -109,6 +112,8 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
     //We defer pickup of up the mouse position until drag actually starts because the mouseDown position is slightly
     //different from the first position returned in mouseDrag.
     newlySelectedNotes.clear();
+    if (!(markingTargetNotes || clearingTargetNotes || editingVelocities.getValue()))
+        displayedSelection.clear();
 //    std::cout << "Selected steps ";
 //    for (int j=0;j<displayedSelection.size();j++)
 //        std::cout << " " << displayedSelection[j];
@@ -122,6 +127,7 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
         }
     }
     selectionRect = Rectangle<int>();
+    lassoShape = Path();
     repaint();
     if (processor->isPlaying )
     {
@@ -164,7 +170,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             }
         }
     }
-    if (selecting)
+    if ((selecting || markingTargetNotes || clearingTargetNotes) && !editingVelocities.getValue())
     {
         selecting = false;
         editingNote = false;
@@ -1411,7 +1417,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
     
     if (!processor->isPlaying)
     {
-//        g.setColour (Colours::whitesmoke);
         if (processor->undoMgr->inRedo)
         {
 //            std::cout << "paint inUndo   " << "\n";
@@ -1491,6 +1496,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
         }
         
 //        std::cout << "Paint "<< "\n"
+        //Paint the selection rectangles and green velocity graph
         Point<float> prevVelPoint;
         for (int i=0;i<displayedSelection.size();i++)
         {
@@ -1667,13 +1673,26 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 editingVelocities = false;
             altKeyPressed = false;
         }
-        if (editingVelocities.getValue())
+        
+        if (markingTargetNotes)
         {
-//            if (getMouseCursor()!=editVelocityCursor)
+//            std::cout << "selectionMarkerCursor\n";
+            selecting = false;
+            if (getMouseCursor()!=selectionMarkerCursor)
+                setMouseCursor(selectionMarkerCursor);
+        }
+        else if (clearingTargetNotes)
+        {
+//            std::cout << "clearingTargetNotes\n";
+            selecting = false;
+            if (getMouseCursor()!=selectionUnMarkerCursor)
+                setMouseCursor(selectionUnMarkerCursor);
+        }
+        else if (editingVelocities.getValue())
+        {
+            if (getMouseCursor()!=editVelocityCursor)
                 setMouseCursor(editVelocityCursor);
         }
-        else if (lassoSelectMode.getValue())
-            setMouseCursor(markTargetNotesCursor);
         else
             setMouseCursor(MouseCursor::NormalCursor);
         repaint();
@@ -1715,8 +1734,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     {
         stopTimer(TIMER_MOUSE_HOLD);
 //        std::cout << "Here - mouse hold " << selectionAnchor.getY() << "\n";
-        if (hoverChord<0 && !editingVelocities.getValue())
-            selecting = true;
+        if (hoverChord<0 && !editingVelocities.getValue() && !markingTargetNotes && !clearingTargetNotes)
+            selecting = true; //Could either be lasso or normal selection
     }
     else if (timerID == TIMER_MOUSE_UP)
     {
@@ -1839,9 +1858,13 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         {
             if (selecting && !ModifierKeys::getCurrentModifiers().isAltDown())
             {
-//                int mousePosInTicks = -1;
+                std::cout << "n displayedSelection" <<displayedSelection.size()<<"\n";
+                int xInTicksLeft = 0;
+                int xInTicksRight = 99;
+                Rectangle<float> selRect = Rectangle<float>();
                 if (!ModifierKeys::getCurrentModifiers().isCommandDown())
                     clearSelectedNotes();
+                //Use latest point to extend the selection region (region may be a Rectangle or Path)
                 if (selectionAnchor.getX() > curDragPosition.getX())
                 {
                     if (selectionAnchor.getY() > curDragPosition.getY())
@@ -1868,20 +1891,22 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                                                                            curDragPosition.getX(),curDragPosition.getY());
                     }
                 }
-                const int xInTicksLeft = ((selectionRect.getX() - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/
+                xInTicksLeft = ((selectionRect.getX() - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/
                 horizontalScale + processor->getTimeInTicks();
-                const int xInTicksRight = ((selectionRect.getRight() - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/
+                
+                xInTicksRight = ((selectionRect.getRight() - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/
                 horizontalScale + processor->getTimeInTicks();
-                Rectangle<float> selRect = Rectangle<float>::leftTopRightBottom((float)selectionRect.getX(),
+                selRect = Rectangle<float>::leftTopRightBottom((float)selectionRect.getX(),
                                                                                 (float)selectionRect.getY(),
                                                                                 (float)selectionRect.getRight(),
                                                                                 (float)selectionRect.getBottom()
                                                                                 );
+
+                //Check all sequence steps within time range of region to see if they are in the region
                 newlySelectedNotes.clear();
                 for (int step=0;step<pSequence->size();step++)
                 {
-                    if (/*pSequence->at(step)->chordTopStep==-1 &&*/
-                        pSequence->at(step)->getTimeStamp() >= xInTicksLeft
+                    if (pSequence->at(step)->getTimeStamp() >= xInTicksLeft
                         && pSequence->at(step)->getTimeStamp() <= xInTicksRight)
                     {
                         const Rectangle<float> scaledHead = pSequence->at(step)->head;
@@ -1932,6 +1957,79 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                         +" width:"+String(maxSelNoteTime-minSelNoteTime);
                     }
 
+                sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
+                repaint();
+            }
+            else if ((markingTargetNotes || clearingTargetNotes) && !ModifierKeys::getCurrentModifiers().isAltDown())
+            {
+//                if (!ModifierKeys::getCurrentModifiers().isCommandDown())
+//                    clearSelectedNotes();
+//                int mouseY = curDragPosition.getY()/verticalScale-topMargin;
+                Point<float> mousePt = Point<float>(curDragPosition.getX(),curDragPosition.getY());
+//                std::cout << "mousex, Y "<<curDragPosition.getX()<<" "<<curDragPosition.getY()<<"\n";
+                newlySelectedNotes.clear();
+                for (int step=0;step<pSequence->size();step++)
+                {
+                    if (true)///*pSequence->at(step)->chordTopStep==-1 &&*/
+                        //pSequence->at(step)->getTimeStamp() >= xInTicksLeft
+                        //&& pSequence->at(step)->getTimeStamp() <= xInTicksRight)
+                    {
+                        const Rectangle<float> scaledHead = pSequence->at(step)->head;
+                        const Rectangle<float> head = Rectangle<float>(
+                                                                       scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                                                                       scaledHead.getY()*verticalScale,
+                                                                       scaledHead.getWidth()*horizontalScale,
+                                                                       scaledHead.getHeight()*verticalScale);
+//                        std::cout << "head "<<head.getX()<<" "<<head.getY()<<"\n";
+                        if (head.contains (mousePt))
+                        {
+                            newlySelectedNotes.add(step);
+//                            std::cout << "hit "<<step<<"\n";
+                        }
+                    }
+                }
+                int minSelNoteTime = INT_MAX;
+                int maxSelNoteTime = 0;
+                for (int i=0;i<selectedNotes.size();i++)
+                {
+                    if (!displayedSelection.contains(selectedNotes[i]))
+                        displayedSelection.add(selectedNotes[i]);
+                }
+                for (int i=0;i<newlySelectedNotes.size();i++)
+                {
+                    if (markingTargetNotes && !displayedSelection.contains(newlySelectedNotes[i]))
+                    {
+                        displayedSelection.add(newlySelectedNotes[i]);
+                        selectedNotes.add(newlySelectedNotes[i]);
+                    }
+                    else if (clearingTargetNotes && displayedSelection.contains(newlySelectedNotes[i]))
+                    {
+                        displayedSelection.remove(displayedSelection.indexOf(newlySelectedNotes[i]));
+                        selectedNotes.remove(selectedNotes.indexOf(newlySelectedNotes[i]));
+                    }
+                    
+                    if (pSequence->at(newlySelectedNotes[i])->getTimeStamp()<minSelNoteTime)
+                        minSelNoteTime = pSequence->at(newlySelectedNotes[i])->getTimeStamp();
+                    if (pSequence->at(newlySelectedNotes[i])->getTimeStamp()>maxSelNoteTime)
+                        maxSelNoteTime = pSequence->at(newlySelectedNotes[i])->getTimeStamp();
+                }
+                
+                NoteTimeComparator comparator(processor);
+                displayedSelection.sort(comparator);
+                
+                std::cout
+                <<  " selected "<<selectedNotes.size()
+                <<  " newlySelected "<<newlySelectedNotes.size()
+                <<  " displayedSelection "<<displayedSelection.size()
+                <<  "\n";
+                if (newlySelectedNotes.size()==0)
+                    hoverInfo.clear();
+                else
+                {
+                    hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
+                    +" width:"+String(maxSelNoteTime-minSelNoteTime);
+                }
+                
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
                 repaint();
             }

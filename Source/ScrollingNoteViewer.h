@@ -77,6 +77,7 @@ public:
     ~ScrollingNoteViewer();
     
     MouseCursor editVelocityCursor;
+    MouseCursor lassoCursor;
     MouseCursor getMouseCursorFromZipFile(const String& filename) {
         if (iconsFromZipFile.size() == 0)
         {
@@ -96,21 +97,21 @@ public:
                 }
             }
         }
-        Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
+        ScopedPointer<Drawable> image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
         juce::Image img =  juce::Image(juce::Image::ARGB, 32, 32, true);
         Graphics g(img);
         image->draw(g, 1.0f);
         return MouseCursor(img,0,0);
     }
-    MouseCursor markTargetNotesCursor;
-    MouseCursor clearTargetNotesCursor;
+    MouseCursor selectionMarkerCursor;
+    MouseCursor selectionUnMarkerCursor;
     MouseCursor getCircleCursor(Colour col, float diameter)
     {
         juce::Image img =  juce::Image(juce::Image::ARGB, 32, 32, true);
+        col = col.withAlpha(0.9f);
         Graphics g(img);
         g.setColour (col);
-        g.fillEllipse((1.0f-diameter)/2, (1-diameter)/2, 32*diameter, 32*diameter);
-//        image->draw(g, 1.0f);
+        g.fillEllipse ((1.0f-diameter)/2.0f, (1-diameter)/2.0f, 32.f*diameter, 32.f*diameter);
         return MouseCursor(img,0,0);
     }
     
@@ -316,6 +317,8 @@ public:
     Value editingVelocities; //Edit velocity mode, toggled by editVelocities toolbar button
     bool altKeyPressed; //Holding this key enables editingVelocities
     Value lassoSelectMode;
+    bool markingTargetNotes; //True if in mode to mark or clear target notes
+    bool clearingTargetNotes; //If in markingMode: True if marking target notes, false if clearing
     
     bool showingChords;
     void setShowingChords(bool showing)
@@ -363,6 +366,7 @@ private:
     double offTimeAfterDrag;
     Point<int> selectionAnchor;
     Rectangle<int> selectionRect;
+    Path lassoShape;
     Array<int> selectedNotes;
     Array<int> newlySelectedNotes;
     Array<int> displayedSelection;
@@ -463,6 +467,37 @@ private:
         }
 //        Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
         return iconNames.indexOf (filename);
+    }
+    
+    int getSizeOfPathType (Path::Iterator::PathElementType t)
+    {
+        switch (t)
+        {
+            case (Path::Iterator::startNewSubPath):
+                return 3;
+            case (Path::Iterator::lineTo):
+                return 3;
+            case (Path::Iterator::quadraticTo):
+                return 5;
+            case (Path::Iterator::cubicTo):
+                return 7;
+            case (Path::Iterator::closePath):
+                return 1;
+            default:
+                return 0;
+        }
+    }
+    
+    int getNumElements (Path p)
+    {
+        Path::Iterator i (p);
+        int numElements = 0;
+        while (i.next() )
+        {
+            numElements += getSizeOfPathType (i.elementType);
+        }
+        
+        return numElements;
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ScrollingNoteViewer)
