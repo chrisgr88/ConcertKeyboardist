@@ -65,16 +65,28 @@ altToolbarFactory(this)
             pHumanizeVelocity->textBox.setText(".6,.8");
             humanizeVelocityAmount = ".6,.8";
         }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::_markTargetNotes)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionAdd)
         {
-            pMarkTargetNotes = mainToolbar.getItemComponent(i);
-            pMarkTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            pMarqueeSelectionAdd = mainToolbar.getItemComponent(i);
+            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
             mainToolbar.getItemComponent(i)->addListener(this);
         }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::_clearTargetNotes)
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionRemove)
         {
-            pClearTargetNotes = mainToolbar.getItemComponent(i);
-            pClearTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            pMarqueeSelectionRemove = mainToolbar.getItemComponent(i);
+            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+            mainToolbar.getItemComponent(i)->addListener(this);
+        }
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_markSelectedNotes)
+        {
+            pMarkSelectedNotes = mainToolbar.getItemComponent(i);
+            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            mainToolbar.getItemComponent(i)->addListener(this);
+        }
+        else if (id == MainToolbarItemFactory::ToolbarItemIds::_clearSelectedNotes)
+        {
+            pClearSelectedNotes = mainToolbar.getItemComponent(i);
+            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
             mainToolbar.getItemComponent(i)->addListener(this);
         }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
@@ -254,41 +266,103 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("editRedo");
         else if(MainToolbarItemFactory::ToolbarItemIds::_toggleActivity == id)
             sendActionMessage("toggleActivity");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_markTargetNotes == id)
+        
+        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionAdd == id)
         {
-            bool foo = pMarkTargetNotes->getToggleState();
-//            std::cout << "at 2 pMarkTargetNotes toggleState " << foo<<"\n";
-            if(foo)
+            if(pMarqueeSelectionAdd->getToggleState())
             {
-                pMarkTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-                noteViewer.clearingTargetNotes = false;
-                noteViewer.markingTargetNotes = false;
+                pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                noteViewer.marqueeAddingNotes = false;
+                noteViewer.clearingSelectedNotes = false;
+                noteViewer.markingSelectedNotes = false;
             }
             else
             {
-                pClearTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-                pMarkTargetNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
-                noteViewer.markingTargetNotes = true;
-                noteViewer.clearingTargetNotes = false;
+                noteViewer.editingVelocities.setValue(false);
+                pMarqueeSelectionAdd->setToggleState(true, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeAddingNotes = true;
+                pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingSelectedNotes = false;
+                pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.markingSelectedNotes = false;
             }
         }
-        else if(MainToolbarItemFactory::ToolbarItemIds::_clearTargetNotes == id)
+        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionRemove == id)
         {
-//            std::cout << "at 2 ClearTargetNotes toggleState " << pClearTargetNotes->getToggleState()<<"\n";
-            if(pClearTargetNotes->getToggleState())
+            if(pMarqueeSelectionRemove->getToggleState())
             {
-                pClearTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-                noteViewer.clearingTargetNotes = false;
-                noteViewer.markingTargetNotes = false;
+                pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                noteViewer.marqueeAddingNotes = false;
+                noteViewer.clearingSelectedNotes = false;
+                noteViewer.markingSelectedNotes = false;
             }
             else
             {
-                pMarkTargetNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-                pClearTargetNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
-                noteViewer.clearingTargetNotes = true;
-                noteViewer.markingTargetNotes = false;
+                noteViewer.editingVelocities.setValue(false);
+                pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeAddingNotes = false;
+                pMarqueeSelectionRemove->setToggleState(true, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = true;
+                pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingSelectedNotes = false;
+                pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.markingSelectedNotes = false;
             }
         }
+        
+        else if(MainToolbarItemFactory::ToolbarItemIds::_markSelectedNotes == id)
+        {
+            if(pMarkSelectedNotes->getToggleState())
+            {
+                pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                noteViewer.marqueeAddingNotes = false;
+                noteViewer.clearingSelectedNotes = false;
+                noteViewer.markingSelectedNotes = false;
+            }
+            else
+            {
+                noteViewer.editingVelocities.setValue(false);
+                pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeAddingNotes = false;
+                pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingSelectedNotes = false;
+                pMarkSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+                noteViewer.markingSelectedNotes = true;
+            }
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_clearSelectedNotes == id)
+        {
+//            std::cout << "at 2 ClearSelectedNotes toggleState " << pClearSelectedNotes->getToggleState()<<"\n";
+            if(pClearSelectedNotes->getToggleState())
+            {
+                pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                noteViewer.marqueeAddingNotes = false;
+                noteViewer.clearingSelectedNotes = false;
+                noteViewer.markingSelectedNotes = false;
+            }
+            else
+            {
+                noteViewer.editingVelocities.setValue(false);
+                pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeAddingNotes = false;
+                pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                pClearSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingSelectedNotes = true;
+                pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.markingSelectedNotes = false;
+            }
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::_clearAllSelection == id)
+            noteViewer.clearSelectedNotes();
         else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
         {
             chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
@@ -296,17 +370,27 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
         {
-//            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
             sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeVelocity == id)
             sendActionMessage("humanizeVelocity:"+pHumanizeVelocity->textBox.getText());
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
             sendActionMessage("_showChords");
-//        else if(MainToolbarItemFactory::ToolbarItemIds::_lasso == id)
-//            noteViewer.repaint();
         else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
+        {
+            if (noteViewer.editingVelocities.getValue())
+            {
+                pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeAddingNotes = false;
+                pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.marqueeRemovingNotes = false;
+                pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.clearingSelectedNotes = false;
+                pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+                noteViewer.markingSelectedNotes = false;
+            }
             noteViewer.repaint();
+        }
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
         {
             std::cout << "addSustain\n";

@@ -204,9 +204,11 @@ private:
             edit_undo       = 4,
             edit_redo       = 5,
             _toggleActivity     = 25,
-            _lasso   = 7,
-            _markTargetNotes  = 23,
-            _clearTargetNotes = 24,
+            _markSelectedNotes  = 23,
+            _clearSelectedNotes = 24,
+            _marqueeSelectionAdd  = 26,
+            _marqueeSelectionRemove = 27,
+            _clearAllSelection = 28,
             _chain          = 8,
             _chordEditToggle = 9,
             _editVelocities  = 10,
@@ -238,9 +240,11 @@ private:
             ids.add (edit_undo);
             ids.add (edit_redo);
             ids.add (_toggleActivity);
-            ids.add (_lasso);
-            ids.add (_markTargetNotes);
-            ids.add (_clearTargetNotes);
+            ids.add (_marqueeSelectionAdd);
+            ids.add (_marqueeSelectionRemove);
+            ids.add (_clearAllSelection);
+            ids.add (_markSelectedNotes);
+            ids.add (_clearSelectedNotes);
             ids.add (_chain);
             ids.add (_addSustain);
             ids.add (_addSoft);
@@ -281,10 +285,12 @@ private:
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
-//            ids.add (_lasso);
             ids.add (separatorBarId);
-            ids.add (_markTargetNotes);
-            ids.add (_clearTargetNotes);
+            ids.add (_marqueeSelectionAdd);
+            ids.add (_marqueeSelectionRemove);
+            ids.add (_markSelectedNotes);
+            ids.add (_clearSelectedNotes);
+            ids.add (_clearAllSelection);
             ids.add (separatorBarId);
             ids.add (_toggleActivity);
             ids.add (separatorBarId);
@@ -323,24 +329,18 @@ private:
                 case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
                     
                 case _toggleActivity:        return createButtonFromZipFileSVG (itemId, "Toggle Target Notes", "toggleActivityTool.svg");
-                case _markTargetNotes: return createButtonFromZipFileSVG (itemId, "Set Target Notes",
+                    
+                case _marqueeSelectionAdd: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Select",
+                                "MarqueeAddButton.svg", "MarqueeAddButton-pressed.svg");
+                case _marqueeSelectionRemove: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Deselect",
+                                "MarqueeRemoveButton.svg", "MarqueeRemoveButton-pressed.svg");
+                    
+                case _markSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Select",
                             "SelectionMarkerButton.svg", "SelectionMarkerButton-pressed.svg");
-//                {
-//                    ToolbarButton *markTargetNotes = createButtonFromZipFileSVG (itemId, "Set Target Notes",
-//                            "makeActive.svg", "makeActive-pressed.svg");
-////                    markTargetNotes->getToggleStateValue().referTo(pViewer->markingTargetNotes);
-//                    markTargetNotes->setClickingTogglesState(true);
-//                    return markTargetNotes;
-//                }
-                case _clearTargetNotes: return createButtonFromZipFileSVG (itemId, "Clear Target Notes",
+                case _clearSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Deselect",
                               "SelectionUnMarkerButton.svg", "SelectionUnMarkerButton-pressed.svg");
-//                {
-//                    ToolbarButton *clearTargetNotes = createButtonFromZipFileSVG (itemId, "Clear Target Notes",
-//                            "makeInactive.svg", "makeInactive-pressed.svg");
-////                    clearTargetNotes->getToggleStateValue().referTo(pViewer->clearingTargetNotes);
-//                    clearTargetNotes->setClickingTogglesState(true);
-//                    return clearTargetNotes;
-//                }
+                case _clearAllSelection: return createButtonFromZipFileSVG (itemId, "Deselect All Notes",
+                            "ClearSelectionButton.svg");
                 case _chain:        return createButtonFromZipFileSVG (itemId, "Chain Notes at Given Interval", "chain.svg");
                 case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
                 case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
@@ -357,14 +357,6 @@ private:
                 }
                 case create_chord: return  createButtonFromZipFileSVG (itemId, "Create Chord", "createChord.svg");
                 case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete Chord", "deleteChord.svg");
-//                case _lasso:
-//                {
-//                    ToolbarButton *lasso = createButtonFromZipFileSVG (itemId, "Lasso Tool", "LassoTool.svg",
-//                                                                       "LassoTool-Pressed.svg");
-//                    lasso->getToggleStateValue().referTo(pViewer->lassoSelectMode);
-//                    lasso->setClickingTogglesState(true);
-//                    return lasso;
-//                }
                 case _editVelocities:
                 {
                     ToolbarButton *editVelButton = createButtonFromZipFileSVG (itemId, "Edit Note Velocities",
@@ -1158,6 +1150,14 @@ private:
         
         ViewerFrame *pViewerFrame;
     };
+    
+    void clearSelectingNotes()
+    {
+        noteViewer.clearingSelectedNotes = false;
+        noteViewer.markingSelectedNotes = false;
+        noteViewer.clearingSelectedNotes = false;
+        noteViewer.markingSelectedNotes = false;
+    }
 
     MainToolbarItemFactory mainFactory;
     AltToolbarItemFactory altToolbarFactory;
@@ -1168,8 +1168,10 @@ private:
     AltToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
-    ToolbarItemComponent *pMarkTargetNotes;
-    ToolbarItemComponent *pClearTargetNotes;
+    ToolbarItemComponent *pMarkSelectedNotes;
+    ToolbarItemComponent *pClearSelectedNotes;
+    ToolbarItemComponent *pMarqueeSelectionAdd;
+    ToolbarItemComponent *pMarqueeSelectionRemove;
     
     double chainAmount;
     String humanizeVelocityAmount;

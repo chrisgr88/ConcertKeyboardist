@@ -344,8 +344,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 {
 //    std::cout << "entering loadSequence \n";
     targetNoteTimes.clear();
-    try {
-        
+  try {
         
     if (retainEdits == doNotRetainEdits)
     {
@@ -887,9 +886,12 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             }
         }
     }
+  } catch (const std::out_of_range& ex) {
+      std::cout << " error loadSequence: reloading file " << "\n";
+  }
     
     //End of reloading file ###
-//    compareAllNotes("End of reloading file");
+  try {
     theSequence.clear();
     
 //      Transfer tracks to "theSequence"
@@ -916,9 +918,13 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             }
         }
     }
+  } catch (const std::out_of_range& ex) {
+      std::cout << " error loadSequence: building theSequence " << "\n";
+  }
     
     if (theSequence.size()>0)
     {
+      try {
         struct {
             bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
             {
@@ -948,12 +954,17 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
             if (theSequence.at(step)->getOffTime() > seqDurationInTicks)
                 seqDurationInTicks = theSequence.at(step)->getOffTime();
         }
+      } catch (const std::out_of_range& ex) {
+          std::cout << " error loadSequence: before chord processing " << "\n";
+      }
+        
         //seqDurationInTicks = theSequence.back()->getTimeStamp(); //We update this here so that it reflects currently active tracks
 
         //###
         //Build the chords list if we either loaded a midi file or loaded a ckf file (and probably read a chords list)
         //Issue - What if sequence does not include all tracks?
 //        std::cout << "Build the chords list \n";
+      try {
         if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
         {
             if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
@@ -1053,9 +1064,13 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 }
             }
         }
+      } catch (const std::out_of_range& ex) {
+          std::cout << " error loadSequence: updating chords " << "\n";
+      }
         
         //###
 //        std::cout << "rds \n";
+      try {
         if (targetNoteTimes.size()>0)
         {
             double prevTimeStamp = -1;
@@ -1241,10 +1256,23 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 chordNotes.clear();
             }
         }
+      } catch (const std::out_of_range& ex) {
+          std::cout << " error loadSequence: processing chords " << "\n";
+      }
         
 //        for (int i=0;i<chords.size();i++)
 //            std::cout << "Chord "<<i<<" "<<chords[i].timeStamp<<" "<<chords[i].nNotes<<"\n";
-        std::sort(theSequence.begin(), theSequence.end(), customCompare);
+      try {
+          struct {
+              bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+              {
+                  if (a->getTimeStamp()==b->getTimeStamp())
+                      return a->noteNumber > b->noteNumber;
+                  else
+                      return a->getTimeStamp() < b->getTimeStamp();
+              }
+          } customCompare;
+          std::sort(theSequence.begin(), theSequence.end(), customCompare);
         for (int step=0;step<theSequence.size();step++)
             theSequence.at(step)->currentStep = step;
         //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
@@ -1341,7 +1369,11 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
         //triggeredNotes are steps that start no later than the triggeredNoteLimit from the chainTrigger.
         //triggeredOffNotes are triggeredNotes that end before the END of the next chainTrigger note.
 //        std::cout << "Determine which steps are triggered notes \n";
+      } catch (const std::out_of_range& ex) {
+          std::cout << " error loadSequence: chaining " << "\n";
+      }
 
+      try {
         for (int step=0; step<theSequence.size();step++)
         {
             if ( theSequence.at(step)->getTimeStamp() <= theSequence.at(theSequence.at(step)->chainTrigger)->getTimeStamp()+triggeredNoteLimit)
@@ -1381,15 +1413,16 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                 theSequence.at(step)->autoplayedNote = true;
             }
         }
+      } catch (const std::out_of_range& ex) {
+          std::cout << " error loadSequence: finding triggered and triggeredOff notes " << "\n";
+      }
     }
+        
     setLoadingFile(false);
 //    dumpData(0, 20, -1);
     //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
 //    compareAllNotes("End of loadSequence");
 
-    } catch (const std::out_of_range& ex) {
-        std::cout << " error in load sequence " << "\n";
-    }
 //    std::cout << "End of loadSequence \n";
     return (theSequence.size()>0);
 } //End of loadSequence

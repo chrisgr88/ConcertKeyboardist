@@ -84,19 +84,13 @@ ApplicationProperties& getAppProperties();
         
         else if (message == "editRedo")
             perform (CommandIDs::editRedo);
-//        else if (message == "lasso")
-//            perform (CommandIDs::Lasso);
         else if (message == "play")
             perform (CommandIDs::playPause);
-//        else if (message == "pause")
-//            perform (CommandIDs::pause);
         else if (message == "rewind")
             perform (CommandIDs::rewind);
         
         else if (message == "listenToSelection")
             perform (CommandIDs::listenToSelection);
-//        else if (message == "playFromPreviousStart")
-//            perform (CommandIDs::playFromPreviousStart);
         
         else if (message == "toggleActivity")
             perform (CommandIDs::toggleSelectedNotesActive);
@@ -159,10 +153,6 @@ ApplicationProperties& getAppProperties();
         {
             perform (CommandIDs::showChords);
         }
-//        else if (message == "_lasso")
-//        {
-//            perform (CommandIDs::Lasso);;
-//        }
         else if (message == "_editVelocities")
         {
             perform (CommandIDs::editVelocities);
@@ -303,11 +293,11 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::increaseTempo:
                 result.setInfo ("IncreaseTempo", "Increase Tempo", category, 0);
-                result.defaultKeypresses.add (KeyPress ('2', ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress ('7', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::decreaseTempo:
                 result.setInfo ("DecreaseTempo", "Decrease Tempo", category, 0);
-                result.defaultKeypresses.add (KeyPress ('1', ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress ('6', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::scoreSettings:
                 result.setInfo ("Tracks...", "Tracks in this score", category, 0);
@@ -329,17 +319,25 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("SelectAll", "SelectAll", category, 0);
                 result.addDefaultKeypress ('a', ModifierKeys::commandModifier);
                 break;
-            case CommandIDs::markTargetNotes:
-                result.setInfo ("markTargetNotes", "markTargetNotes", category, 0);
-                result.addDefaultKeypress ('t', ModifierKeys::shiftModifier);
+            case CommandIDs::marqueeSelectionAdd:
+                result.setInfo ("marqueeSelectionAdd", "marqueeSelectionAdd", category, 0);
+                result.addDefaultKeypress ('1', ModifierKeys::noModifiers);
                 break;
-            case CommandIDs::clearTargetNotes:
-                result.setInfo ("clearTargetNotes", "clearTargetNotes", category, 0);
-                result.addDefaultKeypress ('t', ModifierKeys::commandModifier|ModifierKeys::shiftModifier);
+            case CommandIDs::marqueeSelectionRemove:
+                result.setInfo ("marqueeSelectionRemove", "marqueeSelectionRemove", category, 0);
+                result.addDefaultKeypress ('2', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::markSelectedNotes:
+                result.setInfo ("markSelectedNotes", "markSelectedNotes", category, 0);
+                result.addDefaultKeypress ('3', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::clearSelectedNotes:
+                result.setInfo ("clearSelectedNotes", "clearSelectedNotes", category, 0);
+                result.addDefaultKeypress ('4', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::toggleSelectedNotesActive:
                 result.setInfo ("toggleSelectedNotesActive", "toggleSelectedNotesActive", category, 0);
-                result.addDefaultKeypress ('t', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('5', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::setSelectedNotesActive:
                 result.setInfo ("setSelectedNotesActive", "setSelectedNotesActive", category, 0);
@@ -381,13 +379,9 @@ ApplicationProperties& getAppProperties();
             case CommandIDs::showChords:
                 result.setInfo ("showChords", "showChords", category, 0);
                 break;
-//            case CommandIDs::Lasso:
-//                result.setInfo ("Lasso", "Lasso", category, 0);
-//                result.addDefaultKeypress ('l', ModifierKeys::noModifiers);
-//                break;
             case CommandIDs::editVelocities:
                 result.setInfo ("editVelocities", "Edit Velocities", category, 0);
-                result.addDefaultKeypress ('v', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('5', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::create_chord:
                 result.setInfo ("create_chord", "create_chord", category, 0);
@@ -517,27 +511,25 @@ ApplicationProperties& getAppProperties();
             CommandIDs::fileSave,
             CommandIDs::fileSaveAs,
             CommandIDs::playPause,
-//            CommandIDs::playFromCurrentPlayhead,
             CommandIDs::pause,
-//            CommandIDs::playFromPreviousStart,
             CommandIDs::listenToSelection,
             CommandIDs::increaseTempo,
             CommandIDs::decreaseTempo,
             CommandIDs::scoreSettings,
             CommandIDs::editUndo,
             CommandIDs::editRedo,
-//            CommandIDs::Lasso,
             CommandIDs::clearSelection,
             CommandIDs::selectAll,
             CommandIDs::toggleSelectedNotesActive,
-            CommandIDs::markTargetNotes,
-            CommandIDs::clearTargetNotes,
+            CommandIDs::marqueeSelectionAdd,
+            CommandIDs::marqueeSelectionRemove,
+            CommandIDs::markSelectedNotes,
+            CommandIDs::clearSelectedNotes,
             CommandIDs::setSelectedNotesActive,
             CommandIDs::setSelectedNotesInactive,
             CommandIDs::chainSelectedNotes,
             CommandIDs::velHumanizeSelection,
             CommandIDs::timeHumanizeSelection,
-            
             CommandIDs::addSustain,
             CommandIDs::deleteSustain,
             CommandIDs::addSoft,
@@ -818,36 +810,6 @@ ApplicationProperties& getAppProperties();
                     pViewerFrame->noteViewer.setShowingChords(!pViewerFrame->noteViewer.showingChords);
                     pViewerFrame->resized();
                     pViewerFrame->repaint();
-                }
-                break;
-//            case CommandIDs::Lasso:
-//                std::cout <<"Lasso\n";
-//                if (!midiProcessor.isPlaying)
-//                {
-//                    if (pViewerFrame->noteViewer.lassoSelectMode.getValue())
-//                        pViewerFrame->noteViewer.lassoSelectMode = false;
-//                    else
-//                        pViewerFrame->noteViewer.lassoSelectMode = true;
-//                }
-//                break;
-            case CommandIDs::markTargetNotes:
-                std::cout <<"markTargetNotes\n";
-                if (!midiProcessor.isPlaying)
-                {
-                    if (pViewerFrame->noteViewer.lassoSelectMode.getValue())
-                        pViewerFrame->noteViewer.lassoSelectMode = false;
-                    else
-                        pViewerFrame->noteViewer.lassoSelectMode = true;
-                }
-                break;
-            case CommandIDs::clearTargetNotes:
-                std::cout <<"clearTargetNotes\n";
-                if (!midiProcessor.isPlaying)
-                {
-                    if (pViewerFrame->noteViewer.lassoSelectMode.getValue())
-                        pViewerFrame->noteViewer.lassoSelectMode = false;
-                    else
-                        pViewerFrame->noteViewer.lassoSelectMode = true;
                 }
                 break;
             case CommandIDs::editVelocities:

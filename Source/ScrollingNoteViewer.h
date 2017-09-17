@@ -77,7 +77,6 @@ public:
     ~ScrollingNoteViewer();
     
     MouseCursor editVelocityCursor;
-    MouseCursor lassoCursor;
     MouseCursor getMouseCursorFromZipFile(const String& filename) {
         if (iconsFromZipFile.size() == 0)
         {
@@ -105,6 +104,8 @@ public:
     }
     MouseCursor selectionMarkerCursor;
     MouseCursor selectionUnMarkerCursor;
+    MouseCursor marqueeAddingCursor;
+    MouseCursor marqueeRemovingCursor;
     MouseCursor getCircleCursor(Colour col, float diameter)
     {
         juce::Image img =  juce::Image(juce::Image::ARGB, 32, 32, true);
@@ -316,9 +317,10 @@ public:
     
     Value editingVelocities; //Edit velocity mode, toggled by editVelocities toolbar button
     bool altKeyPressed; //Holding this key enables editingVelocities
-    Value lassoSelectMode;
-    bool markingTargetNotes; //True if in mode to mark or clear target notes
-    bool clearingTargetNotes; //If in markingMode: True if marking target notes, false if clearing
+    bool marqueeAddingNotes; //True if in marquee add note mode
+    bool marqueeRemovingNotes; //If in marquee remove note mode
+    bool markingSelectedNotes; //True if in mode to mark or clear target notes
+    bool clearingSelectedNotes; //If in markingMode: True if marking target notes, false if clearing
     
     bool showingChords;
     void setShowingChords(bool showing)
@@ -366,7 +368,6 @@ private:
     double offTimeAfterDrag;
     Point<int> selectionAnchor;
     Rectangle<int> selectionRect;
-    Path lassoShape;
     Array<int> selectedNotes;
     Array<int> newlySelectedNotes;
     Array<int> displayedSelection;

@@ -7,7 +7,7 @@
     <g transform="matrix(0.883377,0,0,1.06427,2.63754,5.42223)">
         <path d="M6.441,14.201C6.435,14.255 9.393,16.221 9.659,16.487C9.767,16.596 11.893,8.174 11.856,8.278C11.845,8.307 15.178,17.382 15.245,17.426C15.31,17.469 17.809,8.758 17.684,8.726C17.657,8.718 20.082,13.332 20.153,13.415C20.179,13.445 22.656,12.452 22.672,12.403C22.674,12.398 23.183,13.421 23.734,14.558C24.408,15.952 25.145,17.517 25.087,17.57" style="fill:rgb(102,98,98);fill-opacity:0;"/>
         <g transform="matrix(1.64825,0,0,1.6854,-20.9537,0.484733)">
-            <rect x="15.022" y="5.052" width="13.736" height="5.575" style="fill:rgb(245,245,245);fill-opacity:0;stroke:rgb(245,245,245);stroke-width:1.22px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+            <rect x="15.022" y="5.052" width="13.736" height="5.575" style="fill:rgb(245,245,245);fill-opacity:0;stroke:rgb(245,245,245);stroke-opacity:0.898039;stroke-width:1.22px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
         </g>
         <g transform="matrix(0.617465,-0.000415663,0.000426845,0.939611,1.23061,7.12951)">
             <path d="M17,7L28,7" style="fill:none;stroke:rgb(245,245,245);stroke-width:2.48px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
