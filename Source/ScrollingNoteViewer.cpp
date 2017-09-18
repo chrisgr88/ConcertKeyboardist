@@ -225,6 +225,10 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
                 steps.add(noteBeingDraggedOn);
             processor->changeNoteTimes(steps, deltaTimeDrag);
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+            selectedNotes.clear();
+            for (int step=0;step<processor->sequenceObject.theSequence.size();step++)
+                if (processor->sequenceObject.theSequence.at(step)->isSelected)
+                    selectedNotes.add(processor->sequenceObject.theSequence.at(step)->currentStep);
         }
         draggingTime = false;
         hoveringOver = HOVER_NONE;
@@ -1489,7 +1493,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
 //                if(processor->sequenceObject.chords.at(ch).timeStamp<100)
 //                    std::cout << "rct xLeft, xRight " << rct.getX() << " " << rct.getRight()<<"\n";
                 float widthFactor;
-                if (hoverChord==ch || processor->sequenceObject.chords.at(ch).selected)
+                if (hoverChord==ch || processor->sequenceObject.chords.at(ch).chordSelected)
                 {
                     if (hoverChord==ch)
                         g.setColour (Colours::yellow);
@@ -2056,6 +2060,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     {
                         displayedSelection.add(newlySelectedNotes[i]);
                         selectedNotes.add(newlySelectedNotes[i]);
+                        pSequence->at(newlySelectedNotes[i])->isSelected = true;
                     }
                     else if (clearingSelectedNotes && displayedSelection.contains(newlySelectedNotes[i]))
                     {

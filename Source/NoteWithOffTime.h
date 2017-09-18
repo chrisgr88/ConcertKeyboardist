@@ -59,7 +59,7 @@ public:
     rectBar(-1),
     rectHead(-1),
     triggeringExprNote(-1),
-    selected(false),
+    isSelected(false),
     chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
@@ -99,7 +99,7 @@ public:
     rectBar(note.rectBar),
     rectHead(note.rectHead),
     triggeringExprNote(note.triggeringExprNote),
-    selected(note.selected),
+    isSelected(note.isSelected),
     chordTopStep(note.chordTopStep),
     muted(note.muted),
     head(note.head),
@@ -139,7 +139,7 @@ public:
     rectBar(-1),
     rectHead(-1),
     triggeringExprNote(-1),
-    selected(false),
+    isSelected(false),
     chordTopStep(-2),
     muted(false),
     head(Rectangle<float>()),
@@ -153,19 +153,19 @@ public:
     ~NoteWithOffTime()
     {
     };
-    void selectStep(bool sel)
-    {
-        selected = sel;
-    }
-    bool isSelected()
-    {
-        return selected;
-    }
-    bool invertSelected()
-    {
-        selected = !selected;
-        return selected;
-    }
+//    void selectStep(bool sel)
+//    {
+//        isSelected = sel;
+//    }
+//    bool isSelected()
+//    {
+//        return isSelected;
+//    }
+//    bool invertSelected()
+//    {
+//        isSelected = !isSelected;
+//        return isSelected;
+//    }
     
     inline void setTimeStamp(double ts)
     {
@@ -264,7 +264,7 @@ public:
     int rectBar; //GL Rect number of note bar
     int rectHead; //GL Rect number of note head
     uint8 triggeringExprNote; //The expr controller note that caused this note to be on
-    bool selected;
+    bool isSelected;
     int chordTopStep; //Highest note in a group of notes grouped as a chord. For highest is -1, and if not in chord.
     bool muted;
     Rectangle<float> head;

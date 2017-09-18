@@ -229,7 +229,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     {
         sequenceObject.theSequence.at(i)->noteOffNow = false;
         sequenceObject.theSequence.at(i)->sustaining = false;
-        sequenceObject.theSequence.at(i)->selected = false;
+//        sequenceObject.theSequence.at(i)->isSelected = false;
     }
     noteOnOffFifo.reset();
     scheduledNotes.clear();
@@ -1859,15 +1859,7 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
 {
     for (int i=0;i<steps.size();i++)
     {
-//        bool wasTargetNote = getNoteActivity(steps[i]);
-//        if (wasTargetNote)
-//            setAsNonTargetNote(steps[i]);
-        std::vector<std::shared_ptr<NoteWithOffTime>> pSelectedNotes;
-        for (int s=0;s<steps.size();s++)
-        {
-            sequenceObject.theSequence.at(s)->targetNote = getNoteActivity(steps[s]);
-            pSelectedNotes.push_back(sequenceObject.theSequence.at(s));
-        }
+        std::vector<std::shared_ptr<NoteWithOffTime>> selectedNotes;
         
         double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
         double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime();
@@ -1891,15 +1883,6 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
         }
         sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
         sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
-
-//        for (int i=0;i<pSelectedNotes.size();i++)
-//            if (pSelectedNotes.at(i)->targetNote)
-                //Won't work - note times change on rebuild sort.  How to retain target status??
-            
-//        if (wasTargetNote)
-//            setAsTargetNote(steps[i]);
-        
-        
     }
     sequenceObject.setChangedFlag(true);
     catchUp();

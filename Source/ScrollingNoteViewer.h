@@ -270,19 +270,23 @@ public:
     {
         selectedNotes = sel;
         processor->setCopyOfSelectedNotes(selectedNotes);
+        for (int i=0;i<processor->sequenceObject.theSequence.size();i++)
+            if (sel.contains(processor->sequenceObject.theSequence.at(i)->currentStep))
+                processor->sequenceObject.theSequence.at(i)->isSelected = true;
+            else
+                processor->sequenceObject.theSequence.at(i)->isSelected = false;
+            
         for (int i=0;i<processor->sequenceObject.chords.size();i++)
         {
-            processor->sequenceObject.chords.at(i).selected = true;
+            processor->sequenceObject.chords.at(i).chordSelected = true;
             for (int j=0;j<processor->sequenceObject.chords.at(i).notePointers.size();j++)
             {
                 if(!selectedNotes.contains(processor->sequenceObject.chords.at(i).notePointers.at(j)->currentStep))
                 {
-                    processor->sequenceObject.chords.at(i).selected = false;
+                    processor->sequenceObject.chords.at(i).chordSelected = false;
                     break;
                 }
             }
-            //                    if (processor->sequenceObject.chords.at(i).selected)
-            //                        std::cout <<  "selected chord "<< i <<  "\n";
         }
     }
     Array<int> getSelectedNotes()
@@ -296,7 +300,9 @@ public:
         newlySelectedNotes.clear();
         processor->setCopyOfSelectedNotes(selectedNotes);
         for (int i=0;i<processor->sequenceObject.chords.size();i++)
-            processor->sequenceObject.chords.at(i).selected = false;
+            processor->sequenceObject.chords.at(i).chordSelected = false;
+        for (int i=0;i<processor->sequenceObject.theSequence.size();i++)
+            processor->sequenceObject.theSequence.at(i)->isSelected = false;
         repaint();
     }
     void selectAll()
@@ -308,6 +314,7 @@ public:
         {
 //            if (processor->sequenceObject.isActiveTrack(processor->sequenceObject.theSequence.at(step)->track))
             selectedNotes.add(step);
+            processor->sequenceObject.theSequence.at(step)->isSelected = true;
             displayedSelection.add(step);
         }
         processor->setCopyOfSelectedNotes(selectedNotes);

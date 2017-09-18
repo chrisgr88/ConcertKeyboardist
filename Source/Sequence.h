@@ -493,7 +493,7 @@ public:
             offsets.clear();
             velRandSeed = 1;
             chordRect = Rectangle<float>();
-            selected = false;
+            chordSelected = false;
         }
         ChordDetail(ChordDetail const &ch) :
         chordTimeStamp(ch.chordTimeStamp),
@@ -508,7 +508,7 @@ public:
         offsets(ch.offsets),
         noteIds(ch.noteIds),
         chordRect(ch.chordRect),
-        selected(ch.selected)
+        chordSelected(ch.chordSelected)
         {
         }
     public:
@@ -524,7 +524,7 @@ public:
         std::vector<int> offsets; //Offsets from timeStamp of chord top note (or from chord time stamp????)
         std::vector<String> noteIds; //String(track)+"_"+String(channel)+"_"+String(noteNumber)
         Rectangle<float> chordRect; //Rectangle surrounding chord for display and hit testing. Value defined in makeNoteBars.
-        bool selected;
+        bool chordSelected;
     }; //110
     
     Array<double> targetNoteTimes;
