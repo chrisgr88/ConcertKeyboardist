@@ -1709,7 +1709,7 @@ void MIDIProcessor::humanizeChordNoteTimes ()
 //        std::cout << "Time Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
     }
     catchUp();
-    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
     
     pauseProcessing = false;
 }
@@ -1769,7 +1769,7 @@ void MIDIProcessor::humanizeChordNoteVelocities ()
 //        std::cout << "Vel Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
     }
     catchUp();
-    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), false, true);
     
     pauseProcessing = false;
 }

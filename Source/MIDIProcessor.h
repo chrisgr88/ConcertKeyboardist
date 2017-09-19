@@ -107,14 +107,16 @@ public:
     }
     
     //enum LoadType {loadFile, reAnalyzeOnly};
-    void buildSequenceAsOf(Sequence::LoadType type, Sequence::Retain retainEdits, double time)
+    void buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time,
+                            bool humanizeTime=false, bool humanizeVelocity=false)
     {
 //        std::cout << "entering buildSequenceAsOf \n";
         pauseGLRendering = true;
         HighResolutionTimer::stopTimer();
         if (type==Sequence::loadFile)
             lastUserPlayedSeqStep=-1;
-        if (sequenceObject.loadSequence(type, retainEdits))
+        
+        if (sequenceObject.loadSequence(type, retainEdits, humanizeTime, humanizeVelocity))
         {
             HighResolutionTimer::startTimer(timerIntervalInMS);
             rewind(time);  //Note that rewind now does a sendChangeMessage

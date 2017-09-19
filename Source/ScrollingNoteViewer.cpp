@@ -223,25 +223,17 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
                 steps = selectedNotes;
             else
                 steps.add(noteBeingDraggedOn);
+            //TODO - Save actual pointers to selected notes; Then refresh the selection(s) with notes' possibly changed "currentSteps"
+            std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
             processor->changeNoteTimes(steps, deltaTimeDrag);
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
-            selectedNotes.clear();
-            for (int step=0;step<processor->sequenceObject.theSequence.size();step++)
-                if (processor->sequenceObject.theSequence.at(step)->isSelected)
-                    selectedNotes.add(processor->sequenceObject.theSequence.at(step)->currentStep);
+            restoreSelectedNotes(pointersToSelectedNotes);
         }
         draggingTime = false;
         hoveringOver = HOVER_NONE;
     }
     else if (draggingVelocity)
     {
-        if (velocityAfterDrag != -1)
-        {
-//            processor->changeNoteVelocity(hoverStep, velocityAfterDrag);
-//            processor->catchUp();
-//            pSequence->at(hoverStep)->velocity = velocityAfterDrag;
-//            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
-        }
         draggingVelocity = false;
         hoveringOver = HOVER_NONE;
     }
@@ -1539,7 +1531,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
 //        std::cout << "in Paint displayedSelection "<< displayedSelection.size()<<"\n";
         for (int i=0;i<displayedSelection.size();i++)
         {
-//            std::cout << "At A displayedSelection index"<< i<<"\n";
+//            std::cout << "Paint DisplayedSelection "<< i<<" "<<displayedSelection[i]<<"\n";
             const Rectangle<float> scaledHead = pSequence->at(displayedSelection[i])->head;
             const Rectangle<float> head = Rectangle<float>(
                  scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,

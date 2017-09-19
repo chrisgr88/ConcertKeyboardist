@@ -340,7 +340,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
  <#loadSequence#>
  */
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
-bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
+bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanizeTimes, bool humanizeVelocities)
 {
 //    std::cout << "entering loadSequence \n";
     targetNoteTimes.clear();
@@ -1069,7 +1069,6 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
       }
         
         //###
-//        std::cout << "rds \n";
       try {
         if (targetNoteTimes.size()>0)
         {
@@ -1114,7 +1113,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //                    std::cout << thisStepChordNoteIndex<< " "<<step<<" timeSpec before "
 //                    <<chords[thisStepChordNoteIndex].timeSpec<<"\n";
                     String timeSpec = chords[thisStepChordNoteIndex].timeSpec;
-                    if (timeSpec.startsWith("h:"))
+                    if (humanizeTimes && timeSpec.startsWith("h:"))
                     {
                         timeSpec = timeSpec.fromFirstOccurrenceOf(":", false, true);
                         const String randomnessStr = timeSpec.initialSectionContainingOnly("0123456789");
@@ -1174,18 +1173,11 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
                             variation = 0.5*(nextNoteTime-thisChordTimeStamp);
 
-                        //TODO
-                        //- adjust randomness for space?
-                        //- compute non random note times
-                        //- add randomness to each note adjusting the resulting time to be between prevNoteTime & nextNoteTime
                         srand(seed);
                         chords[thisStepChordNoteIndex].timeRandSeed = seed;
                         //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
                         for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
                         {
-                            int foo;
-                            if (thisStepChordNoteIndex>1138)
-                                foo = 0;
                             double proposedNoteTime = thisChordTimeStamp;// + i*increment;
                             const int temp = variation*100;
                             double randomAdd;
@@ -1197,11 +1189,13 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
 //                            std::cout << step << " randomAdd " << randomAdd << std::endl;
 
                             proposedNoteTime += randomAdd;
-//                            const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
-                            if (proposedNoteTime>=seqDurationInTicks)
-                                proposedNoteTime = seqDurationInTicks - 1;
-                            chordNotes.at(i)->setTimeStamp(proposedNoteTime);
-                            if (chordNotes.at(i)->getOffTime() > seqDurationInTicks)  //???
+                            const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
+                            if (proposedNoteTime<seqDurationInTicks)
+                                chordNotes.at(i)->setTimeStamp(proposedNoteTime);
+                            chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
+                            if (chordNotes.at(i)->getTimeStamp()+noteDuration <= seqDurationInTicks)
+                                chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
+                            else
                                 chordNotes.at(i)->setOfftime(seqDurationInTicks);
                             chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(i));
                             const int offset = chordNotes[i]->timeStamp - thisChordTimeStamp;
@@ -1214,7 +1208,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits)
                         //- save original note times?
                     }
                     String velSpec = chords[thisStepChordNoteIndex].velSpec;
-                    if (velSpec.startsWith("h:"))
+                    if (humanizeVelocities && velSpec.startsWith("h:"))
                     {
                         velSpec = velSpec.fromFirstOccurrenceOf(":", false, true);
                         Array<double> strengths;

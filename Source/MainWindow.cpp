@@ -130,8 +130,6 @@ ApplicationProperties& getAppProperties();
                 std::regex_match(htSpec, randAndSlopeAndSeed) || std::regex_match(htSpec, randAndSeed))
                 midiProcessor.sequenceObject.setChordTimeHumanize(htSpec, true);
             perform(CommandIDs::timeHumanizeSelection);
-//            midiProcessor.catchUp();
-//            midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getSequenceReadHead());
         }
         else if (message == "addSustain")
         {
@@ -763,8 +761,6 @@ ApplicationProperties& getAppProperties();
                         midiProcessor.undoMgr->perform(action);
                         midiProcessor.sequenceObject.setChangedFlag(true);
                         midiProcessor.catchUp();
-    //                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly,
-    //                                                    Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
                     }
                 }
                 break;
@@ -772,7 +768,14 @@ ApplicationProperties& getAppProperties();
                 std::cout <<"timeHumanizeSelection\n";
                 //ToDo replace this with midiProcessor.timeHumanizeSelection(), similar to:
                 if (!midiProcessor.isPlaying)
+                {
+                    std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes =
+                            pViewerFrame->noteViewer.stashSelectedNotes();
+
                     midiProcessor.humanizeChordNoteTimes();
+                    
+                    pViewerFrame->noteViewer.restoreSelectedNotes(pointersToSelectedNotes);
+                }
                 break;
             case CommandIDs::velHumanizeSelection:
                 std::cout <<"velHumanizeSelection\n";

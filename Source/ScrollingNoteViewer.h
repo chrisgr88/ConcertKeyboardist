@@ -266,6 +266,23 @@ public:
     int animationStep;
     Array<float> horizontalShiftTweens;
     Array<double> timeInTicksTweens;
+    
+    //These are used to protect the selection during operations that can change ot order of note steps 
+    std::vector<std::shared_ptr<NoteWithOffTime>> stashSelectedNotes()
+    {
+        std::vector<std::shared_ptr<NoteWithOffTime>> selNotes;
+        for (int i=0; i<selectedNotes.size();i++)
+            selNotes.push_back(processor->sequenceObject.theSequence.at(selectedNotes[i]));
+        return selNotes;
+    }
+    void restoreSelectedNotes(std::vector<std::shared_ptr<NoteWithOffTime>> selNotes)
+    {
+        selectedNotes.clear();
+        for (int i=0;i<selNotes.size();i++)
+            selectedNotes.add(selNotes.at(i)->currentStep);
+        displayedSelection = selectedNotes;
+    }
+    
     void setSelectedNotes(Array<int> sel)
     {
         selectedNotes = sel;
@@ -289,7 +306,7 @@ public:
             }
         }
     }
-    Array<int> getSelectedNotes()
+    inline Array<int> getSelectedNotes()
     {
         return selectedNotes;
     }
