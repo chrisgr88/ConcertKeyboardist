@@ -1113,7 +1113,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
 //                    std::cout << thisStepChordNoteIndex<< " "<<step<<" timeSpec before "
 //                    <<chords[thisStepChordNoteIndex].timeSpec<<"\n";
                     String timeSpec = chords[thisStepChordNoteIndex].timeSpec;
-                    if (humanizeTimes && timeSpec.startsWith("h:"))
+                    if (timeSpec.startsWith("h:"))
                     {
                         timeSpec = timeSpec.fromFirstOccurrenceOf(":", false, true);
                         const String randomnessStr = timeSpec.initialSectionContainingOnly("0123456789");
@@ -1123,7 +1123,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         double variation = randomnessStr.getDoubleValue();
                         int chordDirection =  timeSpec.containsAnyOf("/") ? 1 : -1; //It contains either '/' or '\'
                         double chordDuration = chordDurationStr.getDoubleValue();
-                        int seed = seedStr.length()>0 ? seedStr.getIntValue() : (int) thisChordTimeStamp;
+
                         struct {
                             bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
                             {
@@ -1141,6 +1141,12 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         //Note that some of this code is for use in the future ability to do broken chords
                         for (int i=0; i<chordNotes.size(); i++)
                             chordNotes.at(i)->chordTopStep = chordTopStep;
+                        int seed;
+                        if (seedStr.length()>0)
+                            seed=seedStr.getIntValue();
+                        else
+                            seed = (int) thisChordTimeStamp;
+//                        std::cout << "seed " <<seed << std::endl;5
                         
                         int lastChordNote = 0;
                         int firstChordNote = INT_MAX;
@@ -1170,8 +1176,20 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         if (chordSpan<chordDuration)
                             chordDuration = chordSpan - 1;
                         
-                        if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
-                            variation = 0.5*(nextNoteTime-thisChordTimeStamp);
+                        if (humanizeTimes)
+                        {
+                            if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
+                                    variation = 0.5*(nextNoteTime-thisChordTimeStamp);
+                        }
+                        else
+                            variation = 0;
+                        
+//                        for (int i=0; i<chordNotes.size(); i++)
+//                            std::cout<< "chordNote "<<i<<" "
+//                            <<" timeStamp "<< chordNotes.at(i)->getTimeStamp()
+//                            <<" noteNumber "<< chordNotes.at(i)->noteNumber
+//                            <<" variation "<< variation
+//                            <<std::endl;
 
                         srand(seed);
                         chords[thisStepChordNoteIndex].timeRandSeed = seed;
@@ -1179,13 +1197,10 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
                         {
                             double proposedNoteTime = thisChordTimeStamp;// + i*increment;
-                            const int temp = variation*100;
                             double randomAdd;
                             unsigned r = rand();
-                            if (temp==0)
-                                randomAdd = 0;
-                            else
-                                randomAdd = r%temp/100.0;
+                            double R = ((double)r)/((double)RAND_MAX);
+                            randomAdd = variation*R;
 //                            std::cout << step << " randomAdd " << randomAdd << std::endl;
 
                             proposedNoteTime += randomAdd;

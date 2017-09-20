@@ -1,0 +1,18 @@
+To Do:
+- DONE Selecting unselected notes in marquee subtract mode instead adds them.  Should do nothing.
+- DONE Allow click on background to clear selection in selecting modes (make reversible?)
+- DONE? Dragging to edit velocities can leave you in resizing mode.
+- DONE Shortcut keys for selection modes
+- DONE Disable velocity draw mode when a selection mode is enabled?
+- DONE Dragging that changes note positions changes their step position and this makes the selection (and other things?) invalid.
+
+- DONE Prevent toggle note activity from creating slaved target notes
+- LIKLIHOOD REDUCED: Randomizing chord note times can turn slaved target notes into playable target notes.
+- LIKLIHOOD REDUCED: Sometimes active target notes can be hidden behind slaved target notes.
+- Remove assumption that chord notes are adjacent
+- DONE Humanize velocities is not changing the right notes of chords
+- DONE Review what humanize time random seed is derived from
+- Review what happens when chord notes are dragged.  Make dragging the top note of a chord move the chord?
+- Use vector drawing for velocity edit mode.
+- Velocity drag multiple notes
+- Duration drag multiple notes

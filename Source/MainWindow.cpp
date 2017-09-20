@@ -133,10 +133,10 @@ ApplicationProperties& getAppProperties();
                 else
                     slopeSign = -1;
             }
-            std::cout << htSpec << ": " << std::regex_match(htSpec, justRand) << " Matches justRand"<< '\n';
-            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlope) << " Matches randAndSlope"<<" "<<slopeSign<< '\n';
-            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlopeAndSeed)<<" Matches randAndSlopeAndSeed"<<" "<<slopeSign<< '\n';
-            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSeed) << " Matches randAndSeed"<< '\n';
+//            std::cout << htSpec << ": " << std::regex_match(htSpec, justRand) << " Matches justRand"<< '\n';
+//            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlope) << " Matches randAndSlope"<<" "<<slopeSign<< '\n';
+//            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlopeAndSeed)<<" Matches randAndSlopeAndSeed"<<" "<<slopeSign<< '\n';
+//            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSeed) << " Matches randAndSeed"<< '\n';
             
             if (std::regex_match(htSpec, justRand) || std::regex_match(htSpec, randAndSlope) ||
                 std::regex_match(htSpec, randAndSlopeAndSeed) || std::regex_match(htSpec, randAndSeed))

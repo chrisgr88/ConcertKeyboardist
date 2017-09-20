@@ -1304,6 +1304,30 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
             }
             sequenceObject.theSequence.at(steps[i])->targetNote = true;
         }
+        //Remove any duplicate target notes at the same time stamp
+        int prevTargetNoteTime = sequenceObject.theSequence.at(0)->getTimeStamp();
+        int prevTargetNoteStep = 0;
+        for (int step=1;step<sequenceObject.theSequence.size();step++)
+        {
+            if (sequenceObject.theSequence.at(step)->getTimeStamp() == prevTargetNoteTime &&
+                sequenceObject.theSequence.at(step)->targetNote)
+            {
+                sequenceObject.theSequence.at(step)->targetNote = false;
+                int index;
+                for (int i=0;i<stepActivityList.size();i++)
+                    if (stepActivityList[i].step == step)
+                    {
+                        index = i;
+                        break;
+                    }
+                stepActivityList.remove(index);
+            }
+            if (sequenceObject.theSequence.at(step)->getTimeStamp()!=prevTargetNoteTime && sequenceObject.theSequence.at(step)->targetNote)
+            {
+                prevTargetNoteTime = sequenceObject.theSequence.at(step)->getTimeStamp();
+                prevTargetNoteStep = step;
+            }
+        }
     }
     else //set Notes inActive
     {
