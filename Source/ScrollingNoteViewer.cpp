@@ -223,7 +223,6 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
                 steps = selectedNotes;
             else
                 steps.add(noteBeingDraggedOn);
-            //TODO - Save actual pointers to selected notes; Then refresh the selection(s) with notes' possibly changed "currentSteps"
             std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
             processor->changeNoteTimes(steps, deltaTimeDrag);
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());

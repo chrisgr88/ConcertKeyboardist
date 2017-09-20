@@ -94,6 +94,18 @@ ApplicationProperties& getAppProperties();
         
         else if (message == "toggleActivity")
             perform (CommandIDs::toggleSelectedNotesActive);
+        
+        else if (message == "marqueeSelectionAdd")
+            perform (CommandIDs::marqueeSelectionAdd);
+        else if (message == "marqueeSelectionRemove")
+            perform (CommandIDs::marqueeSelectionRemove);
+        else if (message == "markSelectedNote")
+            perform (CommandIDs::markSelectedNotes);
+        else if (message == "clearSelectedNotes")
+            perform (CommandIDs::clearSelectedNotes);
+        else if (message == "clearAllSelection")
+            perform (CommandIDs::clearAllSelection);
+        
         else if (message.upToFirstOccurrenceOf(":",false,true) == "chain")
         {
             midiProcessor.sequenceObject.chainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
@@ -291,11 +303,11 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::increaseTempo:
                 result.setInfo ("IncreaseTempo", "Increase Tempo", category, 0);
-                result.defaultKeypresses.add (KeyPress ('7', ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress ('8', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::decreaseTempo:
                 result.setInfo ("DecreaseTempo", "Decrease Tempo", category, 0);
-                result.defaultKeypresses.add (KeyPress ('6', ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress ('7', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::scoreSettings:
                 result.setInfo ("Tracks...", "Tracks in this score", category, 0);
@@ -309,8 +321,8 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("Redo", "Redo last undo", category, 0);
                 result.addDefaultKeypress ('z', ModifierKeys::commandModifier|ModifierKeys::shiftModifier);
                 break;
-            case CommandIDs::clearSelection:
-                result.setInfo ("ClearSelection", "Clear Selection", category, 0);
+            case CommandIDs::clearAllSelection:
+                result.setInfo ("ClearAllSelection", "Clear Selection", category, 0);
                 result.addDefaultKeypress (KeyPress::escapeKey, ModifierKeys::noModifiers);
                 break;
             case CommandIDs::selectAll:
@@ -351,11 +363,11 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::velHumanizeSelection:
                 result.setInfo ("velHumanizeSelection", "velHumanizeSelection", category, 0);
-                result.addDefaultKeypress ('8', ModifierKeys::commandModifier);
+//                result.addDefaultKeypress ('8', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::timeHumanizeSelection:
                 result.setInfo ("timeHumanizeSelection", "timeHumanizeSelection", category, 0);
-                result.addDefaultKeypress ('9', ModifierKeys::commandModifier);
+//                result.addDefaultKeypress ('9', ModifierKeys::commandModifier);
                 break;
                 
             case CommandIDs::addSustain:
@@ -379,7 +391,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::editVelocities:
                 result.setInfo ("editVelocities", "Edit Velocities", category, 0);
-                result.addDefaultKeypress ('5', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('6', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::create_chord:
                 result.setInfo ("create_chord", "create_chord", category, 0);
@@ -516,7 +528,7 @@ ApplicationProperties& getAppProperties();
             CommandIDs::scoreSettings,
             CommandIDs::editUndo,
             CommandIDs::editRedo,
-            CommandIDs::clearSelection,
+            CommandIDs::clearAllSelection,
             CommandIDs::selectAll,
             CommandIDs::toggleSelectedNotesActive,
             CommandIDs::marqueeSelectionAdd,
@@ -695,8 +707,31 @@ ApplicationProperties& getAppProperties();
                 if(midiProcessor.undoMgr->canRedo())
                     midiProcessor.undoMgr->redo();
                 break;
-            case CommandIDs::clearSelection:
-                std::cout <<"clearSelection\n";
+
+            case CommandIDs::selectAll:
+                std::cout <<"selectAll\n";
+                if (!midiProcessor.isPlaying)
+                    pViewerFrame->noteViewer.selectAll();
+                break;
+                
+            case CommandIDs::marqueeSelectionAdd:
+                std::cout <<"marqueeSelectionAdd\n";
+                pViewerFrame->marqueeAddPressed();
+                break;
+            case CommandIDs::marqueeSelectionRemove:
+                std::cout <<"marqueeSelectionRemove\n";
+                pViewerFrame->marqueeRemovePressed();
+                break;
+            case CommandIDs::markSelectedNotes:
+                std::cout <<"markSelectedNotes\n";
+                pViewerFrame->markingAddPressed();
+                break;
+            case CommandIDs::clearSelectedNotes:
+                std::cout <<"clearSelectedNotes\n";
+                pViewerFrame->markingRemovePressed();
+                break;
+            case CommandIDs::clearAllSelection:
+                std::cout <<"clearAllSelection\n";
                 if (!midiProcessor.isPlaying)
                 {
                     pViewerFrame->noteViewer.clearSelectedNotes();
@@ -704,11 +739,7 @@ ApplicationProperties& getAppProperties();
                     
                 }
                 break;
-            case CommandIDs::selectAll:
-                std::cout <<"selectAll\n";
-                if (!midiProcessor.isPlaying)
-                    pViewerFrame->noteViewer.selectAll();
-                break;
+                
             case CommandIDs::toggleSelectedNotesActive:
                 if (!midiProcessor.isPlaying)
                 {

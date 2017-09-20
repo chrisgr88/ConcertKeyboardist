@@ -72,6 +72,100 @@ public:
 //        processor->play(!processor->playing(),"current");
 //    }
     
+    void marqueeAddPressed()
+    {
+        if(pMarqueeSelectionAdd->getToggleState())
+        {
+            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = false;
+            noteViewer.marqueeAddingNotes = false;
+            noteViewer.clearingSelectedNotes = false;
+            noteViewer.markingSelectedNotes = false;
+        }
+        else
+        {
+            noteViewer.editingVelocities.setValue(false);
+            pMarqueeSelectionAdd->setToggleState(true, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeAddingNotes = true;
+            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = false;
+            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.clearingSelectedNotes = false;
+            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.markingSelectedNotes = false;
+        }
+    }
+    void marqueeRemovePressed()
+    {
+        if(pMarqueeSelectionRemove->getToggleState())
+        {
+            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = false;
+            noteViewer.marqueeAddingNotes = false;
+            noteViewer.clearingSelectedNotes = false;
+            noteViewer.markingSelectedNotes = false;
+        }
+        else
+        {
+            noteViewer.editingVelocities.setValue(false);
+            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeAddingNotes = false;
+            pMarqueeSelectionRemove->setToggleState(true, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = true;
+            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.clearingSelectedNotes = false;
+            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.markingSelectedNotes = false;
+        }
+    }
+    void  markingAddPressed()
+    {
+        if(pMarkSelectedNotes->getToggleState())
+        {
+            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = false;
+            noteViewer.marqueeAddingNotes = false;
+            noteViewer.clearingSelectedNotes = false;
+            noteViewer.markingSelectedNotes = false;
+        }
+        else
+        {
+            noteViewer.editingVelocities.setValue(false);
+            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeAddingNotes = false;
+            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = false;
+            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.clearingSelectedNotes = false;
+            pMarkSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+            noteViewer.markingSelectedNotes = true;
+        }
+    }
+    void  markingRemovePressed()
+    {
+        if(pClearSelectedNotes->getToggleState())
+        {
+            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = false;
+            noteViewer.marqueeAddingNotes = false;
+            noteViewer.clearingSelectedNotes = false;
+            noteViewer.markingSelectedNotes = false;
+        }
+        else
+        {
+            noteViewer.editingVelocities.setValue(false);
+            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeAddingNotes = false;
+            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.marqueeRemovingNotes = false;
+            pClearSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+            noteViewer.clearingSelectedNotes = true;
+            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+            noteViewer.markingSelectedNotes = false;
+        }
+    }
+
+    
     void playFromLastPlayed()
     {
         processor->play(!processor->playing(),"lastPlayed");
