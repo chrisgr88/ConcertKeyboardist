@@ -15,6 +15,7 @@
 #include "NoteWithOffTime.h"
 #include <iostream>
 #include <map>
+#include <random>
 
 const char* const filenameSuffix = ".ckf";
 const char* const filenameWildcard = "*.mid;*.ckf;*.ppf";

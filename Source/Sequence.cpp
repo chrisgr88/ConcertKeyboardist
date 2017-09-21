@@ -1175,43 +1175,43 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         
                         if (chordSpan<chordDuration)
                             chordDuration = chordSpan - 1;
+    
+                        if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
+                                variation = 0.5*(nextNoteTime-thisChordTimeStamp);
                         
-                        if (humanizeTimes)
-                        {
-                            if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
-                                    variation = 0.5*(nextNoteTime-thisChordTimeStamp);
-                        }
-                        else
-                            variation = 0;
-                        
-//                        for (int i=0; i<chordNotes.size(); i++)
-//                            std::cout<< "chordNote "<<i<<" "
-//                            <<" timeStamp "<< chordNotes.at(i)->getTimeStamp()
-//                            <<" noteNumber "<< chordNotes.at(i)->noteNumber
-//                            <<" variation "<< variation
-//                            <<std::endl;
+                        for (int i=0; i<chordNotes.size(); i++)
+                            std::cout<< "chordNote "<<i<<" "
+                            <<" timeStamp "<< chordNotes.at(i)->getTimeStamp()
+                            <<" noteNumber "<< chordNotes.at(i)->noteNumber
+                            <<" seed "<< seed
+                            <<" variation "<< variation
+                            <<std::endl;
 
-                        srand(seed);
+                        std::default_random_engine generator(seed);
+                        std::normal_distribution<double> distribution(0.0,variation/2.0);
                         chords[thisStepChordNoteIndex].timeRandSeed = seed;
                         //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
                         for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
                         {
-                            double proposedNoteTime = thisChordTimeStamp;// + i*increment;
-                            double randomAdd;
-                            unsigned r = rand();
-                            double R = ((double)r)/((double)RAND_MAX);
-                            randomAdd = variation*R;
-//                            std::cout << step << " randomAdd " << randomAdd << std::endl;
-
-                            proposedNoteTime += randomAdd;
-                            const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
-                            if (proposedNoteTime<seqDurationInTicks)
-                                chordNotes.at(i)->setTimeStamp(proposedNoteTime);
-                            chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
-                            if (chordNotes.at(i)->getTimeStamp()+noteDuration <= seqDurationInTicks)
-                                chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
-                            else
-                                chordNotes.at(i)->setOfftime(seqDurationInTicks);
+                            if (humanizeTimes)
+                            {
+                                double proposedNoteTime = thisChordTimeStamp;// + i*increment;
+                                double randomAdd = distribution(generator);
+                                if (randomAdd<0.0)
+                                    randomAdd=-randomAdd;
+                                if (randomAdd>variation)
+                                    randomAdd=variation;
+                                std::cout << step << " randomAdd " << randomAdd << std::endl;
+                                proposedNoteTime += randomAdd;
+                                const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
+                                if (proposedNoteTime<seqDurationInTicks)
+                                    chordNotes.at(i)->setTimeStamp(proposedNoteTime);
+                                chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
+                                if (chordNotes.at(i)->getTimeStamp()+noteDuration <= seqDurationInTicks)
+                                    chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
+                                else
+                                    chordNotes.at(i)->setOfftime(seqDurationInTicks);
+                            }
                             chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(i));
                             const int offset = chordNotes[i]->timeStamp - thisChordTimeStamp;
                             chords[thisStepChordNoteIndex].offsets.push_back(offset);

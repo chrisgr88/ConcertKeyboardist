@@ -253,36 +253,38 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     preDragXinTicks = xInTicks;
     if (vert>0.0 && xInTicks>0.0) //Test if we are on a note bar
     {
-//        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
-        int i;
-        int step = -1;
-        bool inHead;
-        for (i=0;i<pSequence->size();i++)
+        bool inHead = false;
+        bool inBar = false;
+        for (int i=0;i<pSequence->size();i++)
         {
             if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
             {
                 inHead = true;
-                step = i;
-                break;
-            }
-            else if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
-            {
-                inHead = false;
-                step = i;
+                hoverStep = i;
                 break;
             }
         }
-        hoverStep = step;
-        if (step!=-1)
+        if (!inHead)
         {
-            hoverStep = step;
+            for (int i=0;i<pSequence->size();i++)
+            {
+                if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
+                {
+                    inBar = true;
+                    hoverStep = i;
+                    break;
+                }
+            }
+        }
+        if (inHead || inBar)
+        {
             if (inHead)
                 hoveringOver = HOVER_NOTEHEAD;
             else
                 hoveringOver = HOVER_NOTEBAR;
         }
     }
-      editingNote = false;
+    editingNote = false;
     
     zoomDragStarting = false;
     zoomOrScrollDragging = false;
@@ -406,31 +408,37 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
         }
     }
-    if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a note bar
-    {
-//        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
-        const int nn = maxNote - vert + 1;
-        int i;
-        int step = -1;
-        bool inHead;
-        for (i=0;i<pSequence->size();i++)
-        {
-            if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
-            {
-                step = i;
-                inHead = true;
-                break;
-            }
-            else if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
-            {
-                step = i;
-                inHead = false;
-                break;
-            }
-        }
+      
+      
+      if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a note bar
+      {
+          const int nn = maxNote - vert + 1;
+          bool inHead = false;
+          bool inBar = false;
+          for (int i=0;i<pSequence->size();i++)
+          {
+              if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
+              {
+                  inHead = true;
+                  hoverStep = i;
+                  break;
+              }
+          }
+          if (!inHead)
+          {
+              for (int i=0;i<pSequence->size();i++)
+              {
+                  if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
+                  {
+                      inBar = true;
+                      hoverStep = i;
+                      break;
+                  }
+              }
+          }
+
 //        std::cout << "set hoverStep " << step <<"\n";
-        hoverStep = step;
-        if (step==-1)
+        if (!(inHead || inBar))
         {
             hoveringOver = HOVER_NOTETRACK;
             String note = MidiMessage::getMidiNoteName (nn, true, true, 3);
@@ -442,7 +450,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             }
             hoverInfo = note;
         }
-        else// if (step)
+        else
         {
             if (inHead)
                 hoveringOver = HOVER_NOTEHEAD;
@@ -450,11 +458,11 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
                 hoveringOver = HOVER_NOTEBAR;
             hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
             + "[" + String::String(nn) +"]"
-            + " trk:" +String::String(pSequence->at(i)->track)
-            + " channel:" + String::String(pSequence->at(i)->channel)
-            + " velocity:" + String(127.0*pSequence->at(i)->velocity)
-            + " length:" + String((pSequence->at(i)->getOffTime()-pSequence->at(i)->getTimeStamp()))+
-            + " tick:" + String(pSequence->at(i)->getTimeStamp())
+            + " trk:" +String::String(pSequence->at(hoverStep)->track)
+            + " channel:" + String::String(pSequence->at(hoverStep)->channel)
+            + " velocity:" + String(127.0*pSequence->at(hoverStep)->velocity)
+            + " length:" + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp()))+
+            + " tick:" + String(pSequence->at(hoverStep)->getTimeStamp())
             + " step:"+String::String(hoverStep);
 //            repaint();
         }

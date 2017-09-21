@@ -1891,17 +1891,31 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
         offTime += delta;
         if (sequenceObject.theSequence.at(steps[i])->inChord)
         {
-            if (steps[i] == sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].notePointers[0]->currentStep)
+            const int chordIndex = sequenceObject.theSequence.at(steps[i])->chordIndex;
+            int iHighest = 0;
+            for (int i=1;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
+                if (sequenceObject.chords[chordIndex].notePointers.at(i)->noteNumber >
+                            sequenceObject.chords[chordIndex].notePointers.at(iHighest)->noteNumber)
+                    iHighest = i;
+            if (steps[i] == sequenceObject.chords[chordIndex].notePointers[iHighest]->currentStep)
             {
-                //If it's the chord's top step change the chord timestamp
-                sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].chordTimeStamp = timeStamp;
+                //If it's the chord's top step change all the chord's notes
+                for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
+                {
+                    const double newTimeStamp = sequenceObject.chords[chordIndex].notePointers.at(i)->getTimeStamp()+delta;
+                    const double newOffTime = sequenceObject.chords[chordIndex].notePointers.at(i)->offTime+delta;
+                    sequenceObject.chords[chordIndex].notePointers.at(i)->setTimeStamp(newTimeStamp);
+                    sequenceObject.chords[chordIndex].notePointers.at(i)->offTime = newOffTime;
+                }
+                sequenceObject.chords[chordIndex].chordTimeStamp =
+                            sequenceObject.chords[chordIndex].notePointers.at(iHighest)->getTimeStamp();
             }
             else
             {
-                if (sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].timeSpec != "manual")
+                if (sequenceObject.chords[chordIndex].timeSpec != "manual")
                 {
                     //If it's not the top note, change the chord timeSpec type to manual
-                    sequenceObject.chords[sequenceObject.theSequence.at(steps[i])->chordIndex].timeSpec = "manual";
+                    sequenceObject.chords[chordIndex].timeSpec = "manual";
                 }
             }
         }
