@@ -1073,14 +1073,18 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         if (targetNoteTimes.size()>0)
         {
             double prevTimeStamp = -1;
+            double prevTargetNote = -1;
             for (int step=0;step<theSequence.size();step++)
             {
                 const double timeStamp = theSequence.at(step)->getTimeStamp();
                 theSequence.at(step)->targetNote = false;
-                if (timeStamp != prevTimeStamp)
+                if (timeStamp != prevTimeStamp && timeStamp != prevTargetNote)
                 {
                     if (targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
+                    {
                         theSequence.at(step)->targetNote = true;
+                        prevTargetNote = theSequence.at(step)->getTimeStamp();
+                    }
                 }
                 prevTimeStamp = timeStamp;
             }
@@ -1542,6 +1546,7 @@ void Sequence::dumpData(int start, int end, int nn)
     << " inChord "
     << " chordTopStep "
     << " chordIndex "
+    << " targetNote "
     << "\n";
     if (end>theSequence.size())
         end = theSequence.size();
@@ -1569,6 +1574,7 @@ void Sequence::dumpData(int start, int end, int nn)
             << theSequence.at(i)->inChord<<" "
             << theSequence.at(i)->chordTopStep<<" "
             << theSequence.at(i)->chordIndex<<" "
+            << theSequence.at(i)->targetNote<<" "
             <<"\n";
         }
     }
