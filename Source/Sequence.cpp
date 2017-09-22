@@ -924,39 +924,39 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
     
     if (theSequence.size()>0)
     {
-      try {
-        struct {
-            bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+        try {
+            struct {
+                bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+                {
+                    if (a->getTimeStamp()==b->getTimeStamp())
+                        return a->noteNumber > b->noteNumber;
+                    else
+                        return a->getTimeStamp() < b->getTimeStamp();
+                }
+            } customCompare;
+            std::sort(theSequence.begin(), theSequence.end(),customCompare);
+            std::sort(theControllers.begin(), theControllers.end());
+            //Remove exact duplicate notes
+            std::shared_ptr<NoteWithOffTime> pPrevMsg = NULL;
+            for (int step=0; step<theSequence.size();step++)
             {
-                if (a->getTimeStamp()==b->getTimeStamp())
-                    return a->noteNumber > b->noteNumber;
+                if (pPrevMsg!=NULL && pPrevMsg->channel==theSequence.at(step)->channel &&
+                        pPrevMsg->noteNumber==theSequence.at(step)->noteNumber &&
+                        pPrevMsg->getTimeStamp()==theSequence.at(step)->getTimeStamp())
+                    theSequence.erase(theSequence.begin()+step);
                 else
-                    return a->getTimeStamp() < b->getTimeStamp();
+                    pPrevMsg = theSequence[step];
             }
-        } customCompare;
-        std::sort(theSequence.begin(), theSequence.end(),customCompare);
-        std::sort(theControllers.begin(), theControllers.end());
-        //Remove exact duplicate notes
-        std::shared_ptr<NoteWithOffTime> pPrevMsg = NULL;
-        for (int step=0; step<theSequence.size();step++)
-        {
-            if (pPrevMsg!=NULL && pPrevMsg->channel==theSequence.at(step)->channel &&
-                    pPrevMsg->noteNumber==theSequence.at(step)->noteNumber &&
-                    pPrevMsg->getTimeStamp()==theSequence.at(step)->getTimeStamp())
-                theSequence.erase(theSequence.begin()+step);
-            else
-                pPrevMsg = theSequence[step];
-        }
-        seqDurationInTicks = 0.0;
-        for (int step=0;step<theSequence.size();step++)
-        {
-            theSequence.at(step)->currentStep = step;
-            if (theSequence.at(step)->getOffTime() > seqDurationInTicks)
-                seqDurationInTicks = theSequence.at(step)->getOffTime();
-        }
-      } catch (const std::out_of_range& ex) {
+            seqDurationInTicks = 0.0;
+            for (int step=0;step<theSequence.size();step++)
+            {
+                theSequence.at(step)->currentStep = step;
+                if (theSequence.at(step)->getOffTime() > seqDurationInTicks)
+                    seqDurationInTicks = theSequence.at(step)->getOffTime();
+            }
+        } catch (const std::out_of_range& ex) {
           std::cout << " error loadSequence: before chord processing " << "\n";
-      }
+        }
         
         //seqDurationInTicks = theSequence.back()->getTimeStamp(); //We update this here so that it reflects currently active tracks
 
@@ -964,315 +964,282 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         //Build the chords list if we either loaded a midi file or loaded a ckf file (and probably read a chords list)
         //Issue - What if sequence does not include all tracks?
 //        std::cout << "Build the chords list \n";
-      try {
-        if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
-        {
-            if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
-                chords.size()>0)  //It Was a ckf file so finish creating the chords list loaded from the file
+        try {
+            if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
             {
-                //For each chord in the chords Array, and for each note in its chordNotes list,
-                //find notes with that timeStamp in theSequence
-                //Set each found note's chordIndex to refer to this chord
-                //Set each chord note's inChord to true
-                //We assume theSequence has been created and chords has been created or loaded from the file.  Both must be sorted by ascending timeStamp.
+                if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
+                    chords.size()>0)  //It Was a ckf file so finish creating the chords list loaded from the file
+                {
+                    //For each chord in the chords Array, and for each note in its chordNotes list,
+                    //find notes with that timeStamp in theSequence
+                    //Set each found note's chordIndex to refer to this chord
+                    //Set each chord note's inChord to true
+                    //We assume theSequence has been created and chords has been created or loaded from the file.  Both must be sorted by ascending timeStamp.
+                    for (int step=0;step<theSequence.size();step++)
+                    {
+                        theSequence.at(step)->inChord = false;
+                    }
+                    int chStartStep=0;
+                    for (int chIndex=0;chIndex<chords.size();chIndex++)
+                    {
+                        while (chStartStep<theSequence.size() &&
+                               theSequence.at(chStartStep)->getTimeStamp()!=chords.at(chIndex).chordTimeStamp)
+                            chStartStep++;
+                        //We are now at the start of the next chord
+                        for (int ntIndex=0;ntIndex<chords.at(chIndex).offsets.size();ntIndex++)
+                        {
+                            int step;
+                            for (step=chStartStep;step<theSequence.size();step++)
+                            {
+                                String noteId = String(theSequence.at(step)->track)
+                                +"_"+String(theSequence.at(step)->channel)
+                                +"_"+String(theSequence.at(step)->noteNumber);
+                                if (chords.at(chIndex).noteIds.at(ntIndex)==noteId)
+                                    break;
+                            }
+                            if (step<theSequence.size())
+                            {
+                                const double noteTimeStamp = chords.at(chIndex).chordTimeStamp+chords.at(chIndex).offsets[ntIndex];
+                                theSequence.at(step)->setTimeStamp(noteTimeStamp);
+                                chords.at(chIndex).notePointers.push_back(theSequence.at(step));
+                                theSequence.at(step)->chordIndex = chIndex;
+                                theSequence.at(step)->noteIndexInChord = ntIndex;
+                                theSequence.at(step)->inChord = true;
+                            }
+                        }
+                    }
+                }
+                else //It Was a midi file so create a new chords list
+                {
+                    chords.clear();
+                    double thisChordTimeStamp;
+                    for (int step=0; step<theSequence.size();step++)
+                    {
+                        thisChordTimeStamp = theSequence.at(step)->getTimeStamp();
+        //                std::vector<std::shared_ptr<NoteWithOffTime>> tempChordNotes;
+                        ChordDetail detail;
+                        while (step<theSequence.size() && theSequence.at(step)->getTimeStamp() == thisChordTimeStamp)
+                        {
+                            //                    nt.indexOfChordDetail = chords.size();
+                            //                    nt.indexOfChordDetail = -1; //Mark as not in a chord for now
+                            detail.notePointers.push_back(theSequence[step]);
+                            step++;
+                        }
+                        step--;
+                        
+                        for (int j=0;j<detail.notePointers.size();j++)
+                        {
+                            detail.notePointers.at(j)->noteIndexInChord = j; //Tell this note it's current index in the chord
+                            //We mark every non chord note-1 and every chord note with the index in chords[ ]  of its chord.
+                            if (detail.notePointers.size()==1) //One note, so not a chord
+                                detail.notePointers.at(j)->inChord = false;
+                            else
+                            {
+                                detail.notePointers.at(j)->chordIndex = chords.size();
+                                detail.notePointers.at(j)->inChord = true;
+                            }
+                            //                    tempChordNotes.setUnchecked(j, tempChordNotes[j]);
+                            
+                            //                    std::cout <<"Next original note: index " << originalNotes.size()-1
+                            //                    << " key " << key
+                            //                    << " timeStamp " <<tempChordNotes[j].timeStamp
+                            //                    << " nChordNotes "<<tempChordNotes.size()
+                            //                    << " indexOfChordDetail " << tempChordNotes[j].indexOfChordDetail
+                            //                    <<"\n";
+                            //                    originalNoteIndex[key] = originalNotes.size()-1;
+                        }
+                        
+                        if (detail.notePointers.size()>1)
+                        {
+                            detail.chordTimeStamp = detail.notePointers.at(0)->getTimeStamp();
+                            detail.timeSpec = "manual";
+                            chords.push_back(detail);
+    //                        std::cout <<"Next chord: chordNum "<<chords.size()-1
+    //                        <<" timeStamp " <<detail.timeStamp
+    //                        << " nNotes "<< detail.notePointers.size();
+    //                        if (detail.notePointers.size()>0)
+    //                            std::cout << " firstIndex " << detail.notePointers.at(0)->getTimeStamp();
+    //                        std::cout <<"\n";
+                        }
+                    }
+                }
+            }
+        } catch (const std::out_of_range& ex) {
+            std::cout << " error loadSequence: updating chords " << "\n";
+        }
+        
+    //###
+        try {
+            if (targetNoteTimes.size()>0)
+            {
+                double prevTimeStamp = -1;
+                double prevTargetNote = -1;
                 for (int step=0;step<theSequence.size();step++)
                 {
-                    theSequence.at(step)->inChord = false;
-                }
-                int chStartStep=0;
-                for (int chIndex=0;chIndex<chords.size();chIndex++)
-                {
-                    while (chStartStep<theSequence.size() &&
-                           theSequence.at(chStartStep)->getTimeStamp()!=chords.at(chIndex).chordTimeStamp)
-                        chStartStep++;
-                    //We are now at the start of the next chord
-                    for (int ntIndex=0;ntIndex<chords.at(chIndex).offsets.size();ntIndex++)
+                    const double timeStamp = theSequence.at(step)->getTimeStamp();
+                    theSequence.at(step)->targetNote = false;
+                    if (timeStamp != prevTimeStamp && timeStamp != prevTargetNote)
                     {
-                        int step;
-                        for (step=chStartStep;step<theSequence.size();step++)
+                        if (targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
                         {
-                            String noteId = String(theSequence.at(step)->track)
-                            +"_"+String(theSequence.at(step)->channel)
-                            +"_"+String(theSequence.at(step)->noteNumber);
-                            if (chords.at(chIndex).noteIds.at(ntIndex)==noteId)
-                                break;
-                        }
-                        if (step<theSequence.size())
-                        {
-                            const double noteTimeStamp = chords.at(chIndex).chordTimeStamp+chords.at(chIndex).offsets[ntIndex];
-                            theSequence.at(step)->setTimeStamp(noteTimeStamp);
-                            chords.at(chIndex).notePointers.push_back(theSequence.at(step));
-                            theSequence.at(step)->chordIndex = chIndex;
-                            theSequence.at(step)->noteIndexInChord = ntIndex;
-                            theSequence.at(step)->inChord = true;
+                            theSequence.at(step)->targetNote = true;
+                            prevTargetNote = theSequence.at(step)->getTimeStamp();
                         }
                     }
+                    prevTimeStamp = timeStamp;
                 }
             }
-            else //It Was a midi file so create a new chords list
-            {
-                chords.clear();
-                double thisChordTimeStamp;
-                for (int step=0; step<theSequence.size();step++)
-                {
-                    thisChordTimeStamp = theSequence.at(step)->getTimeStamp();
-    //                std::vector<std::shared_ptr<NoteWithOffTime>> tempChordNotes;
-                    ChordDetail detail;
-                    while (step<theSequence.size() && theSequence.at(step)->getTimeStamp() == thisChordTimeStamp)
-                    {
-                        //                    nt.indexOfChordDetail = chords.size();
-                        //                    nt.indexOfChordDetail = -1; //Mark as not in a chord for now
-                        detail.notePointers.push_back(theSequence[step]);
-                        step++;
-                    }
-                    step--;
-                    
-                    for (int j=0;j<detail.notePointers.size();j++)
-                    {
-                        detail.notePointers.at(j)->noteIndexInChord = j; //Tell this note it's current index in the chord
-                        //We mark every non chord note-1 and every chord note with the index in chords[ ]  of its chord.
-                        if (detail.notePointers.size()==1) //One note, so not a chord
-                            detail.notePointers.at(j)->inChord = false;
-                        else
-                        {
-                            detail.notePointers.at(j)->chordIndex = chords.size();
-                            detail.notePointers.at(j)->inChord = true;
-                        }
-                        //                    tempChordNotes.setUnchecked(j, tempChordNotes[j]);
-                        
-                        //                    std::cout <<"Next original note: index " << originalNotes.size()-1
-                        //                    << " key " << key
-                        //                    << " timeStamp " <<tempChordNotes[j].timeStamp
-                        //                    << " nChordNotes "<<tempChordNotes.size()
-                        //                    << " indexOfChordDetail " << tempChordNotes[j].indexOfChordDetail
-                        //                    <<"\n";
-                        //                    originalNoteIndex[key] = originalNotes.size()-1;
-                    }
-                    
-                    if (detail.notePointers.size()>1)
-                    {
-                        detail.chordTimeStamp = detail.notePointers.at(0)->getTimeStamp();
-                        detail.timeSpec = "manual";
-                        chords.push_back(detail);
-//                        std::cout <<"Next chord: chordNum "<<chords.size()-1
-//                        <<" timeStamp " <<detail.timeStamp
-//                        << " nNotes "<< detail.notePointers.size();
-//                        if (detail.notePointers.size()>0)
-//                            std::cout << " firstIndex " << detail.notePointers.at(0)->getTimeStamp();
-//                        std::cout <<"\n";
-                    }
-                }
-            }
-        }
-      } catch (const std::out_of_range& ex) {
-          std::cout << " error loadSequence: updating chords " << "\n";
-      }
-        
-        //###
-      try {
-        if (targetNoteTimes.size()>0)
-        {
-            double prevTimeStamp = -1;
-            double prevTargetNote = -1;
-            for (int step=0;step<theSequence.size();step++)
-            {
-                const double timeStamp = theSequence.at(step)->getTimeStamp();
-                theSequence.at(step)->targetNote = false;
-                if (timeStamp != prevTimeStamp && timeStamp != prevTargetNote)
-                {
-                    if (targetNoteTimes.contains(theSequence.at(step)->getTimeStamp()))
-                    {
-                        theSequence.at(step)->targetNote = true;
-                        prevTargetNote = theSequence.at(step)->getTimeStamp();
-                    }
-                }
-                prevTimeStamp = timeStamp;
-            }
+        } catch (const std::out_of_range& ex) {
+            std::cout << " error loadSequence: processing chords " << "\n";
         }
         
-        double thisChordTimeStamp;
-        std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes;
-        int chordTopStep;
-        for (int step=0; step<theSequence.size();step++)
-        {
-            //All sequential notes with the same chordIndex are assumed to be part of this chord (if any)
-            int thisStepChordNoteIndex = theSequence.at(step)->chordIndex;
-            int nextStepChordNoteIndex;
-            if (step+1<theSequence.size())
-            {
-                nextStepChordNoteIndex = theSequence.at(step+1)->chordIndex;
-            }
-            else
-                nextStepChordNoteIndex = INT32_MAX;
-        
-            chordNotes.push_back(theSequence[step]);
-            if (chordNotes.size()==1)  //If there's one step it's always the chord top
-                chordTopStep=step;
-            if (thisStepChordNoteIndex != nextStepChordNoteIndex)
-            {
-                if (chordNotes.size()>1 & thisStepChordNoteIndex!=-1)
-                {
-                    //We are now at the start of the next chord and chordNotes[ ] contains pointers to its notes, and
-                    // thisStepChordNoteIndex is the chord's index
-//                    std::cout << thisStepChordNoteIndex<< " "<<step<<" timeSpec before "
-//                    <<chords[thisStepChordNoteIndex].timeSpec<<"\n";
-                    String timeSpec = chords[thisStepChordNoteIndex].timeSpec;
-                    if (timeSpec.startsWith("h:"))
-                    {
-                        timeSpec = timeSpec.fromFirstOccurrenceOf(":", false, true);
-                        const String randomnessStr = timeSpec.initialSectionContainingOnly("0123456789");
-                        String chordDurationStr =  timeSpec.getLastCharacters(timeSpec.length()-randomnessStr.length());
-                        String seedStr = chordDurationStr.fromFirstOccurrenceOf(":", false, true);
-                        chordDurationStr = chordDurationStr.upToFirstOccurrenceOf(":", false, true).substring(1,999);
-                        double variation = randomnessStr.getDoubleValue();
-                        int chordDirection =  timeSpec.containsAnyOf("/") ? 1 : -1; //It contains either '/' or '\'
-                        double chordDuration = chordDurationStr.getDoubleValue();
-
-                        struct {
-                            bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
-                            {
-                                return a->noteNumber > b->noteNumber;
-                            }
-                        } customCompare2;
-                        std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
-                        
-                        thisChordTimeStamp = chords[thisStepChordNoteIndex].chordTimeStamp;
-                        chords[thisStepChordNoteIndex].notePointers.clear();
-                        chords[thisStepChordNoteIndex].offsets.clear();
-                        chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(0));
-                        chords[thisStepChordNoteIndex].offsets.push_back(0);
-
-                        //Note that some of this code is for use in the future ability to do broken chords
-                        for (int i=0; i<chordNotes.size(); i++)
-                            chordNotes.at(i)->chordTopStep = chordTopStep;
-                        int seed;
-                        if (seedStr.length()>0)
-                            seed=seedStr.getIntValue();
-                        else
-                            seed = (int) thisChordTimeStamp;
-//                        std::cout << "seed " <<seed << std::endl;5
-                        
-                        int lastChordNote = 0;
-                        int firstChordNote = INT_MAX;
-                        for (int j=0;j<chordNotes.size();j++)
-                        {
-                            if (chordNotes.at(j)->currentStep > lastChordNote)
-                                lastChordNote = chordNotes.at(j)->currentStep;
-                            if (chordNotes.at(j)->currentStep < firstChordNote)
-                                firstChordNote = chordNotes.at(j)->currentStep;
-                        }
-                        double nextNoteTime, prevNoteTime;
-                        if (lastChordNote<theSequence.size()-1)
-                            nextNoteTime = theSequence.at(lastChordNote+1)->getTimeStamp();
-                        else
-                            nextNoteTime = theSequence.back()->getTimeStamp();
-                        if (firstChordNote==0)
-                            prevNoteTime = 0;
-                        else
-                            prevNoteTime = theSequence.at(firstChordNote-1)->getTimeStamp();
-                        
-                        double chordSpan;
-                        if (chordDirection>0) //Put notes before chord timeStamp
-                            chordSpan = thisChordTimeStamp - prevNoteTime;
-                        else
-                            chordSpan = nextNoteTime - thisChordTimeStamp;
-                        
-                        if (chordSpan<chordDuration)
-                            chordDuration = chordSpan - 1;
-    
-                        if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
-                                variation = 0.5*(nextNoteTime-thisChordTimeStamp);
-                        
-                        for (int i=0; i<chordNotes.size(); i++)
-                            std::cout<< "chordNote "<<i<<" "
-                            <<" timeStamp "<< chordNotes.at(i)->getTimeStamp()
-                            <<" noteNumber "<< chordNotes.at(i)->noteNumber
-                            <<" seed "<< seed
-                            <<" variation "<< variation
-                            <<std::endl;
-
-                        std::default_random_engine generator(seed);
-                        std::normal_distribution<double> distribution(0.0,variation/2.0);
-                        chords[thisStepChordNoteIndex].timeRandSeed = seed;
-                        //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
-                        for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
-                        {
-                            if (humanizeTimes)
-                            {
-                                double proposedNoteTime = thisChordTimeStamp;// + i*increment;
-                                double randomAdd = distribution(generator);
-                                if (randomAdd<0.0)
-                                    randomAdd=-randomAdd;
-                                if (randomAdd>variation)
-                                    randomAdd=variation;
-                                std::cout << step << " randomAdd " << randomAdd << std::endl;
-                                proposedNoteTime += randomAdd;
-                                const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
-                                if (proposedNoteTime<seqDurationInTicks)
-                                    chordNotes.at(i)->setTimeStamp(proposedNoteTime);
-                                chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
-                                if (chordNotes.at(i)->getTimeStamp()+noteDuration <= seqDurationInTicks)
-                                    chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
-                                else
-                                    chordNotes.at(i)->setOfftime(seqDurationInTicks);
-                            }
-                            chords[thisStepChordNoteIndex].notePointers.push_back(chordNotes.at(i));
-                            const int offset = chordNotes[i]->timeStamp - thisChordTimeStamp;
-                            chords[thisStepChordNoteIndex].offsets.push_back(offset);
-                        }
-                        
-                        //Also to do:
-                        //- rationalize saving of random seed
-                        //- display of chord properties
-                        //- save original note times?
-                    }
-                    String velSpec = chords[thisStepChordNoteIndex].velSpec;
-                    if (humanizeVelocities && velSpec.startsWith("h:"))
-                    {
-                        velSpec = velSpec.fromFirstOccurrenceOf(":", false, true);
-                        Array<double> strengths;
-                        std::string numStr = velSpec.toStdString();
-                        std::string delimiter = ",";
-                        size_t pos = 0;
-                        std::string token;
-                        while ((pos = numStr.find(delimiter)) != std::string::npos) {
-                            token = numStr.substr(0, pos);
-                            strengths.add(String(token).getDoubleValue());
-//                            std::cout << "strength " << strengths.getLast() << std::endl;
-                            numStr.erase(0, pos + delimiter.length());
-                        }
-                        strengths.add(String(numStr).getDoubleValue());
-//                        std::cout << "strength " << strengths.getLast() << std::endl;
-                        
-                        const float topNoteVel = chordNotes.at(0)->getVelocity();
-                        if (chordNotes.size()==2)
-                        {
-                            const float ckVel = strengths.getLast() * topNoteVel;
-                            chordNotes.at(1)->setVelocity(ckVel);
-                        }
-                        else // (chord.size()>2)
-                        {
-                            for (int j=1;j<chordNotes.size()-1;j++)
-                            {
-                                const float ckVel = strengths.getFirst() * topNoteVel ;
-                                chordNotes.at(j)->setVelocity(ckVel);
-                            }
-                            const float ckVel = strengths.getLast() * topNoteVel;
-                            chordNotes.at(chordNotes.size()-1)->setVelocity(ckVel);
-                        }
-                    }
-//                    std::cout << thisStepChordNoteIndex<< " offsets[1] " <<chords[thisStepChordNoteIndex].offsets[1]<<"\n";
-                    chordNotes.at(0)->chordTopStep=-1;
-                }
-                else
-                    theSequence.at(step)->chordTopStep=-1;
-                chordNotes.clear();
-            }
+        //Loop through chords humanizing note times for those with a valid timeSpec,
+        //and note velocities for those with a valid velSpec
+        try {
+//            for (int chIndex=0;chIndex<chords.size();chIndex++)
+//            {
+//                String timeSpec = chords[chIndex].timeSpec;
+//                double thisChordTimeStamp = chords[chIndex].chordTimeStamp;
+//                std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = chords.at(chIndex).notePointers;
+////                std::cout << "At A NchordNotes chIndex "<<  chordNotes.size()<<" "<< chIndex <<"\n";
+//                if (chordNotes.size()==0)
+//                    continue;
+//                int firstChordNote = chordNotes.front()->currentStep;
+//                int lastChordNote = chordNotes.back()->currentStep;
+////                std::cout << "At A1 first, last note "<<  firstChordNote<<" "<<lastChordNote <<"\n";
+//                if (timeSpec.startsWith("h:"))
+//                {
+//                    timeSpec = timeSpec.fromFirstOccurrenceOf(":", false, true);
+//                    const String randomnessStr = timeSpec.initialSectionContainingOnly("0123456789");
+//                    String chordDurationStr =  timeSpec.getLastCharacters(timeSpec.length()-randomnessStr.length());
+//                    String seedStr = chordDurationStr.fromFirstOccurrenceOf(":", false, true);
+//                    chordDurationStr = chordDurationStr.upToFirstOccurrenceOf(":", false, true).substring(1,999);
+//                    double variation = randomnessStr.getDoubleValue();
+//                    int chordDirection =  timeSpec.containsAnyOf("/") ? 1 : -1; //It contains either '/' or '\'
+//                    double chordDuration = chordDurationStr.getDoubleValue();
+//
+//                    struct {
+//                        bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+//                        {
+//                          return a->noteNumber > b->noteNumber;
+//                        }
+//                    } customCompare2;
+//                    std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
+//
+//                    thisChordTimeStamp = chords[chIndex].chordTimeStamp;
+//                    chords[chIndex].offsets.clear();
+//                    chords[chIndex].offsets.push_back(0);
+//                    //Note that some of this code is for use in the future ability to do broken chords
+//                    //                      for (int i=0; i<chordNotes.size(); i++)
+//                    //                          chordNotes.at(i)->chordTopStep = chordTopStep;
+//                    int seed;
+//                    if (seedStr.length()>0)
+//                        seed=seedStr.getIntValue();
+//                    else
+//                        seed = (int) thisChordTimeStamp;
+//
+//                    double nextNoteTime, prevNoteTime;
+//                    if (lastChordNote<theSequence.size()-1)
+//                        nextNoteTime = theSequence.at(lastChordNote+1)->getTimeStamp();
+//                    else
+//                        nextNoteTime = theSequence.back()->getTimeStamp();
+//                    if (firstChordNote==0)
+//                        prevNoteTime = 0;
+//                    else
+//                        prevNoteTime = theSequence.at(firstChordNote-1)->getTimeStamp();
+//                    double chordSpan;
+//                    if (chordDirection>0) //Put notes before chord timeStamp
+//                        chordSpan = thisChordTimeStamp - prevNoteTime;
+//                    else
+//                        chordSpan = nextNoteTime - thisChordTimeStamp;
+//
+//                    if (chordSpan<chordDuration)
+//                        chordDuration = chordSpan - 1;
+//
+//                    if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
+//                          variation = 0.5*(nextNoteTime-thisChordTimeStamp);
+//                    //
+//                    //                  for (int i=0; i<chordNotes.size(); i++)
+//                    //                      std::cout<< "chordNote "<<i<<" "
+//                    //                      <<" timeStamp "<< chordNotes.at(i)->getTimeStamp()
+//                    //                      <<" noteNumber "<< chordNotes.at(i)->noteNumber
+//                    //                      <<" seed "<< seed
+//                    //                      <<" variation "<< variation
+//                    //                      <<std::endl;
+//
+//                    std::default_random_engine generator(seed);
+//                    std::normal_distribution<double> distribution(0.0,variation/2.0);
+//                    chords[chIndex].timeRandSeed = seed;
+//                    //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
+//                    for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
+//                    {
+//                        if (humanizeTimes)
+//                        {
+//                          double proposedNoteTime = thisChordTimeStamp;// + i*increment;
+//                          double randomAdd = distribution(generator);
+//                          if (randomAdd<0.0)
+//                              randomAdd=-randomAdd;
+//                          if (randomAdd>variation)
+//                              randomAdd=variation;
+//
+//                          proposedNoteTime += randomAdd;
+//                          const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
+//                          if (proposedNoteTime<seqDurationInTicks)
+//                              chordNotes.at(i)->setTimeStamp(proposedNoteTime);
+//                          chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
+//                          if (chordNotes.at(i)->getTimeStamp()+noteDuration <= seqDurationInTicks)
+//                              chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
+//                          else
+//                              chordNotes.at(i)->setOfftime(seqDurationInTicks);
+//                        //                        std::cout <<  chordNotes.at(i)->currentStep
+//                        //                          << " randomAdd " << randomAdd
+//                        //                          << " timeStamp " << chordNotes.at(i)->getTimeStamp()
+//                        //                          << std::endl;
+//                        }
+//                        const int offset = chordNotes[i]->getTimeStamp() - thisChordTimeStamp;
+//                        chords[chIndex].offsets.push_back(offset);
+//                    }
+//                }
+//                String velSpec = chords[chIndex].velSpec;
+//                if (humanizeVelocities && velSpec.startsWith("h:"))
+//                {
+//                    velSpec = velSpec.fromFirstOccurrenceOf(":", false, true);
+//                    Array<double> strengths;
+//                    std::string numStr = velSpec.toStdString();
+//                    std::string delimiter = ",";
+//                    size_t pos = 0;
+//                    std::string token;
+//                    while ((pos = numStr.find(delimiter)) != std::string::npos) {
+//                        token = numStr.substr(0, pos);
+//                        strengths.add(String(token).getDoubleValue());
+//                        //                            std::cout << "strength " << strengths.getLast() << std::endl;
+//                        numStr.erase(0, pos + delimiter.length());
+//                    }
+//                    strengths.add(String(numStr).getDoubleValue());
+//                    //                        std::cout << "strength " << strengths.getLast() << std::endl;
+//
+//                    const float topNoteVel = chordNotes.at(0)->getVelocity();
+//                    if (chordNotes.size()==2)
+//                    {
+//                      const float ckVel = strengths.getLast() * topNoteVel;
+//                      chordNotes.at(1)->setVelocity(ckVel);
+//                    }
+//                    else // (chord.size()>2)
+//                    {
+//                      for (int j=1;j<chordNotes.size()-1;j++)
+//                      {
+//                          const float ckVel = strengths.getFirst() * topNoteVel ;
+//                          chordNotes.at(j)->setVelocity(ckVel);
+//                      }
+//                      const float ckVel = strengths.getLast() * topNoteVel;
+//                      chordNotes.at(chordNotes.size()-1)->setVelocity(ckVel);
+//                    }
+//                }
+//            }
+        } catch (const std::out_of_range& ex) {
+            std::cout << " error loadSequence: humanizing times or vels" << "\n";
         }
-      } catch (const std::out_of_range& ex) {
-          std::cout << " error loadSequence: processing chords " << "\n";
-      }
-        
+
 //        for (int i=0;i<chords.size();i++)
 //            std::cout << "Chord "<<i<<" "<<chords[i].timeStamp<<" "<<chords[i].nNotes<<"\n";
       try {

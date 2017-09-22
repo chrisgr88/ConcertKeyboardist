@@ -244,6 +244,7 @@ public:
 //        sequenceProps.setValue("chordVelocityHumanize", chordVelocityHumanize);//How much to randomize note velocities
         setChangedFlag (documentReallyChanged);
     }
+    
     void setExprVelToOriginalValRatio(double value, bool documentReallyChanged)
     {
         exprVelToScoreVelRatio = value;

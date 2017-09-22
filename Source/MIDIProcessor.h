@@ -281,7 +281,11 @@ public:
     int lastUserPlayedSeqStep = -1; //Previous value of lastPlayedSeqStep
     int lastPlayedNoteStep = -1; //The step of the last played note, even if its note a target note (for tracking tempo and measures)
     double getLastUserPlayedStepTime();
-    Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps); //Used only by Perform in undo
+    Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps);
+    
+    void timeHumanizeChords (Array<int> steps);
+    void velocityHumanizeChords (Array<int> steps);
+    
     enum PedalType {sustPedal, softPedal};
     void addPedalChange(PedalType pType);
     void deletePedalChange(PedalType pType);

@@ -115,7 +115,7 @@ ApplicationProperties& getAppProperties();
         {
             const String hV = String(message.fromLastOccurrenceOf(":", false, true));
 //            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
-            midiProcessor.sequenceObject.setChordVelocityHumanize(hV, false);
+            midiProcessor.sequenceObject.setChordVelocityHumanize(hV, true);
             perform(CommandIDs::velHumanizeSelection);
         }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeTime")
@@ -797,21 +797,18 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::timeHumanizeSelection:
                 std::cout <<"timeHumanizeSelection\n";
-                //ToDo replace this with midiProcessor.timeHumanizeSelection(), similar to:
                 if (!midiProcessor.isPlaying)
                 {
-                    std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes =
-                            pViewerFrame->noteViewer.stashSelectedNotes();
-
-                    midiProcessor.humanizeChordNoteTimes();
-                    
+                    std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = pViewerFrame->noteViewer.stashSelectedNotes();
+                    midiProcessor.timeHumanizeChords(midiProcessor.copyOfSelectedNotes);
                     pViewerFrame->noteViewer.restoreSelectedNotes(pointersToSelectedNotes);
                 }
                 break;
             case CommandIDs::velHumanizeSelection:
                 std::cout <<"velHumanizeSelection\n";
                 if (!midiProcessor.isPlaying)
-                    midiProcessor.humanizeChordNoteVelocities();
+                    midiProcessor.velocityHumanizeChords(midiProcessor.copyOfSelectedNotes);
+//                    midiProcessor.humanizeChordNoteVelocities();
                 break;
             case CommandIDs::addSustain:
                 {

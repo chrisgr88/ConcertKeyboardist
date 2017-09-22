@@ -1363,6 +1363,174 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
     return stepActivityList;
 }
 
+void MIDIProcessor::timeHumanizeChords (Array<int> steps)
+{
+    try {
+        pauseProcessing = true;
+        String timeSpec = sequenceObject.chordTimeHumanize;
+        const String randomnessStr = timeSpec.initialSectionContainingOnly("0123456789");
+        String chordDurationStr =  timeSpec.getLastCharacters(timeSpec.length()-randomnessStr.length());
+        String seedStr = chordDurationStr.fromFirstOccurrenceOf(":", false, true);
+        chordDurationStr = chordDurationStr.upToFirstOccurrenceOf(":", false, true).substring(1,999);
+        double maxVariation = randomnessStr.getDoubleValue();
+//        int chordDirection =  timeSpec.containsAnyOf("/") ? 1 : -1; //It contains either '/' or '\'
+//        double chordDuration = chordDurationStr.getDoubleValue();
+        struct {
+            bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+            {
+                return a->noteNumber > b->noteNumber;
+            }
+        } customCompare2;
+        Array<int> chordsToProcess;
+        for (int step=0;step<steps.size();step++)
+        {
+            if (sequenceObject.theSequence.at(steps[step])->chordIndex != -1)
+                chordsToProcess.addIfNotAlreadyThere(sequenceObject.theSequence.at(steps[step])->chordIndex);
+        }
+        for (int chNum=0;chNum<chordsToProcess.size();chNum++)
+        {
+            const int chIndex = chordsToProcess[chNum];
+            double thisChordTimeStamp = sequenceObject.chords[chIndex].chordTimeStamp;
+            std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
+            //                std::cout << "At A NchordNotes chIndex "<<  chordNotes.size()<<" "<< chIndex <<"\n";
+            if (chordNotes.size()==0)
+                continue;
+            int topChordNote = chordNotes.front()->currentStep;
+
+            std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
+            
+            thisChordTimeStamp = sequenceObject.chords[chIndex].chordTimeStamp;
+            sequenceObject.chords[chIndex].offsets.clear();
+            sequenceObject.chords[chIndex].offsets.push_back(0);
+            //Note that some of this code is for use in the future ability to do broken chords
+            //                      for (int i=0; i<chordNotes.size(); i++)
+            //                          chordNotes.at(i)->chordTopStep = chordTopStep;
+            int seed;
+            if (seedStr.length()>0)
+                seed=seedStr.getIntValue();
+            else
+                seed = (int) thisChordTimeStamp;
+
+            double shortestDuration = DBL_MAX;
+            for (int i=0;i<chordNotes.size();i++)
+                if ((chordNotes.at(i)->offTime-chordNotes.at(i)->getTimeStamp()) < shortestDuration)
+                    shortestDuration = (chordNotes.at(i)->offTime-chordNotes.at(i)->getTimeStamp());
+            
+            if (maxVariation > shortestDuration)
+                maxVariation = shortestDuration;
+            double standardDeviation = maxVariation/3.0;
+            
+//            std::cout<< "chIndex "<<chIndex<<" "
+//            <<" thisChordTimeStamp "<< thisChordTimeStamp
+//            <<" topChordNote "<< topChordNote
+//            <<" shortestDuration "<< shortestDuration
+//            <<" maxVariation "<< maxVariation
+//            <<" standardDeviation "<< standardDeviation
+//            <<std::endl;
+            
+            std::default_random_engine generator(seed);
+            std::normal_distribution<double> distribution(0.0,standardDeviation);
+            sequenceObject.chords[chIndex].timeRandSeed = seed;
+            //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
+            for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
+            {
+                double proposedNoteTime = thisChordTimeStamp;// + i*increment;
+                double rawRandomAdd;
+//                for (int z=0;z<10;z++)
+//                {
+                    rawRandomAdd = distribution(generator);
+//                    std::cout << "rawRandomAdd "<<rawRandomAdd<<"\n";
+//                }
+                
+                if (rawRandomAdd<0.0)
+                    rawRandomAdd=-rawRandomAdd;
+                double randomAdd = rawRandomAdd;
+                if (randomAdd>maxVariation)
+                    randomAdd=maxVariation-1.0;
+                
+                proposedNoteTime += randomAdd;
+                const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
+                if (proposedNoteTime<sequenceObject.seqDurationInTicks)
+                    chordNotes.at(i)->setTimeStamp(proposedNoteTime);
+                chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
+                if (chordNotes.at(i)->getTimeStamp()+noteDuration <= sequenceObject.seqDurationInTicks)
+                    chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
+                else
+                    chordNotes.at(i)->setOfftime(sequenceObject.seqDurationInTicks);
+//                                        std::cout <<  chordNotes.at(i)->currentStep
+//                                          << " randomAdd " << randomAdd
+//                                          << " timeStamp " << chordNotes.at(i)->getTimeStamp()
+//                                          << std::endl;
+                const int offset = chordNotes[i]->getTimeStamp() - thisChordTimeStamp;
+                sequenceObject.chords[chIndex].offsets.push_back(offset);
+            }
+        }
+        catchUp();
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
+        pauseProcessing = false;
+    } catch (const std::out_of_range& ex) {
+        std::cout << " error in timeHumanizeChords " << "\n";
+    }
+}
+
+void MIDIProcessor::velocityHumanizeChords (Array<int> steps)
+{
+    try {
+        pauseProcessing = true;
+        String velSpec = sequenceObject.chordVelocityHumanize;
+        Array<double> strengths;
+        std::string numStr = velSpec.toStdString();
+        std::string delimiter = ",";
+        size_t pos = 0;
+        std::string token;
+        while ((pos = numStr.find(delimiter)) != std::string::npos) {
+            token = numStr.substr(0, pos);
+            strengths.add(String(token).getDoubleValue());
+            //                            std::cout << "strength " << strengths.getLast() << std::endl;
+            numStr.erase(0, pos + delimiter.length());
+        }
+        strengths.add(String(numStr).getDoubleValue());
+        //                        std::cout << "strength " << strengths.getLast() << std::endl;
+        
+        Array<int> chordsToProcess;
+        for (int step=0;step<steps.size();step++)
+        {
+            if (sequenceObject.theSequence.at(steps[step])->chordIndex != -1)
+                chordsToProcess.addIfNotAlreadyThere(sequenceObject.theSequence.at(steps[step])->chordIndex);
+        }
+
+        for (int chNum=0;chNum<chordsToProcess.size();chNum++)
+        {
+            const int chIndex = chordsToProcess[chNum];
+            if (sequenceObject.chords.at(chIndex).notePointers.size()==0)
+                continue;
+            std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
+
+            const float topNoteVel = chordNotes.at(0)->getVelocity();
+            if (chordNotes.size()==2)
+            {
+                const float ckVel = strengths.getLast() * topNoteVel;
+                chordNotes.at(1)->setVelocity(ckVel);
+            }
+            else // (chord.size()>2)
+            {
+                for (int j=1;j<chordNotes.size()-1;j++)
+                {
+                    const float ckVel = strengths.getFirst() * topNoteVel ;
+                    chordNotes.at(j)->setVelocity(ckVel);
+                }
+                const float ckVel = strengths.getLast() * topNoteVel;
+                chordNotes.at(chordNotes.size()-1)->setVelocity(ckVel);
+            }
+        }
+        catchUp();
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
+        pauseProcessing = false;
+    } catch (const std::out_of_range& ex) {
+        std::cout << " error in velocityHumanizeChords " << "\n";
+    }
+}
+
 void MIDIProcessor::addPedalChange(PedalType pType)
 {
     pauseProcessing = true;
@@ -1734,7 +1902,9 @@ void MIDIProcessor::humanizeChordNoteTimes ()
     }
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
-    
+    if (copyOfSelectedNotes.size()==0)
+        return;
+    pauseProcessing = true;
     pauseProcessing = false;
 }
 
