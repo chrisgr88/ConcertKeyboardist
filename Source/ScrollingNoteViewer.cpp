@@ -116,12 +116,9 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
     //We defer pickup of up the mouse position until drag actually starts because the mouseDown position is slightly
     //different from the first position returned in mouseDrag.
     newlySelectedNotes.clear();
-//    if (marqueeRemovingNotes || marqueeAddingNotes)
-//        displayedSelection.clear();
-//    std::cout << "Selected steps ";
-//    for (int j=0;j<displayedSelection.size();j++)
-//        std::cout << " " << displayedSelection[j];
-//    std::cout  <<" hover step "<< hoverStep <<" "<<displayedSelection.contains(hoverStep)<<"\n";
+      if (hoveringOver==HOVER_NOTETRACK && (!ModifierKeys::getCurrentModifiers().isShiftDown() && !ModifierKeys::getCurrentModifiers().isAltDown() && !editingVelocities.getValue() ))
+          //&&hoveringOver!=HOVER_TOPBAR && hoveringOver!=HOVER_NOTEHEAD && hoveringOver!=HOVER_NOTEBAR)
+          clearSelectedNotes();
     if (!ModifierKeys::getCurrentModifiers().isCommandDown() && hoveringOver != HOVER_NONE)
     {
         if ((hoveringOver == HOVER_NOTEHEAD || hoveringOver == HOVER_NOTEBAR) && !selectedNotes.contains(hoverStep))
@@ -177,9 +174,12 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             }
         }
     }
-    if ((marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) && !editingVelocities.getValue())
+    if (selecting)//(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) && !editingVelocities.getValue())
     {
         selecting = false;
+        marqueeRemovingNotes = false;
+        marqueeAddingNotes = false;
+        editingNote = false;
 
         if (!event.source.hasMouseMovedSignificantlySincePressed())
         {
@@ -238,8 +238,16 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else if (draggingOffTime)
     {
+        Array<int> steps;
         if (offTimeAfterDrag != -1)
-            processor->changeNoteOffTime(noteBeingDraggedOn, offTimeAfterDrag);
+        {
+            if (selectedNotes.contains(noteBeingDraggedOn))
+                steps = selectedNotes;
+            else
+                steps.add(noteBeingDraggedOn);
+        }
+        const double delta = offTimeAfterDrag - processor->sequenceObject.theSequence.at(noteBeingDraggedOn)->offTime;
+        processor->changeNoteOffTimes(steps, delta);
         draggingOffTime = false;
         hoveringOver = HOVER_NONE;
     }
@@ -446,7 +454,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             {
                 const double time1 = pSequence->at(selectedNotes[0])->getTimeStamp();
                 const double time2 = pSequence->at(selectedNotes.getLast())->getTimeStamp();
-                note = note + " Selection width:" + String (std::abs(time1-time2));
+                note = note + " Selection width: " + String (std::abs(time1-time2)/60.0) + " sixteenths";
             }
             hoverInfo = note;
         }
@@ -461,7 +469,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             + " trk:" +String::String(pSequence->at(hoverStep)->track)
             + " channel:" + String::String(pSequence->at(hoverStep)->channel)
             + " velocity:" + String(127.0*pSequence->at(hoverStep)->velocity)
-            + " length:" + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp()))+
+            + " length:" + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp())/60.0)+
             + " tick:" + String(pSequence->at(hoverStep)->getTimeStamp())
             + " step:"+String::String(hoverStep);
 //            repaint();
@@ -1710,14 +1718,14 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     {
         if (ModifierKeys::getCurrentModifiers().isAltDown())
         {
-            editingVelocities = true;
-            altKeyPressed = true;
+//            editingVelocities = true;
+//            altKeyPressed = true;
         }
         else
         {
-            if (altKeyPressed)
-                editingVelocities = false;
-            altKeyPressed = false;
+//            if (altKeyPressed)
+//                editingVelocities = false;
+//            altKeyPressed = false;
         }
         
         //Cursor setting
@@ -1731,18 +1739,18 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             if (getMouseCursor()!=marqueeRemovingCursor)
                 setMouseCursor(marqueeRemovingCursor);
         }
-        else if (markingSelectedNotes)
-        {
-            selecting = false;
-            if (getMouseCursor()!=selectionMarkerCursor)
-                setMouseCursor(selectionMarkerCursor);
-        }
-        else if (clearingSelectedNotes)
-        {
-            selecting = false;
-            if (getMouseCursor()!=selectionUnMarkerCursor)
-                setMouseCursor(selectionUnMarkerCursor);
-        }
+//        else if (markingSelectedNotes)
+//        {
+//            selecting = false;
+//            if (getMouseCursor()!=selectionMarkerCursor)
+//                setMouseCursor(selectionMarkerCursor);
+//        }
+//        else if (clearingSelectedNotes)
+//        {
+//            selecting = false;
+//            if (getMouseCursor()!=selectionUnMarkerCursor)
+//                setMouseCursor(selectionUnMarkerCursor);
+//        }
         else if (editingVelocities.getValue())
         {
             if (getMouseCursor()!=editVelocityCursor)
@@ -1789,8 +1797,14 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     {
         stopTimer(TIMER_MOUSE_HOLD);
 //        std::cout << "Here - mouse hold " << selectionAnchor.getY() << "\n";
-        if (hoverChord<0 && !editingVelocities.getValue() && (marqueeAddingNotes||marqueeRemovingNotes))
-            selecting = true; 
+        if (hoverChord<0 && !editingVelocities.getValue())// && (marqueeAddingNotes||marqueeRemovingNotes))
+        {
+            selecting = true;
+            if(ModifierKeys::getCurrentModifiers().isShiftDown())
+                marqueeAddingNotes = true;
+            if(ModifierKeys::getCurrentModifiers().isAltDown())
+                marqueeRemovingNotes = true;
+        }
     }
     else if (timerID == TIMER_MOUSE_UP)
     {
@@ -1911,7 +1925,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         }
         else
         {
-            if (selecting && !ModifierKeys::getCurrentModifiers().isAltDown())
+            if (selecting)// && !ModifierKeys::getCurrentModifiers().isAltDown())
             {
                 int xInTicksLeft = 0;
                 int xInTicksRight = 99;
@@ -2012,7 +2026,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 else
                     {
                         hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
-                        +" width:"+String(maxSelNoteTime-minSelNoteTime);
+                        +" width:"+String((maxSelNoteTime-minSelNoteTime)/60.0);
                     }
 
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
@@ -2076,17 +2090,17 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 NoteTimeComparator comparator(processor);
                 displayedSelection.sort(comparator);
                 
-                std::cout
-                <<  " selected "<<selectedNotes.size()
-                <<  " newlySelected "<<newlySelectedNotes.size()
-                <<  " displayedSelection "<<displayedSelection.size()
-                <<  "\n";
+//                std::cout
+//                <<  " selected "<<selectedNotes.size()
+//                <<  " newlySelected "<<newlySelectedNotes.size()
+//                <<  " displayedSelection "<<displayedSelection.size()
+//                <<  "\n";
                 if (newlySelectedNotes.size()==0)
                     hoverInfo.clear();
                 else
                 {
                     hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
-                    +" width:"+String(maxSelNoteTime-minSelNoteTime);
+                    +" width:"+String((maxSelNoteTime-minSelNoteTime)/60.0);
                 }
                 
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
@@ -2140,15 +2154,15 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 }
                 else if (draggingTime)
                 {
-                    timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/5.0));
+                    timeAfterDrag = std::max(0.0,timeStartDrag - (deltaX/0.5));
                     timeAfterDrag = std::min(processor->sequenceObject.seqDurationInTicks, timeAfterDrag);
 //                    std::cout << "deltaTimeDrag " << deltaTimeDrag  << "\n";
-                    deltaTimeDrag = -(deltaX/5.0);
+                    deltaTimeDrag = -(deltaX/0.5);
                     repaint();
                 }
                 else if (draggingOffTime)
                 {
-                    offTimeAfterDrag = std::max(1.0,offTimeStartDrag - (deltaX/5.0));
+                    offTimeAfterDrag = std::max(1.0,offTimeStartDrag - (deltaX/0.5));
                     if (offTimeAfterDrag<timeStartDrag+1)
                         offTimeAfterDrag = timeStartDrag+1;
                     offTimeAfterDrag = std::min(processor->sequenceObject.seqDurationInTicks, offTimeAfterDrag);

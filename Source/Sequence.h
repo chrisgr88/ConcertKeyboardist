@@ -177,7 +177,7 @@ public:
     MidiFile midiFile; //File holding score
     inline double getPPQ()
     {
-        return 96.0;
+        return 960.0;
     }
     Array<MidiMessage>  getTimeSigInfo()
     {
@@ -326,7 +326,7 @@ public:
         }
 
         double curTempo = 60.0/tempoChanges.at(tempoChangeIndex).getTempoSecondsPerQuarterNote();
-//        const double increment =  tempoMultiplier * 96.0*curTempo/60000.0;
+//        const double increment =  tempoMultiplier * 960.0*curTempo/60000.0;
 //        std::cout
 //        << " tempoChangeIndex " << tempoChangeIndex
 //        << " curTempo " << curTempo
@@ -461,7 +461,7 @@ public:
     std::vector<PedalMessage> softPedalChanges;
     File scoreFile;  //This is just used by the file name display in the UI because it must be changed on save
     int numerator, denominator;
-//    double timeIncrement; //Amount to increase time at each tick, based on ppq of 96.  Adjusted based on actual ppq of this midi file.
+//    double timeIncrement; //Amount to increase time at each tick, based on ppq of 960.  Adjusted based on actual ppq of this midi file.
     int rightHandStartsHere = 1;
     
     String chordTimeHumanize;
@@ -618,7 +618,8 @@ public:
     bool autoPlaySofts;
     bool allVelocitiesFromScore;
     bool deriveSecVelocityFromPrimary;
-    double ppq;
+    int originalPpq;
+    int ppq;
     
 //    String headerStringAsB64;
     char sysexTrackMarker[3] = {'p','p','f'};

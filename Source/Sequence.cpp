@@ -174,7 +174,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         tracksToCopy--;
     
     MidiFile outputFile;
-    short timeFormat = 96;//midiFile.getTimeFormat();
+    short timeFormat = 960;//midiFile.getTimeFormat();
     int firstTrkWithPedals = -1;
     int firstTrkWithNotes = -1;
     for (int trk=0;trk<trackDetails.size();trk++ )
@@ -196,7 +196,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             MidiMessage msg = theTrack->getEventPointer(i)->message;
             if (!msg.isNoteOn())
             {
-                msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
+                msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
                 if (!msg.isController())
                     trackSeq.addEvent(msg);
                 else if (msg.getControllerNumber()!=64 && msg.getControllerNumber()!=67) //Don't save original pedal messages
@@ -348,7 +348,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         
     if (retainEdits == doNotRetainEdits)
     {
-        chainingInterval = 12.0;
+        chainingInterval = 120.0;
         bookmarkTimes.clear();
         setTempoMultiplier(1.0, false);
         if (loadFile==LoadType::loadFile)
@@ -386,9 +386,12 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         
         MidiMessageSequence tempoChangeEvents;
         
-        ppq = midiFile.getTimeFormat(); //This is only used in converting the midi file to a standard of 96 ppq.
-        if (ppq<0)
-            ppq = 96;
+        originalPpq = midiFile.getTimeFormat(); //This is only used in converting the midi file to a standard of 960 ppq.
+        std::cout << "originalPpq " << originalPpq << "\n";
+        if (originalPpq<0)
+            ppq = 960;
+        else
+            ppq = originalPpq;
         
         midiFile.findAllTempoEvents(tempoChangeEvents);
         tempoChanges.clear();
@@ -396,7 +399,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         for (int i=0;i<tempoChangeEvents.getNumEvents();i++)
         {
             MidiMessage msg = tempoChangeEvents.getEventPointer(i)->message;
-            msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
+            msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
             tempoChanges.push_back(msg);
             const double secPerQtr = msg.getTempoSecondsPerQuarterNote();
             const double tempo = (1.0/secPerQtr)*(60.0);
@@ -422,7 +425,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         for (int i=0;i<timesigChangeEvents.getNumEvents();i++)
         {
             MidiMessage msg = timesigChangeEvents.getEventPointer(i)->message;
-            msg.setTimeStamp(96.0*msg.getTimeStamp()/ppq);
+            msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
             msg.getTimeSignatureInfo(numerator, denominator);
             timeSigChanges.add(msg);
 //            std::cout << "Time sig change " << msg.timeStamp << " " << numerator << " " << denominator << "\n";
@@ -432,7 +435,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         else
             timeSigChanges.add(MidiMessage::timeSignatureMetaEvent(4, 4));
 
-//        timeIncrement = 96.0*tempo*(numerator/denominator)/60000.0;//Per tick.See spreadsheet in source directory. 96 is ppq, always the same
+//        timeIncrement = 960.0*tempo*(numerator/denominator)/60000.0;//Per tick.See spreadsheet in source directory. 960 is ppq, always the same
         
         numTracks = midiFile.getNumTracks();
         
@@ -538,7 +541,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                 trackDetails.add(trkDetail);
                 }
             }
-        seqDurationInTicks = 96.0*seqDurationInTicks/ppq;
+        seqDurationInTicks = 960.0*seqDurationInTicks/ppq;
 //        std::cout << "seqDurationInTicks " << seqDurationInTicks << "\n";
         if (retainEdits==Sequence::doNotRetainEdits)
         {
@@ -589,8 +592,8 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                 {
                     TrackDetail trkDetail = trackDetails[trk];
                     //The following were determined during the scan of all events (including noteOns) in each track
-                    const int startInTicks = 96.0*trackDetails[trk].startMeasure/ppq;
-                    const int endInTicks = 96.0*trackDetails[trk].endMeasure/ppq;
+                    const int startInTicks = 960.0*trackDetails[trk].startMeasure/ppq;
+                    const int endInTicks = 960.0*trackDetails[trk].endMeasure/ppq;
     //                std::cout << "start ticks, end ticks " << trk <<" "<<startInTicks << " " << endInTicks << "\n";
                     int m;
                     for (m=0;m<measureTimes.size()-1;m++)
@@ -695,7 +698,10 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                 }
                 else if (key == "tnt") //target Note Times
                 {
-                    targetNoteTimes.add(value.getDoubleValue());
+                    double tnt = value.getDoubleValue();
+                    if (originalPpq==96)
+                        tnt = tnt*10;
+                    targetNoteTimes.add(tnt);
                 }
                 else if (key == "chordDetails") //Each chord
                 {
@@ -706,7 +712,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                     ChordDetail chDet;
                     StringArray values;
                     values.addTokens(value, " ", "\"");
-                    chDet.chordTimeStamp = values[0].getIntValue();
+                    chDet.chordTimeStamp = values[0].getIntValue() * ((originalPpq==96)?10:1);
                     chDet.scaleFactor=values[1].getFloatValue();
                     chDet.timeSpec = values[2];
                     if (chDet.timeSpec=="random" || chDet.timeSpec=="arp") //Ignore obsolete property names
@@ -725,14 +731,12 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                     StringArray values;
                     values.addTokens(value, " ", "\"");
                     const int chordIndex = values[0].getIntValue();
-                    int offset = values[1].getIntValue();
+                    int offset = values[1].getIntValue() * ((originalPpq==96)?10:1);
                     const String noteId = values[2];
                     if (chordIndex<chords.size())
                     {
-                        int foo;
                         if (offset>200000 || offset<-200000)
                         {
-                            foo=0;
                             offset = 0;
                         }
                         chords.at(chordIndex).offsets.push_back(offset);
@@ -796,9 +800,9 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         if (msg->getOffTime() <= msg->getTimeStamp()) //In a correct sequence this should not happen
                             msg->setOfftime(msg->getTimeStamp()+50); //But if it does, make a short note with non neg duration
                         const double ts = msg->getTimeStamp();
-                        msg->setTimeStamp(96.0*ts/ppq);
+                        msg->setTimeStamp(960.0*ts/ppq);
                         msg->originalVelocity = msg->velocity;
-                        const double ot = 96.0*msg->getOffTime()/ppq;
+                        const double ot = 960.0*msg->getOffTime()/ppq;
                         msg->setOfftime(ot);
                         msg->indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));
                         allNotes.at(trkNumber).push_back(msg);
@@ -852,7 +856,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         for (int i=0;i<theControllers.size();i++)
         {
             ControllerMessage ctrMsg = theControllers[i];
-            ctrMsg.setTimeStamp(96.0*ctrMsg.getTimeStamp()/ppq);
+            ctrMsg.setTimeStamp(960.0*ctrMsg.getTimeStamp()/ppq);
             if (ctrMsg.track==trackWithSustains && ctrMsg.getControllerNumber()==64)   //Sustain pedal
             {
 //                std::cout<< ctrMsg.getTimeStamp()<<" sust Track " << ctrMsg.track<<" "<<ctrMsg.getControllerValue()<<"\n";
@@ -1091,153 +1095,6 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
             }
         } catch (const std::out_of_range& ex) {
             std::cout << " error loadSequence: processing chords " << "\n";
-        }
-        
-        //Loop through chords humanizing note times for those with a valid timeSpec,
-        //and note velocities for those with a valid velSpec
-        try {
-//            for (int chIndex=0;chIndex<chords.size();chIndex++)
-//            {
-//                String timeSpec = chords[chIndex].timeSpec;
-//                double thisChordTimeStamp = chords[chIndex].chordTimeStamp;
-//                std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = chords.at(chIndex).notePointers;
-////                std::cout << "At A NchordNotes chIndex "<<  chordNotes.size()<<" "<< chIndex <<"\n";
-//                if (chordNotes.size()==0)
-//                    continue;
-//                int firstChordNote = chordNotes.front()->currentStep;
-//                int lastChordNote = chordNotes.back()->currentStep;
-////                std::cout << "At A1 first, last note "<<  firstChordNote<<" "<<lastChordNote <<"\n";
-//                if (timeSpec.startsWith("h:"))
-//                {
-//                    timeSpec = timeSpec.fromFirstOccurrenceOf(":", false, true);
-//                    const String randomnessStr = timeSpec.initialSectionContainingOnly("0123456789");
-//                    String chordDurationStr =  timeSpec.getLastCharacters(timeSpec.length()-randomnessStr.length());
-//                    String seedStr = chordDurationStr.fromFirstOccurrenceOf(":", false, true);
-//                    chordDurationStr = chordDurationStr.upToFirstOccurrenceOf(":", false, true).substring(1,999);
-//                    double variation = randomnessStr.getDoubleValue();
-//                    int chordDirection =  timeSpec.containsAnyOf("/") ? 1 : -1; //It contains either '/' or '\'
-//                    double chordDuration = chordDurationStr.getDoubleValue();
-//
-//                    struct {
-//                        bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
-//                        {
-//                          return a->noteNumber > b->noteNumber;
-//                        }
-//                    } customCompare2;
-//                    std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
-//
-//                    thisChordTimeStamp = chords[chIndex].chordTimeStamp;
-//                    chords[chIndex].offsets.clear();
-//                    chords[chIndex].offsets.push_back(0);
-//                    //Note that some of this code is for use in the future ability to do broken chords
-//                    //                      for (int i=0; i<chordNotes.size(); i++)
-//                    //                          chordNotes.at(i)->chordTopStep = chordTopStep;
-//                    int seed;
-//                    if (seedStr.length()>0)
-//                        seed=seedStr.getIntValue();
-//                    else
-//                        seed = (int) thisChordTimeStamp;
-//
-//                    double nextNoteTime, prevNoteTime;
-//                    if (lastChordNote<theSequence.size()-1)
-//                        nextNoteTime = theSequence.at(lastChordNote+1)->getTimeStamp();
-//                    else
-//                        nextNoteTime = theSequence.back()->getTimeStamp();
-//                    if (firstChordNote==0)
-//                        prevNoteTime = 0;
-//                    else
-//                        prevNoteTime = theSequence.at(firstChordNote-1)->getTimeStamp();
-//                    double chordSpan;
-//                    if (chordDirection>0) //Put notes before chord timeStamp
-//                        chordSpan = thisChordTimeStamp - prevNoteTime;
-//                    else
-//                        chordSpan = nextNoteTime - thisChordTimeStamp;
-//
-//                    if (chordSpan<chordDuration)
-//                        chordDuration = chordSpan - 1;
-//
-//                    if (variation >= 0.5*(nextNoteTime-thisChordTimeStamp))
-//                          variation = 0.5*(nextNoteTime-thisChordTimeStamp);
-//                    //
-//                    //                  for (int i=0; i<chordNotes.size(); i++)
-//                    //                      std::cout<< "chordNote "<<i<<" "
-//                    //                      <<" timeStamp "<< chordNotes.at(i)->getTimeStamp()
-//                    //                      <<" noteNumber "<< chordNotes.at(i)->noteNumber
-//                    //                      <<" seed "<< seed
-//                    //                      <<" variation "<< variation
-//                    //                      <<std::endl;
-//
-//                    std::default_random_engine generator(seed);
-//                    std::normal_distribution<double> distribution(0.0,variation/2.0);
-//                    chords[chIndex].timeRandSeed = seed;
-//                    //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
-//                    for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
-//                    {
-//                        if (humanizeTimes)
-//                        {
-//                          double proposedNoteTime = thisChordTimeStamp;// + i*increment;
-//                          double randomAdd = distribution(generator);
-//                          if (randomAdd<0.0)
-//                              randomAdd=-randomAdd;
-//                          if (randomAdd>variation)
-//                              randomAdd=variation;
-//
-//                          proposedNoteTime += randomAdd;
-//                          const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
-//                          if (proposedNoteTime<seqDurationInTicks)
-//                              chordNotes.at(i)->setTimeStamp(proposedNoteTime);
-//                          chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
-//                          if (chordNotes.at(i)->getTimeStamp()+noteDuration <= seqDurationInTicks)
-//                              chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
-//                          else
-//                              chordNotes.at(i)->setOfftime(seqDurationInTicks);
-//                        //                        std::cout <<  chordNotes.at(i)->currentStep
-//                        //                          << " randomAdd " << randomAdd
-//                        //                          << " timeStamp " << chordNotes.at(i)->getTimeStamp()
-//                        //                          << std::endl;
-//                        }
-//                        const int offset = chordNotes[i]->getTimeStamp() - thisChordTimeStamp;
-//                        chords[chIndex].offsets.push_back(offset);
-//                    }
-//                }
-//                String velSpec = chords[chIndex].velSpec;
-//                if (humanizeVelocities && velSpec.startsWith("h:"))
-//                {
-//                    velSpec = velSpec.fromFirstOccurrenceOf(":", false, true);
-//                    Array<double> strengths;
-//                    std::string numStr = velSpec.toStdString();
-//                    std::string delimiter = ",";
-//                    size_t pos = 0;
-//                    std::string token;
-//                    while ((pos = numStr.find(delimiter)) != std::string::npos) {
-//                        token = numStr.substr(0, pos);
-//                        strengths.add(String(token).getDoubleValue());
-//                        //                            std::cout << "strength " << strengths.getLast() << std::endl;
-//                        numStr.erase(0, pos + delimiter.length());
-//                    }
-//                    strengths.add(String(numStr).getDoubleValue());
-//                    //                        std::cout << "strength " << strengths.getLast() << std::endl;
-//
-//                    const float topNoteVel = chordNotes.at(0)->getVelocity();
-//                    if (chordNotes.size()==2)
-//                    {
-//                      const float ckVel = strengths.getLast() * topNoteVel;
-//                      chordNotes.at(1)->setVelocity(ckVel);
-//                    }
-//                    else // (chord.size()>2)
-//                    {
-//                      for (int j=1;j<chordNotes.size()-1;j++)
-//                      {
-//                          const float ckVel = strengths.getFirst() * topNoteVel ;
-//                          chordNotes.at(j)->setVelocity(ckVel);
-//                      }
-//                      const float ckVel = strengths.getLast() * topNoteVel;
-//                      chordNotes.at(chordNotes.size()-1)->setVelocity(ckVel);
-//                    }
-//                }
-//            }
-        } catch (const std::out_of_range& ex) {
-            std::cout << " error loadSequence: humanizing times or vels" << "\n";
         }
 
 //        for (int i=0;i<chords.size();i++)

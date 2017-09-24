@@ -95,14 +95,14 @@ ApplicationProperties& getAppProperties();
         else if (message == "toggleActivity")
             perform (CommandIDs::toggleSelectedNotesActive);
         
-        else if (message == "marqueeSelectionAdd")
-            perform (CommandIDs::marqueeSelectionAdd);
-        else if (message == "marqueeSelectionRemove")
-            perform (CommandIDs::marqueeSelectionRemove);
-        else if (message == "markSelectedNote")
-            perform (CommandIDs::markSelectedNotes);
-        else if (message == "clearSelectedNotes")
-            perform (CommandIDs::clearSelectedNotes);
+//        else if (message == "marqueeSelectionAdd")
+//            perform (CommandIDs::marqueeSelectionAdd);
+//        else if (message == "marqueeSelectionRemove")
+//            perform (CommandIDs::marqueeSelectionRemove);
+//        else if (message == "markSelectedNote")
+//            perform (CommandIDs::markSelectedNotes);
+//        else if (message == "clearSelectedNotes")
+//            perform (CommandIDs::clearSelectedNotes);
         else if (message == "clearAllSelection")
             perform (CommandIDs::clearAllSelection);
         
@@ -329,25 +329,25 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("SelectAll", "SelectAll", category, 0);
                 result.addDefaultKeypress ('a', ModifierKeys::commandModifier);
                 break;
-            case CommandIDs::marqueeSelectionAdd:
-                result.setInfo ("marqueeSelectionAdd", "marqueeSelectionAdd", category, 0);
-                result.addDefaultKeypress ('1', ModifierKeys::noModifiers);
-                break;
-            case CommandIDs::marqueeSelectionRemove:
-                result.setInfo ("marqueeSelectionRemove", "marqueeSelectionRemove", category, 0);
-                result.addDefaultKeypress ('2', ModifierKeys::noModifiers);
-                break;
-            case CommandIDs::markSelectedNotes:
-                result.setInfo ("markSelectedNotes", "markSelectedNotes", category, 0);
-                result.addDefaultKeypress ('3', ModifierKeys::noModifiers);
-                break;
-            case CommandIDs::clearSelectedNotes:
-                result.setInfo ("clearSelectedNotes", "clearSelectedNotes", category, 0);
-                result.addDefaultKeypress ('4', ModifierKeys::noModifiers);
-                break;
+//            case CommandIDs::marqueeSelectionAdd:
+//                result.setInfo ("marqueeSelectionAdd", "marqueeSelectionAdd", category, 0);
+//                result.addDefaultKeypress ('1', ModifierKeys::noModifiers);
+//                break;
+//            case CommandIDs::marqueeSelectionRemove:
+//                result.setInfo ("marqueeSelectionRemove", "marqueeSelectionRemove", category, 0);
+//                result.addDefaultKeypress ('2', ModifierKeys::noModifiers);
+//                break;
+//            case CommandIDs::markSelectedNotes:
+//                result.setInfo ("markSelectedNotes", "markSelectedNotes", category, 0);
+//                result.addDefaultKeypress ('3', ModifierKeys::noModifiers);
+//                break;
+//            case CommandIDs::clearSelectedNotes:
+//                result.setInfo ("clearSelectedNotes", "clearSelectedNotes", category, 0);
+//                result.addDefaultKeypress ('4', ModifierKeys::noModifiers);
+//                break;
             case CommandIDs::toggleSelectedNotesActive:
                 result.setInfo ("toggleSelectedNotesActive", "toggleSelectedNotesActive", category, 0);
-                result.addDefaultKeypress ('5', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('t', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::setSelectedNotesActive:
                 result.setInfo ("setSelectedNotesActive", "setSelectedNotesActive", category, 0);
@@ -531,10 +531,10 @@ ApplicationProperties& getAppProperties();
             CommandIDs::clearAllSelection,
             CommandIDs::selectAll,
             CommandIDs::toggleSelectedNotesActive,
-            CommandIDs::marqueeSelectionAdd,
-            CommandIDs::marqueeSelectionRemove,
-            CommandIDs::markSelectedNotes,
-            CommandIDs::clearSelectedNotes,
+//            CommandIDs::marqueeSelectionAdd,
+//            CommandIDs::marqueeSelectionRemove,
+//            CommandIDs::markSelectedNotes,
+//            CommandIDs::clearSelectedNotes,
             CommandIDs::setSelectedNotesActive,
             CommandIDs::setSelectedNotesInactive,
             CommandIDs::chainSelectedNotes,
@@ -714,22 +714,22 @@ ApplicationProperties& getAppProperties();
                     pViewerFrame->noteViewer.selectAll();
                 break;
                 
-            case CommandIDs::marqueeSelectionAdd:
-                std::cout <<"marqueeSelectionAdd\n";
-                pViewerFrame->marqueeAddPressed();
-                break;
-            case CommandIDs::marqueeSelectionRemove:
-                std::cout <<"marqueeSelectionRemove\n";
-                pViewerFrame->marqueeRemovePressed();
-                break;
-            case CommandIDs::markSelectedNotes:
-                std::cout <<"markSelectedNotes\n";
-                pViewerFrame->markingAddPressed();
-                break;
-            case CommandIDs::clearSelectedNotes:
-                std::cout <<"clearSelectedNotes\n";
-                pViewerFrame->markingRemovePressed();
-                break;
+//            case CommandIDs::marqueeSelectionAdd:
+//                std::cout <<"marqueeSelectionAdd\n";
+//                pViewerFrame->marqueeAddPressed();
+//                break;
+//            case CommandIDs::marqueeSelectionRemove:
+//                std::cout <<"marqueeSelectionRemove\n";
+//                pViewerFrame->marqueeRemovePressed();
+//                break;
+//            case CommandIDs::markSelectedNotes:
+//                std::cout <<"markSelectedNotes\n";
+//                pViewerFrame->markingAddPressed();
+//                break;
+//            case CommandIDs::clearSelectedNotes:
+//                std::cout <<"clearSelectedNotes\n";
+//                pViewerFrame->markingRemovePressed();
+//                break;
             case CommandIDs::clearAllSelection:
                 std::cout <<"clearAllSelection\n";
                 if (!midiProcessor.isPlaying)

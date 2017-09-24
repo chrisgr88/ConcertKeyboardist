@@ -71,99 +71,99 @@ public:
 //    {
 //        processor->play(!processor->playing(),"current");
 //    }
-    
-    void marqueeAddPressed()
-    {
-        if(pMarqueeSelectionAdd->getToggleState())
-        {
-            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = false;
-            noteViewer.marqueeAddingNotes = false;
-            noteViewer.clearingSelectedNotes = false;
-            noteViewer.markingSelectedNotes = false;
-        }
-        else
-        {
-            noteViewer.editingVelocities.setValue(false);
-            pMarqueeSelectionAdd->setToggleState(true, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeAddingNotes = true;
-            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = false;
-            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.clearingSelectedNotes = false;
-            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.markingSelectedNotes = false;
-        }
-    }
-    void marqueeRemovePressed()
-    {
-        if(pMarqueeSelectionRemove->getToggleState())
-        {
-            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = false;
-            noteViewer.marqueeAddingNotes = false;
-            noteViewer.clearingSelectedNotes = false;
-            noteViewer.markingSelectedNotes = false;
-        }
-        else
-        {
-            noteViewer.editingVelocities.setValue(false);
-            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeAddingNotes = false;
-            pMarqueeSelectionRemove->setToggleState(true, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = true;
-            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.clearingSelectedNotes = false;
-            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.markingSelectedNotes = false;
-        }
-    }
-    void  markingAddPressed()
-    {
-        if(pMarkSelectedNotes->getToggleState())
-        {
-            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = false;
-            noteViewer.marqueeAddingNotes = false;
-            noteViewer.clearingSelectedNotes = false;
-            noteViewer.markingSelectedNotes = false;
-        }
-        else
-        {
-            noteViewer.editingVelocities.setValue(false);
-            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeAddingNotes = false;
-            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = false;
-            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.clearingSelectedNotes = false;
-            pMarkSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
-            noteViewer.markingSelectedNotes = true;
-        }
-    }
-    void  markingRemovePressed()
-    {
-        if(pClearSelectedNotes->getToggleState())
-        {
-            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = false;
-            noteViewer.marqueeAddingNotes = false;
-            noteViewer.clearingSelectedNotes = false;
-            noteViewer.markingSelectedNotes = false;
-        }
-        else
-        {
-            noteViewer.editingVelocities.setValue(false);
-            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeAddingNotes = false;
-            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.marqueeRemovingNotes = false;
-            pClearSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
-            noteViewer.clearingSelectedNotes = true;
-            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            noteViewer.markingSelectedNotes = false;
-        }
-    }
+//    
+//    void marqueeAddPressed()
+//    {
+//        if(pMarqueeSelectionAdd->getToggleState())
+//        {
+//            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = false;
+//            noteViewer.marqueeAddingNotes = false;
+//            noteViewer.clearingSelectedNotes = false;
+//            noteViewer.markingSelectedNotes = false;
+//        }
+//        else
+//        {
+//            noteViewer.editingVelocities.setValue(false);
+//            pMarqueeSelectionAdd->setToggleState(true, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeAddingNotes = true;
+//            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = false;
+//            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.clearingSelectedNotes = false;
+//            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.markingSelectedNotes = false;
+//        }
+//    }
+//    void marqueeRemovePressed()
+//    {
+//        if(pMarqueeSelectionRemove->getToggleState())
+//        {
+//            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = false;
+//            noteViewer.marqueeAddingNotes = false;
+//            noteViewer.clearingSelectedNotes = false;
+//            noteViewer.markingSelectedNotes = false;
+//        }
+//        else
+//        {
+//            noteViewer.editingVelocities.setValue(false);
+//            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeAddingNotes = false;
+//            pMarqueeSelectionRemove->setToggleState(true, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = true;
+//            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.clearingSelectedNotes = false;
+//            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.markingSelectedNotes = false;
+//        }
+//    }
+//    void  markingAddPressed()
+//    {
+//        if(pMarkSelectedNotes->getToggleState())
+//        {
+//            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = false;
+//            noteViewer.marqueeAddingNotes = false;
+//            noteViewer.clearingSelectedNotes = false;
+//            noteViewer.markingSelectedNotes = false;
+//        }
+//        else
+//        {
+//            noteViewer.editingVelocities.setValue(false);
+//            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeAddingNotes = false;
+//            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = false;
+//            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.clearingSelectedNotes = false;
+//            pMarkSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+//            noteViewer.markingSelectedNotes = true;
+//        }
+//    }
+//    void  markingRemovePressed()
+//    {
+//        if(pClearSelectedNotes->getToggleState())
+//        {
+//            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = false;
+//            noteViewer.marqueeAddingNotes = false;
+//            noteViewer.clearingSelectedNotes = false;
+//            noteViewer.markingSelectedNotes = false;
+//        }
+//        else
+//        {
+//            noteViewer.editingVelocities.setValue(false);
+//            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeAddingNotes = false;
+//            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.marqueeRemovingNotes = false;
+//            pClearSelectedNotes->setToggleState(true, juce::NotificationType::dontSendNotification);
+//            noteViewer.clearingSelectedNotes = true;
+//            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            noteViewer.markingSelectedNotes = false;
+//        }
+//    }
 
     
     void playFromLastPlayed()
@@ -298,11 +298,11 @@ private:
             edit_undo       = 4,
             edit_redo       = 5,
             _toggleActivity     = 25,
-            _markSelectedNotes  = 23,
-            _clearSelectedNotes = 24,
-            _marqueeSelectionAdd  = 26,
-            _marqueeSelectionRemove = 27,
-            _clearAllSelection = 28,
+//            _markSelectedNotes  = 23,
+//            _clearSelectedNotes = 24,
+//            _marqueeSelectionAdd  = 26,
+//            _marqueeSelectionRemove = 27,
+//            _clearAllSelection = 28,
             _chain          = 8,
             _chordEditToggle = 9,
             _editVelocities  = 10,
@@ -334,11 +334,11 @@ private:
             ids.add (edit_undo);
             ids.add (edit_redo);
             ids.add (_toggleActivity);
-            ids.add (_marqueeSelectionAdd);
-            ids.add (_marqueeSelectionRemove);
-            ids.add (_clearAllSelection);
-            ids.add (_markSelectedNotes);
-            ids.add (_clearSelectedNotes);
+//            ids.add (_marqueeSelectionAdd);
+//            ids.add (_marqueeSelectionRemove);
+//            ids.add (_clearAllSelection);
+//            ids.add (_markSelectedNotes);
+//            ids.add (_clearSelectedNotes);
             ids.add (_chain);
             ids.add (_addSustain);
             ids.add (_addSoft);
@@ -380,11 +380,11 @@ private:
             ids.add (edit_undo);
             ids.add (edit_redo);
             ids.add (separatorBarId);
-            ids.add (_marqueeSelectionAdd);
-            ids.add (_marqueeSelectionRemove);
-            ids.add (_markSelectedNotes);
-            ids.add (_clearSelectedNotes);
-            ids.add (_clearAllSelection);
+//            ids.add (_marqueeSelectionAdd);
+//            ids.add (_marqueeSelectionRemove);
+//            ids.add (_markSelectedNotes);
+//            ids.add (_clearSelectedNotes);
+//            ids.add (_clearAllSelection);
             ids.add (separatorBarId);
             ids.add (_toggleActivity);
             ids.add (separatorBarId);
@@ -424,24 +424,24 @@ private:
                     
                 case _toggleActivity:        return createButtonFromZipFileSVG (itemId, "Toggle Target Notes", "toggleActivityTool.svg");
                     
-                case _marqueeSelectionAdd: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Select",
-                                "MarqueeAddButton.svg", "MarqueeAddButton-pressed.svg");
-                case _marqueeSelectionRemove: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Deselect",
-                                "MarqueeRemoveButton.svg", "MarqueeRemoveButton-pressed.svg");
-                    
-                case _markSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Select",
-                            "SelectionMarkerButton.svg", "SelectionMarkerButton-pressed.svg");
-                case _clearSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Deselect",
-                              "SelectionUnMarkerButton.svg", "SelectionUnMarkerButton-pressed.svg");
-                case _clearAllSelection: return createButtonFromZipFileSVG (itemId, "Deselect All Notes",
-                            "ClearSelectionButton.svg");
-                case _chain:        return createButtonFromZipFileSVG (itemId, "Chain Notes at Given Interval", "chain.svg");
+//                case _marqueeSelectionAdd: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Select",
+//                                "MarqueeAddButton.svg", "MarqueeAddButton-pressed.svg");
+//                case _marqueeSelectionRemove: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Deselect",
+//                                "MarqueeRemoveButton.svg", "MarqueeRemoveButton-pressed.svg");
+//                    
+//                case _markSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Select",
+//                            "SelectionMarkerButton.svg", "SelectionMarkerButton-pressed.svg");
+//                case _clearSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Deselect",
+//                              "SelectionUnMarkerButton.svg", "SelectionUnMarkerButton-pressed.svg");
+//                case _clearAllSelection: return createButtonFromZipFileSVG (itemId, "Deselect All Notes",
+//                            "ClearSelectionButton.svg");
+                case _chain:        return createButtonFromZipFileSVG (itemId, "Generate Target Notes After Pauses", "chain.svg");
                 case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
                 case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
                 case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
-                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Adjust Chord Note Times", "humanizeStartTimes.svg");
-                case _humanizeVelocity: return createButtonFromZipFileSVG (itemId, "Adjust Note Velocities", "humanizeVelocities.svg");
+                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Randomize Chord Note Times", "humanizeStartTimes.svg");
+                case _humanizeVelocity: return createButtonFromZipFileSVG (itemId, "Adjust Chord Note Velocities", "humanizeVelocities.svg");
                 case _chordEditToggle:
                 {
                     ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Edit Chords",
@@ -463,21 +463,21 @@ private:
                 case chainAmountBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Chaining Interval in Ticks");
+                    txtBox->textBox.setTooltip("Minimum Pause In Sixteenths to Generate Target Note");
                     return txtBox;
                 }
                     
                 case _humanizeVelocityBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Amount of Velocity Humanization");
+                    txtBox->textBox.setTooltip("Note Velocity Pattern as Fractions of Top Note");
                     return txtBox;
                 }
                     
                 case _humanizeTimeBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Amount of Time Randomization");
+                    txtBox->textBox.setTooltip("Maximum Time Randomization in Milliseconds");
                     return txtBox;
                 }
                     
@@ -816,7 +816,7 @@ private:
                 ToolbarItemComponent::addAndMakeVisible (incDecBox);
                 
                 incDecBox.setRange (0, 600.0, 1);
-                incDecBox.setValue (12, dontSendNotification);
+                incDecBox.setValue (120, dontSendNotification);
                 incDecBox.setSliderStyle (Slider::IncDecButtons);
                 incDecBox.setBounds (180, 40, 20, 20);
                 incDecBox.setTextBoxStyle(Slider::TextBoxLeft, false, 30, 20);
@@ -1262,10 +1262,10 @@ private:
     AltToolbarItemFactory::RealTimeTempo *pRealTimeTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
-    ToolbarItemComponent *pMarkSelectedNotes;
-    ToolbarItemComponent *pClearSelectedNotes;
-    ToolbarItemComponent *pMarqueeSelectionAdd;
-    ToolbarItemComponent *pMarqueeSelectionRemove;
+//    ToolbarItemComponent *pMarkSelectedNotes;
+//    ToolbarItemComponent *pClearSelectedNotes;
+//    ToolbarItemComponent *pMarqueeSelectionAdd;
+//    ToolbarItemComponent *pMarqueeSelectionRemove;
     
     double chainAmount;
     String humanizeVelocityAmount;

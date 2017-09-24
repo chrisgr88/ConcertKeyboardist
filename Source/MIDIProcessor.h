@@ -47,7 +47,7 @@ public:
     void timerCallback (int timerID) override;
     double getTempo ()
     {
-//        return 625*timeIncrement; //625 = 60000.0/96.0
+//        return 625*timeIncrement; //625 = 60000.0/960.0
 //        else
         if (timeInTicks<=0)
             return 60;
@@ -299,7 +299,7 @@ public:
     bool getNoteActivity(int step);
     void changeNoteVelocity(int step, float velocity);
     void changeNoteTimes(Array<int>, double time);
-    void changeNoteOffTime(int step, double offTime);
+    void changeNoteOffTimes(Array<int> steps, double delta);
     Array<int> copyOfSelectedNotes;
     void setCopyOfSelectedNotes(Array<int> sel);
     void setListenSequence(double startTime, double endTime, Array<int> tracks);
@@ -363,9 +363,9 @@ private:
     bool loopPending = false;
     std::deque<int> scheduledNotes;
     
-    double timerIntervalInMS; //SC//Length of ticks in ms to provide a given tempo assuming a ppq of 96
+    double timerIntervalInMS; //SC//Length of ticks in ms to provide a given tempo assuming a ppq of 960
     double timeIncrement;
-    double variableTimeIncrement;//Amount to increase time at each tick, based on ppq of 96.Adjusted based on actual ppq of this midi file.
+    double variableTimeIncrement;//Amount to increase time at each tick, based on ppq of 960.Adjusted based on actual ppq of this midi file.
     class MyUndoManager : public UndoManager
     {
     public:

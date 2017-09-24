@@ -196,7 +196,7 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
         while (time > listenSequence.at(listenStep).timeStamp)
             listenStep++;
     }
-    timeIncrement =  sequenceObject.tempoMultiplier * 96.0*sequenceObject.getTempo(time)/60000.0;
+    timeIncrement =  sequenceObject.tempoMultiplier * 960.0*sequenceObject.getTempo(time)/60000.0;
     variableTimeIncrement = timeIncrement;
     leadLag = 0;
     changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
@@ -648,8 +648,8 @@ void MIDIProcessor::processBlock ()
         if (lastPlayedNoteStep>=0)
         {
             const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(lastPlayedNoteStep)->getTimeStamp());
-            timeIncrement = sequenceObject.tempoMultiplier * tempo / 625;
-            variableTimeIncrement = variableTempoRatio * sequenceObject.tempoMultiplier * tempo / 625;
+            timeIncrement = 10*sequenceObject.tempoMultiplier * tempo / 625;
+            variableTimeIncrement = 10*variableTempoRatio * sequenceObject.tempoMultiplier * tempo / 625;
 //            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
 //            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
         }
@@ -733,7 +733,7 @@ void MIDIProcessor::processBlock ()
 //                sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber, sequenceObject.theSequence.at(step)->channel, false);
 //                onNotes.remove(onNoteIndex);
 //                deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by viewer
-                //60000.0*timeIncrement/(sequenceObject.getTempo(time)*sequenceObject.tempoMultiplier) =  96.0;
+                //60000.0*timeIncrement/(sequenceObject.getTempo(time)*sequenceObject.tempoMultiplier) =  960.0;
                 int nextNoteOn = -1;
                 if (step<sequenceObject.theSequence.size())
                 {
@@ -759,7 +759,7 @@ void MIDIProcessor::processBlock ()
                 { //Add a note overlap time to the current time and schedule the noteoff for then
 //                    std::cout<<"delayed off at "<<step<<" nextNoteOn "<<nextNoteOn<<"\n";
                     const double keyOverlapTimeMs = 100;
-                    const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks))/96.0;
+                    const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks))/960.0;
                     const double keyOverlapTimeTicks = keyOverlapTimeMs/msPerTick;
                     sequenceObject.theSequence.at(step)->noteOffNow = false;
                     sequenceObject.theSequence.at(step)->sustaining = true;
@@ -1056,7 +1056,7 @@ void MIDIProcessor::processBlock ()
                 if (availableNotes.size()>0)
                 {
                     sequenceReadHead = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()+1;
-                    const double noteOnLag = mostRecentNoteTime-timeInTicks;
+                    const double noteOnLag = (mostRecentNoteTime-timeInTicks)/10.0;
                     const double deltaNoteOnLag = noteOnLag - prevNoteOnLag;
                     prevNoteOnLag = noteOnLag;
 //                    int latePlayAdjustmentWindow = 100; //To prevent big speed jumps if the user plays far too early
@@ -1391,11 +1391,14 @@ void MIDIProcessor::timeHumanizeChords (Array<int> steps)
         {
             const int chIndex = chordsToProcess[chNum];
             double thisChordTimeStamp = sequenceObject.chords[chIndex].chordTimeStamp;
+            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(sequenceObject.chords[chIndex].notePointers.at(0)->currentStep)->getTimeStamp());
+            double timeIncrement = 10*sequenceObject.tempoMultiplier * tempo / 625;
+            std::cout << chIndex<<" In timeHumanizeChords at chIndex: ts, tempo, increment= "<<thisChordTimeStamp
+            <<" "<<  tempo<<" "<< timeIncrement<<"\n";
             std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
-            //                std::cout << "At A NchordNotes chIndex "<<  chordNotes.size()<<" "<< chIndex <<"\n";
             if (chordNotes.size()==0)
                 continue;
-            int topChordNote = chordNotes.front()->currentStep;
+//            int topChordNote = chordNotes.front()->currentStep;
 
             std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
             
@@ -1447,7 +1450,7 @@ void MIDIProcessor::timeHumanizeChords (Array<int> steps)
                 double randomAdd = rawRandomAdd;
                 if (randomAdd>maxVariation)
                     randomAdd=maxVariation-1.0;
-                
+                randomAdd = randomAdd*timeIncrement; //This allows variation to be stated in milliseconds in the UI
                 proposedNoteTime += randomAdd;
                 const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
                 if (proposedNoteTime<sequenceObject.seqDurationInTicks)
@@ -2053,12 +2056,6 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
 {
     for (int i=0;i<steps.size();i++)
     {
-        std::vector<std::shared_ptr<NoteWithOffTime>> selectedNotes;
-        
-        double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
-        double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime();
-        timeStamp += delta;
-        offTime += delta;
         if (sequenceObject.theSequence.at(steps[i])->inChord)
         {
             const int chordIndex = sequenceObject.theSequence.at(steps[i])->chordIndex;
@@ -2069,26 +2066,19 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
                     iHighest = i;
             if (steps[i] == sequenceObject.chords[chordIndex].notePointers[iHighest]->currentStep)
             {
-                //If it's the chord's top step change all the chord's notes
+                //If it's the chord's top step add all the chord's notes to steps to be changed
                 for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
-                {
-                    const double newTimeStamp = sequenceObject.chords[chordIndex].notePointers.at(i)->getTimeStamp()+delta;
-                    const double newOffTime = sequenceObject.chords[chordIndex].notePointers.at(i)->offTime+delta;
-                    sequenceObject.chords[chordIndex].notePointers.at(i)->setTimeStamp(newTimeStamp);
-                    sequenceObject.chords[chordIndex].notePointers.at(i)->offTime = newOffTime;
-                }
-                sequenceObject.chords[chordIndex].chordTimeStamp =
-                            sequenceObject.chords[chordIndex].notePointers.at(iHighest)->getTimeStamp();
-            }
-            else
-            {
-                if (sequenceObject.chords[chordIndex].timeSpec != "manual")
-                {
-                    //If it's not the top note, change the chord timeSpec type to manual
-                    sequenceObject.chords[chordIndex].timeSpec = "manual";
-                }
+                    steps.addIfNotAlreadyThere(sequenceObject.chords[chordIndex].notePointers.at(i)->currentStep);
+                sequenceObject.chords[chordIndex].chordTimeStamp += delta;
             }
         }
+    }
+    for (int i=0;i<steps.size();i++)
+    {
+        double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
+        double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime();
+        timeStamp += delta;
+        offTime += delta;
         sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
         sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
     }
@@ -2096,14 +2086,21 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
 }
-void MIDIProcessor::changeNoteOffTime(int step, double offTime)
+void MIDIProcessor::changeNoteOffTimes(Array<int> steps, double delta)
 {
-    std::cout << "changeNoteOffTime "<<step<<" "<< time<<"\n";
-    sequenceObject.theSequence.at(step)->setOfftime(offTime);
+//    std::cout << "changeNoteOffTimes "<<steps.size()<<" "<< delta<<"\n";
+    for (int i=0;i<steps.size();i++)
+    {
+        const double proposedOffTime = sequenceObject.theSequence.at(steps[i])->offTime+delta;
+        if (proposedOffTime>(sequenceObject.theSequence.at(steps[i])->getTimeStamp()+10))
+            sequenceObject.theSequence.at(steps[i])->setOfftime(proposedOffTime);
+        else
+            sequenceObject.theSequence.at(steps[i])->setOfftime(sequenceObject.theSequence.at(steps[i])->getTimeStamp()+10);
+    }
     sequenceObject.setChangedFlag(true);
     catchUp();
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
-    std::cout << "changeNoteOffTime after buildSequence"<<"\n";
+//    std::cout << "changeNoteOffTimes after buildSequence"<<"\n";
 }
 void MIDIProcessor::setCopyOfSelectedNotes(Array<int> sel)
 {

@@ -42,8 +42,8 @@ altToolbarFactory(this)
             pChainAmountBox = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pChainAmountBox->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pChainAmountBox->setWidth(35);
-            pChainAmountBox->textBox.setText("12");
-            chainAmount = 12.0;
+            pChainAmountBox->textBox.setText("2.0");
+            chainAmount = 120.0;
         }
         else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeTimeBox)
         {
@@ -52,8 +52,8 @@ altToolbarFactory(this)
             (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pHumanizeStartTime->setWidth(65);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
-            pHumanizeStartTime->textBox.setText("3");
-            humanizeTimeAmount = "3";
+            pHumanizeStartTime->textBox.setText("60");
+            humanizeTimeAmount = "60";
         }
         else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeVelocityBox)
         {
@@ -65,30 +65,30 @@ altToolbarFactory(this)
             pHumanizeVelocity->textBox.setText(".6,.8");
             humanizeVelocityAmount = ".6,.8";
         }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionAdd)
-        {
-            pMarqueeSelectionAdd = mainToolbar.getItemComponent(i);
-            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
-            mainToolbar.getItemComponent(i)->addListener(this);
-        }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionRemove)
-        {
-            pMarqueeSelectionRemove = mainToolbar.getItemComponent(i);
-            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
-            mainToolbar.getItemComponent(i)->addListener(this);
-        }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::_markSelectedNotes)
-        {
-            pMarkSelectedNotes = mainToolbar.getItemComponent(i);
-            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            mainToolbar.getItemComponent(i)->addListener(this);
-        }
-        else if (id == MainToolbarItemFactory::ToolbarItemIds::_clearSelectedNotes)
-        {
-            pClearSelectedNotes = mainToolbar.getItemComponent(i);
-            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-            mainToolbar.getItemComponent(i)->addListener(this);
-        }
+//        else if (id == MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionAdd)
+//        {
+//            pMarqueeSelectionAdd = mainToolbar.getItemComponent(i);
+//            pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            mainToolbar.getItemComponent(i)->addListener(this);
+//        }
+//        else if (id == MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionRemove)
+//        {
+//            pMarqueeSelectionRemove = mainToolbar.getItemComponent(i);
+//            pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            mainToolbar.getItemComponent(i)->addListener(this);
+//        }
+//        else if (id == MainToolbarItemFactory::ToolbarItemIds::_markSelectedNotes)
+//        {
+//            pMarkSelectedNotes = mainToolbar.getItemComponent(i);
+//            pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            mainToolbar.getItemComponent(i)->addListener(this);
+//        }
+//        else if (id == MainToolbarItemFactory::ToolbarItemIds::_clearSelectedNotes)
+//        {
+//            pClearSelectedNotes = mainToolbar.getItemComponent(i);
+//            pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//            mainToolbar.getItemComponent(i)->addListener(this);
+//        }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
             pScoreTempo = (AltToolbarItemFactory::ScoreTempo *) altToolbar.getItemComponent(i);
@@ -160,7 +160,7 @@ void ViewerFrame::timerCallback()
     if (pChainAmountBox->returnPressed)
     {
         std::cout << "Return pressed - chainAmount" <<pChainAmountBox->textBox.getText().getDoubleValue()<<"\n";
-        chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
+        chainAmount = pChainAmountBox->textBox.getText().getDoubleValue()*60.0;
         sendActionMessage("chain:"+String(chainAmount));
         grabKeyboardFocus();
         pChainAmountBox->returnPressed = false;
@@ -266,19 +266,19 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("editRedo");
         else if(MainToolbarItemFactory::ToolbarItemIds::_toggleActivity == id)
             sendActionMessage("toggleActivity");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionAdd == id)
-            sendActionMessage("marqueeSelectionAdd");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionRemove == id)
-            sendActionMessage("marqueeSelectionRemove");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_markSelectedNotes == id)
-            sendActionMessage("markSelectedNote");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_clearSelectedNotes == id)
-            sendActionMessage("clearSelectedNotes");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_clearAllSelection == id)
-            sendActionMessage("clearAllSelection");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionAdd == id)
+//            sendActionMessage("marqueeSelectionAdd");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionRemove == id)
+//            sendActionMessage("marqueeSelectionRemove");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::_markSelectedNotes == id)
+//            sendActionMessage("markSelectedNote");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::_clearSelectedNotes == id)
+//            sendActionMessage("clearSelectedNotes");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::_clearAllSelection == id)
+//            sendActionMessage("clearAllSelection");
         else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
         {
-            chainAmount = pChainAmountBox->textBox.getText().getDoubleValue();
+            chainAmount = pChainAmountBox->textBox.getText().getDoubleValue()*60.0;
             sendActionMessage("chain:"+String(chainAmount));
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
@@ -291,17 +291,17 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("_showChords");
         else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
         {
-            if (noteViewer.editingVelocities.getValue())
-            {
-                pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
-                noteViewer.marqueeAddingNotes = false;
-                pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
-                noteViewer.marqueeRemovingNotes = false;
-                pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-                noteViewer.clearingSelectedNotes = false;
-                pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
-                noteViewer.markingSelectedNotes = false;
-            }
+//            if (noteViewer.editingVelocities.getValue())
+//            {
+//                pMarqueeSelectionAdd->setToggleState(false, juce::NotificationType::dontSendNotification);
+//                noteViewer.marqueeAddingNotes = false;
+//                pMarqueeSelectionRemove->setToggleState(false, juce::NotificationType::dontSendNotification);
+//                noteViewer.marqueeRemovingNotes = false;
+//                pClearSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//                noteViewer.clearingSelectedNotes = false;
+//                pMarkSelectedNotes->setToggleState(false, juce::NotificationType::dontSendNotification);
+//                noteViewer.markingSelectedNotes = false;
+//            }
             noteViewer.repaint();
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_addSustain == id)
