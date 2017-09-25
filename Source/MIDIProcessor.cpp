@@ -1999,7 +1999,6 @@ bool MIDIProcessor::getNoteActivity(int step)
 void MIDIProcessor::changeNoteVelocity(int step, float velocity)
 {
 //    std::cout << "changeNoteVelocity before catchUp "<<step<<"\n";
-    catchUp();
     //        if (copyOfSelectedNotes.size()<=1)
     //        {
 //    std::cout << "changeNoteVelocity after catchUp "<<step<<"\n";
@@ -2049,7 +2048,8 @@ void MIDIProcessor::changeNoteVelocity(int step, float velocity)
     //                }
     //            }
     //        }
-    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+//    catchUp();
+//    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
 }
 
 void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)

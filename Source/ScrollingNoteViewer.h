@@ -384,6 +384,13 @@ private:
     int noteBeingDraggedOn;
 //    bool showVelocityIndicator; //If true, the velocity tick mark indicator of the hoverStep is to be painted
     float velStartDrag;
+    Array<int> notesBeingDraggedOn;
+    Array<float> velsStartDrag;
+    enum VelocityDragTypes {VelocityDragLeftEnd, VelocityDragRightEnd, VelocityDragMiddle};
+    VelocityDragTypes velocityDragType;
+    double selectionLeftTick; //Used in vel dragging
+    double selectionWidthTicks; //Used in vel dragging
+    int lowestVelDragStep;
     float timeStartDrag;
     float offTimeStartDrag;
     double timeAfterDrag;
