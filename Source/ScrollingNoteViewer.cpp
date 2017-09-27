@@ -1248,7 +1248,7 @@ void ScrollingNoteViewer::makeNoteBars()
     {
         pSequence->at(deferredNoteBars[i].seqIndex)->rectBar =
             addNote(deferredNoteBars[i].x, deferredNoteBars[i].y,
-               deferredNoteBars[i].w, noteBarVerticalSize,
+               deferredNoteBars[i].w, noteBarVerticalSize+1.0,
                deferredNoteBars[i].headWidth, deferredNoteBars[i].headHeight,
                deferredNoteBars[i].colHead, deferredNoteBars[i].colBar);
     }
@@ -1584,28 +1584,38 @@ void ScrollingNoteViewer::paint (Graphics& g)
             if (draggingTime && hoverStep>=0)
             {
     //            std::cout << "draggingTime" << "\n";
+                g.setColour (Colour(0xFFF0F0FF));
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-                const Rectangle<float> head = Rectangle<float>(
+                Rectangle<float> guideLine = Rectangle<float>(
                        (timeAfterDrag*pixelsPerTick)*horizontalScale+sequenceStartPixel+horizontalShift -
                                                                processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
-                       (scaledHead.getY()-3.0f)*verticalScale,
-                       1.0f*horizontalScale,
-                       10.0f*verticalScale);
-                g.setColour (Colour(0xFFF0F0FF));
-                g.drawRect(head, 1.0);
+                       (scaledHead.getY())*verticalScale,
+                                                               
+                       2.0*horizontalScale,
+                       scaledHead.getHeight()*verticalScale);
+                
+                g.drawRect(guideLine, 1.5);
+                guideLine.setY(topMargin*verticalScale);
+                guideLine.setWidth(0.5f*horizontalScale);
+                guideLine.setHeight(getHeight() - topMargin*verticalScale);
+                g.drawRect(guideLine, 0.5);
             }
             else if (draggingOffTime && hoverStep>=0)
             {
                 //std::cout << "draggingOffTime" << "\n";
+                g.setColour (Colour(0xFFF0F0FF));
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-                const Rectangle<float> head = Rectangle<float>(
+                Rectangle<float> guideLine = Rectangle<float>(
                        (offTimeAfterDrag*pixelsPerTick)*horizontalScale+sequenceStartPixel+horizontalShift -
                        processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
-                       (scaledHead.getY()-3.0f)*verticalScale,
-                       1.0f*horizontalScale,
-                       10.0f*verticalScale);
-                g.setColour (Colour(0xFFF0F0FF));
-                g.drawRect(head, 1.0);
+                       (scaledHead.getY())*verticalScale,
+                       2.0*horizontalScale,
+                       scaledHead.getHeight()*verticalScale);
+                g.drawRect(guideLine, 1.0);
+                guideLine.setY(topMargin*verticalScale);
+                guideLine.setWidth(0.5f*horizontalScale);
+                guideLine.setHeight(getHeight() - topMargin*verticalScale);
+                g.drawRect(guideLine, 0.5);
             }
         }
     }
