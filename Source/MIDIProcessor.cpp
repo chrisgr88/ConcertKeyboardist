@@ -1393,8 +1393,8 @@ void MIDIProcessor::timeHumanizeChords (Array<int> steps)
             double thisChordTimeStamp = sequenceObject.chords[chIndex].chordTimeStamp;
             const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(sequenceObject.chords[chIndex].notePointers.at(0)->currentStep)->getTimeStamp());
             double timeIncrement = 10*sequenceObject.tempoMultiplier * tempo / 625;
-            std::cout << chIndex<<" In timeHumanizeChords at chIndex: ts, tempo, increment= "<<thisChordTimeStamp
-            <<" "<<  tempo<<" "<< timeIncrement<<"\n";
+//            std::cout << chIndex<<" In timeHumanizeChords at chIndex: ts, tempo, increment= "<<thisChordTimeStamp
+//            <<" "<<  tempo<<" "<< timeIncrement<<"\n";
             std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
             if (chordNotes.size()==0)
                 continue;
@@ -2075,10 +2075,26 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
     }
     for (int i=0;i<steps.size();i++)
     {
+//        int indexOfNextSameNote = -1;
+//        //Adjust the head width if other note of same note number follows closely
+//        const int thisStep = sequenceObject.theSequence.at(steps[i])->currentStep;
+//        const int thisNoteNumber = sequenceObject.theSequence.at(steps[i])->noteNumber;
+//        for (int nxtNoteIndex=thisStep+1;nxtNoteIndex<sequenceObject.theSequence.size()-2;nxtNoteIndex++)
+//        {
+//            if (sequenceObject.theSequence.at(nxtNoteIndex)->noteNumber==thisNoteNumber)
+//            {
+//                indexOfNextSameNote = nxtNoteIndex;
+//                std::cout<< "index,  indexOfNextSameNote "<< index<<" "<<indexOfNextSameNote<< "\n";
+//                break;
+//            }
+//        }
+
         double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
-        double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime();
+        double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime(); 
         timeStamp += delta;
         offTime += delta;
+//        if (indexOfNextSameNote != -1 && (offTime >= sequenceObject.theSequence.at(indexOfNextSameNote)->getTimeStamp()))
+//            offTime = sequenceObject.theSequence.at(indexOfNextSameNote)->getTimeStamp()-1.0;
         sequenceObject.theSequence.at(steps[i])->setTimeStamp(timeStamp);
         sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
     }

@@ -87,7 +87,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+//        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
     
@@ -155,7 +155,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             String noteId = String(chords.at(chIndex).notePointers.at(note)->track)
                                             +"_"+String(chords.at(chIndex).notePointers.at(note)->channel)
                                             +"_"+String(chords.at(chIndex).notePointers.at(note)->noteNumber);
-            const int offset = chords.at(chIndex).notePointers.at(note)->getTimeStamp() - chords.at(chIndex).chordTimeStamp;
+            const int offset = 0;//chords.at(chIndex).notePointers.at(note)->getTimeStamp() - chords.at(chIndex).chordTimeStamp;
             
             String propertyStr = String("chordNote:")+String(chIndex)+" "+String(offset)+" "+noteId;
             int len = propertyStr.length();
@@ -194,7 +194,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         for (int i=0;i<numEvents;i++)
         {
             MidiMessage msg = theTrack->getEventPointer(i)->message;
-            if (!msg.isNoteOn())
+            if (!msg.isNoteOnOrOff())
             {
                 msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
                 if (!msg.isController())
@@ -222,23 +222,64 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
                 trackSeq.addEvent(msg);
             }
         }
-        for (int step=0;step<allNotes.at(trk).size();step++)
+        for (int trackStep=0;trackStep<allNotes.at(trk).size();trackStep++)
         {
-            MidiMessage onMsg = MidiMessage::noteOn(allNotes.at(trk).at(step)->channel,
-                                                  allNotes.at(trk).at(step)->noteNumber,
-                                                  allNotes.at(trk).at(step)->velocity);
-            if (allNotes.at(trk).at(step)->inChord) //If in a chord
-                onMsg.setTimeStamp(chords.at(allNotes.at(trk).at(step)->chordIndex).chordTimeStamp); //Write the chords timestamp for all its notes
-            else
-                onMsg.setTimeStamp(allNotes.at(trk).at(step)->getTimeStamp()); //Otherwise write the actual note's timestamp
+            int foo3;
+            if (allNotes.at(trk).at(trackStep)->currentStep==4)
+                foo3=0;
+            double proposedOnTime = allNotes.at(trk).at(trackStep)->getTimeStamp();
+            double proposedOffTime = allNotes.at(trk).at(trackStep)->offTime;
+//            if (allNotes.at(trk).at(trackStep)->currentStep<12)
+//                std::cout << "Real step "<<allNotes.at(trk).at(trackStep)->currentStep
+//                <<" proposedOnTime "<<proposedOnTime
+//                <<" proposedOffTime "<<proposedOffTime
+//                <<"\n";
+            
+            MidiMessage onMsg = MidiMessage::noteOn(allNotes.at(trk).at(trackStep)->channel,
+                                                  allNotes.at(trk).at(trackStep)->noteNumber,
+                                                  allNotes.at(trk).at(trackStep)->velocity);
+//            if (allNotes.at(trk).at(step)->inChord) //If in a chord
+//                onMsg.setTimeStamp(chords.at(allNotes.at(trk).at(step)->chordIndex).chordTimeStamp); //Write the chord's timestamp for all its notes
+//            else
+                onMsg.setTimeStamp(proposedOnTime); //Otherwise write the actual note's timestamp
             trackSeq.addEvent(onMsg);
-            MidiMessage offMsg = MidiMessage::noteOff(allNotes.at(trk).at(step)->channel,
-                                                  allNotes.at(trk).at(step)->noteNumber,
-                                                  0.0f);
-            offMsg.setTimeStamp(allNotes.at(trk).at(step)->getOffTime());
+            
+            //We need to shorten notes that end after the next note of that notenumber or so the note gets the correct noteOff
+            int trackStepNextSameNote = -1;
+            //Adjust the head width if other note of same note number follows closely
+            const int thisTrackStep = trackStep;
+            const int thisNoteNumber = allNotes.at(trk).at(trackStep)->noteNumber;
+            for (int nxtNoteTrackStep=thisTrackStep+1;nxtNoteTrackStep<allNotes.at(trk).size()-2;nxtNoteTrackStep++)
+            {
+                if (allNotes.at(trk).at(nxtNoteTrackStep)->noteNumber==thisNoteNumber)
+                {
+                    trackStepNextSameNote = nxtNoteTrackStep;
+//                    if (allNotes.at(trk).at(trackStep)->currentStep<20)
+//                        std::cout<< "trackStep,  trackStepNextSameNote "<< trackStep<<" "<<trackStepNextSameNote<< "\n";
+                    break;
+                }
+            }
+            if (trackStepNextSameNote != -1 && (proposedOffTime >= (allNotes.at(trk).at(trackStepNextSameNote)->getTimeStamp())-4))
+                proposedOffTime = allNotes.at(trk).at(trackStepNextSameNote)->getTimeStamp()-4.0;
+         
+            MidiMessage offMsg = MidiMessage::noteOff(allNotes.at(trk).at(trackStep)->channel,
+                                                      allNotes.at(trk).at(trackStep)->noteNumber,
+                                                      0.0f);
+            offMsg.setTimeStamp(proposedOffTime);
             trackSeq.addEvent(offMsg);
         }
         trackSeq.sort();
+//        trackSeq.updateMatchedPairs();
+//        int loopTo = 20;
+//        if (trackSeq.getNumEvents()<20)
+//            loopTo = trackSeq.getNumEvents();
+//        for (int i=0;i<loopTo;i++)
+//            if (trackSeq.getEventPointer(i)->message.isNoteOnOrOff())
+//                std::cout << "trk "<<trk<<" Actual sequence at "<<i
+//                <<" NoteNumber "<<trackSeq.getEventPointer(i)->message.getNoteNumber()
+//                <<" TimeStamp "<< trackSeq.getEventPointer(i)->message.getTimeStamp()
+//                <<" isNoteOn "<<trackSeq.getEventPointer(i)->message.isNoteOn()
+//                <<"\n";
         outputFile.addTrack(trackSeq);
     }
     outputFile.addTrack(sysexSeq);
@@ -798,7 +839,13 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         msg->setOfftime(theTrack->getTimeOfMatchingKeyUp(i));
                         
                         if (msg->getOffTime() <= msg->getTimeStamp()) //In a correct sequence this should not happen
-                            msg->setOfftime(msg->getTimeStamp()+50); //But if it does, make a short note with non neg duration
+                             msg->setOfftime(msg->getTimeStamp()+50); //But if it does, make a short note with non neg duration
+                        int foo;
+                        if (msg->getOffTime()==4851)
+                            foo=0;
+                        int foo2;
+                        if (msg->getOffTime()==4851)
+                            foo2=0;
                         const double ts = msg->getTimeStamp();
                         msg->setTimeStamp(960.0*ts/ppq);
                         msg->originalVelocity = msg->velocity;
@@ -1003,12 +1050,13 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                             }
                             if (step<theSequence.size())
                             {
-                                const double noteTimeStamp = chords.at(chIndex).chordTimeStamp+chords.at(chIndex).offsets[ntIndex];
-                                theSequence.at(step)->setTimeStamp(noteTimeStamp);
+//                                const double noteTimeStamp = chords.at(chIndex).chordTimeStamp+chords.at(chIndex).offsets[ntIndex];
+//                                theSequence.at(step)->setTimeStamp(noteTimeStamp);
                                 chords.at(chIndex).notePointers.push_back(theSequence.at(step));
                                 theSequence.at(step)->chordIndex = chIndex;
                                 theSequence.at(step)->noteIndexInChord = ntIndex;
                                 theSequence.at(step)->inChord = true;
+                                theSequence.at(step)->setOfftime(theSequence.at(step)->getOffTime()+chords.at(chIndex).offsets.at(ntIndex));
                             }
                         }
                     }
