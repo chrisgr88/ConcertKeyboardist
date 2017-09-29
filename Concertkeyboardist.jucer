@@ -2,8 +2,8 @@
 
 <JUCERPROJECT id="IilE7R" name="ConcertKeyboardist" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.yourcompany.ConcertKeyboardist" includeBinaryInAppConfig="1"
-              jucerVersion="5.0.2" displaySplashScreen="1" reportAppUsage="1"
-              splashScreenColour="Dark">
+              jucerVersion="5.1.2" displaySplashScreen="1" reportAppUsage="1"
+              splashScreenColour="Dark" cppLanguageStandard="11">
   <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">
     <GROUP id="{D43238F0-992F-BC5A-F1AA-31BBBD3D17B0}" name="Source">
       <FILE id="GcQUY3" name="TracksComponent.h" compile="0" resource="0"
@@ -58,7 +58,6 @@
         <MODULEPATH id="juce_audio_processors" path="JUCE.git/modules/juce_audio_processors"/>
         <MODULEPATH id="juce_audio_utils" path="JUCE.git/modules/juce_audio_utils"/>
         <MODULEPATH id="juce_cryptography" path="JUCE.git/modules"/>
-        <MODULEPATH id="SFZero" path="SFZero"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="portraitlandscape">
@@ -67,7 +66,6 @@
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="SFZero" path="SFZero"/>
         <MODULEPATH id="juce_video" path="JUCE.git/modules/juce_video"/>
         <MODULEPATH id="juce_opengl" path="JUCE.git/modules/juce_opengl"/>
         <MODULEPATH id="juce_gui_extra" path="JUCE.git/modules/juce_gui_extra"/>
@@ -86,7 +84,7 @@
     </XCODE_IPHONE>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
@@ -100,7 +98,6 @@
     <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_video" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="SFZero" showAllCode="1" useLocalCopy="1"/>
   </MODULES>
   <JUCEOPTIONS JUCE_PLUGINHOST_VST="enabled" JUCE_PLUGINHOST_VST3="enabled"
                JUCE_PLUGINHOST_AU="enabled"/>

@@ -74,7 +74,7 @@ private:
 
     MIDIProcessor *processor; //This was previously "PluginProcessor"
     
-    sfzero::Synth synth;
+//    sfzero::Synth synth;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

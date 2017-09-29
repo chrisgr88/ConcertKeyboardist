@@ -144,6 +144,7 @@ public:
 
     ApplicationCommandTarget* getNextCommandTarget() override;
     void addPluginsToMenu (PopupMenu&) const;
+    const PluginDescription* getChosenType (const int menuID) const;
     
 public:
     MIDIProcessor midiProcessor;

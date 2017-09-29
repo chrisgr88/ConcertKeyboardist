@@ -10,57 +10,13 @@
 
 #include "MainWindow.h"
 
-////==============================================================================
-//class MainWindow::PluginListWindow  : public DocumentWindow
-//{
-//public:
-//    PluginListWindow (MainWindow& owner_, AudioPluginFormatManager& pluginFormatManager)
-//    : DocumentWindow ("Available Plugins",
-//                      LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
-//                      DocumentWindow::minimiseButton | DocumentWindow::closeButton),
-//    owner (owner_)
-//    {
-//        const File deadMansPedalFile (getAppProperties().getUserSettings()
-//                                      ->getFile().getSiblingFile ("RecentlyCrashedPluginsList"));
-//        
-//        setContentOwned (new PluginListComponent (pluginFormatManager,
-//                                                  owner.knownPluginList,
-//                                                  deadMansPedalFile,
-//                                                  getAppProperties().getUserSettings(), true), true);
-//        
-//        setResizable (true, false);
-//        setResizeLimits (300, 400, 800, 1500);
-//        setTopLeftPosition (60, 60);
-//        
-//        restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("listWindowPos"));
-//        setVisible (true);
-//    }
-//    
-//    ~PluginListWindow()
-//    {
-//        getAppProperties().getUserSettings()->setValue ("listWindowPos", getWindowStateAsString());
-//        
-//        clearContentComponent();
-//    }
-//    
-//    void closeButtonPressed()
-//    {
-//        owner.pluginListWindow = nullptr;
-//    }
-//    
-//private:
-//    MainWindow& owner;
-//    
-//    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginListWindow)
-//};
-
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
     MainWindow::MainWindow (String name)
     : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
-//        formatManager.addDefaultFormats();
+        formatManager.addDefaultFormats();
         ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
         
         if (savedPluginList != nullptr)
@@ -582,15 +538,22 @@ ApplicationProperties& getAppProperties();
             menu.addSubMenu ("Plugin menu type", sortTypeMenu);
             PopupMenu pluginsMenu;
             addPluginsToMenu (pluginsMenu);
-            menu.addSubMenu ("Create plugin", pluginsMenu);
+            menu.addSubMenu ("Load plugin", pluginsMenu);
             menu.addSeparator();
-            menu.addItem (250, "Delete all plugins");
+            menu.addItem (250, "Unload plugin");
         }
         return menu;
     }
 void MainWindow::addPluginsToMenu (PopupMenu& m) const
 {
     knownPluginList.addToMenu (m, pluginSortMethod);
+}
+const PluginDescription* MainWindow::getChosenType (const int menuID) const
+{
+//    if (menuID >= 1 && menuID < 1 + internalTypes.size())
+//        return internalTypes [menuID - 1];
+//    
+    return knownPluginList.getType (knownPluginList.getIndexChosenByMenu (menuID));
 }
 void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
     {
@@ -601,18 +564,39 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             else if (menuItemID==123)
                 std::cout <<"About\n";
         }
-        else if (topLevelMenuIndex==1 && 100<=menuItemID && menuItemID<=150)
+        else if (topLevelMenuIndex==1)
         {
-            RecentlyOpenedFilesList recentFiles;
-            recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
-            File recent = recentFiles.getFile (menuItemID - 100);
-            String files = recentFiles.toString();
-            String path = recent.getFullPathName();
-//            std::cout << "Load recent file " << recentFiles.getNumFiles() << " " <<  path << " " << recentFiles.toString() << "\n";
-            
-            if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
-                midiProcessor.loadSpecifiedFile(recent);
-            Component::toFront(true);
+            if (100<=menuItemID && menuItemID<=150)
+            {
+                RecentlyOpenedFilesList recentFiles;
+                recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
+                File recent = recentFiles.getFile (menuItemID - 100);
+                String files = recentFiles.toString();
+                String path = recent.getFullPathName();
+    //            std::cout << "Load recent file " << recentFiles.getNumFiles() << " " <<  path << " " << recentFiles.toString() << "\n";
+                
+                if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
+                    midiProcessor.loadSpecifiedFile(recent);
+                Component::toFront(true);
+            }
+        }
+        else if (topLevelMenuIndex==2)
+        {
+            if (menuItemID == 250)
+            {
+                std::cout << "Unload plugin" <<"\n";
+                //            if (auto* graphEditor = getGraphEditor())
+                //                if (auto* filterGraph = graphEditor->graph.get())
+                //                    filterGraph->clear();
+            }
+            else
+            {
+                std::cout << "Load plugin "<<getChosenType (menuItemID)->descriptiveName <<"\n";
+//                if (auto* desc = getChosenType (menuItemID))
+//                    createPlugin (*desc,
+//                                  { proportionOfWidth  (0.3f + Random::getSystemRandom().nextFloat() * 0.6f),
+//                                      proportionOfHeight (0.3f + Random::getSystemRandom().nextFloat() * 0.6f) });
+            }
         }
     }
     

@@ -31,7 +31,7 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         setSize (1100, 300);
         for (int i=0;i<128;i++)
         {
-            synth.addVoice(new::sfzero::Voice());
+//            synth.addVoice(new::sfzero::Voice());
         }
         AudioFormatManager formatManager;
 //        formatManager.registerBasicFormats	();
@@ -86,7 +86,7 @@ MainComponent::~MainComponent()
         const double sampleRate = device->getCurrentSampleRate();
 //        processor->reset (sampleRate);
         processor->synthMessageCollectorReset(sampleRate);
-        synth.setCurrentPlaybackSampleRate (sampleRate);
+//        synth.setCurrentPlaybackSampleRate (sampleRate);
     }
     
     void MainComponent::audioDeviceStopped()
