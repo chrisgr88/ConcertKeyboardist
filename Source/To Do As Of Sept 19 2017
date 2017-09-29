@@ -5,7 +5,6 @@ To Do:
 - DONE Shortcut keys for selection modes
 - DONE Disable velocity draw mode when a selection mode is enabled?
 - DONE Dragging that changes note positions changes their step position and this makes the selection (and other things?) invalid.
-
 - DONE Prevent toggle note activity from creating slaved target notes
 - LIKLIHOOD REDUCED: Randomizing chord note times can turn slaved target notes into playable target notes.
 - LIKLIHOOD REDUCED: Sometimes active target notes can be hidden behind slaved target notes.
@@ -14,12 +13,13 @@ To Do:
 - DONE Make dragging the top note of a chord move the chord.
 - DONE Can't access a note head that's over another note's bar with the mouse
 - DONE Eliminate simultaneous target notes on loading
-
 - DONE Remove assumption that chord notes are adjacent.
-- Allow repeated clicks on the background to toggle the current selection rather than close it
-- Make marquee selecting on by default?
-- Display number of selected notes in bottom bar, preceding the time-range selected.  Also display first and last selected tick.
-- Use vector drawing for velocity edit mode.
-- Velocity drag multiple notes
-- Duration drag multiple notes
-- Selection filters
+- DEFER Allow repeated clicks on the background to toggle the current selection rather than close it
+- DONE Make marquee selecting on by default?
+- DONE Add guidelines for visual alignment when dragging note on and off times. 
+- DONE Clean up bottom bar data display
+- DEFER Display number of selected notes in bottom bar, preceding the time-range.  Also display first and last selected tick.
+- Make drawing easier for velocity edit mode.
+- DONE Velocity drag multiple notes
+- DONE Duration drag multiple notes
+- DEFER Selection filters

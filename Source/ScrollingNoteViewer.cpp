@@ -467,12 +467,12 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             else
                 hoveringOver = HOVER_NOTEBAR;
             hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
-            + "[" + String::String(nn) +"]"
+            + " nn:" + String::String(nn) +" "
             + " trk:" +String::String(pSequence->at(hoverStep)->track)
-            + " channel:" + String::String(pSequence->at(hoverStep)->channel)
-            + " velocity:" + String(127.0*pSequence->at(hoverStep)->velocity)
-            + " length:" + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp())/60.0)+
-            + " tick:" + String(pSequence->at(hoverStep)->getTimeStamp())
+            + " ch:" + String::String(pSequence->at(hoverStep)->channel)
+            + " vel:" + String(127.0*pSequence->at(hoverStep)->velocity)
+            + " length: " + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp())/60.0, 1)+
+            + " 16ths tick:" + String(pSequence->at(hoverStep)->getTimeStamp())
             + " step:"+String::String(hoverStep);
 //            repaint();
         }
@@ -1851,7 +1851,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 const int noteTS = pSequence->at(selectedNotes[ntNdx])->getTimeStamp();
                 const int xInTicks = std::round(mouseXinTicks);
                 const float diff = noteTS > xInTicks ? noteTS - xInTicks : xInTicks - noteTS;
-                if (diff<=3)
+                if (diff<=100)
                 {
                     float velocity = 1.0f-(y + topMargin/verticalScale - toolbarHeight)/(getHeight() - topMargin);
                     velocity = velocity < 0.0f?0.0f:velocity;
@@ -2037,8 +2037,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     hoverInfo.clear();
                 else
                     {
-                        hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
-                        +" width:"+String((maxSelNoteTime-minSelNoteTime)/60.0);
+                        hoverInfo = "Range in ticks: "+ String(minSelNoteTime)+ " to "+String(maxSelNoteTime)
+                        +" width in sixteenths: "+String((maxSelNoteTime-minSelNoteTime)/60.0);
                     }
 
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
@@ -2111,8 +2111,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     hoverInfo.clear();
                 else
                 {
-                    hoverInfo = "Selecting from:"+ String(minSelNoteTime)+ " to:"+String(maxSelNoteTime)
-                    +" width:"+String((maxSelNoteTime-minSelNoteTime)/60.0);
+                    hoverInfo = "Range in ticks: "+ String(minSelNoteTime)+ " to "+String(maxSelNoteTime)
+                    +" width in sixteenths: "+String((maxSelNoteTime-minSelNoteTime)/60.0);
                 }
                 
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar

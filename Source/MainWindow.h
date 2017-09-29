@@ -23,6 +23,7 @@ namespace CommandIDs
 {
     static const int appAboutBox                = 0x20000;
     static const int audioMidiSettings          = 0x20050;
+    static const int showPluginListEditor       = 0x20051;
     static const int fileOpen                   = 0x30000;
     static const int fileRecent                 = 0x30010; //To submenu
     static const int fileSave                   = 0x30040;
@@ -84,7 +85,8 @@ public KeyListener,
 public ActionListener,
 public ActionBroadcaster,
 public Timer,
-public FileDragAndDropTarget
+public FileDragAndDropTarget,
+public ChangeListener
 {
 public:
     MainWindow (String name);
@@ -113,6 +115,7 @@ public:
         midiProcessor.loadSpecifiedFile(f);
     }
     
+    void changeListenerCallback (ChangeBroadcaster* changed);
     void actionListenerCallback (const String& message) override;
     
     bool keyPressed (const KeyPress& key, Component* originatingComponent) override;
@@ -140,12 +143,66 @@ public:
     bool perform (const InvocationInfo& info) override;
 
     ApplicationCommandTarget* getNextCommandTarget() override;
-
+    void addPluginsToMenu (PopupMenu&) const;
+    
 public:
     MIDIProcessor midiProcessor;
     ViewerFrame* pViewerFrame;
     ScopedPointer<MainComponent> mainComponent;
+
+    
+private:
+    AudioPluginFormatManager formatManager;
+    KnownPluginList knownPluginList;
+    KnownPluginList::SortMethod pluginSortMethod;
+    class PluginListWindow;
+    ScopedPointer<PluginListWindow> pluginListWindow;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
+};
+
+//==============================================================================
+class MainWindow::PluginListWindow  : public DocumentWindow
+{
+public:
+    PluginListWindow (MainWindow& owner_, AudioPluginFormatManager& pluginFormatManager)
+    : DocumentWindow ("Available Plugins",
+                      LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
+                      DocumentWindow::minimiseButton | DocumentWindow::closeButton),
+    owner (owner_)
+    {
+        const File deadMansPedalFile (getAppProperties().getUserSettings()
+                                      ->getFile().getSiblingFile ("RecentlyCrashedPluginsList"));
+        
+        setContentOwned (new PluginListComponent (pluginFormatManager,
+                                                  owner.knownPluginList,
+                                                  deadMansPedalFile,
+                                                  getAppProperties().getUserSettings(), true), true);
+        
+        setResizable (true, false);
+        setResizeLimits (300, 400, 800, 1500);
+        setTopLeftPosition (60, 60);
+        
+        restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("listWindowPos"));
+        setVisible (true);
+    }
+    
+    ~PluginListWindow()
+    {
+        getAppProperties().getUserSettings()->setValue ("listWindowPos", getWindowStateAsString());
+        
+        clearContentComponent();
+    }
+    
+    void closeButtonPressed()
+    {
+        owner.pluginListWindow = nullptr;
+    }
+    
+private:
+    MainWindow& owner;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginListWindow)
 };
 
 #endif  // MAINWINDOW_H_INCLUDED

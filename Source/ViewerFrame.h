@@ -899,7 +899,7 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
-            for (int n=0;n<34;n++)
+            for (int n=0;n<38;n++)
                 ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (scoreTempo);

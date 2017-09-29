@@ -424,5 +424,5 @@ void ViewerFrame::resized()
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
     hoverStepInfo.setBounds(20, getHeight()-30, 500, noteViewer.getToolbarHeight()-1);
-    scoreTempoInfo.setBounds(508, getHeight()-30, 40, noteViewer.getToolbarHeight()-1);
+    scoreTempoInfo.setBounds(566, getHeight()-30, 40, noteViewer.getToolbarHeight()-1);
 }

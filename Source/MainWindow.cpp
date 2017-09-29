@@ -10,11 +10,68 @@
 
 #include "MainWindow.h"
 
+////==============================================================================
+//class MainWindow::PluginListWindow  : public DocumentWindow
+//{
+//public:
+//    PluginListWindow (MainWindow& owner_, AudioPluginFormatManager& pluginFormatManager)
+//    : DocumentWindow ("Available Plugins",
+//                      LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
+//                      DocumentWindow::minimiseButton | DocumentWindow::closeButton),
+//    owner (owner_)
+//    {
+//        const File deadMansPedalFile (getAppProperties().getUserSettings()
+//                                      ->getFile().getSiblingFile ("RecentlyCrashedPluginsList"));
+//        
+//        setContentOwned (new PluginListComponent (pluginFormatManager,
+//                                                  owner.knownPluginList,
+//                                                  deadMansPedalFile,
+//                                                  getAppProperties().getUserSettings(), true), true);
+//        
+//        setResizable (true, false);
+//        setResizeLimits (300, 400, 800, 1500);
+//        setTopLeftPosition (60, 60);
+//        
+//        restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("listWindowPos"));
+//        setVisible (true);
+//    }
+//    
+//    ~PluginListWindow()
+//    {
+//        getAppProperties().getUserSettings()->setValue ("listWindowPos", getWindowStateAsString());
+//        
+//        clearContentComponent();
+//    }
+//    
+//    void closeButtonPressed()
+//    {
+//        owner.pluginListWindow = nullptr;
+//    }
+//    
+//private:
+//    MainWindow& owner;
+//    
+//    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginListWindow)
+//};
+
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
+
     MainWindow::MainWindow (String name)
     : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
+//        formatManager.addDefaultFormats();
+        ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
+        
+        if (savedPluginList != nullptr)
+            knownPluginList.recreateFromXml (*savedPluginList);
+        
+        pluginSortMethod = (KnownPluginList::SortMethod) getAppProperties().getUserSettings()
+        ->getIntValue ("pluginSortMethod", KnownPluginList::sortByManufacturer);
+        
+        knownPluginList.addChangeListener (this);
+        
+        
         ckBlockClosing = false;
         startTimer(1000);
         //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", 99);
@@ -59,6 +116,8 @@ ApplicationProperties& getAppProperties();
     }
     
     MainWindow::~MainWindow ()  {
+        pluginListWindow = nullptr;
+        knownPluginList.removeChangeListener (this);
         getAppProperties().getUserSettings()->setValue ("mainWindowPos", getWindowStateAsString());
 #if JUCE_MAC
         setMacMainMenu (nullptr);
@@ -67,7 +126,25 @@ ApplicationProperties& getAppProperties();
 #endif
     }
 
-    // This is sent actions from viewerFrame where the toolbar is implemented
+    void MainWindow::changeListenerCallback (ChangeBroadcaster* changed)
+    {
+        if (changed == &knownPluginList)
+        {
+            menuItemsChanged();
+            
+            // save the plugin list every time it gets chnaged, so that if we're scanning
+            // and it crashes, we've still saved the previous ones
+            ScopedPointer<XmlElement> savedPluginList (knownPluginList.createXml());
+            
+            if (savedPluginList != nullptr)
+            {
+                getAppProperties().getUserSettings()->setValue ("pluginList", savedPluginList);
+                getAppProperties().saveIfNeeded();
+            }
+        }
+    }
+
+// This is sent actions from viewerFrame where the toolbar is implemented
     void MainWindow::actionListenerCallback (const String& message)
     {
 //        std::cout <<"actionListenerCallback"<< message << "\n";
@@ -226,7 +303,7 @@ ApplicationProperties& getAppProperties();
         tracksComponent.setSize (897, 200);
         DialogWindow::LaunchOptions dw;
         dw.content.setNonOwned (&tracksComponent);
-        dw.dialogTitle                   = "Score Settings";
+        dw.dialogTitle                   = "Tracks";
         dw.componentToCentreAround       = this;
         dw.dialogBackgroundColour        = Colours::azure;
         dw.escapeKeyTriggersCloseButton  = true;
@@ -235,6 +312,13 @@ ApplicationProperties& getAppProperties();
         ckBlockClosing = true;
         dw.runModal();
         ckBlockClosing = false;
+        AudioPluginFormatManager formatManager;
+        PropertiesFile* userSettings = getAppProperties().getUserSettings();
+        setResizable(true, false);
+        setResizeLimits(300, 400, 800, 1500);
+        setTopLeftPosition(60, 60);
+        restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
+        setVisible(true);
     }
     
     void MainWindow::menuBarActivated (bool isActive)
@@ -244,7 +328,7 @@ ApplicationProperties& getAppProperties();
     
     StringArray MainWindow::getMenuBarNames()
     {
-        const char* const names[] = {"File", "Edit", "Sequence", "Window", "Help", nullptr };
+        const char* const names[] = {"File", "Edit", "Plugins", "Sequence", "Window", "Help", nullptr };
         
         return StringArray (names);
     }
@@ -261,6 +345,10 @@ ApplicationProperties& getAppProperties();
             case CommandIDs::audioMidiSettings:
                 result.setInfo ("Audio and Midi Settings...", "Audio and Midi Settings", category, 0);
                 result.defaultKeypresses.add (KeyPress (',', ModifierKeys::commandModifier, 0));
+                break;
+            case CommandIDs::showPluginListEditor:
+                result.setInfo ("Edit the list of available plug-Ins...", String(), category, 0);
+                result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::fileOpen:
                 result.setInfo ("Open...", "Open or import a file", category, 0);
@@ -359,7 +447,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::chainSelectedNotes:
                 result.setInfo ("chainSelectedNotes", "chainSelectedNotes", category, 0);
-                result.addDefaultKeypress ('n', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('c', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::velHumanizeSelection:
                 result.setInfo ("velHumanizeSelection", "velHumanizeSelection", category, 0);
@@ -395,11 +483,11 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::create_chord:
                 result.setInfo ("create_chord", "create_chord", category, 0);
-                result.addDefaultKeypress ('c', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('d', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::delete_chord:
                 result.setInfo ("delete_chord", "delete_chord", category, 0);
-                result.addDefaultKeypress ('c', ModifierKeys::shiftModifier);
+                result.addDefaultKeypress ('d', ModifierKeys::shiftModifier);
                 break;
             case CommandIDs::previousTargetNote:
                 result.setInfo ("PreviousTargetNote", "Go to Previous Target Note", category, 0);
@@ -480,9 +568,31 @@ ApplicationProperties& getAppProperties();
 //            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
             menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }
+        else if (topLevelMenuIndex == 2)
+        {
+            // "Plugins" menu
+            menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
+            
+            PopupMenu sortTypeMenu;
+            sortTypeMenu.addItem (200, "List plugins in default order",      true, pluginSortMethod == KnownPluginList::defaultOrder);
+            sortTypeMenu.addItem (201, "List plugins in alphabetical order", true, pluginSortMethod == KnownPluginList::sortAlphabetically);
+            sortTypeMenu.addItem (202, "List plugins by category",           true, pluginSortMethod == KnownPluginList::sortByCategory);
+            sortTypeMenu.addItem (203, "List plugins by manufacturer",       true, pluginSortMethod == KnownPluginList::sortByManufacturer);
+            sortTypeMenu.addItem (204, "List plugins based on the directory structure", true, pluginSortMethod == KnownPluginList::sortByFileSystemLocation);
+            menu.addSubMenu ("Plugin menu type", sortTypeMenu);
+            PopupMenu pluginsMenu;
+            addPluginsToMenu (pluginsMenu);
+            menu.addSubMenu ("Create plugin", pluginsMenu);
+            menu.addSeparator();
+            menu.addItem (250, "Delete all plugins");
+        }
         return menu;
     }
-    void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
+void MainWindow::addPluginsToMenu (PopupMenu& m) const
+{
+    knownPluginList.addToMenu (m, pluginSortMethod);
+}
+void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
     {
         if (topLevelMenuIndex==-1)
         {
@@ -516,6 +626,7 @@ ApplicationProperties& getAppProperties();
         const CommandID ids[] = {
             CommandIDs::appAboutBox,
             CommandIDs::audioMidiSettings,
+            CommandIDs::showPluginListEditor,
             CommandIDs::fileOpen,
             CommandIDs::fileRecent,
             CommandIDs::fileSave,
@@ -577,6 +688,12 @@ ApplicationProperties& getAppProperties();
                     showAudioSettings();
                     Component::toFront(true);
                 }
+                break;
+            case CommandIDs::showPluginListEditor:
+                if (pluginListWindow == nullptr)
+                    pluginListWindow = new PluginListWindow (*this, formatManager);
+                
+                pluginListWindow->toFront (true);
                 break;
             case CommandIDs::fileOpen:
                 if (!midiProcessor.isPlaying)
