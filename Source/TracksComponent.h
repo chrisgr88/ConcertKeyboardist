@@ -167,6 +167,7 @@ public:
             trkDetail.playability = newPlayability;
             sequence->trackDetails.set(rowNum, trkDetail);
         }
+        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
     }
     
     //==============================================================================

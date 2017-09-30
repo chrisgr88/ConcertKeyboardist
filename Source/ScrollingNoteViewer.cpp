@@ -742,7 +742,7 @@ void ScrollingNoteViewer::renderOpenGL()
         return;
     const ScopedLock myScopedLock (glRenderLock);
     if (!processor->appIsActive)
-        return;
+        ;//return;
     ++frameCounter;
     jassert (OpenGLHelpers::isContextActive());
     

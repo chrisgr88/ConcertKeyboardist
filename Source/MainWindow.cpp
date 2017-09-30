@@ -249,32 +249,32 @@ ApplicationProperties& getAppProperties();
         getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
         getAppProperties().getUserSettings()->saveIfNeeded();
     }
-    
-    void MainWindow::showScoreSettings()
-    {
-        
-        //TODO Add call of this and make it contain the TracksComponent
-        //    ScopedPointer<DialogWindow> settingsWindow;
-        TracksComponent tracksComponent(&midiProcessor);
-        tracksComponent.setSize (897, 200);
-        DialogWindow::LaunchOptions dw;
-        dw.content.setNonOwned (&tracksComponent);
-        dw.dialogTitle                   = "Tracks";
-        dw.componentToCentreAround       = this;
-        dw.dialogBackgroundColour        = Colours::azure;
-        dw.escapeKeyTriggersCloseButton  = true;
-        dw.useNativeTitleBar             = true;
-        dw.resizable                     = true;
-        ckBlockClosing = true;
-        dw.runModal();
-        ckBlockClosing = false;
-        PropertiesFile* userSettings = getAppProperties().getUserSettings();
-        setResizable(true, false);
-        setResizeLimits(300, 400, 800, 1500);
-        setTopLeftPosition(60, 60);
-        restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
-        setVisible(true);
-    }
+//    
+//    void MainWindow::showScoreSettings()
+//    {
+//        
+//        //TODO Add call of this and make it contain the TracksComponent
+//        //    ScopedPointer<DialogWindow> settingsWindow;
+//        TracksComponent tracksComponent(&midiProcessor);
+//        tracksComponent.setSize (897, 200);
+//        DialogWindow::LaunchOptions dw;
+//        dw.content.setNonOwned (&tracksComponent);
+//        dw.dialogTitle                   = "Tracks";
+//        dw.componentToCentreAround       = this;
+//        dw.dialogBackgroundColour        = Colours::azure;
+//        dw.escapeKeyTriggersCloseButton  = true;
+//        dw.useNativeTitleBar             = true;
+//        dw.resizable                     = true;
+//        ckBlockClosing = true;
+//        dw.runModal();
+//        ckBlockClosing = false;
+//        PropertiesFile* userSettings = getAppProperties().getUserSettings();
+//        setResizable(true, false);
+//        setResizeLimits(300, 400, 800, 1500);
+//        setTopLeftPosition(60, 60);
+//        restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
+//        setVisible(true);
+//    }
     
     void MainWindow::menuBarActivated (bool isActive)
     {
@@ -530,15 +530,7 @@ ApplicationProperties& getAppProperties();
             menu.addSubMenu ("Load plugin", pluginsMenu);
             menu.addItem (250, "Unload plugin");
             menu.addSeparator();
-            
             menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
-//            PopupMenu sortTypeMenu;
-//            sortTypeMenu.addItem (200, "List plugins in default order",      true, pluginSortMethod == KnownPluginList::defaultOrder);
-//            sortTypeMenu.addItem (201, "List plugins in alphabetical order", true, pluginSortMethod == KnownPluginList::sortAlphabetically);
-//            sortTypeMenu.addItem (202, "List plugins by category",           true, pluginSortMethod == KnownPluginList::sortByCategory);
-//            sortTypeMenu.addItem (203, "List plugins by manufacturer",       true, pluginSortMethod == KnownPluginList::sortByManufacturer);
-//            sortTypeMenu.addItem (204, "List plugins based on the directory structure", true, pluginSortMethod == KnownPluginList::sortByFileSystemLocation);
-//            menu.addSubMenu ("Plugin sort order", sortTypeMenu);
         }
         return menu;
     }
@@ -548,9 +540,6 @@ void MainWindow::addPluginsToMenu (PopupMenu& m) const
 }
 const PluginDescription* MainWindow::getChosenType (const int menuID) const
 {
-//    if (menuID >= 1 && menuID < 1 + internalTypes.size())
-//        return internalTypes [menuID - 1];
-//
     int index = knownPluginList.getIndexChosenByMenu (menuID);
     if (index != -1)
         return knownPluginList.getType (index);
@@ -566,7 +555,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             else if (menuItemID==123)
                 std::cout <<"About\n";
         }
-        else if (topLevelMenuIndex==1)
+        else if (topLevelMenuIndex==0)
         {
             if (100<=menuItemID && menuItemID<=150)
             {

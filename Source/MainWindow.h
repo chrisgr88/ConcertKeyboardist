@@ -124,7 +124,7 @@ public:
     
     void showAudioSettings();
     
-    void showScoreSettings();
+//    void showScoreSettings();
     
     void menuBarActivated (bool isActive) override;
     
@@ -218,6 +218,7 @@ public:
                       DocumentWindow::minimiseButton | DocumentWindow::closeButton),
     owner (owner_)
     {
+        proc = pMidiProc;
         setContentOwned (new TracksComponent (pMidiProc), false);
         
         
@@ -226,7 +227,7 @@ public:
 //        ckBlockClosing = false;
         PropertiesFile* userSettings = getAppProperties().getUserSettings();
         setResizable(true, false);
-        setResizeLimits(800, 400, 1200, 1800);
+        setResizeLimits(900, 150, 1200, 1800);
         setTopLeftPosition(60, 60);
         restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
 //        
@@ -248,6 +249,7 @@ public:
     
 private:
     MainWindow& owner;
+    MIDIProcessor *proc;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TracksWindow)
 };
