@@ -157,7 +157,9 @@ private:
     KnownPluginList knownPluginList;
     KnownPluginList::SortMethod pluginSortMethod;
     class PluginListWindow;
+    class TracksWindow;
     ScopedPointer<PluginListWindow> pluginListWindow;
+    ScopedPointer<TracksWindow> tracksWindow;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
 };
@@ -204,6 +206,50 @@ private:
     MainWindow& owner;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginListWindow)
+};
+
+//==============================================================================
+class MainWindow::TracksWindow  : public DocumentWindow
+{
+public:
+    TracksWindow (MainWindow& owner_, AudioPluginFormatManager& pluginFormatManager, MIDIProcessor *pMidiProc)
+    : DocumentWindow ("Tracks",
+                      LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
+                      DocumentWindow::minimiseButton | DocumentWindow::closeButton),
+    owner (owner_)
+    {
+        setContentOwned (new TracksComponent (pMidiProc), false);
+        
+        
+//        ckBlockClosing = true;
+//        dw.runModal();
+//        ckBlockClosing = false;
+        PropertiesFile* userSettings = getAppProperties().getUserSettings();
+        setResizable(true, false);
+        setResizeLimits(800, 400, 1200, 1800);
+        setTopLeftPosition(60, 60);
+        restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
+//        
+//        setResizable (true, false);
+//        setResizeLimits (300, 400, 800, 1500);
+//        setTopLeftPosition (60, 60);
+        setVisible (true);
+    }
+    
+    ~TracksWindow()
+    {
+        clearContentComponent();
+    }
+    
+    void closeButtonPressed()
+    {
+        owner.tracksWindow = nullptr;
+    }
+    
+private:
+    MainWindow& owner;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TracksWindow)
 };
 
 #endif  // MAINWINDOW_H_INCLUDED

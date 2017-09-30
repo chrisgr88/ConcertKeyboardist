@@ -268,7 +268,6 @@ ApplicationProperties& getAppProperties();
         ckBlockClosing = true;
         dw.runModal();
         ckBlockClosing = false;
-        AudioPluginFormatManager formatManager;
         PropertiesFile* userSettings = getAppProperties().getUserSettings();
         setResizable(true, false);
         setResizeLimits(300, 400, 800, 1500);
@@ -303,7 +302,7 @@ ApplicationProperties& getAppProperties();
                 result.defaultKeypresses.add (KeyPress (',', ModifierKeys::commandModifier, 0));
                 break;
             case CommandIDs::showPluginListEditor:
-                result.setInfo ("Edit the list of available plug-Ins...", String(), category, 0);
+                result.setInfo ("Manage available plug-Ins...", String(), category, 0);
                 result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::fileOpen:
@@ -524,23 +523,22 @@ ApplicationProperties& getAppProperties();
 //            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
             menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }
-        else if (topLevelMenuIndex == 2)
+        else if (topLevelMenuIndex == 2) // "Plugins" menu
         {
-            // "Plugins" menu
-            menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
-            
-            PopupMenu sortTypeMenu;
-            sortTypeMenu.addItem (200, "List plugins in default order",      true, pluginSortMethod == KnownPluginList::defaultOrder);
-            sortTypeMenu.addItem (201, "List plugins in alphabetical order", true, pluginSortMethod == KnownPluginList::sortAlphabetically);
-            sortTypeMenu.addItem (202, "List plugins by category",           true, pluginSortMethod == KnownPluginList::sortByCategory);
-            sortTypeMenu.addItem (203, "List plugins by manufacturer",       true, pluginSortMethod == KnownPluginList::sortByManufacturer);
-            sortTypeMenu.addItem (204, "List plugins based on the directory structure", true, pluginSortMethod == KnownPluginList::sortByFileSystemLocation);
-            menu.addSubMenu ("Plugin menu type", sortTypeMenu);
             PopupMenu pluginsMenu;
             addPluginsToMenu (pluginsMenu);
             menu.addSubMenu ("Load plugin", pluginsMenu);
-            menu.addSeparator();
             menu.addItem (250, "Unload plugin");
+            menu.addSeparator();
+            
+            menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
+//            PopupMenu sortTypeMenu;
+//            sortTypeMenu.addItem (200, "List plugins in default order",      true, pluginSortMethod == KnownPluginList::defaultOrder);
+//            sortTypeMenu.addItem (201, "List plugins in alphabetical order", true, pluginSortMethod == KnownPluginList::sortAlphabetically);
+//            sortTypeMenu.addItem (202, "List plugins by category",           true, pluginSortMethod == KnownPluginList::sortByCategory);
+//            sortTypeMenu.addItem (203, "List plugins by manufacturer",       true, pluginSortMethod == KnownPluginList::sortByManufacturer);
+//            sortTypeMenu.addItem (204, "List plugins based on the directory structure", true, pluginSortMethod == KnownPluginList::sortByFileSystemLocation);
+//            menu.addSubMenu ("Plugin sort order", sortTypeMenu);
         }
         return menu;
     }
@@ -552,8 +550,12 @@ const PluginDescription* MainWindow::getChosenType (const int menuID) const
 {
 //    if (menuID >= 1 && menuID < 1 + internalTypes.size())
 //        return internalTypes [menuID - 1];
-//    
-    return knownPluginList.getType (knownPluginList.getIndexChosenByMenu (menuID));
+//
+    int index = knownPluginList.getIndexChosenByMenu (menuID);
+    if (index != -1)
+        return knownPluginList.getType (index);
+    else
+        return NULL;
 }
 void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
     {
@@ -591,11 +593,18 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             }
             else
             {
-                std::cout << "Load plugin "<<getChosenType (menuItemID)->descriptiveName <<"\n";
-//                if (auto* desc = getChosenType (menuItemID))
-//                    createPlugin (*desc,
-//                                  { proportionOfWidth  (0.3f + Random::getSystemRandom().nextFloat() * 0.6f),
-//                                      proportionOfHeight (0.3f + Random::getSystemRandom().nextFloat() * 0.6f) });
+                const PluginDescription* desc = getChosenType (menuItemID);
+                if (desc != NULL)
+                {
+                    std::cout << "Loading plugin "<<desc->descriptiveName <<"\n";
+                    const PluginDescription *pPID = knownPluginList.getType(knownPluginList.getIndexChosenByMenu (menuItemID));
+                    String errorMsg;
+                    AudioPluginInstance* loaded = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
+                    if (loaded)
+                    {
+                        std::cout << "Loaded plugin "<<getChosenType (menuItemID)->descriptiveName <<"\n";
+                    }
+                }
             }
         }
     }
@@ -792,7 +801,10 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 std::cout <<"tracksWindow\n";
                 if (!midiProcessor.isPlaying)
                 {
-                    showScoreSettings();
+                    if (tracksWindow == nullptr)
+                        tracksWindow = new TracksWindow (*this, formatManager, &midiProcessor);
+                    tracksWindow->toFront (true);
+//                    showScoreSettings();
                     midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
                 }
                 break;
