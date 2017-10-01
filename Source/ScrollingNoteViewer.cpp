@@ -1045,11 +1045,14 @@ void ScrollingNoteViewer::makeNoteBars()
     trackVerticalSize = ((float)initialHeight-topMargin)/nKeys;
     vertices.clear();
     indices.clear();
+      
 //    std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
     nKeys = maxNote-minNote+1;
     const float h = trackVerticalSize*noteBarWidthRatio; //Note bar height
-    const int seqSize = static_cast<int>(pSequence->size());
+      if (seqSize != static_cast<int>(pSequence->size()))
+          clearSelectedNotes();
+    seqSize = static_cast<int>(pSequence->size());
     int seqDurationInTicks =  processor->sequenceObject.getSeqDurationInTicks();
     const int sequenceWidthPixels = seqDurationInTicks+sequenceStartPixel;
     
@@ -1058,8 +1061,12 @@ void ScrollingNoteViewer::makeNoteBars()
     //Top margin
     addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(0xFF404040));
     addRectangle(-sequenceWidthPixels, topMargin-1.0f, sequenceWidthPixels*30, 1.0f, Colour(0xFFB0B0B0).darker());
-    if (seqSize==0)
-        return;
+      
+      if (seqSize==0)
+      {
+          rebuidingGLBuffer = false;
+          return;
+      }
     
     //Black & white note track highlighting
     for (int note = minNote;note<=maxNote;note++)
@@ -1080,8 +1087,8 @@ void ScrollingNoteViewer::makeNoteBars()
     //Last line
     addRectangle(seqDurationInTicks*pixelsPerTick-1.0f,0.f,2.0f,initialHeight, Colour(0xFFC0C0C0));
     
-    if (seqSize==0)
-        return;
+//    if (seqSize==0)
+//        return;
     //Velocity graph
     const double graphHeight = (300.0-15.0)-2*toolbarHeight; //(300.0-15.0) the original viewer height set in MainComponent.cpp
 
@@ -1114,7 +1121,7 @@ void ScrollingNoteViewer::makeNoteBars()
     //###
     bool prevInChord = false;
     //Note Bars
-    int size = pSequence->size();
+    int size = (int)pSequence->size();
     for (int index = 0;index<size;index++)
     {
 //        if (index>=21 && index<=31)
@@ -1451,7 +1458,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
     g.fillRect(Rectangle<float>(sequenceStartPixel-3.f,0.0, 6.0, (topMargin)*verticalScale));
     
     const int meas = processor->getMeasure(horizontalShift);
-    const int totalMeas = processor->sequenceObject.measureTimes.size();
+    const int totalMeas = (int) processor->sequenceObject.measureTimes.size();
     Font f = Font (10.0*verticalScale);
     f.setStyleFlags(Font::FontStyleFlags::bold);
     g.setFont(f);
@@ -1829,10 +1836,10 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //        std::cout <<"Entering TIMER_MOUSE_DRAG "<<"\n";
         stopTimer(TIMER_MOUSE_DRAG);
         static double prevY;
-        double xx = Desktop::getInstance().getMousePosition().getX();
-        double yy = Desktop::getInstance().getMousePosition().getY();
+//        double xx = Desktop::getInstance().getMousePosition().getX();
+//        double yy = Desktop::getInstance().getMousePosition().getY();
         double y = curDragPosition.getY();
-        double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
+//        double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
         if (!drawingVelocity && ModifierKeys::getCurrentModifiers().isCommandDown())
         {
             drawingVelocity = true;

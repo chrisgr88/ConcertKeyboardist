@@ -21,12 +21,15 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Sequence.h"
 #include "MIDIProcessor.h"
+#include "MainWindow.h"
 
+static int nActive;
 class TracksComponent    : public Component, public TableListBoxModel
 {
 public:
-    TracksComponent(MIDIProcessor *proc)   : font (12.0f)
+    TracksComponent( MIDIProcessor *proc)   : font (12.0f)
     {
+        nActive = 0;
         processor = proc;
         sequence = &proc->sequenceObject;
         addAndMakeVisible (table);
@@ -112,6 +115,8 @@ public:
     {
 //        std::cout << rowNum<< "refreshComponentForCell Track row: nEvents " << sequence->trackDetails[rowNum].nNotes <<"\n";
 
+        if (rowNum==0)
+            nActive = 0;
         if (columnId != 10)
         {
             jassert (existingComponentToUpdate == nullptr);
@@ -130,7 +135,11 @@ public:
         }
     
         if (sequence->trackDetails[rowNum].nNotes>0)
+        {
             playabilityBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].playability);
+            if (sequence->trackDetails[rowNum].playability==1)
+                nActive++;
+        }
         else
             playabilityBox->setEnabled(false);
         
@@ -161,13 +170,24 @@ public:
     
     void setPlayability (const int rowNum, const int newPlayability)
     {
-        Sequence::TrackDetail trkDetail = sequence->trackDetails[rowNum];
-        if (trkDetail.playability != newPlayability)
-        {
-            trkDetail.playability = newPlayability;
-            sequence->trackDetails.set(rowNum, trkDetail);
-        }
-        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+        try {
+            Sequence::TrackDetail trkDetail = sequence->trackDetails[rowNum];
+            if (trkDetail.playability != newPlayability)
+            {
+                trkDetail.playability = newPlayability;
+                sequence->trackDetails.set(rowNum, trkDetail);
+                processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+            }
+            nActive = 0;
+            for (int t=1;t<3;t++)
+            {
+                if ( sequence->trackDetails[t].playability==1)
+                    nActive++;
+            }
+            int foo=0;
+         } catch (const std::out_of_range& ex) {
+             std::cout << " error in setPlayability " << "\n";
+         }
     }
     
     //==============================================================================
@@ -175,7 +195,6 @@ public:
     {
         table.setBoundsInset (BorderSize<int> (8));
     }
-    
     
 private:
     TableListBox table;
@@ -214,52 +233,6 @@ private:
         int row, columnId;
     };
     
-    
-//    //==============================================================================
-//    class PlayabilityColumnCustomComponent    : public Component,
-//    private ComboBoxListener
-//    {
-//    public:
-//        PlayabilityColumnCustomComponent (TracksComponent& td, int playability)  : owner (td)
-//        {
-//            addAndMakeVisible (comboBox);
-//            if (playability==Sequence::Track_Play || playability==Sequence::Track_Autoplay || playability==Sequence::Track_Mute)
-//            {
-//                comboBox.addItem ("Play", Sequence::Track_Play);
-//                comboBox.addItem ("Mute", Sequence::Track_Mute);
-////                comboBox.addItem ("Autoplay", Sequence::Track_Autoplay);
-//                comboBox.setSelectedId(2);
-//            }
-//            else
-//                comboBox.addItem ("Other", Sequence::Track_Other);
-//            comboBox.addListener (this);
-//            comboBox.setWantsKeyboardFocus (false);
-//        }
-//        
-//        void resized() override
-//        {
-//            comboBox.setBoundsInset (BorderSize<int> (2));
-//        }
-//        
-//        void setRowAndColumn (int newRow, int newColumn, int setting)
-//        {
-//            row = newRow;
-//            columnId = newColumn;
-//            comboBox.setSelectedId (setting, dontSendNotification);
-//        }
-//        
-//        void comboBoxChanged (ComboBox*) override
-//        {
-////            std::cout << "Selected ID " << comboBox.getSelectedId() <<"\n";
-//            owner.setPlayability (row, comboBox.getSelectedId());
-//        }
-//        
-//    private:
-//        TracksComponent& owner;
-//        ComboBox comboBox;
-//        int row, columnId;
-//    };
-    
     //==============================================================================
     class PlayabilityColumnCustomComponent    :
     public Component,
@@ -293,7 +266,10 @@ private:
 
         void buttonClicked (Button*) override
         {
-            owner.setPlayability (row, activeButton.getToggleState());
+            if (nActive>1 || activeButton.getToggleState()==true)
+                owner.setPlayability (row, activeButton.getToggleState());
+            else
+                activeButton.setToggleState(true, NotificationType::dontSendNotification);
         };
         
     private:

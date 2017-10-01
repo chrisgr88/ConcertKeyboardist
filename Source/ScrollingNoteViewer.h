@@ -76,6 +76,7 @@ public:
     ScrollingNoteViewer (MIDIProcessor *p);
     ~ScrollingNoteViewer();
     
+    int seqSize = 0;
     MouseCursor editVelocityCursor;
     MouseCursor getMouseCursorFromZipFile(const String& filename) {
         if (iconsFromZipFile.size() == 0)

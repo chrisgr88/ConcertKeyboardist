@@ -189,7 +189,7 @@ public:
     }
     inline int getSize()
     {
-        return theSequence.size();
+        return (int) theSequence.size();
     }
     uint encodeVarint(uint8* output, uint value);
     uint decodeVarint(uint8* input, uint inputSize);
@@ -314,7 +314,7 @@ public:
             tempoChangeIndex = prevTempoChangeIndex;
         else
             tempoChangeIndex = 0;
-        int counter = tempoChanges.size();
+        int counter = (int) tempoChanges.size();
         while (counter-- > 0)
         {
             if ((tempoChangeIndex+1)<tempoChanges.size() &&

@@ -115,7 +115,7 @@ public:
         midiProcessor.loadSpecifiedFile(f);
     }
     
-    void changeListenerCallback (ChangeBroadcaster* changed);
+    void changeListenerCallback (ChangeBroadcaster* changed) override;
     void actionListenerCallback (const String& message) override;
     
     bool keyPressed (const KeyPress& key, Component* originatingComponent) override;
@@ -219,21 +219,11 @@ public:
     owner (owner_)
     {
         proc = pMidiProc;
-        setContentOwned (new TracksComponent (pMidiProc), false);
-        
-        
-//        ckBlockClosing = true;
-//        dw.runModal();
-//        ckBlockClosing = false;
-        PropertiesFile* userSettings = getAppProperties().getUserSettings();
+        setContentOwned (new TracksComponent (pMidiProc), false);        PropertiesFile* userSettings = getAppProperties().getUserSettings();
         setResizable(true, false);
         setResizeLimits(900, 150, 1200, 1800);
         setTopLeftPosition(60, 60);
         restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
-//        
-//        setResizable (true, false);
-//        setResizeLimits (300, 400, 800, 1500);
-//        setTopLeftPosition (60, 60);
         setVisible (true);
     }
     

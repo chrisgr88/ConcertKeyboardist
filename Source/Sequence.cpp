@@ -24,7 +24,7 @@ Sequence::Sequence()
     setNotePlayWindow(200);
     setLatePlayAdjustmentWindow(100);
     setLeadLagAdjustmentFactor(1.0);
-    setKX(0.0000001);
+    setKX(0.00000005);
     setKV(0.00010);
     setLowerTempoLimit(0.6);
     setUpperTempoLimit(1.4);
@@ -305,7 +305,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
     }
     else
     {
-        selection.ensureStorageAllocated(theSequence.size());
+        selection.ensureStorageAllocated((int) theSequence.size());
         startTime = 0;
         endTime = seqDurationInTicks;
         for (int step=0;step<theSequence.size();step++)
@@ -949,7 +949,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
 //        std::cout << "Transfer tracks to theSequence \n";
     for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
     {
-        const int numEvents = allNotes.at(trkNumber).size();
+        const int numEvents = (int)allNotes.at(trkNumber).size();
 //        std::cout
 //        << "Loading track "<< trkNumber;
         //Notes
@@ -1087,7 +1087,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                                 detail.notePointers.at(j)->inChord = false;
                             else
                             {
-                                detail.notePointers.at(j)->chordIndex = chords.size();
+                                detail.notePointers.at(j)->chordIndex = (int) chords.size();
                                 detail.notePointers.at(j)->inChord = true;
                             }
                             //                    tempChordNotes.setUnchecked(j, tempChordNotes[j]);
@@ -1309,7 +1309,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
 //    compareAllNotes("End of loadSequence");
 
 //    std::cout << "End of loadSequence \n";
-    return (theSequence.size()>0);
+    return true;//(theSequence.size()>0);
 } //End of loadSequence
 
 SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)
@@ -1421,7 +1421,7 @@ void Sequence::dumpData(int start, int end, int nn)
     << " targetNote "
     << "\n";
     if (end>theSequence.size())
-        end = theSequence.size();
+        end = (int) theSequence.size();
     for (int i=start; i<theSequence.size() && i<=end;i++)
     {
         if (nn==-1 || theSequence.at(i)->noteNumber==nn )

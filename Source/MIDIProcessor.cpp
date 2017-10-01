@@ -23,12 +23,10 @@ MIDIProcessor::MIDIProcessor() :
     waitingForFirstNote = false;
     resetViewer = true; //Cleared by NoteViewer after reset
     timerIntervalInMS = 1;
-//    startTimer(timerIntervalInMS);
     panic = false;
     midiOutput = MidiOutput::createNewDevice("ConcertKeyboardist");
     notesEditable=true;
     MultiTimer::startTimer(TIMER_APP_ACTIVE, 1000);
-//    addActionListener(Main);
 }
 
 MIDIProcessor::~MIDIProcessor()
@@ -179,196 +177,193 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
 //    std::cout << "Rewind: time " << time
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
 //    << "\n";
+    if (sequenceObject.theSequence.size()==0)
+        return;
     try {
-    
-    for (int i=0; i<onNotes.size(); i++)
-    {
-        const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
-                                                         sequenceObject.theSequence.at(onNotes[i])->noteNumber,
-                                                         sequenceObject.theSequence.at(onNotes[i])->getVelocity());
-        sendMidiMessage(noteOff);
-    }
-    onNotes.clear();
-        
-    listenStep = 0;
-    if (listenSequence.size()>0)
-    {
-        while (time > listenSequence.at(listenStep).timeStamp)
-            listenStep++;
-    }
-    timeIncrement =  sequenceObject.tempoMultiplier * 960.0*sequenceObject.getTempo(time)/60000.0;
-    variableTimeIncrement = timeIncrement;
-    leadLag = 0;
-    changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
-    sendSynchronousChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
-//    std::vector<std::shared_ptr<NoteWithOffTime>> theSequence = sequenceObject.getSequence();
-    HighResolutionTimer::stopTimer();
-    panic = true;
-    for (int chan=1;chan<=16;chan++)
-    {
-        MidiMessage controllersOff = MidiMessage::allControllersOff(chan);
-        sendMidiMessage(controllersOff);
-        MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
-        sendMidiMessage(allNotesOff);
-    }
-//    isPlaying = false;
-    autoPlaying = false;
-    waitingForFirstNote = false;
-    meas = 0; //Current measure, updated when timeInTicks passes next measure division
-    currentBeat = 0;
-    changeMessageType = CHANGE_MESSAGE_MEASURE_CHANGED;
-    sendSynchronousChangeMessage();
-    duplicateNote = -1;
-    prevNoteOnLag = 0;
-    prevTimeInTicks = 0;
-//    sequenceObject.suppressSpeedAdjustment = false;
-    sequenceObject.noteIsOn.clear();
-    for (int i=0;i<(16*128);i++)
-        sequenceObject.noteIsOn.push_back(false);
-    for (int i=0; i<sequenceObject.theSequence.size();i++)
-    {
-        sequenceObject.theSequence.at(i)->noteOffNow = false;
-        sequenceObject.theSequence.at(i)->sustaining = false;
-//        sequenceObject.theSequence.at(i)->isSelected = false;
-    }
-    noteOnOffFifo.reset();
-    scheduledNotes.clear();
+        pauseProcessing = true;
+        for (int i=0; i<onNotes.size(); i++)
+        {
+            const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
+                                                             sequenceObject.theSequence.at(onNotes[i])->noteNumber,
+                                                             sequenceObject.theSequence.at(onNotes[i])->getVelocity());
+            sendMidiMessage(noteOff);
+        }
+        onNotes.clear();
+            
+        listenStep = 0;
+        if (listenSequence.size()>0)
+        {
+            while (time > listenSequence.at(listenStep).timeStamp)
+                listenStep++;
+        }
+        timeIncrement =  sequenceObject.tempoMultiplier * 960.0*sequenceObject.getTempo(time)/60000.0;
+        variableTimeIncrement = timeIncrement;
+        leadLag = 0;
+        changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
+        sendSynchronousChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
+    //    std::vector<std::shared_ptr<NoteWithOffTime>> theSequence = sequenceObject.getSequence();
+        HighResolutionTimer::stopTimer();
+        panic = true;
+        for (int chan=1;chan<=16;chan++)
+        {
+            MidiMessage controllersOff = MidiMessage::allControllersOff(chan);
+            sendMidiMessage(controllersOff);
+            MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
+            sendMidiMessage(allNotesOff);
+        }
+    //    isPlaying = false;
+        autoPlaying = false;
+        waitingForFirstNote = false;
+        meas = 0; //Current measure, updated when timeInTicks passes next measure division
+        currentBeat = 0;
+        changeMessageType = CHANGE_MESSAGE_MEASURE_CHANGED;
+        sendSynchronousChangeMessage();
+        duplicateNote = -1;
+        prevNoteOnLag = 0;
+        prevTimeInTicks = 0;
+    //    sequenceObject.suppressSpeedAdjustment = false;
+        sequenceObject.noteIsOn.clear();
+        for (int i=0;i<(16*128);i++)
+            sequenceObject.noteIsOn.push_back(false);
+        for (int i=0; i<sequenceObject.theSequence.size();i++)
+        {
+            sequenceObject.theSequence.at(i)->noteOffNow = false;
+            sequenceObject.theSequence.at(i)->sustaining = false;
+        }
+        noteOnOffFifo.reset();
+        scheduledNotes.clear();
     } catch (const std::out_of_range& ex) {
         std::cout << " error 1 in rewind " << "\n";
     }
     
     try {
-
-    int step = 0;
-    if (time==0)
-    {
-        variableTempoRatio = 1.0;
-        sequenceReadHead = 0;
-        currentSeqStep = -1;
-        lastPlayedNoteStep = 0;
-        lastPlayedSeqStep = currentSeqStep;
-        timeInTicks = 0;
-        metTimeInTicks = 0;
-        metronomeLighted = false;
-        currentBeat = 0;
-//        accompTimeInTicks = 0;
-//        beatTickCounter = 0;
-    }
-    else //Set to position
-    {
-//        std::cout << "rewind start Set to position" << "\n";
-
-        for (step=0;step<sequenceObject.theSequence.size();step++)
+        int step = 0;
+        if (time==0)
         {
-            if (sequenceObject.theSequence.at(step)->getTimeStamp()>=(time-0.001) &&
-                sequenceObject.theSequence.at(step)->targetNote)
-                break;
+            variableTempoRatio = 1.0;
+            sequenceReadHead = 0;
+            currentSeqStep = -1;
+            lastPlayedNoteStep = 0;
+            lastPlayedSeqStep = currentSeqStep;
+            timeInTicks = 0;
+            metTimeInTicks = 0;
+            metronomeLighted = false;
+            currentBeat = 0;
+    //        accompTimeInTicks = 0;
+    //        beatTickCounter = 0;
         }
-        if (step>=sequenceObject.theSequence.size())
-            step = sequenceObject.theSequence.size() - 1;
-        if (step==-1)
-            step = 0;
-//        std::cout << "rewind Set to position: step =  " <<step<< "\n";
-
-        sequenceReadHead = sequenceObject.theSequence.at(step)->getTimeStamp();
-//        std::cout << "rewind Set read head " <<"\n";
-        currentSeqStep = step-1;
-        lastPlayedNoteStep = currentSeqStep;
-        timeInTicks = time;
-//        accompTimeInTicks = time;
-    }
-//    std::cout
-//    << "In Rewind: time " << time
-//    << " sequenceReadHead " << sequenceReadHead
-//    << " currentSeqStep " << currentSeqStep
-//    << " lastPlayedSeqStep " << lastPlayedSeqStep
-//    << "\n";
-    
-//    startTimer(tempInterval);
-//    std::cout << "rewind autoPlaySustains  " << "\n";
-    if (sequenceObject.autoPlaySustains)
-    {
-        int k=0; //This will be the value if there are no sustainPedalChanges.  i.e. One step past the the last, which is 0
-        if (sequenceObject.sustainPedalChanges.size()>0)
+        else //Set to position
         {
-            for (k=0;k<sequenceObject.sustainPedalChanges.size();k++)
+    //        std::cout << "rewind start Set to position" << "\n";
+            for (step=0;step<sequenceObject.theSequence.size();step++)
             {
-    //            std::cout
-    //            << " sustainPedalChange " << k
-    //            << " at " << sequenceObject.sustainPedalChanges.at(k).timeStamp
-    //            << " value " << sequenceObject.sustainPedalChanges.at(k).getControllerValue()
-    //            << "\n";
-                if (sequenceObject.sustainPedalChanges.at(k).timeStamp>=time)
+                if (sequenceObject.theSequence.at(step)->getTimeStamp()>=(time-0.001) &&
+                    sequenceObject.theSequence.at(step)->targetNote)
                     break;
             }
-            //        if (k<sequenceObject.sustainPedalChanges.size())
-            nextSustainStep = k; //Note that this could be past the end of sustainPedalChanges[ ] if there are no more events
-            if(nextSustainStep<sequenceObject.sustainPedalChanges.size() && nextSustainStep-1 >= 0)
-            {
-                if (sequenceObject.sustainPedalChanges.at(k-1).pedalOn)
-                {
-                    MidiMessage msgOn = MidiMessage::controllerEvent(1, 64, 127);
-                    msgOn.setTimeStamp(sequenceObject.sustainPedalChanges.at(k).timeStamp);
-                    sendMidiMessage(msgOn);
-                }
-                else
-                {
-                    MidiMessage msgOff = MidiMessage::controllerEvent(1, 64, 0);
-                    msgOff.setTimeStamp(sequenceObject.sustainPedalChanges.at(k).timeStamp);
-                    sendMidiMessage(msgOff);
-                }
-            }
+            if (step>=sequenceObject.theSequence.size())
+                step = (int)sequenceObject.theSequence.size() - 1;
+            if (step==-1)
+                step = 0;
+    //        std::cout << "rewind Set to position: step =  " <<step<< "\n";
+
+            sequenceReadHead = sequenceObject.theSequence.at(step)->getTimeStamp();
+    //        std::cout << "rewind Set read head " <<"\n";
+            currentSeqStep = step-1;
+            lastPlayedNoteStep = currentSeqStep;
+            timeInTicks = time;
+    //        accompTimeInTicks = time;
         }
-    }
-//    std::cout << "rewind autoPlaySofts  " << "\n";
+    //    std::cout
+    //    << "In Rewind: time " << time
+    //    << " sequenceReadHead " << sequenceReadHead
+    //    << " currentSeqStep " << currentSeqStep
+    //    << " lastPlayedSeqStep " << lastPlayedSeqStep
+    //    << "\n";
         
-    if (sequenceObject.autoPlaySofts)
-    {
-        int k=0; //This will be the value if there are no softPedalChanges.  i.e. One step past the the last, which is 0
-        if (sequenceObject.softPedalChanges.size()>0)
+    //    startTimer(tempInterval);
+    //    std::cout << "rewind autoPlaySustains  " << "\n";
+        if (sequenceObject.autoPlaySustains)
         {
-            for (k=0;k<sequenceObject.softPedalChanges.size();k++)
+            int k=0; //This will be the value if there are no sustainPedalChanges.  i.e. One step past the the last, which is 0
+            if (sequenceObject.sustainPedalChanges.size()>0)
             {
-//                std::cout
-//                << " softPedalChange " << k
-//                << " at " << sequenceObject.softPedalChanges.at(k).timeStamp
-//                << " value " << sequenceObject.softPedalChanges.at(k).getControllerValue()
-//                << "\n";
-                if (sequenceObject.softPedalChanges.at(k).timeStamp>=time)
-                    break;
-            }
-            //        if (k<softPedalChanges())
-            nextSoftStep = k; //Note that this could be past the end of softPedalChanges[ ] if there are no more events
-            if(nextSoftStep<sequenceObject.softPedalChanges.size() && nextSoftStep-1>=0)
-            {
-//                sendMidiMessage(sequenceObject.softPedalChanges[nextSoftStep-1]);
-//                std::cout
-//                << " send " << nextSoftStep-1
-//                << " value " << sequenceObject.softPedalChanges.at(nextSoftStep-1).getControllerValue()
-//                << "\n";
-                if (sequenceObject.softPedalChanges.at(k-1).pedalOn)
+                for (k=0;k<sequenceObject.sustainPedalChanges.size();k++)
                 {
-                    MidiMessage msgOn = MidiMessage::controllerEvent(1, 67, 127);
-                    msgOn.setTimeStamp(sequenceObject.softPedalChanges.at(k-1).timeStamp);
-                    sendMidiMessage(msgOn);
+        //            std::cout
+        //            << " sustainPedalChange " << k
+        //            << " at " << sequenceObject.sustainPedalChanges.at(k).timeStamp
+        //            << " value " << sequenceObject.sustainPedalChanges.at(k).getControllerValue()
+        //            << "\n";
+                    if (sequenceObject.sustainPedalChanges.at(k).timeStamp>=time)
+                        break;
                 }
-                else
+                //        if (k<sequenceObject.sustainPedalChanges.size())
+                nextSustainStep = k; //Note that this could be past the end of sustainPedalChanges[ ] if there are no more events
+                if(nextSustainStep<sequenceObject.sustainPedalChanges.size() && nextSustainStep-1 >= 0)
                 {
-                    MidiMessage msgOff = MidiMessage::controllerEvent(1, 67, 0);
-                    msgOff.setTimeStamp(sequenceObject.softPedalChanges.at(k-1).timeStamp);
-                    sendMidiMessage(msgOff);
+                    if (sequenceObject.sustainPedalChanges.at(k-1).pedalOn)
+                    {
+                        MidiMessage msgOn = MidiMessage::controllerEvent(1, 64, 127);
+                        msgOn.setTimeStamp(sequenceObject.sustainPedalChanges.at(k).timeStamp);
+                        sendMidiMessage(msgOn);
+                    }
+                    else
+                    {
+                        MidiMessage msgOff = MidiMessage::controllerEvent(1, 64, 0);
+                        msgOff.setTimeStamp(sequenceObject.sustainPedalChanges.at(k).timeStamp);
+                        sendMidiMessage(msgOff);
+                    }
                 }
             }
         }
-    }
-    pauseProcessing = false;
-    changeMessageType = CHANGE_MESSAGE_REWIND;
+    //    std::cout << "rewind autoPlaySofts  " << "\n";
+            
+        if (sequenceObject.autoPlaySofts)
+        {
+            int k=0; //This will be the value if there are no softPedalChanges.  i.e. One step past the the last, which is 0
+            if (sequenceObject.softPedalChanges.size()>0)
+            {
+                for (k=0;k<sequenceObject.softPedalChanges.size();k++)
+                {
+    //                std::cout
+    //                << " softPedalChange " << k
+    //                << " at " << sequenceObject.softPedalChanges.at(k).timeStamp
+    //                << " value " << sequenceObject.softPedalChanges.at(k).getControllerValue()
+    //                << "\n";
+                    if (sequenceObject.softPedalChanges.at(k).timeStamp>=time)
+                        break;
+                }
+                //        if (k<softPedalChanges())
+                nextSoftStep = k; //Note that this could be past the end of softPedalChanges[ ] if there are no more events
+                if(nextSoftStep<sequenceObject.softPedalChanges.size() && nextSoftStep-1>=0)
+                {
+    //                sendMidiMessage(sequenceObject.softPedalChanges[nextSoftStep-1]);
+    //                std::cout
+    //                << " send " << nextSoftStep-1
+    //                << " value " << sequenceObject.softPedalChanges.at(nextSoftStep-1).getControllerValue()
+    //                << "\n";
+                    if (sequenceObject.softPedalChanges.at(k-1).pedalOn)
+                    {
+                        MidiMessage msgOn = MidiMessage::controllerEvent(1, 67, 127);
+                        msgOn.setTimeStamp(sequenceObject.softPedalChanges.at(k-1).timeStamp);
+                        sendMidiMessage(msgOn);
+                    }
+                    else
+                    {
+                        MidiMessage msgOff = MidiMessage::controllerEvent(1, 67, 0);
+                        msgOff.setTimeStamp(sequenceObject.softPedalChanges.at(k-1).timeStamp);
+                        sendMidiMessage(msgOff);
+                    }
+                }
+            }
+        }
     } catch (const std::out_of_range& ex) {
-        
         std::cout << " error 2 in rewind " << ex.what()<<"\n";
     }
-        
     try {
+        pauseProcessing = false;
+        changeMessageType = CHANGE_MESSAGE_REWIND;
         sendSynchronousChangeMessage();
     } catch (const std::out_of_range& ex) {
         std::cout << " error 3 in rewind " << "\n";
@@ -609,7 +604,7 @@ void MIDIProcessor::processBlock ()
     try {
         
 
-    if (pauseProcessing || sequenceObject.loadingFile)
+    if (pauseProcessing || sequenceObject.loadingFile || sequenceObject.theSequence.size()==0)
         return;
     if (panic)
     {
@@ -1313,14 +1308,13 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
                 sequenceObject.theSequence.at(step)->targetNote)
             {
                 sequenceObject.theSequence.at(step)->targetNote = false;
-                int index;
-                for (int i=0;i<stepActivityList.size();i++)
+                int i;
+                for (i=0;i<stepActivityList.size();i++)
                     if (stepActivityList[i].step == step)
                     {
-                        index = i;
                         break;
                     }
-                stepActivityList.remove(index);
+                stepActivityList.remove(i);
             }
             if (sequenceObject.theSequence.at(step)->getTimeStamp()!=prevTargetNoteTime && sequenceObject.theSequence.at(step)->targetNote)
             {
@@ -1542,7 +1536,7 @@ void MIDIProcessor::addPedalChange(PedalType pType)
     std::vector<Sequence::PedalMessage> *pedalChanges;
     if (pType==sustPedal)
         pedalChanges = &sequenceObject.sustainPedalChanges;
-    else if (pType==softPedal)
+    else// if (pType==softPedal)
         pedalChanges = &sequenceObject.softPedalChanges;
     
     double newStart = sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->getTimeStamp();
@@ -1602,7 +1596,7 @@ void MIDIProcessor::addPedalChange(PedalType pType)
             pedalChanges->at(i+1).timeStamp = newStart-3.0;
         }
     }
-    for (int i=pedalChanges->size()-1; 0<=i ;i--) //Delete those marked for deletion above
+    for (int i=(int) pedalChanges->size()-1; 0<=i ;i--) //Delete those marked for deletion above
     {
         if (pedalChanges->at(i).timeStamp == DBL_MAX)
             pedalChanges->erase(pedalChanges->begin() + i);
@@ -1640,7 +1634,7 @@ void MIDIProcessor::addPedalChange(PedalType pType)
     //            << " offTS "<<pedalChanges->at(i+1).timeStamp
     //            << "\n";
     //        }
-    for (int i=pedalChanges->size()-1; 0<=i ;i-=2) //Delete very short sustains
+    for (int i=(int) pedalChanges->size()-1; 0<=i ;i-=2) //Delete very short sustains
     {
         const double sustDuration = (pedalChanges->at(i).timeStamp - /*The sust-off*/
                                      pedalChanges->at(i-1).timeStamp) /*The sust-on*/;
@@ -1670,7 +1664,7 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
     std::vector<Sequence::PedalMessage> *pedalChanges;
     if (pType==sustPedal)
         pedalChanges = &sequenceObject.sustainPedalChanges;
-    else if (pType==softPedal)
+    else// if (pType==softPedal)
         pedalChanges = &sequenceObject.softPedalChanges;
     
     double currentZtlTime = timeInTicks-xInTicksFromViewer;

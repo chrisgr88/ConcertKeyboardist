@@ -249,32 +249,6 @@ ApplicationProperties& getAppProperties();
         getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
         getAppProperties().getUserSettings()->saveIfNeeded();
     }
-//    
-//    void MainWindow::showScoreSettings()
-//    {
-//        
-//        //TODO Add call of this and make it contain the TracksComponent
-//        //    ScopedPointer<DialogWindow> settingsWindow;
-//        TracksComponent tracksComponent(&midiProcessor);
-//        tracksComponent.setSize (897, 200);
-//        DialogWindow::LaunchOptions dw;
-//        dw.content.setNonOwned (&tracksComponent);
-//        dw.dialogTitle                   = "Tracks";
-//        dw.componentToCentreAround       = this;
-//        dw.dialogBackgroundColour        = Colours::azure;
-//        dw.escapeKeyTriggersCloseButton  = true;
-//        dw.useNativeTitleBar             = true;
-//        dw.resizable                     = true;
-//        ckBlockClosing = true;
-//        dw.runModal();
-//        ckBlockClosing = false;
-//        PropertiesFile* userSettings = getAppProperties().getUserSettings();
-//        setResizable(true, false);
-//        setResizeLimits(300, 400, 800, 1500);
-//        setTopLeftPosition(60, 60);
-//        restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
-//        setVisible(true);
-//    }
     
     void MainWindow::menuBarActivated (bool isActive)
     {
@@ -569,6 +543,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                     midiProcessor.loadSpecifiedFile(recent);
                 Component::toFront(true);
+                tracksWindow->setVisible(false);
             }
         }
         else if (topLevelMenuIndex==2)
@@ -681,6 +656,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     ckBlockClosing = true;
+                    tracksWindow->setVisible(false);
                     if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                         midiProcessor.loadFromUserSpecifiedFile();
                     Component::toFront(true);
@@ -790,11 +766,13 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 std::cout <<"tracksWindow\n";
                 if (!midiProcessor.isPlaying)
                 {
+                    pViewerFrame->noteViewer.clearSelectedNotes();
                     if (tracksWindow == nullptr)
                         tracksWindow = new TracksWindow (*this, formatManager, &midiProcessor);
                     tracksWindow->toFront (true);
+                    tracksWindow->setVisible(true);
 //                    showScoreSettings();
-                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
+//                    midiProcessor.buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, midiProcessor.getTimeInTicks());
                 }
                 break;
             case CommandIDs::editUndo:
