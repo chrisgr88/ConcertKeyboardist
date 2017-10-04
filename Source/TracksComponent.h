@@ -184,7 +184,6 @@ public:
                 if ( sequence->trackDetails[t].playability==1)
                     nActive++;
             }
-            int foo=0;
          } catch (const std::out_of_range& ex) {
              std::cout << " error in setPlayability " << "\n";
          }

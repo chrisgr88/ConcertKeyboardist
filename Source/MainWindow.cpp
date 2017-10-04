@@ -10,22 +10,114 @@
 
 #include "MainWindow.h"
 
+//==============================================================================
+static Array<PluginWindow*> activePluginWindows;
+
+PluginWindow::PluginWindow (AudioProcessorEditor* pluginEditor, AudioProcessor* o, WindowFormatType t)
+: DocumentWindow (pluginEditor->getName(),
+                  LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
+                  DocumentWindow::minimiseButton | DocumentWindow::closeButton),
+owner (o),
+type (t)
+{
+    setSize (400, 300);
+    
+    setContentOwned (pluginEditor, true);
+    
+    setTopLeftPosition (100,100);//owner->properties.getWithDefault (getLastXProp (type), Random::getSystemRandom().nextInt (500)),
+                       // owner->properties.getWithDefault (getLastYProp (type), Random::getSystemRandom().nextInt (500)));
+    
+    //owner->properties.set (getOpenProp (type), true);
+    
+    setVisible (true);
+    
+    activePluginWindows.add (this);
+}
+PluginWindow::~PluginWindow()
+{
+    activePluginWindows.removeFirstMatchingValue (this);
+    clearContentComponent();
+}
+
+void PluginWindow::moved()
+{
+//    owner->properties.set (getLastXProp (type), getX());
+//    owner->properties.set (getLastYProp (type), getY());
+}
+
+void PluginWindow::closeButtonPressed()
+{
+//    owner->properties.set (getOpenProp (type), false);
+    delete this;
+}
+
+PluginWindow* PluginWindow::getWindowFor (AudioProcessor* p, PluginWindow::WindowFormatType type)
+{
+    for (auto* w : activePluginWindows)
+        if (w->type == type)
+            return w;
+    auto* processor = p;
+    AudioProcessorEditor* ui = nullptr;
+    
+    if (auto* pluginInstance = dynamic_cast<AudioPluginInstance*> (processor))
+    {
+        auto description = pluginInstance->getPluginDescription();
+    }
+    
+    if (type == Normal)
+    {
+        ui = processor->createEditorIfNeeded();
+        
+        if (ui == nullptr)
+            type = Generic;
+    }
+    
+    if (ui == nullptr)
+    {
+        if (type == Generic || type == Parameters)  ui = new GenericAudioProcessorEditor (processor);
+//        else if (type == Programs)                  ui = new ProgramAudioProcessorEditor (processor);
+    }
+    
+    if (ui != nullptr)
+    {
+        if (auto* plugin = dynamic_cast<AudioPluginInstance*> (processor))
+            ui->setName (plugin->getName());
+        
+        return new PluginWindow (ui, p, type);
+    }
+    
+    return nullptr;
+}
+
+void PluginWindow::closeAllCurrentlyOpenWindows()
+{
+    if (activePluginWindows.size() > 0)
+    {
+        for (int i = activePluginWindows.size(); --i >= 0;)
+            delete activePluginWindows.getUnchecked (i);
+        
+        Component dummyModalComp;
+        dummyModalComp.enterModalState (false);
+        MessageManager::getInstance()->runDispatchLoopUntil (50);
+    }
+}
+
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
     MainWindow::MainWindow (String name)
     : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
-        formatManager.addDefaultFormats();
-        ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
-        
-        if (savedPluginList != nullptr)
-            knownPluginList.recreateFromXml (*savedPluginList);
-        
-        pluginSortMethod = (KnownPluginList::SortMethod) getAppProperties().getUserSettings()
-        ->getIntValue ("pluginSortMethod", KnownPluginList::sortByManufacturer);
-        
-        knownPluginList.addChangeListener (this);
+//        formatManager.addDefaultFormats();
+//        ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
+//        
+//        if (savedPluginList != nullptr)
+//            knownPluginList.recreateFromXml (*savedPluginList);
+//        
+//        pluginSortMethod = (KnownPluginList::SortMethod) getAppProperties().getUserSettings()
+//        ->getIntValue ("pluginSortMethod", KnownPluginList::sortByManufacturer);
+//        
+//        knownPluginList.addChangeListener (this);
         
         
         ckBlockClosing = false;
@@ -73,7 +165,6 @@ ApplicationProperties& getAppProperties();
     
     MainWindow::~MainWindow ()  {
         pluginListWindow = nullptr;
-        knownPluginList.removeChangeListener (this);
         getAppProperties().getUserSettings()->setValue ("mainWindowPos", getWindowStateAsString());
 #if JUCE_MAC
         setMacMainMenu (nullptr);
@@ -84,20 +175,20 @@ ApplicationProperties& getAppProperties();
 
     void MainWindow::changeListenerCallback (ChangeBroadcaster* changed)
     {
-        if (changed == &knownPluginList)
-        {
-            menuItemsChanged();
-            
-            // save the plugin list every time it gets chnaged, so that if we're scanning
-            // and it crashes, we've still saved the previous ones
-            ScopedPointer<XmlElement> savedPluginList (knownPluginList.createXml());
-            
-            if (savedPluginList != nullptr)
-            {
-                getAppProperties().getUserSettings()->setValue ("pluginList", savedPluginList);
-                getAppProperties().saveIfNeeded();
-            }
-        }
+//        if (changed == &knownPluginList)
+//        {
+//            menuItemsChanged();
+//            
+//            // save the plugin list every time it gets chnaged, so that if we're scanning
+//            // and it crashes, we've still saved the previous ones
+//            ScopedPointer<XmlElement> savedPluginList (knownPluginList.createXml());
+//            
+//            if (savedPluginList != nullptr)
+//            {
+//                getAppProperties().getUserSettings()->setValue ("pluginList", savedPluginList);
+//                getAppProperties().saveIfNeeded();
+//            }
+//        }
     }
 
 // This is sent actions from viewerFrame where the toolbar is implemented
@@ -248,6 +339,8 @@ ApplicationProperties& getAppProperties();
         ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
         getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
         getAppProperties().getUserSettings()->saveIfNeeded();
+        const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+        midiProcessor.synthMessageCollectorReset(sampRate);
     }
     
     void MainWindow::menuBarActivated (bool isActive)
@@ -502,7 +595,12 @@ ApplicationProperties& getAppProperties();
             PopupMenu pluginsMenu;
             addPluginsToMenu (pluginsMenu);
             menu.addSubMenu ("Load plugin", pluginsMenu);
-            menu.addItem (250, "Unload plugin");
+//            menu.addItem (250, "Unload plugin");
+            menu.addSeparator();
+            menu.addItem (251, "Show plugin window");
+            menu.addItem (252, "Show all programs");
+            menu.addItem (253, "Show all parameters");
+            menu.addItem (254, "Configure audio I/O");
             menu.addSeparator();
             menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
         }
@@ -510,13 +608,13 @@ ApplicationProperties& getAppProperties();
     }
 void MainWindow::addPluginsToMenu (PopupMenu& m) const
 {
-    knownPluginList.addToMenu (m, pluginSortMethod);
+    mainComponent->knownPluginList.addToMenu (m, mainComponent->pluginSortMethod);
 }
 const PluginDescription* MainWindow::getChosenType (const int menuID) const
 {
-    int index = knownPluginList.getIndexChosenByMenu (menuID);
+    int index = mainComponent->knownPluginList.getIndexChosenByMenu (menuID);
     if (index != -1)
-        return knownPluginList.getType (index);
+        return mainComponent->knownPluginList.getType (index);
     else
         return NULL;
 }
@@ -543,32 +641,73 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                     midiProcessor.loadSpecifiedFile(recent);
                 Component::toFront(true);
-                tracksWindow->setVisible(false);
+                if (tracksWindow)
+                    tracksWindow->setVisible(false);
             }
         }
         else if (topLevelMenuIndex==2)
+//            
+//        {
+//        case 4: type = PluginWindow::Programs; break;
+//        case 5: type = PluginWindow::Parameters; break;
+//        case 6: type = PluginWindow::AudioIO; break;
+//            
+//        default: break;
+//        };
+//        
+//        if (auto* w = PluginWindow::getWindowFor (f, type))
+//            w->toFront (true);
         {
+            PluginWindow::WindowFormatType type;
             if (menuItemID == 250)
             {
                 std::cout << "Unload plugin" <<"\n";
-                //            if (auto* graphEditor = getGraphEditor())
-                //                if (auto* filterGraph = graphEditor->graph.get())
-                //                    filterGraph->clear();
+            }
+            else if (menuItemID == 251)
+            {
+                std::cout << "Show plugin window" <<"\n";
+                if (mainComponent->thePlugin)
+                {
+                    type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
+                    if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
+                        w->toFront (true);
+                }
+            }
+            else if (menuItemID == 252)
+            {
+                std::cout << "Show all programs" <<"\n";
+                type = PluginWindow::Programs;
+            }
+            else if (menuItemID == 253)
+            {
+                std::cout << "Show all parameters" <<"\n";
+                type = PluginWindow::Parameters;
+            }
+            else if (menuItemID == 254)
+            {
+                std::cout << "Configure audio I/O" <<"\n";
+                type = PluginWindow::AudioIO;
             }
             else
             {
                 const PluginDescription* desc = getChosenType (menuItemID);
                 if (desc != NULL)
                 {
-                    std::cout << "Loading plugin "<<desc->descriptiveName <<"\n";
-                    const PluginDescription *pPID = knownPluginList.getType(knownPluginList.getIndexChosenByMenu (menuItemID));
-                    String errorMsg;
-                    AudioPluginInstance* loaded = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
-                    if (loaded)
-                    {
-                        std::cout << "Loaded plugin "<<getChosenType (menuItemID)->descriptiveName <<"\n";
-                    }
+                    mainComponent->loadPlugin(desc);
                 }
+//
+//                if (desc != NULL)
+//                {
+//                    std::cout << "Loading plugin "<<desc->descriptiveName <<"\n";
+//                    const PluginDescription *pPID = knownPluginList.getType(knownPluginList.getIndexChosenByMenu (menuItemID));
+//                    
+//                    String errorMsg;
+//                    AudioPluginInstance* loaded = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
+//                    if (loaded)
+//                    {
+//                        std::cout << "Loaded plugin "<<getChosenType (menuItemID)->descriptiveName <<"\n";
+//                    }
+//                }
             }
         }
     }
@@ -648,7 +787,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 break;
             case CommandIDs::showPluginListEditor:
                 if (pluginListWindow == nullptr)
-                    pluginListWindow = new PluginListWindow (*this, formatManager);
+                    pluginListWindow = new PluginListWindow (*this, mainComponent->formatManager);
                 
                 pluginListWindow->toFront (true);
                 break;
@@ -656,7 +795,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     ckBlockClosing = true;
-                    tracksWindow->setVisible(false);
+                    if (tracksWindow)
+                        tracksWindow->setVisible(false);
                     if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                         midiProcessor.loadFromUserSpecifiedFile();
                     Component::toFront(true);
@@ -768,7 +908,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 {
                     pViewerFrame->noteViewer.clearSelectedNotes();
                     if (tracksWindow == nullptr)
-                        tracksWindow = new TracksWindow (*this, formatManager, &midiProcessor);
+                        tracksWindow = new TracksWindow (*this, mainComponent->formatManager, &midiProcessor);
                     tracksWindow->toFront (true);
                     tracksWindow->setVisible(true);
 //                    showScoreSettings();

@@ -37,6 +37,26 @@ MIDIProcessor::~MIDIProcessor()
     delete undoMgr;
 }
 
+bool MIDIProcessor::getCurrentPosition (CurrentPositionInfo& result)
+{
+    result.bpm = getRealTimeTempo();
+    result.timeSigNumerator = sequenceObject.numerator;
+    result.timeSigDenominator = sequenceObject.denominator;
+    result.timeInSamples =sampleRate*timerIntervalInMS*timeInTicks/1000.0;
+//    std::cout << " timeInSamples " << result.timeInSamples << "\n";
+    result.timeInSeconds = timerIntervalInMS*timeInTicks/1000.0;
+    result.editOriginTime = 0.0;
+    result.ppqPosition = variableTimeIncrement*timeInTicks;
+    result.ppqPositionOfLastBarStart = 0;
+//    result.frameRate = 0.0f;
+    result.isPlaying = isPlaying;
+    result.isRecording = false;
+    result.ppqLoopStart = 0;
+    result.ppqLoopEnd = 0;
+    result.isLooping = false;
+    return true;
+}
+
 void MIDIProcessor::changeListenerCallback (ChangeBroadcaster* broadcaster)
 {
     if (broadcaster == &sequenceObject)
@@ -885,8 +905,8 @@ void MIDIProcessor::processBlock ()
 //                    << "\n";
 //                    midiMessages.addEvent(noteOff,0);
 //                    midiOutput->sendMessageNow(noteOff);
-//                    noteOff.setTimeStamp(99.0);
-//                    synthMessageCollector.addMessageToQueue (noteOff);
+                    noteOff.setTimeStamp(99.0);
+                    synthMessageCollector.addMessageToQueue (noteOff);
                     sendMidiMessage(noteOff);
 //                    std::cout<<"at 3 noteOff "<<stepToTurnOff<<"\n";
                     

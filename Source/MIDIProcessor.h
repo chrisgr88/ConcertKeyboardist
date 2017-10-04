@@ -30,7 +30,8 @@ class MIDIProcessor  :
     public ChangeBroadcaster,
     private HighResolutionTimer,
     private MultiTimer,
-    public ChangeListener
+    public ChangeListener,
+    public AudioPlayHead
 {
 public:
     //==============================================================================
@@ -45,6 +46,8 @@ public:
     
     void changeListenerCallback (ChangeBroadcaster* broadcaster) override;
     void timerCallback (int timerID) override;
+    
+    bool getCurrentPosition (CurrentPositionInfo& result)  override;
     double getTempo ()
     {
 //        return 625*timeIncrement; //625 = 60000.0/960.0
@@ -229,7 +232,7 @@ public:
     void synthMessageCollectorReset(const double rate)
     {
         synthMessageCollector.reset(rate);
-        if (rate!=44100)
+//        if (rate!=44100)
             synthMessageCollectorIsReset = true;
     }
     enum class MidiDestination {internalSynth = 0, output = 1, pluginSynth = 2};
@@ -307,7 +310,7 @@ public:
     
     bool appIsActive = true;
     double getStartTimeOfNextStep();
-    
+    int sampleRate;
 private:
     //==============================================================================
     std::atomic_bool pauseProcessing;
@@ -318,13 +321,19 @@ private:
     bool notesEditable; //Whether notes can be edited in the viewer
     void sendMidiMessage(MidiMessage msg)
     {
-        if (midiDestination==MidiDestination::internalSynth)
-        {
-            msg.setTimeStamp(99.0);
-            synthMessageCollector.addMessageToQueue (msg); //<<<<<<<<<<<<<<< Add more
-        }
-        else if (midiDestination==MidiDestination::output)
-            midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
+//        if (midiDestination==MidiDestination::internalSynth)
+//        {
+//        if (timeInTicks>0)
+//        {
+        double t = Time::getMillisecondCounterHiRes()*0.001;
+            msg.setTimeStamp(t);
+            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
+            if (synthMessageCollectorIsReset)
+                synthMessageCollector.addMessageToQueue (msg); //<<<<<<<<<<<<<<< Add more
+    //        }
+    //        else if (midiDestination==MidiDestination::output)
+                midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
+//        }
     }
     double timeInTicks = -1;
     int leadTimeInTicks; //How much space in ticks to allow to left of the ztl in viewer window
@@ -353,7 +362,6 @@ private:
     bool prevTis;  //Used to detect rewind
     int duplicateNote;
     AudioPlayHead::CurrentPositionInfo playHeadInfo;
-    int sampleRate;
     Array<MidiMessage> exprEvents;//SC
     Array<int, CriticalSection> onNotes; //SC//Seq numbers of on notes
     double loopStartTick;

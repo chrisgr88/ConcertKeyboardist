@@ -24,82 +24,82 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         processor->setMidiDestination (MIDIProcessor::MidiDestination::output);
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
-        audioDeviceManager.initialise (256, 256, savedAudioState, true);
-        audioDeviceManager.addMidiInputCallback (String(), this);
-        audioDeviceManager.addAudioCallback (this);
+        audioDeviceManager.initialise (0, 2, savedAudioState, true);
+        const StringArray midiInputs (MidiInput::getDevices());
+        for (int i = 0; i < midiInputs.size(); ++i)
+        {
+            if (audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
+            {
+//                setMidiInput (i);
+                std::cout <<"Midi "<<midiInputs[i]<<"\n";
+                break;
+            }
+        }
+        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+        audioDeviceManager.addMidiInputCallback (String(), processor);
+        //processor->synthMessageCollectorReset(sampRate);
         addAndMakeVisible(viewerFrame);
         setSize (1100, 300);
-        for (int i=0;i<128;i++)
-        {
-//            synth.addVoice(new::sfzero::Voice());
-        }
-        AudioFormatManager formatManager;
-//        formatManager.registerBasicFormats	();
-//        auto sfzFile = File ("/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
-//        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
+        formatManager.addDefaultFormats();
+        ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
         
-//        auto sound = new sfzero::Sound(sfzFile);
-//        sound->loadRegions();
-//        sound->loadSamples(&formatManager);
-//        synth.clearSounds();
-//        synth.addSound(sound);
+        if (savedPluginList != nullptr)
+            knownPluginList.recreateFromXml (*savedPluginList);
+        
+        pluginSortMethod = (KnownPluginList::SortMethod) getAppProperties().getUserSettings()
+        ->getIntValue ("pluginSortMethod", KnownPluginList::sortByManufacturer);
+        knownPluginList.addChangeListener (this);
     }
     
 MainComponent::~MainComponent()
     {
-        audioDeviceManager.removeMidiInputCallback (String(), this);
+        knownPluginList.removeChangeListener (this);
+        audioDeviceManager.closeAudioDevice();
     }
 
-    void MainComponent::paint(Graphics& g)
+//void MainComponent::setMidiInput (int index)
+//{
+//    const StringArray list (MidiInput::getDevices());
+//    
+//    audioDeviceManager.removeMidiInputCallback (list[lastInputIndex], this);
+//    
+//    const String newInput (list[index]);
+//    
+//    if (! audioDeviceManager.isMidiInputEnabled (newInput))
+//        audioDeviceManager.setMidiInputEnabled (newInput, true);
+//    
+////    audioDeviceManager.addMidiInputCallback (newInput, this);
+////    midiInputList.setSelectedId (index + 1, dontSendNotification);
+//    
+//    lastInputIndex = index;
+//}
+
+void MainComponent::paint(Graphics& g)
     {
     }
 
-
-    
     //==============================================================================
+void MainComponent::changeListenerCallback (ChangeBroadcaster* changed)
+    {
+        if (changed == &knownPluginList)
+        {
+            //TODO - notify Mainwindow that menuItemsChanged();
+            // save the plugin list every time it gets chnaged, so that if we're scanning
+            // and it crashes, we've still saved the previous ones
+            ScopedPointer<XmlElement> savedPluginList (knownPluginList.createXml());
+
+            if (savedPluginList != nullptr)
+            {
+                getAppProperties().getUserSettings()->setValue ("pluginList", savedPluginList);
+                getAppProperties().saveIfNeeded();
+            }
+        }
+    }
+
     void MainComponent::resized()
     {
-//        const float audioSetupCompRelativeHeight = 0.4f;
-        
         Rectangle<int> r (getLocalBounds());
-        
-//        audioSetupComp.setBounds (r.removeFromTop (proportionOfHeight (audioSetupCompRelativeHeight)));
         viewerFrame.setBounds(r);
         viewerFrame.resized();
     }
     
-    //==============================================================================
-    void MainComponent::audioDeviceIOCallback (const float** /*inputChannelData*/, int /*numInputChannels*/,
-                                float** outputChannelData, int numOutputChannels,
-                                int numSamples)
-    {
-        AudioBuffer<float> buffer (outputChannelData, numOutputChannels, numSamples);
-        buffer.clear();
-        
-        MidiBuffer incomingMidi;
-        processor->synthMessageCollector.removeNextBlockOfMessages (incomingMidi, numSamples);
-//        synth.renderNextBlock (buffer, incomingMidi, 0, numSamples);
-    }
-    
-    void MainComponent::audioDeviceAboutToStart (AudioIODevice* device)
-    {
-        const double sampleRate = device->getCurrentSampleRate();
-//        processor->reset (sampleRate);
-        processor->synthMessageCollectorReset(sampleRate);
-//        synth.setCurrentPlaybackSampleRate (sampleRate);
-    }
-    
-    void MainComponent::audioDeviceStopped()
-    {
-    }
-
-    //==============================================================================
-    void MainComponent::handleIncomingMidiMessage (MidiInput* /*source*/,
-                                    const MidiMessage& message)
-    {
-//        visualiserInstrument.processNextMidiEvent (message);
-        processor->addMessageToQueue (message);
-    }
-
-
-

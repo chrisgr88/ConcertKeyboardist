@@ -31,8 +31,9 @@
 
 class MainComponent :
     public Component,
-    private AudioIODeviceCallback,
-    private MidiInputCallback
+//    private AudioIODeviceCallback,
+//    private MidiInputCallback,
+    public ChangeListener
 {
 public:
     //==============================================================================
@@ -50,21 +51,73 @@ public:
     void resized() override;
 
     //==============================================================================
-    void audioDeviceIOCallback (const float** /*inputChannelData*/, int /*numInputChannels*/,
-                                float** outputChannelData, int numOutputChannels,
-                                int numSamples) override;
-
-    void audioDeviceAboutToStart (AudioIODevice* device) override;
-
-    void audioDeviceStopped() override;
-//    void sendMidiMessageToSynth (const MidiMessage& message);
+//    void audioDeviceIOCallback (const float** /*inputChannelData*/, int /*numInputChannels*/,
+//                                float** outputChannelData, int numOutputChannels,
+//                                int numSamples) override;
+//
+//    void audioDeviceAboutToStart (AudioIODevice* device) override;
+//
+//    void audioDeviceStopped() override;
     
+    void setMidiInput (int index);
+    
+    void loadPlugin(const PluginDescription* pPID)
+    {
+        std::cout << "Loading plugin "<<pPID->descriptiveName <<"\n";
+        String errorMsg;
+        ScopedPointer<AudioPluginInstance> loaded = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
+        if (loaded)
+        {
+            std::cout << "Loaded plugin \n";
+        }
+        audioDeviceManager.closeAudioDevice();
+        thePlugin = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
+        thePlayer.setProcessor(thePlugin);
+        thePlugin->setPlayHead(processor);
+//        audioDeviceManager.addAudioCallback (&thePlayer);
+//        audioDeviceManager.addMidiInputCallback (String(), &processor->synthMessageCollector);
+//        audioDeviceManager.addMidiInputCallback (String(), processor);
+            audioDeviceManager.addMidiInputCallback (String(), &thePlayer);
+
+
+        ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
+                                                   ->getXmlValue ("audioDeviceState"));
+        audioDeviceManager.restartLastAudioDevice();
+        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+        processor->synthMessageCollectorReset(sampRate);
+        thePlayer.getMidiMessageCollector().reset(sampRate);
+        audioDeviceManager.initialise (0, 2, savedAudioState, true);
+    }
+    AudioPluginFormatManager formatManager;
+    KnownPluginList knownPluginList;
+    KnownPluginList::SortMethod pluginSortMethod;
     AudioDeviceManager audioDeviceManager;
+    AudioProcessorPlayer thePlayer;
+    ScopedPointer<AudioPluginInstance> thePlugin;
+    int lastInputIndex = 0;
+    
+    void changeListenerCallback (ChangeBroadcaster* changed) override;
+//    {
+//        if (changed == &knownPluginList)
+//        {
+//            menuItemsChanged();
+//            
+//            // save the plugin list every time it gets chnaged, so that if we're scanning
+//            // and it crashes, we've still saved the previous ones
+//            ScopedPointer<XmlElement> savedPluginList (knownPluginList.createXml());
+//            
+//            if (savedPluginList != nullptr)
+//            {
+//                getAppProperties().getUserSettings()->setValue ("pluginList", savedPluginList);
+//                getAppProperties().saveIfNeeded();
+//            }
+//        }
+//    }
     
 private:
     //==============================================================================
-    void handleIncomingMidiMessage (MidiInput* /*source*/,
-                                    const MidiMessage& message) override;
+//    void handleIncomingMidiMessage (MidiInput* /*source*/,
+//                                    const MidiMessage& message) override;
     //==============================================================================
     LookAndFeel_V3 lookAndFeel;
 
@@ -73,7 +126,8 @@ private:
     ScrollingNoteViewer scrollingNoteViewer;
 
     MIDIProcessor *processor; //This was previously "PluginProcessor"
-    
+    double sampleRate;
+    int blockSize;
 //    sfzero::Synth synth;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

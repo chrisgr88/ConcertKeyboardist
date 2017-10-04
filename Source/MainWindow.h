@@ -19,6 +19,40 @@
 #include <string>
 #include <regex>
 
+/** A desktop window containing a plugin's UI. */
+class PluginWindow  : public DocumentWindow
+{
+public:
+    enum WindowFormatType
+    {
+        Normal = 0,
+        Generic,
+        Programs,
+        Parameters,
+        AudioIO,
+        NumTypes
+    };
+    
+    PluginWindow (AudioProcessorEditor*, AudioProcessor*, WindowFormatType);
+    ~PluginWindow();
+    
+    static PluginWindow* getWindowFor (AudioProcessor*, WindowFormatType);
+    
+//    static void closeCurrentlyOpenWindowsFor (const uint32 nodeId);
+    static void closeAllCurrentlyOpenWindows();
+    
+    void moved() override;
+    void closeButtonPressed() override;
+    
+private:
+    AudioProcessor* owner;
+    WindowFormatType type;
+    
+    float getDesktopScaleFactor() const override     { return 1.0f; }
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginWindow)
+};
+
 namespace CommandIDs
 {
     static const int appAboutBox                = 0x20000;
@@ -153,9 +187,9 @@ public:
 
     
 private:
-    AudioPluginFormatManager formatManager;
-    KnownPluginList knownPluginList;
-    KnownPluginList::SortMethod pluginSortMethod;
+//    AudioPluginFormatManager formatManager;
+//    KnownPluginList knownPluginList;
+//    KnownPluginList::SortMethod pluginSortMethod;
     class PluginListWindow;
     class TracksWindow;
     ScopedPointer<PluginListWindow> pluginListWindow;
@@ -178,7 +212,7 @@ public:
                                       ->getFile().getSiblingFile ("RecentlyCrashedPluginsList"));
         
         setContentOwned (new PluginListComponent (pluginFormatManager,
-                                                  owner.knownPluginList,
+                                                  owner.mainComponent->knownPluginList,
                                                   deadMansPedalFile,
                                                   getAppProperties().getUserSettings(), true), true);
         
