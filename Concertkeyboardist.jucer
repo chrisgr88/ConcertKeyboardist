@@ -58,6 +58,7 @@
         <MODULEPATH id="juce_audio_processors" path="JUCE.git/modules/juce_audio_processors"/>
         <MODULEPATH id="juce_audio_utils" path="JUCE.git/modules/juce_audio_utils"/>
         <MODULEPATH id="juce_cryptography" path="JUCE.git/modules"/>
+        <MODULEPATH id="SFZero" path="."/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="portraitlandscape">
@@ -80,6 +81,7 @@
         <MODULEPATH id="juce_audio_formats" path="JUCE.git/modules/juce_audio_formats"/>
         <MODULEPATH id="juce_audio_devices" path="JUCE.git/modules/juce_audio_devices"/>
         <MODULEPATH id="juce_audio_basics" path="JUCE.git/modules"/>
+        <MODULEPATH id="SFZero" path="."/>
       </MODULEPATHS>
     </XCODE_IPHONE>
   </EXPORTFORMATS>
@@ -98,6 +100,7 @@
     <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_video" showAllCode="1" useLocalCopy="1"/>
+    <MODULE id="SFZero" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_PLUGINHOST_VST="enabled" JUCE_PLUGINHOST_VST3="enabled"
                JUCE_PLUGINHOST_AU="enabled"/>

@@ -14,7 +14,7 @@ MIDIProcessor::MIDIProcessor() :
     sequenceObject.addChangeListener(this);
     undoMgr = new MyUndoManager();
     synthMessageCollectorIsReset = false;
-    reset(44.1);
+//    reset(44.1);
     isPlaying = false;
     isListening = false;
     startListenTime = -1;
@@ -68,7 +68,7 @@ void MIDIProcessor::timerCallback (int timerID)
         if (appIsActive)
             HighResolutionTimer::startTimer(timerIntervalInMS);
         else
-            HighResolutionTimer::startTimer(100);
+            HighResolutionTimer::startTimer(50);
     }
 }
 void MIDIProcessor::play (bool ply, String fromWhere)
@@ -76,6 +76,8 @@ void MIDIProcessor::play (bool ply, String fromWhere)
 //    std::cout << "xInTicksFromViewer " << xInTicksFromViewer <<"\n";
     if (sequenceObject.theSequence.size()==0)
         return;
+    reset(sampleRate);
+    std::cout << "sampleRate "<<sampleRate<<"\n";
 //    if (!ply)
 //         std::cout << "stopped playing " << timeInTicks <<"\n";
     if (!isPlaying && ply)
@@ -695,7 +697,10 @@ void MIDIProcessor::processBlock ()
     if (midiMessages.getNumEvents() > 0)
     {
         for (MidiBuffer::Iterator it (midiMessages); it.getNextEvent (msg, samplePosition);) //Get next event into msg
+        {
+            std::cout << "Add expr note: nn, vel "<<(int)msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<"\n";
             exprEvents.add(msg);
+        }
     }
     midiMessages.clear();
     
@@ -1149,7 +1154,7 @@ void MIDIProcessor::processBlock ()
                                     + (1.0-sequenceObject.exprVelToScoreVelRatio)*thisNoteOriginalVelocity;
                     
                     if (exprVel<highVelInChain)
-                        velocity = std::round((proportionedVelocity/highVelInChain) * thisNoteOriginalVelocity);
+                        velocity = (proportionedVelocity/highVelInChain) * thisNoteOriginalVelocity;
                     else
                         velocity = proportionedVelocity;
                 }

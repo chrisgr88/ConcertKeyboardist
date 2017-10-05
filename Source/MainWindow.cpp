@@ -543,7 +543,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                     midiProcessor.loadSpecifiedFile(recent);
                 Component::toFront(true);
-                tracksWindow->setVisible(false);
+                if (tracksWindow)
+                    tracksWindow->setVisible(false);
             }
         }
         else if (topLevelMenuIndex==2)
@@ -656,7 +657,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     ckBlockClosing = true;
-                    tracksWindow->setVisible(false);
+                    if (tracksWindow)
+                        tracksWindow->setVisible(false);
                     if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                         midiProcessor.loadFromUserSpecifiedFile();
                     Component::toFront(true);

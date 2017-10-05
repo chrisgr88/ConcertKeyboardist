@@ -229,7 +229,7 @@ public:
     void synthMessageCollectorReset(const double rate)
     {
         synthMessageCollector.reset(rate);
-        if (rate!=44100)
+//        if (rate!=44100)
             synthMessageCollectorIsReset = true;
     }
     enum class MidiDestination {internalSynth = 0, output = 1, pluginSynth = 2};
@@ -307,6 +307,7 @@ public:
     
     bool appIsActive = true;
     double getStartTimeOfNextStep();
+    double sampleRate;
     
 private:
     //==============================================================================
@@ -353,7 +354,6 @@ private:
     bool prevTis;  //Used to detect rewind
     int duplicateNote;
     AudioPlayHead::CurrentPositionInfo playHeadInfo;
-    int sampleRate;
     Array<MidiMessage> exprEvents;//SC
     Array<int, CriticalSection> onNotes; //SC//Seq numbers of on notes
     double loopStartTick;

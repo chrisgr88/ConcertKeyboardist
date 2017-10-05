@@ -20,29 +20,32 @@ MainComponent::MainComponent(MIDIProcessor *p) :
     processor(p)
     {
         setLookAndFeel (&lookAndFeel);
-        processor->reset(44.1);
         processor->setMidiDestination (MIDIProcessor::MidiDestination::output);
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
         audioDeviceManager.initialise (256, 256, savedAudioState, true);
+        juce::AudioDeviceManager::AudioDeviceSetup setup;
+        audioDeviceManager.getAudioDeviceSetup(setup);
+        processor->reset(setup.sampleRate);
         audioDeviceManager.addMidiInputCallback (String(), this);
         audioDeviceManager.addAudioCallback (this);
         addAndMakeVisible(viewerFrame);
         setSize (1100, 300);
         for (int i=0;i<128;i++)
         {
-//            synth.addVoice(new::sfzero::Voice());
+            synth.addVoice(new::sfzero::Voice());
         }
         AudioFormatManager formatManager;
 //        formatManager.registerBasicFormats	();
 //        auto sfzFile = File ("/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
 //        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
+        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/Nice-Keys-B-Plus-JN1.4.sf2");
         
-//        auto sound = new sfzero::Sound(sfzFile);
-//        sound->loadRegions();
-//        sound->loadSamples(&formatManager);
-//        synth.clearSounds();
-//        synth.addSound(sound);
+        auto sound = new sfzero::Sound(sfzFile);
+        sound->loadRegions();
+        sound->loadSamples(&formatManager);
+        synth.clearSounds();
+        synth.addSound(sound);
     }
     
 MainComponent::~MainComponent()
@@ -84,7 +87,7 @@ MainComponent::~MainComponent()
     void MainComponent::audioDeviceAboutToStart (AudioIODevice* device)
     {
         const double sampleRate = device->getCurrentSampleRate();
-//        processor->reset (sampleRate);
+        processor->sampleRate = sampleRate;
         processor->synthMessageCollectorReset(sampleRate);
 //        synth.setCurrentPlaybackSampleRate (sampleRate);
     }
@@ -97,7 +100,10 @@ MainComponent::~MainComponent()
     void MainComponent::handleIncomingMidiMessage (MidiInput* /*source*/,
                                     const MidiMessage& message)
     {
-//        visualiserInstrument.processNextMidiEvent (message);
+        std::cout << "addMessageToQueue timeStamp, vel, nn "<< message.getTimeStamp() << " " <<  (int)message.getVelocity()<<" "<<  (int)message.getNoteNumber()<<"\n";
+        int foo;
+        if (message.getVelocity()==0)
+            foo=0;
         processor->addMessageToQueue (message);
     }
 
