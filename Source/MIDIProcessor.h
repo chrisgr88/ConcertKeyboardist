@@ -321,7 +321,7 @@ private:
     {
         if (midiDestination==MidiDestination::internalSynth)
         {
-            msg.setTimeStamp(99.0);
+            msg.setTimeStamp (Time::getMillisecondCounterHiRes() * 0.001);
             synthMessageCollector.addMessageToQueue (msg); //<<<<<<<<<<<<<<< Add more
         }
         else if (midiDestination==MidiDestination::output)

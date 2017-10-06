@@ -21,6 +21,7 @@ MainComponent::MainComponent(MIDIProcessor *p) :
     {
         setLookAndFeel (&lookAndFeel);
         processor->setMidiDestination (MIDIProcessor::MidiDestination::output);
+//        processor->setMidiDestination (MIDIProcessor::MidiDestination::internalSynth);
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
         audioDeviceManager.initialise (256, 256, savedAudioState, true);
@@ -36,10 +37,11 @@ MainComponent::MainComponent(MIDIProcessor *p) :
             synth.addVoice(new::sfzero::Voice());
         }
         AudioFormatManager formatManager;
-//        formatManager.registerBasicFormats	();
+        formatManager.registerBasicFormats	();
 //        auto sfzFile = File ("/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
-//        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
-        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/Nice-Keys-B-Plus-JN1.4.sf2");
+        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
+//        auto sfzFile = File ("/Users/chrisgr/Downloads/Nice-Keys-B-Plus-JN1.4.sf2");
+        bool exist = sfzFile.exists();
         
         auto sound = new sfzero::Sound(sfzFile);
         sound->loadRegions();
@@ -81,7 +83,7 @@ MainComponent::~MainComponent()
         
         MidiBuffer incomingMidi;
         processor->synthMessageCollector.removeNextBlockOfMessages (incomingMidi, numSamples);
-//        synth.renderNextBlock (buffer, incomingMidi, 0, numSamples);
+        synth.renderNextBlock (buffer, incomingMidi, 0, numSamples);
     }
     
     void MainComponent::audioDeviceAboutToStart (AudioIODevice* device)
@@ -89,7 +91,7 @@ MainComponent::~MainComponent()
         const double sampleRate = device->getCurrentSampleRate();
         processor->sampleRate = sampleRate;
         processor->synthMessageCollectorReset(sampleRate);
-//        synth.setCurrentPlaybackSampleRate (sampleRate);
+        synth.setCurrentPlaybackSampleRate (sampleRate);
     }
     
     void MainComponent::audioDeviceStopped()

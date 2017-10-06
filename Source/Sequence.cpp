@@ -1015,11 +1015,16 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         //Build the chords list if we either loaded a midi file or loaded a ckf file (and probably read a chords list)
         //Issue - What if sequence does not include all tracks?
 //        std::cout << "Build the chords list \n";
+        int totalChordNotes = 0;
+        for (int i=0;i<chords.size();i++)
+            totalChordNotes += chords.at(i).notePointers.size();
+            
         try {
             if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
             {
-                if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
-                    chords.size()>0)  //It Was a ckf file so finish creating the chords list loaded from the file
+                if ((loadFile!=Sequence::updateChords && loadedCkfFile==true &&
+                    chords.size()>0) && totalChordNotes>0)
+                    //It Was a ckf file so finish creating the chords list loaded from the file
                 {
                     //For each chord in the chords Array, and for each note in its chordNotes list,
                     //find notes with that timeStamp in theSequence
