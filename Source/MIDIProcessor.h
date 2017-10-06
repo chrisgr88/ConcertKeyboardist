@@ -308,6 +308,7 @@ public:
     bool appIsActive = true;
     double getStartTimeOfNextStep();
     double sampleRate;
+    MidiDestination midiDestination;    
     
 private:
     //==============================================================================
@@ -315,7 +316,6 @@ private:
     std::vector<NoteWithOffTime> listenSequence;
     double listenStep;
     MidiOutput *midiOutput;
-    MidiDestination midiDestination;
     bool notesEditable; //Whether notes can be edited in the viewer
     void sendMidiMessage(MidiMessage msg)
     {

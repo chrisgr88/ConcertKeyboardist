@@ -61,6 +61,8 @@ public:
     
     AudioDeviceManager audioDeviceManager;
     
+    bool loadSoundFontIfNeeded ();
+    
 private:
     //==============================================================================
     void handleIncomingMidiMessage (MidiInput* /*source*/,

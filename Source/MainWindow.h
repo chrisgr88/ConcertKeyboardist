@@ -24,6 +24,8 @@ namespace CommandIDs
     static const int appAboutBox                = 0x20000;
     static const int audioMidiSettings          = 0x20050;
     static const int showPluginListEditor       = 0x20051;
+    static const int enableInternalSynth           = 0x20052;
+    static const int loadSoundFontFile          = 0x20053;
     static const int fileOpen                   = 0x30000;
     static const int fileRecent                 = 0x30010; //To submenu
     static const int fileSave                   = 0x30040;
@@ -114,6 +116,13 @@ public:
         File f = File::getCurrentWorkingDirectory().getChildFile(withNoQuotes);
         midiProcessor.loadSpecifiedFile(f);
     }
+    
+//    void updateInternalSynthMenu (ApplicationCommandInfo& info)
+//    {
+////        info.setInfo ("Double floating point precision rendering", String(), "General", 0);
+//        info.setInfo ("Enable Shit", String(), "general", 0);
+//        info.setTicked (true);
+//    }
     
     void changeListenerCallback (ChangeBroadcaster* changed) override;
     void actionListenerCallback (const String& message) override;

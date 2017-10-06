@@ -32,22 +32,24 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         audioDeviceManager.addAudioCallback (this);
         addAndMakeVisible(viewerFrame);
         setSize (1100, 300);
-        for (int i=0;i<128;i++)
-        {
-            synth.addVoice(new::sfzero::Voice());
-        }
-        AudioFormatManager formatManager;
-        formatManager.registerBasicFormats	();
-//        auto sfzFile = File ("/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
-        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
-//        auto sfzFile = File ("/Users/chrisgr/Downloads/Nice-Keys-B-Plus-JN1.4.sf2");
-        bool exist = sfzFile.exists();
-        
-        auto sound = new sfzero::Sound(sfzFile);
-        sound->loadRegions();
-        sound->loadSamples(&formatManager);
-        synth.clearSounds();
-        synth.addSound(sound);
+        if (processor->midiDestination == MIDIProcessor::MidiDestination::internalSynth)
+            loadSoundFontIfNeeded();
+//        for (int i=0;i<128;i++)
+//        {
+//            synth.addVoice(new::sfzero::Voice());
+//        }
+//        AudioFormatManager formatManager;
+//        formatManager.registerBasicFormats	();
+////        auto sfzFile = File ("/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
+//        auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
+////        auto sfzFile = File ("/Users/chrisgr/Downloads/Nice-Keys-B-Plus-JN1.4.sf2");
+//        bool exist = sfzFile.exists();
+//        
+//        auto sound = new sfzero::Sound(sfzFile);
+//        sound->loadRegions();
+//        sound->loadSamples(&formatManager);
+//        synth.clearSounds();
+//        synth.addSound(sound);
     }
     
 MainComponent::~MainComponent()
@@ -96,6 +98,35 @@ MainComponent::~MainComponent()
     
     void MainComponent::audioDeviceStopped()
     {
+    }
+
+    bool MainComponent::loadSoundFontIfNeeded ()
+    {
+        bool result = true;
+        if (synth.getNumSounds()==0)
+        {
+            setMouseCursor(MouseCursor::WaitCursor);
+            for (int i=0;i<128;i++)
+            {
+                synth.addVoice(new::sfzero::Voice());
+            }
+            AudioFormatManager formatManager;
+            formatManager.registerBasicFormats	();
+            //        auto sfzFile = File ("/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
+            auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
+            //        auto sfzFile = File ("/Users/chrisgr/Downloads/Nice-Keys-B-Plus-JN1.4.sf2");
+            bool exist = sfzFile.exists();
+            
+            auto sound = new sfzero::Sound(sfzFile);
+            sound->loadRegions();
+            sound->loadSamples(&formatManager);
+            synth.clearSounds();
+            synth.addSound(sound);
+            if (synth.getNumSounds()==0)
+                result = false;
+            setMouseCursor(MouseCursor::NormalCursor);
+        }
+        return result;
     }
 
     //==============================================================================

@@ -257,7 +257,7 @@ ApplicationProperties& getAppProperties();
     
     StringArray MainWindow::getMenuBarNames()
     {
-        const char* const names[] = {"File", "Edit", "Plugins", "Sequence", "Window", "Help", nullptr };
+        const char* const names[] = {"File", "Edit", "Sound", "Score", "Help", nullptr };
         
         return StringArray (names);
     }
@@ -275,9 +275,29 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("Audio and Midi Settings...", "Audio and Midi Settings", category, 0);
                 result.defaultKeypresses.add (KeyPress (',', ModifierKeys::commandModifier, 0));
                 break;
+                
             case CommandIDs::showPluginListEditor:
                 result.setInfo ("Manage available plug-Ins...", String(), category, 0);
                 result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
+                break;
+            case CommandIDs::enableInternalSynth:
+            {
+                result.setInfo ("Use Internal Synth", String(), category, 0);
+                if (midiProcessor.midiDestination == MIDIProcessor::MidiDestination::internalSynth)
+                {
+                    std::cout <<"Getcommandinfo destination is internalSynth so we set menu ticked" << "\n";
+                    result.setTicked(true);
+                }
+                else if (midiProcessor.midiDestination == MIDIProcessor::MidiDestination::output)
+                {
+                    std::cout <<"Getcommandinfo destination is output so we set menu unticked" << "\n";
+                    result.setTicked(false);
+                }
+                break;
+            }
+            case CommandIDs::loadSoundFontFile:
+                result.setInfo ("Load SoundFont File...", String(), category, 0);
+//                result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::fileOpen:
                 result.setInfo ("Open...", "Open or import a file", category, 0);
@@ -311,7 +331,7 @@ ApplicationProperties& getAppProperties();
 //                result.defaultKeypresses.add (KeyPress ('-', ModifierKeys::noModifiers, 0));
 //                break;
             case CommandIDs::listenToSelection:
-                result.setInfo ("listenToSelection", "listenToSelection", category, 0);
+                result.setInfo ("Listen From Here", "Listen From Here", category, 0);
                 result.defaultKeypresses.add (KeyPress ('=', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::rewind:
@@ -481,30 +501,35 @@ ApplicationProperties& getAppProperties();
             menu.addCommandItem (&getCommandManager(), CommandIDs::fileSave);
             menu.addCommandItem (&getCommandManager(), CommandIDs::fileSaveAs);
             menu.addSeparator();
-            menu.addCommandItem (&getCommandManager(), CommandIDs::audioMidiSettings);
-            menu.addCommandItem (&getCommandManager(), CommandIDs::scoreSettings);
-            menu.addSeparator();
             menu.addCommandItem (&getCommandManager(), StandardApplicationCommandIDs::quit);
         }
         else if (topLevelMenuIndex == 1)
         {
             menu.addCommandItem (&getCommandManager(), CommandIDs::editUndo);
             menu.addCommandItem (&getCommandManager(), CommandIDs::editRedo);
-            //            menu.addCommandItem (&getCommandManager(), CommandIDs::setPlayheadToHere);
-            menu.addCommandItem (&getCommandManager(), CommandIDs::playPause);
-//            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromCurrentPlayhead);
-//            menu.addCommandItem (&getCommandManager(), CommandIDs::pause);
-//            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
-            menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }
-        else if (topLevelMenuIndex == 2) // "Plugins" menu
+        else if (topLevelMenuIndex == 2) // "Sound" menu
         {
-            PopupMenu pluginsMenu;
-            addPluginsToMenu (pluginsMenu);
-            menu.addSubMenu ("Load plugin", pluginsMenu);
-            menu.addItem (250, "Unload plugin");
+            menu.addCommandItem (&getCommandManager(), CommandIDs::audioMidiSettings);
             menu.addSeparator();
-            menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::enableInternalSynth);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::loadSoundFontFile);
+        }
+//        else if (topLevelMenuIndex == 2) // "Plugins" menu
+//        {
+//            PopupMenu pluginsMenu;
+//            addPluginsToMenu (pluginsMenu);
+//            menu.addSubMenu ("Load plugin", pluginsMenu);
+//            menu.addItem (250, "Unload plugin");
+//            menu.addSeparator();
+//            menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
+//        }
+        else if (topLevelMenuIndex == 3) // "Score" menu
+        {
+            menu.addCommandItem (&getCommandManager(), CommandIDs::scoreSettings);
+            menu.addSeparator();
+            menu.addCommandItem (&getCommandManager(), CommandIDs::playPause);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }
         return menu;
     }
@@ -585,6 +610,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::appAboutBox,
             CommandIDs::audioMidiSettings,
             CommandIDs::showPluginListEditor,
+            CommandIDs::enableInternalSynth,
+            CommandIDs::loadSoundFontFile,
             CommandIDs::fileOpen,
             CommandIDs::fileRecent,
             CommandIDs::fileSave,
@@ -634,6 +661,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
     
     bool MainWindow::perform (const InvocationInfo& info)
     {
+        int foo;
         switch (info.commandID)
         {
             case CommandIDs::appAboutBox:
@@ -653,6 +681,25 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 
                 pluginListWindow->toFront (true);
                 break;
+            case CommandIDs::enableInternalSynth:
+            {
+                if (midiProcessor.midiDestination == MIDIProcessor::MidiDestination::output)
+                {
+                    mainComponent->loadSoundFontIfNeeded();
+                    midiProcessor.midiDestination = MIDIProcessor::MidiDestination::internalSynth;
+                }
+                else
+                {
+                    midiProcessor.midiDestination = MIDIProcessor::MidiDestination::output;
+                }
+//                menuItemsChanged();
+                break;
+            }
+            case CommandIDs::loadSoundFontFile:
+            {
+
+                break;
+            }
             case CommandIDs::fileOpen:
                 if (!midiProcessor.isPlaying)
                 {
