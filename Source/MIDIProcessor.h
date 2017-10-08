@@ -231,9 +231,9 @@ public:
     void removeListener (Listener* listener);
     void synthMessageCollectorReset(const double rate)
     {
-        synthMessageCollector.reset(rate);
-//        if (rate!=44100)
-            synthMessageCollectorIsReset = true;
+//        synthMessageCollector.reset(rate);
+        synthMessageCollectorIsReset = true;
+        pluginMessageCollector->reset(rate);
     }
     enum class MidiDestination {internalSynth = 0, output = 1, pluginSynth = 2};
     void setMidiDestination ( MidiDestination dest )
@@ -246,6 +246,7 @@ public:
     AbstractFifo noteOnOffFifo;
     bool synthMessageCollectorIsReset;
     MidiMessageCollector synthMessageCollector;
+    MidiMessageCollector *pluginMessageCollector;
     
     void prepareToSave()
     {
@@ -329,7 +330,8 @@ private:
             msg.setTimeStamp(t);
             std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
             if (synthMessageCollectorIsReset)
-                synthMessageCollector.addMessageToQueue (msg); //<<<<<<<<<<<<<<< Add more
+//                synthMessageCollector.addMessageToQueue (msg); //<<<<<<<<<<<<<<< Add more
+                pluginMessageCollector->addMessageToQueue (msg);
     //        }
     //        else if (midiDestination==MidiDestination::output)
                 midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi

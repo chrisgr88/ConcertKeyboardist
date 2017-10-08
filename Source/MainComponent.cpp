@@ -35,7 +35,7 @@ MainComponent::MainComponent(MIDIProcessor *p) :
                 break;
             }
         }
-        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+//        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
         audioDeviceManager.addMidiInputCallback (String(), processor);
         //processor->synthMessageCollectorReset(sampRate);
         addAndMakeVisible(viewerFrame);
@@ -56,23 +56,6 @@ MainComponent::~MainComponent()
         knownPluginList.removeChangeListener (this);
         audioDeviceManager.closeAudioDevice();
     }
-
-//void MainComponent::setMidiInput (int index)
-//{
-//    const StringArray list (MidiInput::getDevices());
-//    
-//    audioDeviceManager.removeMidiInputCallback (list[lastInputIndex], this);
-//    
-//    const String newInput (list[index]);
-//    
-//    if (! audioDeviceManager.isMidiInputEnabled (newInput))
-//        audioDeviceManager.setMidiInputEnabled (newInput, true);
-//    
-////    audioDeviceManager.addMidiInputCallback (newInput, this);
-////    midiInputList.setSelectedId (index + 1, dontSendNotification);
-//    
-//    lastInputIndex = index;
-//}
 
 void MainComponent::paint(Graphics& g)
     {

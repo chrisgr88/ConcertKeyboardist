@@ -906,7 +906,8 @@ void MIDIProcessor::processBlock ()
 //                    midiMessages.addEvent(noteOff,0);
 //                    midiOutput->sendMessageNow(noteOff);
                     noteOff.setTimeStamp(99.0);
-                    synthMessageCollector.addMessageToQueue (noteOff);
+//                    synthMessageCollector.addMessageToQueue (noteOff);
+                    pluginMessageCollector->addMessageToQueue(noteOff);
                     sendMidiMessage(noteOff);
 //                    std::cout<<"at 3 noteOff "<<stepToTurnOff<<"\n";
                     

@@ -72,13 +72,12 @@ public:
         }
         audioDeviceManager.closeAudioDevice();
         thePlugin = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
-        thePlayer.setProcessor(thePlugin);
+        thePlayer.setProcessor(thePlugin); //This is a midi input callback for the processor
+        MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
+        processor->pluginMessageCollector = &mmc;
         thePlugin->setPlayHead(processor);
-//        audioDeviceManager.addAudioCallback (&thePlayer);
-//        audioDeviceManager.addMidiInputCallback (String(), &processor->synthMessageCollector);
-//        audioDeviceManager.addMidiInputCallback (String(), processor);
+        audioDeviceManager.addAudioCallback (&thePlayer);
             audioDeviceManager.addMidiInputCallback (String(), &thePlayer);
-
 
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));

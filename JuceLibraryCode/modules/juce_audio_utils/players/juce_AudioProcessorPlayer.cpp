@@ -160,6 +160,8 @@ void AudioProcessorPlayer::audioDeviceIOCallback (const float** const inputChann
                 }
                 else
                 {
+                    if (incomingMidi.getNumEvents()>0)
+                        std::cout << "incomingMidi "<<incomingMidi.getNumEvents()<<"\n";
                     processor->processBlock (buffer, incomingMidi);
                 }
 
@@ -215,6 +217,7 @@ void AudioProcessorPlayer::audioDeviceStopped()
 
 void AudioProcessorPlayer::handleIncomingMidiMessage (MidiInput*, const MidiMessage& message)
 {
+    std::cout << "myHandleIncomingMidiMessage /n";
     messageCollector.addMessageToQueue (message);
 }
 
