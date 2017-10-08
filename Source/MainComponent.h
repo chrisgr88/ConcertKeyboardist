@@ -61,31 +61,33 @@ public:
     
     void setMidiInput (int index);
     
-    void loadPlugin(const PluginDescription* pPID)
+    void loadPlugin(const PluginDescription* pluginDescription)
     {
-        std::cout << "Loading plugin "<<pPID->descriptiveName <<"\n";
+        std::cout << "Loading plugin "<<pluginDescription->descriptiveName <<"\n";
+        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+        const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
         String errorMsg;
-        ScopedPointer<AudioPluginInstance> loaded = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
-        if (loaded)
+        if (thePlugin)
         {
-            std::cout << "Loaded plugin \n";
+            thePlugin->suspendProcessing(true);
+            thePlayer.setProcessor(nullptr);
+            thePlugin = nullptr;
         }
-        audioDeviceManager.closeAudioDevice();
-        thePlugin = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
-        thePlayer.setProcessor(thePlugin); //This is a midi input callback for the processor
+        thePlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
+        if (thePlugin)
+            std::cout << "Loaded plugin \n";
+        else
+            std::cout << "Plugin error "<<errorMsg<<"\n";
+        
+        thePlayer.setProcessor(thePlugin);
+        audioDeviceManager.addAudioCallback (&thePlayer);
+        thePlugin->suspendProcessing(false);
+        
         MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
         processor->pluginMessageCollector = &mmc;
         thePlugin->setPlayHead(processor);
-        audioDeviceManager.addAudioCallback (&thePlayer);
-            audioDeviceManager.addMidiInputCallback (String(), &thePlayer);
-
-        ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
-                                                   ->getXmlValue ("audioDeviceState"));
-        audioDeviceManager.restartLastAudioDevice();
-        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
         processor->synthMessageCollectorReset(sampRate);
         thePlayer.getMidiMessageCollector().reset(sampRate);
-        audioDeviceManager.initialise (0, 2, savedAudioState, true);
     }
     AudioPluginFormatManager formatManager;
     KnownPluginList knownPluginList;

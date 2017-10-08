@@ -312,9 +312,10 @@ public:
     bool appIsActive = true;
     double getStartTimeOfNextStep();
     int sampleRate;
+    std::atomic_bool pauseProcessing;
 private:
     //==============================================================================
-    std::atomic_bool pauseProcessing;
+
     std::vector<NoteWithOffTime> listenSequence;
     double listenStep;
     MidiOutput *midiOutput;
