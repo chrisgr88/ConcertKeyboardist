@@ -164,6 +164,8 @@ ApplicationProperties& getAppProperties();
     }
     
     MainWindow::~MainWindow ()  {
+        for (int i=0;i<activePluginWindows.size();i++)
+            activePluginWindows[i]->closeAllCurrentlyOpenWindows();
         pluginListWindow = nullptr;
         getAppProperties().getUserSettings()->setValue ("mainWindowPos", getWindowStateAsString());
 #if JUCE_MAC
@@ -220,6 +222,13 @@ ApplicationProperties& getAppProperties();
         {
             Point<int> pos = getMouseXYRelative();
             pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
+            if (mainComponent->thePlugin)
+            {
+                PluginWindow::WindowFormatType type;
+                type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
+                if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
+                    w->toFront (true);
+            }
         }
         else if (message == "editPlugin")
         {
@@ -386,6 +395,9 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::showPluginListEditor:
                 result.setInfo ("Manage available plug-Ins...", String(), category, 0);
+                break;
+            case CommandIDs::showPlugWindow:
+                result.setInfo ("Show plugin window...", String(), category, 0);
                 result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::fileOpen:
@@ -613,10 +625,11 @@ ApplicationProperties& getAppProperties();
             menu.addSubMenu ("Load plugin", pluginsMenu);
 //            menu.addItem (250, "Unload plugin");
             menu.addSeparator();
-            menu.addItem (251, "Show plugin window");
-            menu.addItem (252, "Show all programs");
-            menu.addItem (253, "Show all parameters");
-            menu.addItem (254, "Configure audio I/O");
+//            menu.addItem (251, "Show plugin window");
+            menu.addCommandItem (&getCommandManager(), CommandIDs::showPlugWindow);
+//            menu.addItem (252, "Show all programs");
+//            menu.addItem (253, "Show all parameters");
+//            menu.addItem (254, "Configure audio I/O");
             menu.addSeparator();
             menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
         }
@@ -758,6 +771,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::appAboutBox,
             CommandIDs::audioMidiSettings,
             CommandIDs::showPluginListEditor,
+            CommandIDs::showPlugWindow,
             CommandIDs::fileOpen,
             CommandIDs::fileRecent,
             CommandIDs::fileSave,
@@ -823,9 +837,20 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             case CommandIDs::showPluginListEditor:
                 if (pluginListWindow == nullptr)
                     pluginListWindow = new PluginListWindow (*this, mainComponent->formatManager);
-                
                 pluginListWindow->toFront (true);
                 break;
+            case CommandIDs::showPlugWindow:
+            {
+                std::cout << "Show plugin window" <<"\n";
+                if (mainComponent->thePlugin)
+                {
+                    PluginWindow::WindowFormatType type;
+                    type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
+                    if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
+                        w->toFront (true);
+                }
+                break;
+            }
             case CommandIDs::fileOpen:
                 if (!midiProcessor.isPlaying)
                 {
