@@ -216,6 +216,22 @@ ApplicationProperties& getAppProperties();
         else if (message == "listenToSelection")
             perform (CommandIDs::listenToSelection);
         
+        else if (message == "loadPlugin")
+        {
+            Point<int> pos = getMouseXYRelative();
+            pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
+        }
+        else if (message == "editPlugin")
+        {
+            if (mainComponent->thePlugin)
+            {
+                PluginWindow::WindowFormatType type;
+                type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
+                if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
+                    w->toFront (true);
+            }
+        }
+        
         else if (message == "toggleActivity")
             perform (CommandIDs::toggleSelectedNotesActive);
         
@@ -618,6 +634,24 @@ const PluginDescription* MainWindow::getChosenType (const int menuID) const
     else
         return NULL;
 }
+const PluginDescription* MainWindow::pluginContextMenu (Rectangle<int> menuAt) const
+{
+    PopupMenu m;
+    addPluginsToMenu(m);
+    int index = m.showAt(menuAt);
+    if (index>0)
+    {
+        const PluginDescription* desc = getChosenType (index);
+        if (desc != NULL)
+        {
+            mainComponent->loadPlugin(desc);
+        }
+    }
+//        return mainComponent->knownPluginList.getType (index);
+//    else
+        return nullptr;
+}
+
 void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
     {
         if (topLevelMenuIndex==-1)
@@ -668,6 +702,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 std::cout << "Show plugin window" <<"\n";
                 if (mainComponent->thePlugin)
                 {
+                    PluginWindow::WindowFormatType type;
                     type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
                     if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
                         w->toFront (true);

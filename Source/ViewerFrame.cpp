@@ -356,6 +356,12 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("rewind");
         else if(AltToolbarItemFactory::ToolbarItemIds::_listen == id)
             sendActionMessage("listenToSelection");
+        else if(AltToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
+        {
+            sendActionMessage("loadPlugin");
+        }
+        else if(AltToolbarItemFactory::ToolbarItemIds::editPlugin == id)
+            sendActionMessage("editPlugin");
     }
     unfocusAllComponents();
 }
@@ -424,5 +430,5 @@ void ViewerFrame::resized()
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
     hoverStepInfo.setBounds(20, getHeight()-30, 500, noteViewer.getToolbarHeight()-1);
-    scoreTempoInfo.setBounds(566, getHeight()-30, 40, noteViewer.getToolbarHeight()-1);
+    scoreTempoInfo.setBounds(513, getHeight()-30, 40, noteViewer.getToolbarHeight()-1);
 }

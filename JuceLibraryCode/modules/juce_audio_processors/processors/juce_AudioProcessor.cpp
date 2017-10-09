@@ -395,10 +395,10 @@ void AudioProcessor::setPlayConfigDetails (const int newNumIns,
 
     // if the user is using this method then they do not want any side-buses or aux outputs
     success &= disableNonMainBuses();
-    jassert (success);
+//    jassert (success);
 
     // the processor may not support this arrangement at all
-    jassert (success && newNumIns == getTotalNumInputChannels() && newNumOuts == getTotalNumOutputChannels());
+//    jassert (success && newNumIns == getTotalNumInputChannels() && newNumOuts == getTotalNumOutputChannels());
 
     setRateAndBufferSizeDetails (newSampleRate, newBlockSize);
 }

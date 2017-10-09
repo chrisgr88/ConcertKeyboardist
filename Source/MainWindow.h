@@ -179,6 +179,7 @@ public:
     ApplicationCommandTarget* getNextCommandTarget() override;
     void addPluginsToMenu (PopupMenu&) const;
     const PluginDescription* getChosenType (const int menuID) const;
+    const PluginDescription* pluginContextMenu (Rectangle<int> menuAt) const;
     
 public:
     MIDIProcessor midiProcessor;

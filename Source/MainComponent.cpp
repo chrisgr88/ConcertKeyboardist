@@ -25,6 +25,12 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
         audioDeviceManager.initialise (0, 2, savedAudioState, true);
+        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
+        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
+//        graph.addNode(&midiInNode,0);
+//        graph.addNode(&audioOutNode,4);
+//        graph.call
+        
         const StringArray midiInputs (MidiInput::getDevices());
         for (int i = 0; i < midiInputs.size(); ++i)
         {

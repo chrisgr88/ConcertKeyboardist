@@ -329,7 +329,7 @@ private:
 //        {
         double t = Time::getMillisecondCounterHiRes()*0.001;
             msg.setTimeStamp(t);
-            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
+//            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
             if (synthMessageCollectorIsReset)
 //                synthMessageCollector.addMessageToQueue (msg); //<<<<<<<<<<<<<<< Add more
                 pluginMessageCollector->addMessageToQueue (msg);

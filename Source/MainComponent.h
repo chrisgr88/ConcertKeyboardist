@@ -22,7 +22,6 @@
   ==============================================================================
 */
 
-
 #ifndef MAINCOMPONENT_H_INCLUDED
 #define MAINCOMPONENT_H_INCLUDED
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -79,6 +78,14 @@ public:
         else
             std::cout << "Plugin error "<<errorMsg<<"\n";
         
+//        graph.addNode(thePlugin,2);
+//        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
+//        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
+//        graph.addNode(&midiInNode,0);
+//        graph.addNode(&audioOutNode,4);
+//        graph.addConnection(0, 0, 2, 0);
+//        graph.addConnection(0, 2, 4, 0);
+        thePlayer.setProcessor(&graph);
         thePlayer.setProcessor(thePlugin);
         audioDeviceManager.addAudioCallback (&thePlayer);
         thePlugin->suspendProcessing(false);
@@ -95,7 +102,8 @@ public:
     AudioDeviceManager audioDeviceManager;
     AudioProcessorPlayer thePlayer;
     ScopedPointer<AudioPluginInstance> thePlugin;
-    int lastInputIndex = 0;
+
+    AudioProcessorGraph graph;
     
     void changeListenerCallback (ChangeBroadcaster* changed) override;
 //    {
