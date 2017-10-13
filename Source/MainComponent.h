@@ -32,7 +32,8 @@ class MainComponent :
     public Component,
 //    private AudioIODeviceCallback,
 //    private MidiInputCallback,
-    public ChangeListener
+    public ChangeListener,
+    public ActionListener
 {
 public:
     //==============================================================================
@@ -43,6 +44,8 @@ public:
     {
         return &viewerFrame;
     };
+    
+    void actionListenerCallback (const String& message) override;
     
     void paint(Graphics& g) override;
 
@@ -60,42 +63,8 @@ public:
     
     void setMidiInput (int index);
     
-    void loadPlugin(const PluginDescription* pluginDescription)
-    {
-        std::cout << "Loading plugin "<<pluginDescription->descriptiveName <<"\n";
-        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
-        const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
-        String errorMsg;
-        if (thePlugin)
-        {
-            thePlugin->suspendProcessing(true);
-            thePlayer.setProcessor(nullptr);
-            thePlugin = nullptr;
-        }
-        thePlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
-        if (thePlugin)
-            std::cout << "Loaded plugin \n";
-        else
-            std::cout << "Plugin error "<<errorMsg<<"\n";
-        
-//        graph.addNode(thePlugin,2);
-//        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
-//        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
-//        graph.addNode(&midiInNode,0);
-//        graph.addNode(&audioOutNode,4);
-//        graph.addConnection(0, 0, 2, 0);
-//        graph.addConnection(0, 2, 4, 0);
-        thePlayer.setProcessor(&graph);
-        thePlayer.setProcessor(thePlugin);
-        audioDeviceManager.addAudioCallback (&thePlayer);
-        thePlugin->suspendProcessing(false);
-        
-        MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
-        processor->pluginMessageCollector = &mmc;
-        thePlugin->setPlayHead(processor);
-        processor->synthMessageCollectorReset(sampRate);
-        thePlayer.getMidiMessageCollector().reset(sampRate);
-    }
+    void loadPlugin (const PluginDescription* pluginDescription);
+
     AudioPluginFormatManager formatManager;
     KnownPluginList knownPluginList;
     KnownPluginList::SortMethod pluginSortMethod;

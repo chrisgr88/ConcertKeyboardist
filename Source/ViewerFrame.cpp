@@ -129,7 +129,7 @@ altToolbarFactory(this)
 keysThatAreDown.add(false);
     
 //    std::cout << "ViewerComponent isBroughtToFrontOnMouseClick " << isBroughtToFrontOnMouseClick()  <<"\n";
-    startTimer(100);
+    startTimer(200);
 }
 
 ViewerFrame::~ViewerFrame()
@@ -149,13 +149,21 @@ void focusLost (ScrollingNoteViewer::FocusChangeType cause)
 
 void ViewerFrame::timerCallback()
 {
-    if(processor->sequenceObject.propertiesChanged)
-    {
+//    if(processor->sequenceObject.propertiesChanged)
+//    {
+        String plugin;
+        if (processor->sequenceObject.thePlugin)
+        {
+            plugin = " playing "+processor->sequenceObject.thePlugin->getName();
+            int progNum = processor->sequenceObject.thePlugin->getCurrentProgram();
+            if (progNum>=0)
+                plugin = plugin + "[" +processor->sequenceObject.thePlugin->getProgramName(progNum)+"]";
+        }
         String txt = processor->sequenceObject.getScoreFileName();
-        getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName());
+        getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName() + plugin);
         repaint();
         processor->sequenceObject.propertiesChanged = false;
-    }
+//    }
     
     if (pChainAmountBox->returnPressed)
     {
@@ -336,14 +344,18 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
         {
-//            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
             sendActionMessage("humanizeTime:"+String(pHumanizeStartTime->textBox.getText()));
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_help == id)
         {
-            //            humanizeTimeAmount = pHumanizeStartTime->textBox.getText().getDoubleValue();
             sendActionMessage("help");
         }
+        else if(MainToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
+        {
+            sendActionMessage("loadPluginMenu");
+        }
+        else if(MainToolbarItemFactory::ToolbarItemIds::editPlugin == id)
+            sendActionMessage("editPlugin");
     }
     else //in alt toolbar
     {
@@ -356,12 +368,6 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("rewind");
         else if(AltToolbarItemFactory::ToolbarItemIds::_listen == id)
             sendActionMessage("listenToSelection");
-        else if(AltToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
-        {
-            sendActionMessage("loadPlugin");
-        }
-        else if(AltToolbarItemFactory::ToolbarItemIds::editPlugin == id)
-            sendActionMessage("editPlugin");
     }
     unfocusAllComponents();
 }

@@ -140,11 +140,6 @@ ApplicationProperties& getAppProperties();
         File fileToOpen;
         if (recentFiles.getNumFiles() > 0)
             fileToOpen = recentFiles.getFile (0);
-        //        File test = File::getSpecialLocation (File::currentApplicationFile);
-        //        Logger::writeToLog(test.getFullPathName());
-        //        fileToOpen = test.getChildFile(("twinkle_twinkle.mid"));
-        //        Logger::writeToLog(fileToOpen.getFullPathName());
-        //        int nFiles = test.getParentDirectory().findChildFiles(iconFiles, File::findFiles, true, fileNameStart+"*");
         
         if (fileToOpen.existsAsFile())
             midiProcessor.loadSpecifiedFile(fileToOpen);
@@ -218,7 +213,7 @@ ApplicationProperties& getAppProperties();
         else if (message == "listenToSelection")
             perform (CommandIDs::listenToSelection);
         
-        else if (message == "loadPlugin")
+        else if (message == "loadPluginMenu")
         {
             Point<int> pos = getMouseXYRelative();
             pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));

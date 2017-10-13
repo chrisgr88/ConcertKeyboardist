@@ -45,6 +45,14 @@ public:
     ScopedPointer<ApplicationProperties> appProperties;
     LookAndFeel_V3 lookAndFeel;
     
+    class MyLogger : public juce::Logger
+    {
+        void logMessage (const String& message) override
+        {
+            std::cout << message << "\n";
+        }
+    };
+    
     //==============================================================================
     void initialise (const String&) override
     {
@@ -53,6 +61,9 @@ public:
         options.filenameSuffix      = "settings";
         options.osxLibrarySubFolder = "Preferences";
         
+        MyLogger *lg = new MyLogger();
+        juce::Logger::setCurrentLogger(lg);
+        DBG("Starting");
         appProperties = new ApplicationProperties();
         appProperties->setStorageParameters (options);
         

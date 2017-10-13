@@ -317,7 +317,9 @@ private:
             _humanizeTimeBox    = 19,
             _humanizeVelocity   = 20,
             _humanizeVelocityBox = 21,
-            _help                = 22
+            _help                = 22,
+            loadPlugin      = 23,
+            editPlugin      = 24
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -334,11 +336,6 @@ private:
             ids.add (edit_undo);
             ids.add (edit_redo);
             ids.add (_toggleActivity);
-//            ids.add (_marqueeSelectionAdd);
-//            ids.add (_marqueeSelectionRemove);
-//            ids.add (_clearAllSelection);
-//            ids.add (_markSelectedNotes);
-//            ids.add (_clearSelectedNotes);
             ids.add (_chain);
             ids.add (_addSustain);
             ids.add (_addSoft);
@@ -354,17 +351,11 @@ private:
             ids.add (_humanizeTimeBox);
             ids.add (_humanizeVelocityBox);
             ids.add (_editVelocities);
-//            ids.add (scoreTempo);
-//            ids.add (tempoMultiplier);
-//            ids.add (realTimeTempo);
-//            ids.add (_play);
-//            ids.add (_stop);
-//            ids.add (_rewind);
-//            ids.add (_playPause);
-//            ids.add (_listen);
             ids.add (separatorBarId);
             ids.add (_help);
             ids.add (spacerId);
+            ids.add (loadPlugin);
+            ids.add (editPlugin);
             ids.add (flexibleSpacerId);
         }
         
@@ -374,17 +365,15 @@ private:
             ids.add (doc_save);
             ids.add (doc_saveAs);
             ids.add (separatorBarId);
-            for (int n=0;n<16;n++)
+            ids.add (loadPlugin);
+            ids.add (editPlugin);
+            ids.add (separatorBarId);
+            for (int n=0;n<14;n++)
                 ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
             ids.add (separatorBarId);
-//            ids.add (_marqueeSelectionAdd);
-//            ids.add (_marqueeSelectionRemove);
-//            ids.add (_markSelectedNotes);
-//            ids.add (_clearSelectedNotes);
-//            ids.add (_clearAllSelection);
             ids.add (separatorBarId);
             ids.add (_toggleActivity);
             ids.add (separatorBarId);
@@ -419,22 +408,12 @@ private:
                 case doc_open: return  createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
                 case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
                 case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
+                case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
+                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Edit Plugin", "EditPluginButton.svg");
                 case edit_undo:         return createButtonFromZipFileSVG (itemId, "Undo", "edit-undo.svg");
                 case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
                     
                 case _toggleActivity:        return createButtonFromZipFileSVG (itemId, "Toggle Target Notes", "toggleActivityTool.svg");
-                    
-//                case _marqueeSelectionAdd: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Select",
-//                                "MarqueeAddButton.svg", "MarqueeAddButton-pressed.svg");
-//                case _marqueeSelectionRemove: return createButtonFromZipFileSVG (itemId, "Drag Box Around Notes to Deselect",
-//                                "MarqueeRemoveButton.svg", "MarqueeRemoveButton-pressed.svg");
-//                    
-//                case _markSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Select",
-//                            "SelectionMarkerButton.svg", "SelectionMarkerButton-pressed.svg");
-//                case _clearSelectedNotes: return createButtonFromZipFileSVG (itemId, "Drag Over Note Heads To Deselect",
-//                              "SelectionUnMarkerButton.svg", "SelectionUnMarkerButton-pressed.svg");
-//                case _clearAllSelection: return createButtonFromZipFileSVG (itemId, "Deselect All Notes",
-//                            "ClearSelectionButton.svg");
                 case _chain:        return createButtonFromZipFileSVG (itemId, "Generate Target Notes After Pauses", "chain.svg");
                 case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
                 case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
@@ -867,9 +846,9 @@ private:
             _rewind         = 4,
             _listen         = 5,
             scoreTempo      = 6,
-            realTimeTempo   = 7,
-            loadPlugin      = 8,
-            editPlugin      = 9
+            realTimeTempo   = 7//,
+//            loadPlugin      = 8,
+//            editPlugin      = 9
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -894,8 +873,6 @@ private:
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
-            ids.add (loadPlugin);
-            ids.add (editPlugin);
         }
         
         void getDefaultItemSet (Array<int>& ids) override
@@ -916,18 +893,12 @@ private:
             ids.add (_rewind);
             ids.add (separatorBarId);
             ids.add (_listen);
-            ids.add (spacerId);
-            ids.add (separatorBarId);
-            ids.add (loadPlugin);
-            ids.add (editPlugin);
         }
         
         ToolbarItemComponent* createItem (int itemId) override
         {
             switch (itemId)
             {
-                case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
-                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Edit Plugin", "EditPluginButton.svg");
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
                     

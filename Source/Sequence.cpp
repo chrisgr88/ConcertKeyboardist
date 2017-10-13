@@ -33,6 +33,7 @@ Sequence::Sequence()
     buildNumberSavingFile = 9999;
     setSoundfontFile("//root/soundfront.sfz");
     setPluginFile("Massive");
+    thePlugin = nullptr;
 }
 Sequence::~Sequence()
 {
@@ -166,6 +167,49 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
 //                std::cout << " Write chord note - "<<propertyStr <<" "<<propertyStr.length() << "\n";
             sysexSeq.addEvent(sysex);
         }
+    }
+    if (thePlugin)
+    {
+//        String name = thePlugin->getPluginDescription().descriptiveName;
+        String pluginIdentString  = thePlugin->getPluginDescription().createIdentifierString();
+        String propertyStr = String("pluginIdentString:")+pluginIdentString;
+        int len = propertyStr.length();
+        char buffer[128];
+        propertyStr.copyToUTF8(buffer,128);
+        MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+        std::cout << " Write sysex pluginIdentString - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        sysexSeq.addEvent(sysex);
+        
+        //Property "pluginPData"
+        MemoryBlock m;
+        const int blockLen = 100;
+        thePlugin->getStateInformation (m);
+        MD5 md = MD5(m);
+        String checksum = md.toHexString();
+        
+        String b64 = m.toBase64Encoding();
+        int nWholeBlocks = b64.length() / blockLen;
+        int lastBlockSize = b64.length() % blockLen;
+        for (int i=0;i<nWholeBlocks;i++)
+        {
+//            String thisBlock = b64.substring(i*blockLen, i*blockLen+blockLen);
+            String thisBlock = String("plugState:")+b64.substring(i*blockLen, i*blockLen+blockLen);
+            int len = thisBlock.length();
+            char buffer[128];
+            thisBlock.copyToUTF8(buffer,128);
+            MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+            sysexSeq.addEvent(sysex);
+        }
+        if (lastBlockSize>0)
+        {
+            String thisBlock = String("plugState:")+b64.substring((nWholeBlocks)*blockLen);
+            int len = thisBlock.length();
+            char buffer[128];
+            thisBlock.copyToUTF8(buffer,128);
+            MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
+            sysexSeq.addEvent(sysex);
+        }
+        std::cout << " Write sysex plugState "<< checksum <<" "<< m.getSize()<<" "<< b64.length()<< "\n";
     }
     //    std::cout << " Number of sysex records written - "<< seq->getNumEvents()<< "\n";
 
@@ -700,6 +744,8 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         if (loadedCkfFile)
         {
             sequenceProps.clear();
+            String pluginStateB64;
+            String pluginIdentString;
             for (int sysexBlockNum=1; sysexBlockNum<ckfSysex.getNumEvents(); sysexBlockNum++)
             {
                 int sysexSize = ckfSysex.getEventPointer(sysexBlockNum)->message.getSysExDataSize();
@@ -784,8 +830,32 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                         chords.at(chordIndex).noteIds.push_back(noteId);
                     }
                 }
+                else if (key == "pluginIdentString")
+                {
+                    pluginIdentString = value;
+                }
+                else if (key == "plugState")
+                {
+                    pluginStateB64 += value;
+                }
                 else
                     sequenceProps.setValue(key, value);
+            }
+            if (pluginIdentString.length()>0)
+            {
+                std::cout <<"pluginIdentString "<< pluginIdentString<<"\n";
+                pluginIdentString = "loadPlugin:"+pluginIdentString;
+                sendActionMessage(pluginIdentString);
+            }
+            if (pluginStateB64.length()>0)
+            {
+//                MemoryBlock pluginState;
+//                pluginState.fromBase64Encoding(pluginStateB64);
+//                MD5 md = MD5(pluginState);
+//                String checksum = md.toHexString();
+//                std::cout <<"Read sysex plugState  "<<checksum<<" "<<pluginStateB64.length()<<" "<<pluginState.getSize()<<"\n";
+                String pluginStateString = "pluginStateChange:"+pluginStateB64;
+                sendActionMessage(pluginStateString);
             }
         }
         else //midi file

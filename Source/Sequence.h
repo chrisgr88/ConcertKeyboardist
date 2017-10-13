@@ -22,7 +22,7 @@ const char* const filenameWildcard = "*.mid;*.ckf;*.ppf";
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
-class Sequence  : public FileBasedDocument
+class Sequence  : public FileBasedDocument, public ActionBroadcaster
 {
 public:
     Sequence();
@@ -644,6 +644,9 @@ public:
     } trackDetail;
     
     Array<TrackDetail> trackDetails;
+    
+    AudioPluginInstance *thePlugin;
+//    MemoryBlock pluginState; //Used to hold latest loaded plugin's state so it can be accessed by ContentComponent.
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequence)
 };

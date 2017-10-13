@@ -905,7 +905,9 @@ void MIDIProcessor::processBlock ()
 //                    << "\n";
 //                    midiMessages.addEvent(noteOff,0);
 //                    midiOutput->sendMessageNow(noteOff);
-                    noteOff.setTimeStamp(99.0);
+                    double t = Time::getMillisecondCounterHiRes()*0.001;
+                    noteOff.setTimeStamp(t);
+//                    noteOff.setTimeStamp(99.0);
 //                    synthMessageCollector.addMessageToQueue (noteOff);
                     pluginMessageCollector->addMessageToQueue(noteOff);
                     sendMidiMessage(noteOff);
