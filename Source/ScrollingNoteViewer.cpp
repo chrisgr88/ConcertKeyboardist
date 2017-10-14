@@ -82,7 +82,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     colourInactiveNoteHead = Colour (0xffbbbbbb);
     colourNoteOn = Colour(0xffFFFF55);
     nSteps = -1;
-    editingVelocities.setValue(false);
+    showingVelocities.setValue(false);
     marqueeAddingNotes = false;
     marqueeRemovingNotes = false;
     markingSelectedNotes = false; //Not in marking mode
@@ -116,8 +116,7 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
     //We defer pickup of up the mouse position until drag actually starts because the mouseDown position is slightly
     //different from the first position returned in mouseDrag.
     newlySelectedNotes.clear();
-      if (hoveringOver==HOVER_NOTETRACK && (!ModifierKeys::getCurrentModifiers().isCommandDown() && !ModifierKeys::getCurrentModifiers().isShiftDown() && !ModifierKeys::getCurrentModifiers().isAltDown()))// && !editingVelocities.getValue() ))
-          //&&hoveringOver!=HOVER_TOPBAR && hoveringOver!=HOVER_NOTEHEAD && hoveringOver!=HOVER_NOTEBAR)
+      if (hoveringOver==HOVER_NOTETRACK && (!ModifierKeys::getCurrentModifiers().isCommandDown() && !ModifierKeys::getCurrentModifiers().isShiftDown() && !ModifierKeys::getCurrentModifiers().isAltDown() && !drawingVelocities.getValue()))
           clearSelectedNotes();
     if (!ModifierKeys::getCurrentModifiers().isCommandDown() && hoveringOver != HOVER_NONE)
     {
@@ -174,7 +173,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             }
         }
     }
-    if (selecting)//(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) && !editingVelocities.getValue())
+    if (selecting)//(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) && !showingVelocities.getValue())
     {
         selecting = false;
         marqueeRemovingNotes = false;
@@ -308,9 +307,16 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else if ((hoverChord<0) && hoveringOver == HOVER_NOTEHEAD)
     {
-        //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
-        if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() && hoverStep>=0)
-            startTimer(TIMER_TOGGLE_TARGET_NOTE, 1);
+        if (!showingVelocities.getValue())
+        {
+            //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
+            if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() && hoverStep>=0)
+                startTimer(TIMER_TOGGLE_TARGET_NOTE, 1);
+        }
+        else
+        {
+            
+        }
     }
     else if (hoveringOver==HOVER_ZEROTIMELINE || hoveringOver==HOVER_ZEROTIMEHANDLE) //Clicked on ZTL - make this the current time
     {
@@ -1478,7 +1484,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             processor->undoMgr->inRedo = false;
         }
         if (!(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) &&
-            (((hoveringOver == HOVER_NOTEHEAD && editingVelocities.getValue()) || draggingVelocity) && hoverStep>=0))
+            (((hoveringOver == HOVER_NOTEHEAD && showingVelocities.getValue()) || draggingVelocity) && hoverStep>=0))
         {
             const float vel = pSequence->at(hoverStep)->velocity;
             const float graphHeight = getHeight() - topMargin*verticalScale;
@@ -1565,7 +1571,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             g.setColour (Colours::whitesmoke);
             g.drawRect(head, 1.5);
             
-            if (editingVelocities.getValue())
+            if (showingVelocities.getValue())
             {
                 const float vel = pSequence->at(displayedSelection[i])->velocity;
                 const float graphHeight = getHeight() - topMargin*verticalScale;
@@ -1735,16 +1741,39 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
     {
-        if (ModifierKeys::getCurrentModifiers().isAltDown())
+        if (!showingVelocities.getValue())
         {
-//            editingVelocities = true;
-//            altKeyPressed = true;
+            drawingVelocities.setValue(false);
+            adjustingingVelocities.setValue(false);
         }
-        else
+        if ((prevDrawingVelocities != (bool)drawingVelocities.getValue())
+            || (prevAdjustingVelocities != (bool)adjustingingVelocities.getValue()))
         {
-//            if (altKeyPressed)
-//                editingVelocities = false;
-//            altKeyPressed = false;
+            bool drawingVelocitiesChanged;
+            if (prevDrawingVelocities != (bool)drawingVelocities.getValue())
+                drawingVelocitiesChanged = true;
+            else
+                drawingVelocitiesChanged = false;
+            if (drawingVelocitiesChanged)
+            {
+                drawingVelocities.setValue(!prevDrawingVelocities);
+                prevDrawingVelocities = drawingVelocities.getValue();
+                if (drawingVelocities.getValue())
+                {
+                    adjustingingVelocities.setValue(false);
+                    prevAdjustingVelocities = false;
+                }
+            }
+            else
+            {
+                adjustingingVelocities.setValue(!prevAdjustingVelocities);
+                prevAdjustingVelocities = adjustingingVelocities.getValue();
+                if (adjustingingVelocities.getValue())
+                {
+                    drawingVelocities.setValue(false);
+                    prevDrawingVelocities = false;
+                }
+            }
         }
         
         //Cursor setting
@@ -1770,7 +1799,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //            if (getMouseCursor()!=selectionUnMarkerCursor)
 //                setMouseCursor(selectionUnMarkerCursor);
 //        }
-        else if (editingVelocities.getValue())
+        else if (showingVelocities.getValue())
         {
             if (getMouseCursor()!=editVelocityCursor)
                 setMouseCursor(editVelocityCursor);
@@ -1840,7 +1869,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //        double yy = Desktop::getInstance().getMousePosition().getY();
         double y = curDragPosition.getY();
 //        double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
-        if (!drawingVelocity && ModifierKeys::getCurrentModifiers().isCommandDown())
+        if (showingVelocities.getValue() && drawingVelocities.getValue() && !drawingVelocity)// && ModifierKeys::getCurrentModifiers().isCommandDown())
         {
             drawingVelocity = true;
         }
@@ -2159,7 +2188,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                             velStartDrag = pSequence->at(hoverStep)->velocity;
                             noteBeingDraggedOn = hoverStep;
                             notesBeingDraggedOn.clear();
-                            if (selectedNotes.contains(noteBeingDraggedOn))
+                            if (adjustingingVelocities.getValue() && selectedNotes.contains(noteBeingDraggedOn))
                             {
                                 notesBeingDraggedOn = selectedNotes;
                                 int highestVelDragStep = INT_MIN;

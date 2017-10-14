@@ -1119,10 +1119,10 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 std::cout <<"graphVelocities\n";
                 if (!midiProcessor.isPlaying)
                 {
-                    if (pViewerFrame->noteViewer.editingVelocities.getValue())
-                        pViewerFrame->noteViewer.editingVelocities = false;
+                    if (pViewerFrame->noteViewer.showingVelocities.getValue())
+                        pViewerFrame->noteViewer.showingVelocities = false;
                     else
-                        pViewerFrame->noteViewer.editingVelocities = true;
+                        pViewerFrame->noteViewer.showingVelocities = true;
                 }
                 break;
             case CommandIDs::adjustVelocities:

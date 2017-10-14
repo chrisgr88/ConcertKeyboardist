@@ -439,7 +439,7 @@ private:
                 case _humanizeVelocity: return createButtonFromZipFileSVG (itemId, "Adjust Chord Note Velocities", "humanizeVelocities.svg");
                 case _chordEditToggle:
                 {
-                    ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Edit Chords",
+                    ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Show Chords",
                         "chordEditToggle.svg", "chordEditToggle-pressed.svg");
                     chordEditButton->setClickingTogglesState(true);
                     return chordEditButton;
@@ -450,7 +450,7 @@ private:
                 {
                     ToolbarButton *showVelButton = createButtonFromZipFileSVG (itemId, "Graph Velocities of Selected Notes",
                         "showVelocityGraph.svg", "showVelocityGraph-pressed.svg");
-                    showVelButton->getToggleStateValue().referTo(pViewer->editingVelocities);
+                    showVelButton->getToggleStateValue().referTo(pViewer->showingVelocities);
                     showVelButton->setClickingTogglesState(true);
                     return showVelButton;
                 }
