@@ -1,4 +1,3 @@
-
 /*
   ==============================================================================
 
@@ -59,7 +58,6 @@ void MidiMessageCollector::addMessageToQueue (const MidiMessage& message)
     const ScopedLock sl (midiCallbackLock);
 
     auto sampleNumber = (int) ((message.getTimeStamp() - 0.001 * lastCallbackTime) * sampleRate);
-//    std::cout << "addMessageToQueue timeStamp "<< message.getTimeStamp() << " " << lastCallbackTime <<"\n";
 
     incomingMessages.addEvent (message, sampleNumber);
 

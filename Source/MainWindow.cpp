@@ -309,9 +309,17 @@ ApplicationProperties& getAppProperties();
         {
             perform (CommandIDs::showChords);
         }
-        else if (message == "_editVelocities")
+        else if (message == "_showVelocities")
         {
-            perform (CommandIDs::editVelocities);
+            perform (CommandIDs::graphVelocities);
+        }
+        else if (message == "_drawVelocities")
+        {
+            perform (CommandIDs::drawVelocities);
+        }
+         else if (message == "_adjustVelocities")
+        {
+            perform (CommandIDs::adjustVelocities);
         }
         else if (message == "create_chord")
         {
@@ -438,11 +446,11 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::increaseTempo:
                 result.setInfo ("IncreaseTempo", "Increase Tempo", category, 0);
-                result.defaultKeypresses.add (KeyPress ('8', ModifierKeys::noModifiers, 0));
+//                result.defaultKeypresses.add (KeyPress ('8', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::decreaseTempo:
                 result.setInfo ("DecreaseTempo", "Decrease Tempo", category, 0);
-                result.defaultKeypresses.add (KeyPress ('7', ModifierKeys::noModifiers, 0));
+//                result.defaultKeypresses.add (KeyPress ('7', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::scoreSettings:
                 result.setInfo ("Tracks...", "Tracks in this score", category, 0);
@@ -464,22 +472,6 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("SelectAll", "SelectAll", category, 0);
                 result.addDefaultKeypress ('a', ModifierKeys::commandModifier);
                 break;
-//            case CommandIDs::marqueeSelectionAdd:
-//                result.setInfo ("marqueeSelectionAdd", "marqueeSelectionAdd", category, 0);
-//                result.addDefaultKeypress ('1', ModifierKeys::noModifiers);
-//                break;
-//            case CommandIDs::marqueeSelectionRemove:
-//                result.setInfo ("marqueeSelectionRemove", "marqueeSelectionRemove", category, 0);
-//                result.addDefaultKeypress ('2', ModifierKeys::noModifiers);
-//                break;
-//            case CommandIDs::markSelectedNotes:
-//                result.setInfo ("markSelectedNotes", "markSelectedNotes", category, 0);
-//                result.addDefaultKeypress ('3', ModifierKeys::noModifiers);
-//                break;
-//            case CommandIDs::clearSelectedNotes:
-//                result.setInfo ("clearSelectedNotes", "clearSelectedNotes", category, 0);
-//                result.addDefaultKeypress ('4', ModifierKeys::noModifiers);
-//                break;
             case CommandIDs::toggleSelectedNotesActive:
                 result.setInfo ("toggleSelectedNotesActive", "toggleSelectedNotesActive", category, 0);
                 result.addDefaultKeypress ('t', ModifierKeys::noModifiers);
@@ -498,11 +490,9 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::velHumanizeSelection:
                 result.setInfo ("velHumanizeSelection", "velHumanizeSelection", category, 0);
-//                result.addDefaultKeypress ('8', ModifierKeys::commandModifier);
                 break;
             case CommandIDs::timeHumanizeSelection:
                 result.setInfo ("timeHumanizeSelection", "timeHumanizeSelection", category, 0);
-//                result.addDefaultKeypress ('9', ModifierKeys::commandModifier);
                 break;
                 
             case CommandIDs::addSustain:
@@ -524,9 +514,18 @@ ApplicationProperties& getAppProperties();
             case CommandIDs::showChords:
                 result.setInfo ("showChords", "showChords", category, 0);
                 break;
-            case CommandIDs::editVelocities:
-                result.setInfo ("editVelocities", "Edit Velocities", category, 0);
+            case CommandIDs::graphVelocities:
+                result.setInfo ("graphVelocities", "Graph Velocities of Selected Notes", category, 0);
                 result.addDefaultKeypress ('6', ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::adjustVelocities:
+                result.setInfo ("adjustVelocities", "Drag Velocities All Selected Notes", category, 0);
+                result.addDefaultKeypress ('7', ModifierKeys::noModifiers);
+                break;
+ 
+            case CommandIDs::drawVelocities:
+                result.setInfo ("drawVelocities", "Draw New Velocity Graph For Selected Notes", category, 0);
+                result.addDefaultKeypress ('8', ModifierKeys::noModifiers);
                 break;
             case CommandIDs::create_chord:
                 result.setInfo ("create_chord", "create_chord", category, 0);
@@ -792,7 +791,9 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::addSoft,
             CommandIDs::deleteSoft,
             CommandIDs::showChords,
-            CommandIDs::editVelocities,
+            CommandIDs::graphVelocities,
+            CommandIDs::adjustVelocities,
+            CommandIDs::drawVelocities,
             CommandIDs::create_chord,
             CommandIDs::delete_chord,
             
@@ -1114,8 +1115,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                     pViewerFrame->repaint();
                 }
                 break;
-            case CommandIDs::editVelocities:
-                std::cout <<"editVelocities\n";
+            case CommandIDs::graphVelocities:
+                std::cout <<"graphVelocities\n";
                 if (!midiProcessor.isPlaying)
                 {
                     if (pViewerFrame->noteViewer.editingVelocities.getValue())
@@ -1124,6 +1125,27 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                         pViewerFrame->noteViewer.editingVelocities = true;
                 }
                 break;
+            case CommandIDs::adjustVelocities:
+                std::cout <<"adjustVelocities\n";
+                if (!midiProcessor.isPlaying)
+                {
+                    if (pViewerFrame->noteViewer.adjustingingVelocities.getValue())
+                        pViewerFrame->noteViewer.adjustingingVelocities = false;
+                    else
+                        pViewerFrame->noteViewer.adjustingingVelocities = true;
+                }
+                break;
+            case CommandIDs::drawVelocities:
+                std::cout <<"drawVelocities\n";
+                if (!midiProcessor.isPlaying)
+                {
+                    if (pViewerFrame->noteViewer.drawingVelocities.getValue())
+                        pViewerFrame->noteViewer.drawingVelocities = false;
+                    else
+                        pViewerFrame->noteViewer.drawingVelocities = true;
+                }
+                break;
+                
             case CommandIDs::create_chord:
                 std::cout <<"create_chord\n";
                 if (!midiProcessor.isPlaying)

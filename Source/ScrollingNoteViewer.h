@@ -340,7 +340,9 @@ public:
     }
     
     
-    Value editingVelocities; //Edit velocity mode, toggled by editVelocities toolbar button
+    Value editingVelocities; //Edit velocity mode, toggled by graphVelocities toolbar button
+    Value drawingVelocities; //Draw velocity mode, toggled by drawVelocities toolbar button
+    Value adjustingingVelocities; //Adjust velocity mode, toggled by adjustVelocities toolbar button
     bool altKeyPressed; //Holding this key enables editingVelocities
     bool marqueeAddingNotes; //True if in marquee add note mode
     bool marqueeRemovingNotes; //If in marquee remove note mode

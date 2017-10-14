@@ -297,7 +297,7 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("humanizeVelocity:"+pHumanizeVelocity->textBox.getText());
         else if(MainToolbarItemFactory::ToolbarItemIds::_chordEditToggle == id)
             sendActionMessage("_showChords");
-        else if(MainToolbarItemFactory::ToolbarItemIds::_editVelocities == id)
+        else if(MainToolbarItemFactory::ToolbarItemIds::_showVelocities == id)
         {
 //            if (noteViewer.editingVelocities.getValue())
 //            {
@@ -435,6 +435,6 @@ void ViewerFrame::resized()
 //    int tbHeightMultiplier = altToolbarVisible?2:1;
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
-    hoverStepInfo.setBounds(20, getHeight()-30, 500, noteViewer.getToolbarHeight()-1);
-    scoreTempoInfo.setBounds(513, getHeight()-30, 40, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(472, getHeight()-30, 600, noteViewer.getToolbarHeight()-1);
+    scoreTempoInfo.setBounds(219, getHeight()-29, 40, noteViewer.getToolbarHeight()-1);
 }

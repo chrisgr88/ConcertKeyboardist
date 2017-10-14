@@ -467,10 +467,10 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             else
                 hoveringOver = HOVER_NOTEBAR;
             hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
-            + " nn: " + String::String(nn) +" "
-            + " trk: " +String::String(pSequence->at(hoverStep)->track)
-            + " ch: " + String::String(pSequence->at(hoverStep)->channel)
-            + " vel: " + String(127.0*pSequence->at(hoverStep)->velocity)
+            + " note number: " + String::String(nn) +" "
+            + " track: " +String::String(pSequence->at(hoverStep)->track)
+            + " channel: " + String::String(pSequence->at(hoverStep)->channel)
+            + " velocity: " + String(127.0*pSequence->at(hoverStep)->velocity)
             + " length: " + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp())/10.0, 1)+
             + " tick: " + String(pSequence->at(hoverStep)->getTimeStamp()/10.0,1)
             + " step: "+String::String(hoverStep);

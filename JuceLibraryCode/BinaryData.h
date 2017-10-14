@@ -12,7 +12,7 @@ namespace BinaryData
     const int            AppIcon_pngSize = 8197;
 
     extern const char*   icons_zip;
-    const int            icons_zipSize = 133469;
+    const int            icons_zipSize = 148143;
 
     extern const char*   juce_module_info;
     const int            juce_module_infoSize = 1404;

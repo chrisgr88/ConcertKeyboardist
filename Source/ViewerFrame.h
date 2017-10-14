@@ -43,10 +43,10 @@ public:
     double prevTimeInTicks = -1.0;
     ModifierKeys mods;
     
-    bool getVelocityButton()
-    {
-        return mainToolbar.getItemComponent(mainFactory._editVelocities)->getToggleState();
-    }
+//    bool getVelocityButton()
+//    {
+//        return mainToolbar.getItemComponent(mainFactory._showVelocities)->getToggleState();
+//    }
 //    void toggleVelocityButton()
 //    {
 //        if (noteViewer.editingVelocities.getValue())
@@ -55,7 +55,7 @@ public:
 //            noteViewer.editingVelocities.setValue(true);
 //        
 //        noteViewer.repaint();
-//        std::cout << "_editVelocities in viewerframe "<<(bool)noteViewer.editingVelocities.getValue()<<"\n";
+//        std::cout << "_showVelocities in viewerframe "<<(bool)noteViewer.editingVelocities.getValue()<<"\n";
 //    }
     
     void timerCallback() override;
@@ -305,7 +305,9 @@ private:
 //            _clearAllSelection = 28,
             _chain          = 8,
             _chordEditToggle = 9,
-            _editVelocities  = 10,
+            _showVelocities  = 10,
+            _drawVelocities  = 30,
+            _adjustVelocities  = 31,
             chainAmountBox  = 11,
             _addSustain     = 12,
             _addSoft        = 13,
@@ -344,13 +346,14 @@ private:
             ids.add (_chordEditToggle);
             ids.add (create_chord);
             ids.add (delete_chord);
-            ids.add (_editVelocities);
+            ids.add (_showVelocities);
+            ids.add (_drawVelocities);
+            ids.add (_adjustVelocities);
             ids.add (_humanizeTime);
             ids.add (chainAmountBox);
             ids.add (_humanizeVelocity);
             ids.add (_humanizeTimeBox);
             ids.add (_humanizeVelocityBox);
-            ids.add (_editVelocities);
             ids.add (separatorBarId);
             ids.add (_help);
             ids.add (spacerId);
@@ -364,39 +367,52 @@ private:
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
-            ids.add (separatorBarId);
+            ids.add (spacerId);
+//            ids.add (separatorBarId);
+//            ids.add (spacerId);
             ids.add (loadPlugin);
             ids.add (editPlugin);
-            ids.add (separatorBarId);
-            for (int n=0;n<14;n++)
-                ids.add (spacerId);
-            ids.add (separatorBarId);
+//            ids.add (spacerId);
+//            ids.add (separatorBarId);
+//            for (int n=0;n<8;n++)
+//                ids.add (spacerId);
+            ids.add (spacerId);
             ids.add (edit_undo);
             ids.add (edit_redo);
-            ids.add (separatorBarId);
-            ids.add (separatorBarId);
+//            ids.add (spacerId);
+//            ids.add (separatorBarId);
+            ids.add (spacerId);
             ids.add (_toggleActivity);
-            ids.add (separatorBarId);
+            ids.add (spacerId);
+//            ids.add (separatorBarId);
             ids.add (_chain);
             ids.add (chainAmountBox);
-            ids.add (separatorBarId);
-            ids.add (_editVelocities);
-            ids.add (separatorBarId);
+            ids.add (spacerId);
+//            ids.add (separatorBarId);
+            
+            ids.add (_showVelocities);
+            ids.add (_adjustVelocities);
+            ids.add (_drawVelocities);
+            ids.add (spacerId);
+//            ids.add (separatorBarId);
             ids.add (_chordEditToggle);
             ids.add (create_chord);
             ids.add (delete_chord);
-            ids.add (separatorBarId);
-            ids.add (_addSustain);
-            ids.add (_deleteSustain);
-            ids.add (_addSoft);
-            ids.add (_deleteSoft);
-            ids.add (separatorBarId);
             ids.add (_humanizeTime);
             ids.add (_humanizeTimeBox);
             ids.add (separatorBarId);
             ids.add (_humanizeVelocity);
             ids.add (_humanizeVelocityBox);
-            ids.add (separatorBarId);
+            
+            ids.add (spacerId);
+            ids.add (_addSustain);
+            ids.add (_deleteSustain);
+            ids.add (_addSoft);
+            ids.add (_deleteSoft);
+//            ids.add (separatorBarId);
+//            ids.add (spacerId);
+//            ids.add (separatorBarId);
+            ids.add (spacerId);
             ids.add(_help);
             ids.add (flexibleSpacerId);
         }
@@ -430,15 +446,31 @@ private:
                 }
                 case create_chord: return  createButtonFromZipFileSVG (itemId, "Create Chord", "createChord.svg");
                 case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete Chord", "deleteChord.svg");
-                case _editVelocities:
+                case _showVelocities:
                 {
-                    ToolbarButton *editVelButton = createButtonFromZipFileSVG (itemId, "Edit Note Velocities",
-                        "editVelocities.svg", "editVelocities-pressed.svg");
-                    editVelButton->getToggleStateValue().referTo(pViewer->editingVelocities);
-                    editVelButton->setClickingTogglesState(true);
-                    return editVelButton;
+                    ToolbarButton *showVelButton = createButtonFromZipFileSVG (itemId, "Graph Velocities of Selected Notes",
+                        "showVelocityGraph.svg", "showVelocityGraph-pressed.svg");
+                    showVelButton->getToggleStateValue().referTo(pViewer->editingVelocities);
+                    showVelButton->setClickingTogglesState(true);
+                    return showVelButton;
                 }
-                    
+                case _adjustVelocities:
+                {
+                    ToolbarButton *adjVelButton = createButtonFromZipFileSVG (itemId, "Adjust Velocities of All Selected Notes",
+                                    "adjustVelocities.svg", "adjustVelocities-pressed.svg");
+                    adjVelButton->getToggleStateValue().referTo(pViewer->adjustingingVelocities);
+                    adjVelButton->setClickingTogglesState(true);
+                    return adjVelButton;
+                }
+     
+                case _drawVelocities:
+                {
+                    ToolbarButton *drawVelButton = createButtonFromZipFileSVG (itemId, "Draw Velocity Graph For Selected Notes",
+                                    "drawVelocities.svg", "drawVelocities-pressed.svg");
+                    drawVelButton->getToggleStateValue().referTo(pViewer->drawingVelocities);
+                    drawVelButton->setClickingTogglesState(true);
+                    return drawVelButton;
+                }
                 case chainAmountBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
@@ -587,7 +619,7 @@ private:
                 textBox.setPopupMenuEnabled (false);
                 textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey));
                 textBox.setColour (TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
-                textBox.setBounds (180, 30, 20, 10);
+                textBox.setBounds (180, 30, 60, 10);
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
@@ -595,9 +627,9 @@ private:
                 if (isVertical)
                     return false;
                 
-                preferredSize = 30;
-                minSize = 30;
-                maxSize = 30;
+                preferredSize = 60;
+                minSize = 60;
+                maxSize = 60;
                 return true;
             }
             void paintButtonArea (Graphics&, int, int, bool, bool) override
@@ -881,18 +913,19 @@ private:
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
             ids.add (separatorBarId);
-            for (int n=0;n<34;n++)
+            for (int n=0;n<17;n++)
                 ids.add (spacerId);
-            ids.add (separatorBarId);
-            ids.add (scoreTempo);
+//            ids.add (separatorBarId);
+//            ids.add (scoreTempo);
             ids.add (realTimeTempo);
-            ids.add (separatorBarId);
+            ids.add (spacerId);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_playPause);
             ids.add (_rewind);
-            ids.add (separatorBarId);
+            ids.add (spacerId);
             ids.add (_listen);
+            ids.add (separatorBarId);
         }
         
         ToolbarItemComponent* createItem (int itemId) override
