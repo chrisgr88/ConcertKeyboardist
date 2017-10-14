@@ -207,6 +207,8 @@ ApplicationProperties& getAppProperties();
             perform (CommandIDs::editRedo);
         else if (message == "play")
             perform (CommandIDs::playPause);
+        else if (message == "pause")
+            perform (CommandIDs::playPause);
         else if (message == "rewind")
             perform (CommandIDs::rewind);
         
@@ -606,11 +608,7 @@ ApplicationProperties& getAppProperties();
         {
             menu.addCommandItem (&getCommandManager(), CommandIDs::editUndo);
             menu.addCommandItem (&getCommandManager(), CommandIDs::editRedo);
-            //            menu.addCommandItem (&getCommandManager(), CommandIDs::setPlayheadToHere);
             menu.addCommandItem (&getCommandManager(), CommandIDs::playPause);
-//            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromCurrentPlayhead);
-//            menu.addCommandItem (&getCommandManager(), CommandIDs::pause);
-//            menu.addCommandItem (&getCommandManager(), CommandIDs::playFromPreviousStart);
             menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
         }
         else if (topLevelMenuIndex == 2) // "Plugins" menu
@@ -655,9 +653,7 @@ const PluginDescription* MainWindow::pluginContextMenu (Rectangle<int> menuAt) c
             mainComponent->loadPlugin(desc);
         }
     }
-//        return mainComponent->knownPluginList.getType (index);
-//    else
-        return nullptr;
+    return nullptr;
 }
 
 void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
