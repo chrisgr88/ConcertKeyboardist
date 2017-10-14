@@ -456,7 +456,7 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             {
                 const double time1 = pSequence->at(selectedNotes[0])->getTimeStamp();
                 const double time2 = pSequence->at(selectedNotes.getLast())->getTimeStamp();
-                note = note + " Selection width: " + String (std::abs(time1-time2)/60.0) + " sixteenths";
+                note = note + " Selection width: " + String (std::abs(time1-time2)/10.0,1);
             }
             hoverInfo = note;
         }
@@ -467,13 +467,13 @@ void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
             else
                 hoveringOver = HOVER_NOTEBAR;
             hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
-            + " nn:" + String::String(nn) +" "
-            + " trk:" +String::String(pSequence->at(hoverStep)->track)
-            + " ch:" + String::String(pSequence->at(hoverStep)->channel)
-            + " vel:" + String(127.0*pSequence->at(hoverStep)->velocity)
-            + " length: " + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp())/60.0, 1)+
-            + " 16ths tick:" + String(pSequence->at(hoverStep)->getTimeStamp())
-            + " step:"+String::String(hoverStep);
+            + " nn: " + String::String(nn) +" "
+            + " trk: " +String::String(pSequence->at(hoverStep)->track)
+            + " ch: " + String::String(pSequence->at(hoverStep)->channel)
+            + " vel: " + String(127.0*pSequence->at(hoverStep)->velocity)
+            + " length: " + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp())/10.0, 1)+
+            + " tick: " + String(pSequence->at(hoverStep)->getTimeStamp()/10.0,1)
+            + " step: "+String::String(hoverStep);
 //            repaint();
         }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
@@ -1463,7 +1463,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
     f.setStyleFlags(Font::FontStyleFlags::bold);
     g.setFont(f);
     g.setColour (Colours::white);
-    const String measTxt = String(meas)+"/"+String(totalMeas-1)+"["+String(processor->getZTLTime(horizontalShift))+"]";
+    const String measTxt = String(meas)+"/"+String(totalMeas-1)+" ["+String(processor->getZTLTime(horizontalShift)/10.0,1)+"]";
     if (processor->sequenceObject.measureTimes.size()>0)
         g.drawText(measTxt, sequenceStartPixel+6, 3.0*verticalScale, 150,
                    9*verticalScale, juce::Justification::centredLeft);
@@ -2044,8 +2044,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     hoverInfo.clear();
                 else
                     {
-                        hoverInfo = "Range in ticks: "+ String(minSelNoteTime)+ " to "+String(maxSelNoteTime)
-                        +" width in sixteenths: "+String((maxSelNoteTime-minSelNoteTime)/60.0);
+                        hoverInfo = "Range in ticks: "+ String(minSelNoteTime/10.0,1)+ " to "+String(maxSelNoteTime/10.0,1)
+                        +" width: "+String((maxSelNoteTime-minSelNoteTime)/10.0,1);
                     }
 
                 sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar

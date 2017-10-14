@@ -52,8 +52,8 @@ altToolbarFactory(this)
             (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pHumanizeStartTime->setWidth(65);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
-            pHumanizeStartTime->textBox.setText("60");
-            humanizeTimeAmount = "60";
+            pHumanizeStartTime->textBox.setText("50");
+            humanizeTimeAmount = "50";
         }
         else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeVelocityBox)
         {

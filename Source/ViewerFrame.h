@@ -414,7 +414,7 @@ private:
                 case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
                     
                 case _toggleActivity:        return createButtonFromZipFileSVG (itemId, "Toggle Target Notes", "toggleActivityTool.svg");
-                case _chain:        return createButtonFromZipFileSVG (itemId, "Generate Target Notes After Pauses", "chain.svg");
+                case _chain:        return createButtonFromZipFileSVG (itemId, "Auto Create Target Notes After Breaks", "chain.svg");
                 case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
                 case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
                 case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
@@ -442,7 +442,7 @@ private:
                 case chainAmountBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Minimum Pause In Sixteenths to Generate Target Note");
+                    txtBox->textBox.setTooltip("Break Size to Auto Create a Target Note (In Sixteenths)");
                     return txtBox;
                 }
                     
