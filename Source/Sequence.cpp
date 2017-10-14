@@ -15,7 +15,7 @@ Sequence::Sequence()
                      "Load a Concert Keyboardist or MIDI File",
                      "Save a Concert Keyboardist File")
 {
-    triggeredNoteLimit = 4;
+    triggeredNoteLimit = 60;
     tempoControl = TempoControl::autoTempo;
     waitForFirstNote = true;
     autoPlaySustains = true;
@@ -192,7 +192,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         int lastBlockSize = b64.length() % blockLen;
         for (int i=0;i<nWholeBlocks;i++)
         {
-//            String thisBlock = b64.substring(i*blockLen, i*blockLen+blockLen);
             String thisBlock = String("plugState:")+b64.substring(i*blockLen, i*blockLen+blockLen);
             int len = thisBlock.length();
             char buffer[128];
@@ -218,7 +217,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         tracksToCopy--;
     
     MidiFile outputFile;
-    short timeFormat = 960;//midiFile.getTimeFormat();
+    short timeFormat = 960;
     int firstTrkWithPedals = -1;
     int firstTrkWithNotes = -1;
     for (int trk=0;trk<trackDetails.size();trk++ )

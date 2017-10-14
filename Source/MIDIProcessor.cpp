@@ -1242,9 +1242,7 @@ void MIDIProcessor::processBlock ()
                 if (exprNoteThatStartedThisOnNote == exprEvents[exprEventIndex].getNoteNumber())
                 {
                     if (sequenceObject.theSequence.at(seqStep)->triggeredOffNote)
-                    {
                         sequenceObject.theSequence.at(seqStep)->noteOffNow = true;
-                    }
                     else
                         sequenceObject.theSequence.at(seqStep)->sustaining = true;
                 }

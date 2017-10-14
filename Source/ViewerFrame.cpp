@@ -157,7 +157,7 @@ void ViewerFrame::timerCallback()
             plugin = " playing "+processor->sequenceObject.thePlugin->getName();
             int progNum = processor->sequenceObject.thePlugin->getCurrentProgram();
             if (progNum>=0)
-                plugin = plugin + "[" +processor->sequenceObject.thePlugin->getProgramName(progNum)+"]";
+                plugin = plugin + " (" +processor->sequenceObject.thePlugin->getProgramName(progNum)+")";
         }
         String txt = processor->sequenceObject.getScoreFileName();
         getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName() + plugin);
