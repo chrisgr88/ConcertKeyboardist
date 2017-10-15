@@ -122,7 +122,7 @@ public:
         if (sequenceObject.loadSequence(type, retainEdits, humanizeTime, humanizeVelocity))
         {
             HighResolutionTimer::startTimer(timerIntervalInMS);
-            rewind(time);  //Note that rewind now does a sendChangeMessage
+            rewind(time, true);  //Note that rewind now does a sendChangeMessage
         }
     }
 
@@ -135,7 +135,7 @@ public:
     bool pauseClock; //Used to halt increasing timeInTicks if next noteOn time lags too much behind timeInTick
 //    bool waitForFirstNote; //If true when play started waitingForFirstNote is set to true and next unplayed note moved to ztl.
     bool waitingForFirstNote; //If set, time does not increment.  This is set false when the first expr note is played.
-    void rewind (double time);
+    void rewind (double time, bool catchUp=false);
     void listenToSelection();
     void endListen();
 #define CHANGE_MESSAGE_NONE -1

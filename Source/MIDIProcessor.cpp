@@ -96,6 +96,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
 //    std::cout << "xInTicksFromViewer " << xInTicksFromViewer <<"\n";
     if (sequenceObject.theSequence.size()==0)
         return;
+    bool stoppedPlaying = !ply && isPlaying;
 //    if (!ply)
 //         std::cout << "stopped playing " << timeInTicks <<"\n";
     if (!isPlaying && ply)
@@ -171,15 +172,25 @@ void MIDIProcessor::play (bool ply, String fromWhere)
                                                              sequenceObject.theSequence.at(onNotes[i])->getVelocity());
             sendMidiMessage(noteOff);
         }
-        onNotes.clear();
-        for (int chan=1;chan<=16;chan++)
+        if (stoppedPlaying)
         {
-            MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
-            sendMidiMessage(allNotesOff);
-            const MidiMessage sustOff = MidiMessage::controllerEvent(chan, 64, 0);
-            sendMidiMessage(sustOff);
-            const MidiMessage softOff = MidiMessage::controllerEvent(chan, 67, 0);
-            sendMidiMessage(softOff);
+            for (int chan=1;chan<=16;chan++)
+            {
+                for (int i=0; i<onNotes.size(); i++)
+                {
+                    const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
+                                                                     sequenceObject.theSequence.at(onNotes[i])->noteNumber,
+                                                                     sequenceObject.theSequence.at(onNotes[i])->getVelocity());
+                                    sendMidiMessage(noteOff);
+                }
+                MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
+                sendMidiMessage(allNotesOff);
+                const MidiMessage sustOff = MidiMessage::controllerEvent(chan, 64, 0);
+                sendMidiMessage(sustOff);
+                const MidiMessage softOff = MidiMessage::controllerEvent(chan, 67, 0);
+                sendMidiMessage(softOff);
+            }
+            onNotes.clear();
         }
         HighResolutionTimer::stopTimer();
         listenSequence.clear();
@@ -192,7 +203,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
     sendChangeMessage();
 }
 
-void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
+void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInTicks
 {
 //    std::cout << "Rewind: time " << time
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
@@ -201,15 +212,18 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
         return;
     try {
         pauseProcessing = true;
-        for (int i=0; i<onNotes.size(); i++)
-        {
-            const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
-                                                             sequenceObject.theSequence.at(onNotes[i])->noteNumber,
-                                                             sequenceObject.theSequence.at(onNotes[i])->getVelocity());
-            sendMidiMessage(noteOff);
-        }
-        onNotes.clear();
-            
+//        if (!catchUp)
+//        {
+//            for (int i=0; i<onNotes.size(); i++)
+//            {
+//                const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
+//                                                                 sequenceObject.theSequence.at(onNotes[i])->noteNumber,
+//                                                                 sequenceObject.theSequence.at(onNotes[i])->getVelocity());
+////                sendMidiMessage(noteOff);
+//            }
+//            onNotes.clear();
+//        }
+        
         listenStep = 0;
         if (listenSequence.size()>0)
         {
@@ -224,14 +238,17 @@ void MIDIProcessor::rewind (double time) //Rewind to given timeInTicks
     //    std::vector<std::shared_ptr<NoteWithOffTime>> theSequence = sequenceObject.getSequence();
         HighResolutionTimer::stopTimer();
         panic = true;
-        for (int chan=1;chan<=16;chan++)
-        {
-            MidiMessage controllersOff = MidiMessage::allControllersOff(chan);
-            sendMidiMessage(controllersOff);
-            MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
-            sendMidiMessage(allNotesOff);
-        }
-    //    isPlaying = false;
+//        if (!catchUp)
+//        {
+//            for (int chan=1;chan<=16;chan++)
+//            {
+//                MidiMessage controllersOff = MidiMessage::allControllersOff(chan);
+////                sendMidiMessage(controllersOff);
+//                MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
+////                sendMidiMessage(allNotesOff);
+//            }
+//        }
+        isPlaying = false;
         autoPlaying = false;
         waitingForFirstNote = false;
         meas = 0; //Current measure, updated when timeInTicks passes next measure division
@@ -423,7 +440,7 @@ void MIDIProcessor::listenToSelection()
 void::MIDIProcessor::endListen()
 {
     isListening = false;
-    rewind (startListenTime);
+    rewind(startListenTime);
 //    endListenTime = -1;
 //    undoMgr->undo();
 }
@@ -1283,9 +1300,9 @@ void MIDIProcessor::processBlock ()
     }
 }
 
-void MIDIProcessor::catchUp()
+void MIDIProcessor::catchUp ()
 {
-    rewind(timeInTicks-xInTicksFromViewer);
+    rewind(timeInTicks-xInTicksFromViewer, true);
 }
 
 
