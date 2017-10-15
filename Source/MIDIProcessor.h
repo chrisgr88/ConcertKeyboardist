@@ -122,7 +122,7 @@ public:
         if (sequenceObject.loadSequence(type, retainEdits, humanizeTime, humanizeVelocity))
         {
             HighResolutionTimer::startTimer(timerIntervalInMS);
-            rewind(time, true);  //Note that rewind now does a sendChangeMessage
+            rewind(time, true);
         }
     }
 
@@ -174,10 +174,10 @@ public:
     void setXInTicks(double x)
     {
         xInTicksFromViewer = x;
-//        std::cout
-//        << "set xInTicksFromViewer " << xInTicksFromViewer
-//        << " timeInTicks " << timeInTicks
-//        << "\n";
+        std::cout
+        << "set xInTicksFromViewer " << xInTicksFromViewer
+        << " timeInTicks " << timeInTicks
+        << "\n";
     }
     
     bool playing() {return isPlaying;}

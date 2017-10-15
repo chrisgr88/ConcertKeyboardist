@@ -224,7 +224,8 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
                 steps.add(noteBeingDraggedOn);
             std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
             processor->changeNoteTimes(steps, deltaTimeDrag);
-            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+            
+            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getZTLTime(horizontalShift));
             restoreSelectedNotes(pointersToSelectedNotes);
         }
         draggingTime = false;
@@ -2182,7 +2183,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     }
                     else if (hoveringOver != HOVER_NOTEBAR && std::abs(deltaX)<std::abs(deltaY))
                     {//Dragged first vertically so it's a velocity changing drag
-                        if (!(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes))
+                        if (!drawingVelocities.getValue() &&
+                            !(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes))
                         {
                             draggingVelocity = true;
                             velStartDrag = pSequence->at(hoverStep)->velocity;
@@ -2263,7 +2265,10 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //                    for (int i=0;i<notesBeingDraggedOn.size();i++)
 //                        std::cout <<processor->sequenceObject.theSequence.at(notesBeingDraggedOn[i])->velocity<<" ";
                     processor->catchUp();
-                    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+                    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+                                                 processor->getZTLTime(horizontalShift));
+//                    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+                    
                     repaint();
                 }
                 else if (draggingTime)

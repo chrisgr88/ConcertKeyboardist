@@ -212,18 +212,6 @@ void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInT
         return;
     try {
         pauseProcessing = true;
-//        if (!catchUp)
-//        {
-//            for (int i=0; i<onNotes.size(); i++)
-//            {
-//                const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
-//                                                                 sequenceObject.theSequence.at(onNotes[i])->noteNumber,
-//                                                                 sequenceObject.theSequence.at(onNotes[i])->getVelocity());
-////                sendMidiMessage(noteOff);
-//            }
-//            onNotes.clear();
-//        }
-        
         listenStep = 0;
         if (listenSequence.size()>0)
         {
@@ -238,16 +226,6 @@ void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInT
     //    std::vector<std::shared_ptr<NoteWithOffTime>> theSequence = sequenceObject.getSequence();
         HighResolutionTimer::stopTimer();
         panic = true;
-//        if (!catchUp)
-//        {
-//            for (int chan=1;chan<=16;chan++)
-//            {
-//                MidiMessage controllersOff = MidiMessage::allControllersOff(chan);
-////                sendMidiMessage(controllersOff);
-//                MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
-////                sendMidiMessage(allNotesOff);
-//            }
-//        }
         isPlaying = false;
         autoPlaying = false;
         waitingForFirstNote = false;
@@ -2131,8 +2109,14 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
         sequenceObject.theSequence.at(steps[i])->setOfftime(offTime);
     }
     sequenceObject.setChangedFlag(true);
-    catchUp();
-    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+//    catchUp();
+    double ztlTime;
+    if (xInTicksFromViewer==0)
+        ztlTime = getTimeInTicks();
+    else
+        ztlTime = getTimeInTicks()-xInTicksFromViewer;
+    rewind(ztlTime);
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, ztlTime);
 }
 void MIDIProcessor::changeNoteOffTimes(Array<int> steps, double delta)
 {
@@ -2147,7 +2131,12 @@ void MIDIProcessor::changeNoteOffTimes(Array<int> steps, double delta)
     }
     sequenceObject.setChangedFlag(true);
     catchUp();
-    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+    double ztlTime;
+    if (xInTicksFromViewer==0)
+        ztlTime = getTimeInTicks();
+    else
+        ztlTime = getTimeInTicks()-xInTicksFromViewer;
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, ztlTime);
 //    std::cout << "changeNoteOffTimes after buildSequence"<<"\n";
 }
 void MIDIProcessor::setCopyOfSelectedNotes(Array<int> sel)
