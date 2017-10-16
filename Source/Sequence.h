@@ -272,14 +272,12 @@ public:
 //    Array<MidiMessage> tempoChanges;
     std::vector<MidiMessage> tempoChanges;
     //Actual tempo is the midi file multiplied by tempoMultiplier
-    //- autoTempo: Tempo starts at originalFirstTempo*tempoMultiplier and then tracks user
-    //- fixedTempo: Tempo is steady at originalFirstTempo*tempoMultiplier
-    //- proportionalToOriginalTempo: Tempo is instantaneous tempo from file * tempoMultiplier (does not track user)
     double tempoMultiplier;
     void setTempoMultiplier(double value, bool documentReallyChanged)
     {
+        std::cout << "setTempoMultiplier "<<value<<"\r";
         if (value<0.1)
-            tempoMultiplier = 1.0;
+            tempoMultiplier = 0.1;
         else
             tempoMultiplier = value;
 //        setTempo (startingTempo * value);

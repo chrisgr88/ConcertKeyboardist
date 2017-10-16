@@ -1,0 +1,32 @@
+To Do
+
+- Write routine to change the tempo of the selected range or adjust it if passed a number preceded by + or -
+- Make tempo display update continually as the score is scrolled
+- Fix bug in first branch of tempo graph
+- More testing of time setting during navigation & start/stop playing.
+
+- Show velocity cursor only when in velocity drawing mode 
+
+- Cosmetic fixes to bottom toolbar
+
+- Pressing the adjust or draw velocities buttons should automatically press the show velocity graph button
+
+- Drag velocity of all selected notes
+
+- Drag duration of all selected notes
+
+- Button to show/hide tempo graph
+
+- Better detection of when to disable OpenGL
+
+- Change how deletion of sustain and soft bars deterines what to delete.  Use selected notes, not ZTL as indicator.
+
+- Remove green next-to-play marker marker
+
+- AutoScroll while dragging selection
+
+- Undo of more commands
+
+- Note step entry?
+
+- Documentation

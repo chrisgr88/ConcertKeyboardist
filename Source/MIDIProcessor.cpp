@@ -13,7 +13,7 @@ MIDIProcessor::MIDIProcessor() :
     pauseProcessing = false;
     sequenceObject.addChangeListener(this);
     undoMgr = new MyUndoManager();
-    synthMessageCollectorIsReset = false;
+    pluginMessageCollectorIsReset = false;
     reset(44.1);
     isPlaying = false;
     isListening = false;
@@ -904,7 +904,8 @@ void MIDIProcessor::processBlock ()
                     noteOff.setTimeStamp(t);
 //                    noteOff.setTimeStamp(99.0);
 //                    synthMessageCollector.addMessageToQueue (noteOff);
-                    pluginMessageCollector->addMessageToQueue(noteOff);
+                    if (pluginMessageCollectorIsReset)
+                        pluginMessageCollector->addMessageToQueue(noteOff);
                     sendMidiMessage(noteOff);
 //                    std::cout<<"at 3 noteOff "<<stepToTurnOff<<"\n";
                     

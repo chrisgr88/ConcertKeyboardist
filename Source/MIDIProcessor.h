@@ -232,7 +232,7 @@ public:
     void synthMessageCollectorReset(const double rate)
     {
 //        synthMessageCollector.reset(rate);
-        synthMessageCollectorIsReset = true;
+        pluginMessageCollectorIsReset = true;
         pluginMessageCollector->reset(rate);
     }
     enum class MidiDestination {internalSynth = 0, output = 1, pluginSynth = 2};
@@ -244,7 +244,7 @@ public:
 #define FIFO_SIZE 50
     int noteOnOffFifoBuffer [FIFO_SIZE];
     AbstractFifo noteOnOffFifo;
-    bool synthMessageCollectorIsReset;
+    bool pluginMessageCollectorIsReset;
     MidiMessageCollector synthMessageCollector;
     MidiMessageCollector *pluginMessageCollector;
     
@@ -323,20 +323,12 @@ private:
     bool notesEditable; //Whether notes can be edited in the viewer
     void sendMidiMessage(MidiMessage msg)
     {
-//        if (midiDestination==MidiDestination::internalSynth)
-//        {
-//        if (timeInTicks>0)
-//        {
         double t = Time::getMillisecondCounterHiRes()*0.001;
-            msg.setTimeStamp(t);
+        msg.setTimeStamp(t);
 //            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
-            if (synthMessageCollectorIsReset)
-//                synthMessageCollector.addMessageToQueue (msg); //<<<<<<<<<<<<<<< Add more
-                pluginMessageCollector->addMessageToQueue (msg);
-    //        }
-    //        else if (midiDestination==MidiDestination::output)
-                midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
-//        }
+        if (pluginMessageCollectorIsReset)
+            pluginMessageCollector->addMessageToQueue (msg);
+            midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
     }
     double timeInTicks = -1;
     int leadTimeInTicks; //How much space in ticks to allow to left of the ztl in viewer window

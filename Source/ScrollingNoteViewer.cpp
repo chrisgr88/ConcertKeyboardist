@@ -1107,27 +1107,44 @@ void ScrollingNoteViewer::makeNoteBars()
         double x = startPixel;
         if (pSequence->at(index)->targetNote)
         {
-            float velocityOfTargetNote = pSequence->at(index)->velocity;
+            const float velocityOfTargetNote = pSequence->at(index)->velocity;
             const double scaledVelocity = graphHeight * velocityOfTargetNote;
             const double thisY = scaledVelocity;
             if (prevX != -1)
             {
-                addLine (prevX, prevY, x, thisY, 1.0f, Colour(0xFFF0F0FF));
+                addLine (prevX, prevY, x, scaledVelocity, 1.0f, Colour(0xFFF0F0FF));
                 prevY = thisY;
             }
             prevX = x;
         }
     }
-    
+      
+      //Tempo
+      if (processor->sequenceObject.tempoChanges.size()>1)
+      {
+          double startTempo = 60.0/processor->sequenceObject.tempoChanges.at(0).getTempoSecondsPerQuarterNote();
+          double prevY = graphHeight * (startTempo/300.0);
+          double prevX = 0;
+          for (int i=1;i<processor->sequenceObject.tempoChanges.size();i++)
+          {
+              const double timeStamp = processor->sequenceObject.tempoChanges.at(i).getTimeStamp();
+              const double thisX = timeStamp * pixelsPerTick;
+              const double tempo = 60.0/processor->sequenceObject.tempoChanges.at(i).getTempoSecondsPerQuarterNote();
+              const double thisY = graphHeight * (tempo/300.0);
+              addLine (prevX, prevY, thisX, prevY, 1.0f, Colour(Colours::red));
+              prevY = thisY;
+              prevX = thisX;
+          }
+      }
+
+    //Note Bars ###
     const double readHead = processor->getSequenceReadHead();
     const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
     const float headHeight =  h * headToBarHeightRatio;
     Array<NoteBarDescription> deferredNoteBars; //Info to defer making active note bars until inactive ones are made
     int prevChordIndex = 0;
     RectangleList<float> chordRects;
-    //###
     bool prevInChord = false;
-    //Note Bars
     int size = (int)pSequence->size();
     for (int index = 0;index<size;index++)
     {
@@ -1233,8 +1250,6 @@ void ScrollingNoteViewer::makeNoteBars()
             {
                 pSequence->at(index)->rectBar = addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,
                                                       colourInactiveNoteHead, vBasedNoteBar);
-//                std::cout <<"           colourInactiveNoteHead, ";
-                
             }
         }
         else
@@ -1244,14 +1259,11 @@ void ScrollingNoteViewer::makeNoteBars()
             {
                 pSequence->at(index)->rectBar =
                     addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,colourInactiveNoteHead.darker(), vBasedNoteBar);
-//                std::cout <<" Editable, colourInactiveNoteHead, ";
             }
             else
             {
                 pSequence->at(index)->rectBar =
                 addNote(x, y, w, noteBarVerticalSize, headWidth, headHeight,colourInactiveNoteHead.brighter(), vBasedNoteBar);
-//                std::cout <<"           colourInactiveNoteHead, ";
-
             }
         }
 //        std::cout << " rectHead index "<<sequence->at(index)->rectHead<<"\n";
@@ -1404,15 +1416,15 @@ void ScrollingNoteViewer::makeNoteBars()
     for (int i=0;i<processor->sequenceObject.bookmarkTimes.size();i++)
     {
         const double x = processor->sequenceObject.bookmarkTimes[i]*pixelsPerTick;
-        addRectangle(x-1.95, 0.0f,     4, (topMargin), juce::Colour(Colours::red));
+        addRectangle(x-1.95, 0.0f,     4, (topMargin), juce::Colour(Colours::white).darker());
     }
     
-    //Position of next note to play
-    if (processor->lastPlayedSeqStep+1 < processor->sequenceObject.theSequence.size())
-    {
-        const double x = processor->sequenceObject.theSequence.at(processor->lastPlayedSeqStep+1)->getTimeStamp()*pixelsPerTick;
-        nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
-    }
+//    //Position of next note to play
+//    if (processor->lastPlayedSeqStep+1 < processor->sequenceObject.theSequence.size())
+//    {
+//        const double x = processor->sequenceObject.theSequence.at(processor->lastPlayedSeqStep+1)->getTimeStamp()*pixelsPerTick;
+//        nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
+//    }
     rebuidingGLBuffer = false;
         
   } catch (...) {
@@ -1459,10 +1471,10 @@ void ScrollingNoteViewer::paint (Graphics& g)
     }
     else
         g.setColour (Colour(30,30,255).brighter()); //Blue
-    g.fillRect(Rectangle<float>(sequenceStartPixel-1.f,topMargin*verticalScale, 2.0, getHeight()-topMargin*verticalScale));
-    //Handle at top of line
-    g.setColour (Colour((uint8)190,(uint8)220,(uint8)0xff,(uint8)127));
-    g.fillRect(Rectangle<float>(sequenceStartPixel-3.f,0.0, 6.0, (topMargin)*verticalScale));
+    g.fillRect(Rectangle<float>(sequenceStartPixel-1.f,0.0, 2.0, getHeight()));
+//    //Handle at top of line
+//    g.setColour (Colour((uint8)190,(uint8)220,(uint8)0xff,(uint8)127));
+//    g.fillRect(Rectangle<float>(sequenceStartPixel-3.f,0.0, 6.0, (topMargin)*verticalScale));
     
     const int meas = processor->getMeasure(horizontalShift);
     const int totalMeas = (int) processor->sequenceObject.measureTimes.size();
