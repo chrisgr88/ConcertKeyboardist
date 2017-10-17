@@ -1415,8 +1415,13 @@ void ScrollingNoteViewer::makeNoteBars()
     //        std::cout << processor->sequenceObject.bookmarkTimes.size() << "\n";
     for (int i=0;i<processor->sequenceObject.bookmarkTimes.size();i++)
     {
-        const double x = processor->sequenceObject.bookmarkTimes[i]*pixelsPerTick;
-        addRectangle(x-1.95, 0.0f,     4, (topMargin), juce::Colour(Colours::white).darker());
+        const double x = processor->sequenceObject.bookmarkTimes[i].time*pixelsPerTick;
+        Colour col;
+        if (processor->sequenceObject.bookmarkTimes[i].tempoChange)
+            col = Colour(Colours::red);
+        else
+            col = juce::Colour(Colours::white).darker();
+        addRectangle(x-1.95, 0.0f,     4, (topMargin), col);
     }
     
 //    //Position of next note to play

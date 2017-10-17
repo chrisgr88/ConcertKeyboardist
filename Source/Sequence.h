@@ -269,8 +269,8 @@ public:
         tempoControl = value;
         sequenceProps.setValue("tempoControl", "auto"); //enum: autoTempo, fixedTempo, tempoFromFile
     }
-//    Array<MidiMessage> tempoChanges;
     std::vector<MidiMessage> tempoChanges;
+    std::vector<MidiMessage> scaledTempoChanges;
     //Actual tempo is the midi file multiplied by tempoMultiplier
     double tempoMultiplier;
     void setTempoMultiplier(double value, bool documentReallyChanged)
@@ -301,40 +301,8 @@ public:
     {
         tempoMultiplier *= factor;
     }
-    double getTempo (double currentTime)
-    {
-        if (tempoChanges.size()==0)
-            return 120;
-        static int prevTempoChangeIndex;
-        static double prevTime;
-        int tempoChangeIndex;
-        if (currentTime>0 || prevTime>currentTime)
-            tempoChangeIndex = prevTempoChangeIndex;
-        else
-            tempoChangeIndex = 0;
-        int counter = (int) tempoChanges.size();
-        while (counter-- > 0)
-        {
-            if ((tempoChangeIndex+1)<tempoChanges.size() &&
-                (tempoChanges.at(tempoChangeIndex).getTimeStamp()<=currentTime && currentTime<tempoChanges.at(tempoChangeIndex+1).getTimeStamp()) )
-                break;
-            tempoChangeIndex++;
-            if (tempoChangeIndex>=tempoChanges.size()) //If we didn't find it in the up-search restart at the bottom
-                tempoChangeIndex = 0;
-        }
-
-        double curTempo = 60.0/tempoChanges.at(tempoChangeIndex).getTempoSecondsPerQuarterNote();
-//        const double increment =  tempoMultiplier * 960.0*curTempo/60000.0;
-//        std::cout
-//        << " tempoChangeIndex " << tempoChangeIndex
-//        << " curTempo " << curTempo
-//        << " increment " << increment
-//        << "\n";
-        prevTempoChangeIndex = tempoChangeIndex;
-        prevTime = currentTime;
-//        return increment;
-        return curTempo;
-    }
+    double getTempo (double currentTime, bool scaled = true);
+    
     //Realtime playing parameters
     double latePlayAdjustmentWindow;
     void setLatePlayAdjustmentWindow(double value)
@@ -415,32 +383,25 @@ public:
     
     std::vector<double> beatTimes;
     std::vector<double> measureTimes;
-    Array<double> bookmarkTimes;
+    
+    class Bookmark
+    {
+    public:
+        double time;
+        bool tempoChange;
+        double tempoScaleFactor;
+        
+        bool operator< (const Bookmark& bm2) const
+        {
+            return time<bm2.time;
+        }
+    };
+    Array<Bookmark> bookmarkTimes;
     std::vector<int> programChanges;
     bool areThereProgramChanges;
 
 //    std::vector<std::vector<NoteWithOffTime>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
     std::vector<std::vector<std::shared_ptr<NoteWithOffTime>>> allNotes; //Indexed by track.  Tracks sorted by timeStamp, then descending noteNum
-    
-//    bool compareTwoNotes(NoteWithOffTime note1, NoteWithOffTime note2)
-//    {
-//        bool result = true;
-//        if(note1.track!=note2.track)
-//            result = false;
-//        if(note1.getTS!=note2.timeStamp)
-//            result = false;
-//        if(note1.channel!=note2.channel)
-//            result = false;
-//        if(note1.noteNumber!=note2.noteNumber)
-//            result = false;
-//        if(note1.originalVelocity!=note2.originalVelocity)
-//            result = false;
-//        if(note1.offTime!=note2.offTime)
-//            result = false;
-//        if(note1.indexInTrack!=note2.indexInTrack)
-//            result = false;
-//        return result;
-//    }
     
     class PedalMessage
     {

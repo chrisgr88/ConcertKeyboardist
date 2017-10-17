@@ -1,13 +1,17 @@
 To Do
 
-- Write routine to change the tempo of the selected range or adjust it if passed a number preceded by + or -
+- DONE Save and load tempo bookmarks
+- DONE Bug setting tempo bookmark when score is at initial zero time - always set at time 0
+- Enable tempo graph to show tempo changes
+- Enable playing to respond to tempo changes
+
 - Make tempo display update continually as the score is scrolled
 - Fix bug in first branch of tempo graph
 - More testing of time setting during navigation & start/stop playing.
 
 - Show velocity cursor only when in velocity drawing mode 
 
-- Cosmetic fixes to bottom toolbar
+- DONE Cosmetic fixes to bottom toolbar
 
 - Pressing the adjust or draw velocities buttons should automatically press the show velocity graph button
 
@@ -15,7 +19,7 @@ To Do
 
 - Drag duration of all selected notes
 
-- Button to show/hide tempo graph
+- DEFER Button to show/hide tempo graph?
 
 - Better detection of when to disable OpenGL
 

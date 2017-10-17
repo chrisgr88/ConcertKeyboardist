@@ -39,7 +39,12 @@ MIDIProcessor::~MIDIProcessor()
 
 bool MIDIProcessor::getCurrentPosition (CurrentPositionInfo& result)
 {
-    result.bpm = getRealTimeTempo();
+    if (timeInTicks<=0)
+        result.bpm = sequenceObject.getTempo(0) * variableTempoRatio;
+    else
+    {
+        result.bpm = sequenceObject.getTempo(timeInTicks) * variableTempoRatio;
+    }
     result.timeSigNumerator = sequenceObject.numerator;
     result.timeSigDenominator = sequenceObject.denominator;
     result.timeInSamples =sampleRate*timerIntervalInMS*timeInTicks/1000.0;
@@ -218,7 +223,7 @@ void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInT
             while (time > listenSequence.at(listenStep).timeStamp)
                 listenStep++;
         }
-        timeIncrement =  sequenceObject.tempoMultiplier * 960.0*sequenceObject.getTempo(time)/60000.0;
+        timeIncrement =  960.0*sequenceObject.getTempo(time)/60000.0;
         variableTimeIncrement = timeIncrement;
         leadLag = 0;
         changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
@@ -530,17 +535,17 @@ void MIDIProcessor::bookmarkForwardBack(bool direction)
     double ztlTime = timeInTicks-xInTicksFromViewer;
 //    std::cout << "compareTime " << timeInTicks-xInTicksFromViewer <<"\n";
     int b;
-    if (ztlTime < sequenceObject.bookmarkTimes.getFirst())
+    if (ztlTime < sequenceObject.bookmarkTimes.getFirst().time)
     {
         if (direction)
-            tweenMove(sequenceObject.bookmarkTimes.getFirst(), 300);
+            tweenMove(sequenceObject.bookmarkTimes.getFirst().time, 300);
         else
             return;
     }
-    else if (ztlTime > sequenceObject.bookmarkTimes.getLast())
+    else if (ztlTime > sequenceObject.bookmarkTimes.getLast().time)
     {
         if (!direction)
-            tweenMove(sequenceObject.bookmarkTimes.getLast(), 300);
+            tweenMove(sequenceObject.bookmarkTimes.getLast().time, 300);
         else
             return;
     }
@@ -548,16 +553,14 @@ void MIDIProcessor::bookmarkForwardBack(bool direction)
     {
         for (b=1; b<sequenceObject.bookmarkTimes.size(); b++)
         {
-            if (direction && sequenceObject.bookmarkTimes[b-1] <= ztlTime && ztlTime < sequenceObject.bookmarkTimes[b])
+            if (direction && sequenceObject.bookmarkTimes[b-1].time <= ztlTime && ztlTime < sequenceObject.bookmarkTimes[b].time)
             {
-//                rewind(sequenceObject.bookmarkTimes[b]);
-                tweenMove(sequenceObject.bookmarkTimes[b], 300);
+                tweenMove(sequenceObject.bookmarkTimes[b].time, 300);
                 return;
             }
-            else if (!direction && sequenceObject.bookmarkTimes[b-1] < ztlTime && ztlTime <= sequenceObject.bookmarkTimes[b])
+            else if (!direction && sequenceObject.bookmarkTimes[b-1].time < ztlTime && ztlTime <= sequenceObject.bookmarkTimes[b].time)
             {
-//                rewind(sequenceObject.bookmarkTimes[b-1]);
-                tweenMove(sequenceObject.bookmarkTimes[b-1], 300);
+                tweenMove(sequenceObject.bookmarkTimes[b-1].time, 300);
                 return;
             }
         }
@@ -575,22 +578,22 @@ double MIDIProcessor::atBookmark()
     for (int i=0;i<sequenceObject.bookmarkTimes.size();i++)
     {
         //                std::cout << "Bookmark at " << processor->sequenceObject.bookmarkTimes[i] << "\n";
-        if (fabs(sequenceObject.bookmarkTimes[i]+xInTicksFromViewer-getTimeInTicks())<4.0)
+        if (fabs(sequenceObject.bookmarkTimes[i].time+xInTicksFromViewer-getTimeInTicks())<4.0)
         {
             bookmark = i;
-            return sequenceObject.bookmarkTimes[i];
+            return sequenceObject.bookmarkTimes[i].time;
         }
     }
     return -1;
 }
 
-void MIDIProcessor::addRemoveBookmark (int action)
+void MIDIProcessor::addRemoveBookmark (int action, bool tempoChange, double tempoScale)
 {
     int bookmark = -1;
     for (int i=0;i<sequenceObject.bookmarkTimes.size();i++)
     {
         //                std::cout << "Bookmark at " << processor->sequenceObject.bookmarkTimes[i] << "\n";
-        if (fabs(sequenceObject.bookmarkTimes[i]+xInTicksFromViewer-getTimeInTicks())<4.0)
+        if (fabs(sequenceObject.bookmarkTimes[i].time+xInTicksFromViewer-getTimeInTicks())<4.0)
         {
             bookmark = i;
             break;
@@ -602,12 +605,14 @@ void MIDIProcessor::addRemoveBookmark (int action)
     }
     else if (action==BOOKMARK_ADD || action==BOOKMARK_TOGGLE)
     {
-        sequenceObject.bookmarkTimes.add(getTimeInTicks());
+        Sequence::Bookmark bm;
+        bm.time = getTimeInTicks();
+        bm.tempoChange = tempoChange;
+        bm.tempoScaleFactor = tempoScale;
+        sequenceObject.bookmarkTimes.add(bm);
         sequenceObject.bookmarkTimes.sort();
-        //                processor->sequenceObject.setChangedFlag(true);
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getTimeInTicks());
     }
-    //            processor->sequenceObject.setChangedFlag(true);
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getTimeInTicks());
 }
 
@@ -654,12 +659,11 @@ void MIDIProcessor::processBlock ()
                 }
             }
         }
-//        const double tempo = sequenceObject.getTempo(sequenceObject.theSequence[currentSeqStep+1]timeStamp);
         if (lastPlayedNoteStep>=0)
         {
             const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(lastPlayedNoteStep)->getTimeStamp());
-            timeIncrement = 10*sequenceObject.tempoMultiplier * tempo / 625;
-            variableTimeIncrement = 10*variableTempoRatio * sequenceObject.tempoMultiplier * tempo / 625;
+            timeIncrement = 10.0*tempo / 625;
+            variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
 //            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
 //            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
         }
@@ -738,12 +742,6 @@ void MIDIProcessor::processBlock ()
             //Note offs for triggered notes
             if (sequenceObject.theSequence.at(step)->noteOffNow)
             {
-//                MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,sequenceObject.theSequence.at(step)->noteNumber,(uint8) 0);
-//                sendMidiMessage(noteOff);
-//                sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber, sequenceObject.theSequence.at(step)->channel, false);
-//                onNotes.remove(onNoteIndex);
-//                deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by viewer
-                //60000.0*timeIncrement/(sequenceObject.getTempo(time)*sequenceObject.tempoMultiplier) =  960.0;
                 int nextNoteOn = -1;
                 if (step<sequenceObject.theSequence.size())
                 {
@@ -1107,7 +1105,6 @@ void MIDIProcessor::processBlock ()
                                 variableTimeIncrement = variableTimeIncrement + timeDelta;
                             }
                             variableTempoRatio = variableTimeIncrement/timeIncrement;
-//                            std::cout << "RTT " << getRealTimeTempo() << "\n" ;
                         }
                     }
 //                sequenceObject.suppressSpeedAdjustment = autoPlaying; //The next note after autoplaying should not cause speed adjustment
@@ -1402,15 +1399,12 @@ void MIDIProcessor::timeHumanizeChords (Array<int> steps)
         {
             const int chIndex = chordsToProcess[chNum];
             double thisChordTimeStamp = sequenceObject.chords[chIndex].chordTimeStamp;
-            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(sequenceObject.chords[chIndex].notePointers.at(0)->currentStep)->getTimeStamp());
-            double timeIncrement = 10*sequenceObject.tempoMultiplier * tempo / 625;
-//            std::cout << chIndex<<" In timeHumanizeChords at chIndex: ts, tempo, increment= "<<thisChordTimeStamp
-//            <<" "<<  tempo<<" "<< timeIncrement<<"\n";
+            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.
+                                        at(sequenceObject.chords[chIndex].notePointers.at(0)->currentStep)->getTimeStamp());
+            double timeIncrement = 10.0*tempo / 625.0;
             std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
             if (chordNotes.size()==0)
                 continue;
-//            int topChordNote = chordNotes.front()->currentStep;
-
             std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
             
             thisChordTimeStamp = sequenceObject.chords[chIndex].chordTimeStamp;

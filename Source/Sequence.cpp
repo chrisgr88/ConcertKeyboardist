@@ -41,6 +41,40 @@ Sequence::~Sequence()
 //    delete undoMgr;
 }
 
+double Sequence::getTempo (double currentTime, bool scaled)
+{
+    if (tempoChanges.size()==0)
+        return 120 * (scaled?tempoMultiplier:1.0);
+    static int prevTempoChangeIndex;
+    static double prevTime;
+    int tempoChangeIndex;
+    if (currentTime>0 || prevTime>currentTime)
+        tempoChangeIndex = prevTempoChangeIndex;
+        else
+            tempoChangeIndex = 0;
+            int counter = (int) tempoChanges.size();
+            while (counter-- > 0)
+            {
+                if ((tempoChangeIndex+1)<tempoChanges.size() &&
+                    (tempoChanges.at(tempoChangeIndex).getTimeStamp()<=currentTime && currentTime<tempoChanges.at(tempoChangeIndex+1).getTimeStamp()) )
+                    break;
+                tempoChangeIndex++;
+                if (tempoChangeIndex>=tempoChanges.size()) //If we didn't find it in the up-search restart at the bottom
+                    tempoChangeIndex = 0;
+                    }
+    
+    double curTempo = 60.0/tempoChanges.at(tempoChangeIndex).getTempoSecondsPerQuarterNote();
+    //        const double increment =  tempoMultiplier * 960.0*curTempo/60000.0;
+    //        std::cout
+    //        << " tempoChangeIndex " << tempoChangeIndex
+    //        << " curTempo " << curTempo
+    //        << " increment " << increment
+    //        << "\n";
+    prevTempoChangeIndex = tempoChangeIndex;
+    prevTime = currentTime;
+    return curTempo * (scaled?tempoMultiplier:1.0);
+}
+
 /*=============================================================
  <#saveSequence#>
  */
@@ -112,13 +146,13 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     for (int i=0;i<bookmarkTimes.size();i++)
     {
         //Property "bookmark"
-        double bm = bookmarkTimes[i];
-        String propertyStr = String("bookmark:")+String(bm);
+        String propertyStr = String("bookmark:")+String(bookmarkTimes[i].time)+" "+"Annotation"
+            +" "+String((int)bookmarkTimes[i].tempoChange)+" "+String(bookmarkTimes[i].tempoScaleFactor);
         int len = propertyStr.length();
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        std::cout << " Write sysex bookmark - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        std::cout << " Write sysex bookmark - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
     for (int track=0;track<trackDetails.size();track++)
@@ -519,7 +553,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         else
             timeSigChanges.add(MidiMessage::timeSignatureMetaEvent(4, 4));
 
-//        timeIncrement = 960.0*tempo*(numerator/denominator)/60000.0;//Per tick.See spreadsheet in source directory. 960 is ppq, always the same
+//      timeIncrement=960.0*tempo*(numerator/denominator)/60000.0;//Per tick.  960 is ppq, always the same
         
         numTracks = midiFile.getNumTracks();
         
@@ -762,8 +796,21 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
 //                std::cout <<"sysexStr - key, value "<<key << " *** " << value <<"\n";
                 if (key == "bookmark")
                 {
-                    double bm = value.getDoubleValue();
-//                    std::cout <<"read bookmark "<< bm <<"\n";
+                    StringArray values;
+                    values.addTokens(value, " ", "\"");
+                    Bookmark bm;// = value.getDoubleValue();
+                    bm.time = values[0].getDoubleValue();
+                    if (values[2].getIntValue() == 0)
+                    {
+                        bm.tempoChange = false;
+                        bm.tempoScaleFactor = 1.0;
+                    }
+                    else
+                    {
+                        bm.tempoChange = true;
+                        bm.tempoScaleFactor = values[3].getDoubleValue();
+                    }
+                    std::cout <<"read bookmark "<< bm.time << " " << bm.tempoChange<<" "<<bm.tempoScaleFactor <<"\n";
                     bookmarkTimes.add(bm);
                 }
                 else if (retainEdits==Sequence::doNotRetainEdits && key == "trackDetails")
@@ -1013,7 +1060,37 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
     //End of reloading file ###
   try {
     theSequence.clear();
-    
+      
+      //Use tempo scaling bookmarks to create scaledTempoChanges vector
+      scaledTempoChanges = tempoChanges;
+      Array<Bookmark> scaleChangeTimes;
+      for (int i=0;i<bookmarkTimes.size();i++)
+          if (bookmarkTimes[i].tempoChange)
+              scaleChangeTimes.add(bookmarkTimes[i]);
+      if (scaleChangeTimes.size()==1)
+      {
+          std::cout << "ts "<<scaleChangeTimes[0].time<<"\n";;
+          for (int i=1; i<scaledTempoChanges.size();i++)
+          {
+              if (scaledTempoChanges[i].getTimeStamp()>scaleChangeTimes[0].time)
+              {
+                  double x = scaledTempoChanges[i].getTempoSecondsPerQuarterNote();
+                  MidiMessage msg = scaledTempoChanges[i];
+                  msg = MidiMessage::tempoMetaEvent(scaleChangeTimes[0].tempoScaleFactor * x*1000000.0);
+                  double y = msg.getTempoSecondsPerQuarterNote();
+                  scaledTempoChanges[i] = msg;
+              }
+          }
+      }
+      else if (scaleChangeTimes.size()>1)
+      {
+          Bookmark firstScaleChangeTime = scaleChangeTimes[0];
+          for (int i=1; i<scaleChangeTimes.size();i++)
+          {
+              
+          }
+      }
+
 //      Transfer tracks to "theSequence"
 //        std::cout << "Transfer tracks to theSequence \n";
     for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)

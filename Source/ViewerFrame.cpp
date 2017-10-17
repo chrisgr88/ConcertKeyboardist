@@ -184,7 +184,7 @@ void ViewerFrame::timerCallback()
         pHumanizeVelocity->returnPressed = false;
     }
 
-    double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks());
+    double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(), false);
     if (pTempoMultiplier->changed)
     {
         processor->sequenceObject.setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0, true);
@@ -212,6 +212,7 @@ void ViewerFrame::timerCallback()
     }
     if (pScaledTempo->returnPressed)
     {
+//        processor->addRemoveBookmark(BOOKMARK_ADD,true,pScaledTempo->textBox.getText().getDoubleValue()/100.0);
 //        std::cout << "Return pressed - scoreTempo " <<pScoreTempo->textBox.getText().getDoubleValue()<<"\n";
 //        //        sendActionMessage("chain:"+String(chainAmount));
 //        grabKeyboardFocus();
@@ -230,8 +231,6 @@ void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
     if (cb == processor)
     {
         String txt = processor->sequenceObject.getScoreFileName();
-//        fileNameLabel.setText(processor->sequenceObject.getScoreFileName(), dontSendNotification);
-//        tempoSlider.setValue(processor->sequenceObject.getTempoMultiplier(), dontSendNotification);
         repaint();
     }
     else if (cb == &noteViewer)
@@ -373,7 +372,11 @@ void ViewerFrame::buttonClicked (Button* button)
         else if(AltToolbarItemFactory::ToolbarItemIds::_listen == id)
             sendActionMessage("listenToSelection");
         else if(AltToolbarItemFactory::ToolbarItemIds::saveTempoChange == id)
+        {
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
+            processor->catchUp();
+            processor->addRemoveBookmark(BOOKMARK_ADD,true,pScaledTempo->textBox.getText().getDoubleValue()/100.0);
+        }
     }
     unfocusAllComponents();
 }

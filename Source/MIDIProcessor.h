@@ -48,25 +48,6 @@ public:
     void timerCallback (int timerID) override;
     
     bool getCurrentPosition (CurrentPositionInfo& result)  override;
-    double getTempo ()
-    {
-//        return 625*timeIncrement; //625 = 60000.0/960.0
-//        else
-        if (timeInTicks<=0)
-            return 60;
-        else
-            return sequenceObject.tempoMultiplier * sequenceObject.getTempo(timeInTicks);
-    }
-    double getRealTimeTempo ()
-    {
-        if (timeInTicks<=0)
-            return sequenceObject.tempoMultiplier * sequenceObject.getTempo(0) * variableTempoRatio;
-        else
-        {
-//            std::cout<< "getRealTimeTempo "<< timeInTicks << " "<<sequenceObject.getTempo(timeInTicks) <<"\n";
-            return sequenceObject.tempoMultiplier * sequenceObject.getTempo(timeInTicks) * variableTempoRatio;
-        }
-    }
     
     void processBlock ();
     inline double getTimeInTicks()
@@ -169,15 +150,15 @@ public:
 #define BOOKMARK_REMOVE 1
 #define BOOKMARK_TOGGLE 2
     double atBookmark (); //Returns exact bookmark time ZTL is close to bookmark, else -1
-    void addRemoveBookmark (int action); //At current ZTL position
+    void addRemoveBookmark (int action, bool tempoChange=false, double tempoScale = 0); //At current ZTL position
     double xInTicksFromViewer;
     void setXInTicks(double x)
     {
         xInTicksFromViewer = x;
-        std::cout
-        << "set xInTicksFromViewer " << xInTicksFromViewer
-        << " timeInTicks " << timeInTicks
-        << "\n";
+//        std::cout
+//        << "set xInTicksFromViewer " << xInTicksFromViewer
+//        << " timeInTicks " << timeInTicks
+//        << "\n";
     }
     
     bool playing() {return isPlaying;}
