@@ -1122,14 +1122,15 @@ void ScrollingNoteViewer::makeNoteBars()
       //Tempo
       if (processor->sequenceObject.tempoChanges.size()>1)
       {
-          double startTempo = 60.0/processor->sequenceObject.tempoChanges.at(0).getTempoSecondsPerQuarterNote();
+          double startTempo = 60.0/processor->sequenceObject.scaledTempoChanges.at(0).getTempoSecondsPerQuarterNote();
           double prevY = graphHeight * (startTempo/300.0);
           double prevX = 0;
-          for (int i=1;i<processor->sequenceObject.tempoChanges.size();i++)
+          for (int i=1;i<processor->sequenceObject.scaledTempoChanges.size();i++)
           {
-              const double timeStamp = processor->sequenceObject.tempoChanges.at(i).getTimeStamp();
+              const double timeStamp = processor->sequenceObject.scaledTempoChanges.at(i).getTimeStamp();
+              
               const double thisX = timeStamp * pixelsPerTick;
-              const double tempo = 60.0/processor->sequenceObject.tempoChanges.at(i).getTempoSecondsPerQuarterNote();
+              const double tempo = 60.0/processor->sequenceObject.scaledTempoChanges.at(i).getTempoSecondsPerQuarterNote();
               const double thisY = graphHeight * (tempo/300.0);
               addLine (prevX, prevY, thisX, prevY, 1.0f, Colour(Colours::red));
               prevY = thisY;

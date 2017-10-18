@@ -1062,33 +1062,67 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
     theSequence.clear();
       
       //Use tempo scaling bookmarks to create scaledTempoChanges vector
-      scaledTempoChanges = tempoChanges;
-      Array<Bookmark> scaleChangeTimes;
+      Array<Bookmark> scalingChangeTimes;
       for (int i=0;i<bookmarkTimes.size();i++)
           if (bookmarkTimes[i].tempoChange)
-              scaleChangeTimes.add(bookmarkTimes[i]);
-      if (scaleChangeTimes.size()==1)
+              scalingChangeTimes.add(bookmarkTimes[i]);
+      if (scalingChangeTimes.size()==0)
       {
-          std::cout << "ts "<<scaleChangeTimes[0].time<<"\n";;
-          for (int i=1; i<scaledTempoChanges.size();i++)
-          {
-              if (scaledTempoChanges[i].getTimeStamp()>scaleChangeTimes[0].time)
-              {
-                  double x = scaledTempoChanges[i].getTempoSecondsPerQuarterNote();
-                  MidiMessage msg = scaledTempoChanges[i];
-                  msg = MidiMessage::tempoMetaEvent(scaleChangeTimes[0].tempoScaleFactor * x*1000000.0);
-                  double y = msg.getTempoSecondsPerQuarterNote();
-                  scaledTempoChanges[i] = msg;
-              }
-          }
+          Bookmark bm;
+          bm.time = 0;
+          bm.tempoChange = true;
+          bm.tempoScaleFactor = 1.0;
+          scalingChangeTimes.add(bm);
       }
-      else if (scaleChangeTimes.size()>1)
+      
+      scaledTempoChanges.clear();
+      int scalingChangeIndex = 0;
+      int tempoChangeIndex = 0;
+      double eventTime = 0.0;
+      double scaleFactor = scalingChangeTimes[0].time;
+      double tspq = tempoChanges[0].getTempoSecondsPerQuarterNote();
+      bool addEvent = false;
+      int eventNum = 0;
+      std::cout << "N tempo changes " << tempoChanges.size() << "\n";
+      while (eventTime<seqDurationInTicks)
       {
-          Bookmark firstScaleChangeTime = scaleChangeTimes[0];
-          for (int i=1; i<scaleChangeTimes.size();i++)
+          if (scalingChangeTimes[scalingChangeIndex].time > tempoChanges[tempoChangeIndex].getTimeStamp())
           {
-              
+              //Scaling change event was next
+              scaleFactor = scalingChangeTimes[scalingChangeIndex].tempoScaleFactor;
+              addEvent = true;
+              std::cout << "adding Scaling change " << eventTime << "\n";
           }
+          else if (scalingChangeTimes[scalingChangeIndex].time < tempoChanges[tempoChangeIndex].getTimeStamp())
+          {
+              //Tempo change event was next
+              tspq = tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote();
+              addEvent = true;
+              std::cout << "adding Tempo change " << eventTime << "\n";
+          }
+          else
+          {
+              //Both changed at the same time
+              tspq = tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote();
+              scaleFactor = scalingChangeTimes[scalingChangeIndex].tempoScaleFactor;
+              addEvent = true;
+              std::cout << "adding change of both " << eventTime << "\n";
+          }
+          if (addEvent)
+          {
+              MidiMessage  msg = MidiMessage::tempoMetaEvent(scaleFactor * tspq * 1000000.0);
+              msg.setTimeStamp(eventTime);
+              scaledTempoChanges.push_back(msg);
+              if (scalingChangeIndex < scalingChangeTimes.size()-1)
+                  scalingChangeIndex++;
+              if (tempoChangeIndex < tempoChanges.size()-1)
+                  tempoChangeIndex++;
+              addEvent = false;
+              std::cout << "added " << eventNum << " "<<msg.getTempoSecondsPerQuarterNote() << "\n";
+              eventNum++;
+          }
+          
+          eventTime = std::max(scalingChangeTimes[scalingChangeIndex].time, tempoChanges[tempoChangeIndex].getTimeStamp());
       }
 
 //      Transfer tracks to "theSequence"
