@@ -749,7 +749,7 @@ void ScrollingNoteViewer::renderOpenGL()
         return;
     const ScopedLock myScopedLock (glRenderLock);
     if (!processor->appIsActive)
-        ;//return;
+        return;
     ++frameCounter;
     jassert (OpenGLHelpers::isContextActive());
     
@@ -1120,7 +1120,7 @@ void ScrollingNoteViewer::makeNoteBars()
     }
       
       //Tempo
-      if (processor->sequenceObject.tempoChanges.size()>1)
+      if (processor->sequenceObject.scaledTempoChanges.size()>1)
       {
           double startTempo = 60.0/processor->sequenceObject.scaledTempoChanges.at(0).getTempoSecondsPerQuarterNote();
           double prevY = graphHeight * (startTempo/300.0);
@@ -1133,6 +1133,7 @@ void ScrollingNoteViewer::makeNoteBars()
               const double tempo = 60.0/processor->sequenceObject.scaledTempoChanges.at(i).getTempoSecondsPerQuarterNote();
               const double thisY = graphHeight * (tempo/300.0);
               addLine (prevX, prevY, thisX, prevY, 1.0f, Colour(Colours::red));
+//              std::cout << "addLine " << timeStamp <<" "<<tempo<< " "<<prevX<<" "<< prevY<<"\n";
               prevY = thisY;
               prevX = thisX;
           }

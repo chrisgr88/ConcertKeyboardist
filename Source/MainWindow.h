@@ -129,11 +129,33 @@ public:
     MainWindow (String name);
     ~MainWindow ();
     
+    virtual void activeWindowStatusChanged	() override
+    {
+//        std::cout << "activeWindowStatusChanged "<< isActiveWindow()<< "\n";
+    }
+    
     void timerCallback() override
     {
-//        std::cout << "MainWindow " << isActiveWindow() << "\n";
-        midiProcessor.appIsActive = isActiveWindow();
+//        std::cout << "Active Window Process::isForegroundProcess()"<< Process::isForegroundProcess()<< "\n";
+        Process::isForegroundProcess();
+        if (!midiProcessor.appIsActive && (Process::isForegroundProcess()/* || isMouseOver(true)*/))
+        {
+//            std::cout << "Make Active \n";
+            midiProcessor.appIsActive = true;
+            mainComponent->audioDeviceManager.restartLastAudioDevice();
+        }
+        else if (midiProcessor.appIsActive && !(Process::isForegroundProcess()/* || isMouseOver(true)*/) )
+        {
+//            std::cout << "Make InActive \n";
+            midiProcessor.appIsActive = false;
+            mainComponent->audioDeviceManager.closeAudioDevice();
+        }
     }
+    
+//    virtual void mouseDown (const MouseEvent& event) override
+//    {
+//        midiProcessor.appIsActive = true;
+//    }
     
     TooltipWindow tooltipWindow;    
     

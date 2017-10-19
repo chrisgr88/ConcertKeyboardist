@@ -121,7 +121,7 @@ ApplicationProperties& getAppProperties();
         
         
         ckBlockClosing = false;
-        startTimer(1000);
+        startTimer(100);
         //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", 99);
         setUsingNativeTitleBar (true);
         mainComponent = new MainComponent(&midiProcessor);

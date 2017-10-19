@@ -40,10 +40,10 @@ MIDIProcessor::~MIDIProcessor()
 bool MIDIProcessor::getCurrentPosition (CurrentPositionInfo& result)
 {
     if (timeInTicks<=0)
-        result.bpm = sequenceObject.getTempo(0) * variableTempoRatio;
+        result.bpm = sequenceObject.getTempo(0, sequenceObject.scaledTempoChanges) * variableTempoRatio;
     else
     {
-        result.bpm = sequenceObject.getTempo(timeInTicks) * variableTempoRatio;
+        result.bpm = sequenceObject.getTempo(timeInTicks, sequenceObject.scaledTempoChanges) * variableTempoRatio;
     }
     result.timeSigNumerator = sequenceObject.numerator;
     result.timeSigDenominator = sequenceObject.denominator;
@@ -90,10 +90,10 @@ void MIDIProcessor::timerCallback (int timerID)
     if (timerID == TIMER_APP_ACTIVE)
     {
 //        std::cout << "Active flag in MIDIProcessor " << appIsActive <<"\n";
-        if (appIsActive)
+        if (appIsActive)// && !HighResolutionTimer::isTimerRunning())
             HighResolutionTimer::startTimer(timerIntervalInMS);
-        else
-            HighResolutionTimer::startTimer(100);
+        else if (HighResolutionTimer::isTimerRunning())
+            HighResolutionTimer::stopTimer();
     }
 }
 void MIDIProcessor::play (bool ply, String fromWhere)
@@ -223,7 +223,7 @@ void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInT
             while (time > listenSequence.at(listenStep).timeStamp)
                 listenStep++;
         }
-        timeIncrement =  960.0*sequenceObject.getTempo(time)/60000.0;
+        timeIncrement =  960.0*sequenceObject.getTempo(time, sequenceObject.scaledTempoChanges)/60000.0;
         variableTimeIncrement = timeIncrement;
         leadLag = 0;
         changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
@@ -661,7 +661,8 @@ void MIDIProcessor::processBlock ()
         }
         if (lastPlayedNoteStep>=0)
         {
-            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(lastPlayedNoteStep)->getTimeStamp());
+            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(lastPlayedNoteStep)->getTimeStamp(),
+                                                         sequenceObject.scaledTempoChanges);
             timeIncrement = 10.0*tempo / 625;
             variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
 //            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
@@ -767,7 +768,7 @@ void MIDIProcessor::processBlock ()
                 { //Add a note overlap time to the current time and schedule the noteoff for then
 //                    std::cout<<"delayed off at "<<step<<" nextNoteOn "<<nextNoteOn<<"\n";
                     const double keyOverlapTimeMs = 100;
-                    const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks))/960.0;
+                    const double msPerTick = (60000.0/sequenceObject.getTempo(timeInTicks, sequenceObject.scaledTempoChanges))/960.0;
                     const double keyOverlapTimeTicks = keyOverlapTimeMs/msPerTick;
                     sequenceObject.theSequence.at(step)->noteOffNow = false;
                     sequenceObject.theSequence.at(step)->sustaining = true;
@@ -1400,7 +1401,8 @@ void MIDIProcessor::timeHumanizeChords (Array<int> steps)
             const int chIndex = chordsToProcess[chNum];
             double thisChordTimeStamp = sequenceObject.chords[chIndex].chordTimeStamp;
             const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.
-                                        at(sequenceObject.chords[chIndex].notePointers.at(0)->currentStep)->getTimeStamp());
+                            at(sequenceObject.chords[chIndex].notePointers.at(0)->currentStep)->getTimeStamp(),
+                                                         sequenceObject.scaledTempoChanges);
             double timeIncrement = 10.0*tempo / 625.0;
             std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
             if (chordNotes.size()==0)

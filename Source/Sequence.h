@@ -301,7 +301,7 @@ public:
     {
         tempoMultiplier *= factor;
     }
-    double getTempo (double currentTime, bool scaled = true);
+    double getTempo (double currentTime, std::vector<MidiMessage> &tempos);
     
     //Realtime playing parameters
     double latePlayAdjustmentWindow;

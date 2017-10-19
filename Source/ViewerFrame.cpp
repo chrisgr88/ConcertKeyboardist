@@ -149,7 +149,7 @@ void ViewerFrame::timerCallback()
         }
         String txt = processor->sequenceObject.getScoreFileName();
         getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName() + plugin);
-        repaint();
+//        repaint();
         processor->sequenceObject.propertiesChanged = false;
 //    }
     
@@ -184,12 +184,9 @@ void ViewerFrame::timerCallback()
         pHumanizeVelocity->returnPressed = false;
     }
 
-    double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(), false);
     if (pTempoMultiplier->changed)
     {
         processor->sequenceObject.setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0, true);
-//        std::cout << "tempoChanged " <<pRealTimeTempo->numberBox.getText().getDoubleValue()
-//        << " setMult "<<pRealTimeTempo->numberBox.getText().getDoubleValue()/scoreTempo<<"\n";
         pTempoMultiplier->changed = false;
         grabKeyboardFocus();
     }
@@ -199,29 +196,22 @@ void ViewerFrame::timerCallback()
     }
     
     if (pScoreTempo->returnPressed)
-    {
-//        std::cout << "Return pressed - scoreTempo " <<pScoreTempo->textBox.getText().getDoubleValue()<<"\n";
-////        sendActionMessage("chain:"+String(chainAmount));
-//        grabKeyboardFocus();
-//        pScoreTempo->returnPressed = false;
-    }
+        ;
     else
     {
+        double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
+                                                               processor->sequenceObject.tempoChanges);
         if (!pScoreTempo->textBox.hasKeyboardFocus(true))
             pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
     }
     if (pScaledTempo->returnPressed)
-    {
-//        processor->addRemoveBookmark(BOOKMARK_ADD,true,pScaledTempo->textBox.getText().getDoubleValue()/100.0);
-//        std::cout << "Return pressed - scoreTempo " <<pScoreTempo->textBox.getText().getDoubleValue()<<"\n";
-//        //        sendActionMessage("chain:"+String(chainAmount));
-//        grabKeyboardFocus();
-//        pScoreTempo->returnPressed = false;
-    }
+        ;
     else
     {
+        double scaledTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
+                                                                processor->sequenceObject.scaledTempoChanges);
         if (!pScaledTempo->textBox.hasKeyboardFocus(true))
-            pScaledTempo->textBox.setText(String(std::round(scoreTempo * processor->sequenceObject.getTempoMultiplier())));
+            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
     }
     
 }
@@ -231,7 +221,7 @@ void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
     if (cb == processor)
     {
         String txt = processor->sequenceObject.getScoreFileName();
-        repaint();
+//        repaint();
     }
     else if (cb == &noteViewer)
     {
