@@ -273,21 +273,7 @@ public:
     std::vector<MidiMessage> scaledTempoChanges;
     //Actual tempo is the midi file multiplied by tempoMultiplier
     double tempoMultiplier;
-    void setTempoMultiplier(double value, bool documentReallyChanged)
-    {
-        std::cout << "setTempoMultiplier "<<value<<"\r";
-        if (value<0.1)
-            tempoMultiplier = 0.1;
-        else
-            tempoMultiplier = value;
-//        setTempo (startingTempo * value);
-        sequenceProps.setValue("tempoMultiplier", tempoMultiplier);//float - Factor applied to original tempos to adjust original tempo
-        setChangedFlag (documentReallyChanged);
-    }
-    inline double getTempoMultiplier()
-    {
-        return tempoMultiplier;
-    }
+    void setTempoMultiplier(double value, double currentTime, bool documentReallyChanged);
     void setTempo(double tem)
     {
         tempo = tem;
@@ -302,6 +288,7 @@ public:
         tempoMultiplier *= factor;
     }
     double getTempo (double currentTime, std::vector<MidiMessage> &tempos);
+    double getTempoMultipier (double currentTime);
     
     //Realtime playing parameters
     double latePlayAdjustmentWindow;

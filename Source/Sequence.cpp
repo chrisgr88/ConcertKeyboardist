@@ -41,25 +41,77 @@ Sequence::~Sequence()
 //    delete undoMgr;
 }
 
+void Sequence::setTempoMultiplier(double value, double currentTime, bool documentReallyChanged)
+{
+    std::cout << "setTempoMultiplier "<<value<<"\r";
+    if (value<0.1)
+        tempoMultiplier = 0.1;
+    else
+        tempoMultiplier = value;
+    int indexBeforeCurrentTime = -1;
+    int index;
+    for (index=bookmarkTimes.size()-1 ;0<=index ;index--)
+    {
+//        std::cout
+//        << " currentTime " << currentTime
+//        << " bookmark time " << bookmarkTimes[index].time
+//        << " bookmark ScaleFactor " << bookmarkTimes[index].tempoScaleFactor
+//        << "\n";
+        if (bookmarkTimes[index].tempoChange && ((int)bookmarkTimes[index].time)<=currentTime)
+        {
+            indexBeforeCurrentTime = index;
+            break;
+        }
+    }
+    
+    if (indexBeforeCurrentTime == -1)
+    {
+//        if (bookmarkTimes.size()>0 && bookmarkTimes[0].time==0 && bookmarkTimes[0].tempoChange)
+//        {
+//            Bookmark bm = bookmarkTimes[0];
+//            bm.tempoScaleFactor = value;
+//            bookmarkTimes.set(0, bm);
+//        }
+//        else
+//        {
+            Bookmark bm;
+            bm.time = 0;
+            bm.tempoChange = true;
+            bm.tempoScaleFactor = value;
+            bookmarkTimes.insert(0,bm);
+//        }
+    }
+    else
+    {
+        Bookmark bm;
+        bm.time = bookmarkTimes[indexBeforeCurrentTime].time;
+        bm.tempoChange = true;
+        bm.tempoScaleFactor = value;
+        bookmarkTimes.set(indexBeforeCurrentTime,bm);
+    }
+    setChangedFlag (documentReallyChanged);
+    sendChangeMessage();
+}
+
 double Sequence::getTempo (double currentTime, std::vector<MidiMessage> &tempos)
 {
-    static int prevTempoChangeIndex;
-    static double prevTime;
-    int tempoChangeIndex;
+    static int prevTempoChangeIndex = 0;
+    static double prevTime = 0;
+    int tempoChangeIndex = 0;
     if (currentTime>0 || prevTime>currentTime)
         tempoChangeIndex = prevTempoChangeIndex;
-        else
+    else
+        tempoChangeIndex = 0;
+    int counter = (int) tempos.size();
+    while (counter-- > 0)
+    {
+        if ((tempoChangeIndex+1)<tempos.size() &&
+            (tempos.at(tempoChangeIndex).getTimeStamp()<=currentTime && currentTime<tempos.at(tempoChangeIndex+1).getTimeStamp()) )
+            break;
+        tempoChangeIndex++;
+        if (tempoChangeIndex>=tempos.size()) //If we didn't find it in the up-search restart at the bottom
             tempoChangeIndex = 0;
-            int counter = (int) tempos.size();
-            while (counter-- > 0)
-            {
-                if ((tempoChangeIndex+1)<tempos.size() &&
-                    (tempos.at(tempoChangeIndex).getTimeStamp()<=currentTime && currentTime<tempos.at(tempoChangeIndex+1).getTimeStamp()) )
-                    break;
-                tempoChangeIndex++;
-                if (tempoChangeIndex>=tempos.size()) //If we didn't find it in the up-search restart at the bottom
-                    tempoChangeIndex = 0;
-                    }
+    }
     
     double curTempo = 60.0/tempos.at(tempoChangeIndex).getTempoSecondsPerQuarterNote();
     //        const double increment =  tempoMultiplier * 960.0*curTempo/60000.0;
@@ -73,8 +125,56 @@ double Sequence::getTempo (double currentTime, std::vector<MidiMessage> &tempos)
     return curTempo;
 }
 
+//double Sequence::getTempo (double currentTime, std::vector<MidiMessage> &tempos)
+//{
+//    int indexBeforeCurrentTime = -1;
+//    int index;
+//    for (index=(int)tempos.size()-1 ;0<=index ;index--)
+//    {
+////        std::cout
+////        << " currentTime " << currentTime
+////        << " tempo time " << bookmarkTimes[index].time
+////        << " tempo " << bookmarkTimes[index].tempoScaleFactor
+////        << "\n";
+//        if (tempos[index].getTimeStamp() <= currentTime)
+//        {
+//            indexBeforeCurrentTime = index;
+//            break;
+//        }
+//    }
+//
+//    if (indexBeforeCurrentTime == -1)
+//        return 120;
+//    else
+//        return 60/tempos[indexBeforeCurrentTime].getTempoSecondsPerQuarterNote();
+//}
+
+double Sequence::getTempoMultipier (double currentTime)
+{
+    int indexBeforeCurrentTime = -1;
+    int index;
+    for (index=bookmarkTimes.size()-1 ;0<=index ;index--)
+    {
+//        std::cout
+//        << " currentTime " << currentTime
+//        << " bookmark time " << bookmarkTimes[index].time
+//        << " bookmark ScaleFactor " << bookmarkTimes[index].tempoScaleFactor
+//        << "\n";
+        if (bookmarkTimes[index].tempoChange && ((int)bookmarkTimes[index].time)<=currentTime)
+        {
+            indexBeforeCurrentTime = index;
+            break;
+        }
+    }
+    
+    if (indexBeforeCurrentTime == -1)
+        return 1.0;
+    else
+        return bookmarkTimes[indexBeforeCurrentTime].tempoScaleFactor;
+}
+
 /*=============================================================
- <#saveSequence#>
+ 
  */
 void Sequence::saveSequence(File fileToSave)// String  name = "")
 {
@@ -87,11 +187,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     // - "majorVersion" updated by MidiProcessor::prepareToSave()
     // - "minorVersion" updated by MidiProcessor::prepareToSave()
     // - "buildNumber" updated by MidiProcessor::prepareToSave()
-    // - "tn" - Forced target note - see below
-    // - "ntn" - Forced non target note - see below
-    // - "chainSeg" see below
-    // - "tempoMultiplier" kept updated by setTempoMultiplier()
-    // - "waitForFirstNote"
     // - "horizontalScale" is kept updated by the ScrollingNoteViewer
 
     //Not currently implemented:
@@ -466,7 +561,6 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
     {
         chainingInterval = 120.0;
         bookmarkTimes.clear();
-        setTempoMultiplier(1.0, false);
         if (loadFile==LoadType::loadFile)
         {
             //This is not a LoadType::reAnalyzeOnly so clear everything
@@ -915,7 +1009,6 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
             sequenceProps.setValue("horizontalScale", var(1.0));
         }
         //Get values from sequenceProps
-        setTempoMultiplier(sequenceProps.getDoubleValue("tempoMultiplier"), false);
         chordTimeHumanize = sequenceProps.getValue("chordTimeHumanize", var("1.0"));
         chordVelocityHumanize = sequenceProps.getValue("chordVelocityHumanize", var("68"));
         autoPlaySustains = sequenceProps.getBoolValue("autoPlaySustains", var(true));
@@ -1062,8 +1155,11 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
       //Use tempo scaling bookmarks to create scaledTempoChanges vector
       Array<Bookmark> scalingChanges;
       for (int i=0;i<bookmarkTimes.size();i++)
+      {
           if (bookmarkTimes[i].tempoChange)
               scalingChanges.add(bookmarkTimes[i]);
+          std::cout << "scalingChanges "<<scalingChanges.getLast().time<<" "<<scalingChanges.getLast().tempoScaleFactor << "\n";
+      }
       if (scalingChanges.size()==0 || scalingChanges[0].time > 0.0)
       {
           Bookmark bm;
@@ -1077,35 +1173,37 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
       bm.tempoChange = true;
       bm.tempoScaleFactor = 1.0;
       scalingChanges.add(bm);
+//      for (int i=0;i<scalingChanges.size();i++)
+//          std::cout << "scalingChanges "<<scalingChanges[i].time<<" "<<scalingChanges[i].tempoScaleFactor << "\n";
       
       scaledTempoChanges.clear();
-      std::cout << "tempo changes before " << tempoChanges.size() << "\n";
-      double curScalingChangeIndex = 0;
+//      std::cout << "tempo changes before " << tempoChanges.size() << "\n";
+      double nextScalingChangeIndex = 0;
+      double curScale = scalingChanges[0].tempoScaleFactor;
 
       for (int tempoChangeIndex=0;tempoChangeIndex<tempoChanges.size();tempoChangeIndex++)
       {
-          while (scalingChanges[curScalingChangeIndex].time < tempoChanges[tempoChangeIndex].getTimeStamp())
+          while (scalingChanges[nextScalingChangeIndex].time < tempoChanges[tempoChangeIndex].getTimeStamp())
           {
-              MidiMessage  msg = MidiMessage::tempoMetaEvent(scalingChanges[curScalingChangeIndex].tempoScaleFactor
-                                    * tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-                                    * 1000000.0);
-              msg.setTimeStamp(scalingChanges[curScalingChangeIndex].time);
+              curScale = scalingChanges[nextScalingChangeIndex].tempoScaleFactor;
+              MidiMessage  msg = MidiMessage::tempoMetaEvent(tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
+                                    * 1000000.0 / curScale);
+              msg.setTimeStamp(scalingChanges[nextScalingChangeIndex].time);
               scaledTempoChanges.push_back(msg);
               const double tempo = 60.0/scaledTempoChanges.back().getTempoSecondsPerQuarterNote();
-              if (tempoChangeIndex<5)
-                  std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
-              curScalingChangeIndex++;
+//              if (tempoChangeIndex<5)
+//                  std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
+              nextScalingChangeIndex++;
           }
-          MidiMessage  msg = MidiMessage::tempoMetaEvent(scalingChanges[curScalingChangeIndex].tempoScaleFactor
-                                                         * tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-                                                         * 1000000.0);
+          MidiMessage  msg = MidiMessage::tempoMetaEvent(tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
+                                                         * 1000000.0 / curScale);
           msg.setTimeStamp(tempoChanges[tempoChangeIndex].getTimeStamp());
           scaledTempoChanges.push_back(msg);
           const double tempo = 60.0/scaledTempoChanges.back().getTempoSecondsPerQuarterNote();
-          if (tempoChangeIndex<5)
-              std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
+//          if (tempoChangeIndex<5)
+//              std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
       }
-      std::cout << "tempo changes after " << scaledTempoChanges.size() << "\n";
+//      std::cout << "tempo changes after " << scaledTempoChanges.size() << "\n";
 
 //      Transfer tracks to "theSequence"
 //        std::cout << "Transfer tracks to theSequence \n";

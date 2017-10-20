@@ -186,34 +186,35 @@ void ViewerFrame::timerCallback()
 
     if (pTempoMultiplier->changed)
     {
-        processor->sequenceObject.setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0, true);
+        std::cout << "pTempoMultiplier->changed " << pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0 << "\n";
+        processor->setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0,
+                                                     processor->getZTLTime(noteViewer.horizontalShift), true);
         pTempoMultiplier->changed = false;
         grabKeyboardFocus();
     }
     else
     {
-        pTempoMultiplier->setValue(std::round(processor->sequenceObject.getTempoMultiplier()*100.0));
+//        pTempoMultiplier->setValue(std::round(processor->sequenceObject.getTempoMultipier(processor->getTimeInTicks())*100.0));
     }
     
     if (pScoreTempo->returnPressed)
         ;
     else
     {
-        double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
-                                                               processor->sequenceObject.tempoChanges);
-        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
-            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
+//        double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
+//                                                               processor->sequenceObject.tempoChanges);
+//        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
+//            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
     }
     if (pScaledTempo->returnPressed)
         ;
     else
     {
-        double scaledTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
-                                                                processor->sequenceObject.scaledTempoChanges);
-        if (!pScaledTempo->textBox.hasKeyboardFocus(true))
-            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
+//        double scaledTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
+//                                                                processor->sequenceObject.scaledTempoChanges);
+//        if (!pScaledTempo->textBox.hasKeyboardFocus(true))
+//            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
     }
-    
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -221,7 +222,20 @@ void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
     if (cb == processor)
     {
         String txt = processor->sequenceObject.getScoreFileName();
-//        repaint();
+//        std::cout << "ViewerFrame::CLB tempoMultipier " << std::round(processor->sequenceObject.
+//                                                                          getTempoMultipier(processor->getZTLTime(noteViewer.horizontalShift))*100.0) << "\n";
+        
+        const double scaledTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
+                                                                processor->sequenceObject.scaledTempoChanges);
+        if (!pScaledTempo->textBox.hasKeyboardFocus(true))
+            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
+        const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
+                                                               processor->sequenceObject.tempoChanges);
+        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
+            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
+        
+        pTempoMultiplier->setValue(std::round(processor->sequenceObject.
+                                              getTempoMultipier(processor->getZTLTime(noteViewer.horizontalShift))*100.0));
     }
     else if (cb == &noteViewer)
     {
@@ -364,8 +378,8 @@ void ViewerFrame::buttonClicked (Button* button)
         else if(AltToolbarItemFactory::ToolbarItemIds::saveTempoChange == id)
         {
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
-            processor->catchUp();
-            processor->addRemoveBookmark(BOOKMARK_ADD,true,pScaledTempo->textBox.getText().getDoubleValue()/100.0);
+            processor->catchUp(false);
+            processor->addRemoveBookmark(BOOKMARK_ADD,true,pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0);
         }
     }
     unfocusAllComponents();
@@ -436,7 +450,7 @@ void ViewerFrame::resized()
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
     
     scoreTempoLabel.setBounds(22, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
-    scaledTempoLabel.setBounds(141, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
-    scaleFactorLabel.setBounds(255, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
+    scaleFactorLabel.setBounds(138, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
+    scaledTempoLabel.setBounds(276, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
     hoverStepInfo.setBounds(585, getHeight()-30, 600, noteViewer.getToolbarHeight()-1);
 }

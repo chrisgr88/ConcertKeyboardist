@@ -208,7 +208,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
     sendChangeMessage();
 }
 
-void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInTicks
+void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to given timeInTicks
 {
 //    std::cout << "Rewind: time " << time
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
@@ -227,7 +227,8 @@ void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInT
         variableTimeIncrement = timeIncrement;
         leadLag = 0;
         changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
-        sendSynchronousChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
+        if (sendChangeMessages)
+            sendSynchronousChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
     //    std::vector<std::shared_ptr<NoteWithOffTime>> theSequence = sequenceObject.getSequence();
         HighResolutionTimer::stopTimer();
         panic = true;
@@ -237,7 +238,8 @@ void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInT
         meas = 0; //Current measure, updated when timeInTicks passes next measure division
         currentBeat = 0;
         changeMessageType = CHANGE_MESSAGE_MEASURE_CHANGED;
-        sendSynchronousChangeMessage();
+        if (sendChangeMessages)
+            sendSynchronousChangeMessage();
         duplicateNote = -1;
         prevNoteOnLag = 0;
         prevTimeInTicks = 0;
@@ -384,7 +386,8 @@ void MIDIProcessor::rewind (double time, bool catchUp) //Rewind to given timeInT
     try {
         pauseProcessing = false;
         changeMessageType = CHANGE_MESSAGE_REWIND;
-        sendSynchronousChangeMessage();
+        if (sendChangeMessages)
+            sendSynchronousChangeMessage();
     } catch (const std::out_of_range& ex) {
         std::cout << " error 3 in rewind " << "\n";
     }
@@ -409,7 +412,6 @@ void MIDIProcessor::listenToSelection()
 //            endListenTime =  sequenceObject.theSequence.at(copyOfSelectedNotes.getLast()).timeStamp;
 //        }
         setListenSequence(startListenTime, endListenTime, Array<int>());
-//        rewind(startListenTime);
         lastStartTime = startListenTime;
         play(true,"previousStart");
         isListening = true;
@@ -444,7 +446,6 @@ void MIDIProcessor::playableStepForwardBack(bool direction)
         for (int step=currentSeqStep; 0<=step ; step--)
             if (sequenceObject.theSequence.at(step)->targetNote)
             {
-//                rewind(sequenceObject.theSequence.at(step).timeStamp, true);
                 tweenMove(sequenceObject.theSequence.at(step)->getTimeStamp(), 5.0);
                 break;
             }
@@ -459,11 +460,11 @@ void MIDIProcessor::playableStepForwardBack(bool direction)
         for (int step=nextStep; step<sequenceObject.theSequence.size()-1; step++)
             if (sequenceObject.theSequence.at(step)->targetNote)
             {
-//                rewind(sequenceObject.theSequence.at(step).timeStamp, true);
                 tweenMove(sequenceObject.theSequence.at(step)->getTimeStamp(), 5.0);
                 break;
             }
     }
+    sendChangeMessage();
 }
 
 int MIDIProcessor::getMeasure(double horizontalShift)
@@ -528,6 +529,7 @@ void MIDIProcessor::measureForwardBack(bool direction)
             tweenMove(sequenceObject.measureTimes[m-1], 80);
         }
     }
+    sendChangeMessage();
 }
 void MIDIProcessor::bookmarkForwardBack(bool direction)
 {
@@ -565,6 +567,7 @@ void MIDIProcessor::bookmarkForwardBack(bool direction)
             }
         }
     }
+    sendChangeMessage();
 }
 
 bool MIDIProcessor::atZTL()
@@ -668,6 +671,10 @@ void MIDIProcessor::processBlock ()
 //            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
 //            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
         }
+        
+        const double tempo = sequenceObject.getTempo(timeInTicks,sequenceObject.scaledTempoChanges);
+        timeIncrement = 10.0*tempo / 625;
+        variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
     }
     else
     {
@@ -696,20 +703,6 @@ void MIDIProcessor::processBlock ()
     removeNextBlockOfMessages(midiMessages, 50);
     int samplePosition=0;
     MidiMessage msg;
-//    if (midiMessages.getNumEvents()>0)
-//    {
-////        std::cout << "removeNextBlockOfMessages. Count = " << midiMessages.getNumEvents() << "\n";
-//        for (MidiBuffer::Iterator it (midiMessages); it.getNextEvent (msg, samplePosition);)
-//        {
-//            if (msg.isNoteOn())
-//                ;//std::cout << "NoteOn " << (int)msg.getNoteNumber() <<" "<<(int)msg.getVelocity()<<" "<<msg.getChannel()<< "\n";
-//            else if (msg.isNoteOff())
-//                ;//std::cout << "NoteOff " << (int)msg.getNoteNumber() <<" "<<(int)msg.getVelocity()<<" "<<msg.getChannel()<< "\n";
-//        }
-//    }
-//    const int64 tis = playHeadInfo.timeInSamples;
-//    if (tis==0 && prevTis!=0)
-//        rewind(0);
     //------------------------------------------------------------------
     //Put expression control events in expr array
     if (midiMessages.getNumEvents() > 0)
@@ -1252,24 +1245,7 @@ void MIDIProcessor::processBlock ()
             sendMidiMessage(exprEvents[exprEventIndex]);
         }
     }
-//    loopStartTick = 300.0;
-//    loopEndStep = 50;
-//    loopEndTick = DBL_MAX;
-//    if (currentSeqStep>=loopEndStep)
-//    {
-//        loopPending = true;
-//        loopEndTick = theSequence.at(loopEndStep).scheduledOnTime + loopEndTickOffset;
-//    }
-//    if (timeInTicks>=loopEndTick)
-//    {
-//        std::cout << "Looped ****** timeInTicks " << timeInTicks << "\n";
-//        rewind(loopStartTick, true);
-//        isPlaying = true;
-//        loopEndTick = DBL_MAX;
-//        loopPending = false;
-//    }
-//    else
-        exprEvents.clear();
+    exprEvents.clear();
     pauseProcessing = false;
 
     } catch (const std::out_of_range& ex) {
@@ -1277,9 +1253,9 @@ void MIDIProcessor::processBlock ()
     }
 }
 
-void MIDIProcessor::catchUp ()
+void MIDIProcessor::catchUp (bool sendChangeMessages)
 {
-    rewind(timeInTicks-xInTicksFromViewer, true);
+    rewind(timeInTicks-xInTicksFromViewer, sendChangeMessages);
 }
 
 
@@ -2057,6 +2033,62 @@ void MIDIProcessor::changeNoteVelocity(int step, float velocity)
     //        }
 //    catchUp();
 //    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
+}
+
+void MIDIProcessor::setTempoMultiplier(double value, double currentTime, bool documentReallyChanged)
+{
+    std::cout << "setTempoMultiplier "<<value<<"\r";
+    if (value<0.1)
+        value = 0.1;
+    int indexBeforeCurrentTime = -1;
+    int index;
+    for (index=sequenceObject.bookmarkTimes.size()-1 ;0<=index ;index--)
+    {
+        //        std::cout
+        //        << " currentTime " << currentTime
+        //        << " bookmark time " << bookmarkTimes[index].time
+        //        << " bookmark ScaleFactor " << bookmarkTimes[index].tempoScaleFactor
+        //        << "\n";
+        if (sequenceObject.bookmarkTimes[index].tempoChange && ((int)sequenceObject.bookmarkTimes[index].time)<=currentTime)
+        {
+            indexBeforeCurrentTime = index;
+            break;
+        }
+    }
+    
+    if (indexBeforeCurrentTime == -1)
+    {
+        //        if (bookmarkTimes.size()>0 && bookmarkTimes[0].time==0 && bookmarkTimes[0].tempoChange)
+        //        {
+        //            Bookmark bm = bookmarkTimes[0];
+        //            bm.tempoScaleFactor = value;
+        //            bookmarkTimes.set(0, bm);
+        //        }
+        //        else
+        //        {
+        Sequence::Bookmark bm;
+        bm.time = 0;
+        bm.tempoChange = true;
+        bm.tempoScaleFactor = value;
+        sequenceObject.bookmarkTimes.insert(0,bm);
+        //        }
+    }
+    else
+    {
+        Sequence::Bookmark bm;
+        bm.time = sequenceObject.bookmarkTimes[indexBeforeCurrentTime].time;
+        bm.tempoChange = true;
+        bm.tempoScaleFactor = value;
+        sequenceObject.bookmarkTimes.set(indexBeforeCurrentTime,bm);
+    }
+    sequenceObject.setChangedFlag (documentReallyChanged);
+    double ztlTime;
+    if (xInTicksFromViewer==0)
+        ztlTime = getTimeInTicks();
+    else
+        ztlTime = getTimeInTicks()-xInTicksFromViewer;
+    rewind(ztlTime);
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, ztlTime);
 }
 
 void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)

@@ -44,7 +44,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     rebuidingGLBuffer = false;
     sequenceChanged = false;
     prevFileLoaded = File();
-    processor->addChangeListener(this); //Sent at the end of rewind()
+    processor->addChangeListener(this); //Sent at the end of rewind  ()
     processor->sequenceObject.addChangeListener(this); //Send at the end of saveSequence()
     openGLContext.setMultisamplingEnabled(true);
     OpenGLPixelFormat format;
@@ -319,13 +319,6 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             
         }
     }
-    else if (hoveringOver==HOVER_ZEROTIMELINE || hoveringOver==HOVER_ZEROTIMEHANDLE) //Clicked on ZTL - make this the current time
-    {
-        double xInTicks = processor->getTimeInTicks()+((event.position.getX() -
-                                                        (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale;
-        processor->setXInTicks(horizontalShift*pixelsPerTick/horizontalScale);
-        processor->rewind(xInTicks);
-    }
     else
         hoveringOver = HOVER_NONE;
 //    draggingVelocity = false;
@@ -376,6 +369,7 @@ void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWh
     else if (seqEndRelToLeftEdgeInPixels < sequenceStartPixel*horizontalScale)
         newShift =  processor->getTimeInTicks()*pixelsPerTick*horizontalScale - scaledSeqDurationInPixels/horizontalScale;
     setHorizontalShift(newShift);
+    processor->sendChangeMessage();
     repaint();
 }
 void ScrollingNoteViewer::mouseMagnify (const MouseEvent& event, float scaleFactor)

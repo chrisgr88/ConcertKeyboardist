@@ -59,6 +59,7 @@ public:
     {
 //        std::cout<< "setTimeInTicks "<< time << "\n";
         timeInTicks = time;
+        sendChangeMessage();
 //        accompTimeInTicks = time;
     }
     void setLeadTimeInTicks(int ticks) {leadTimeInTicks = ticks;}
@@ -103,7 +104,7 @@ public:
         if (sequenceObject.loadSequence(type, retainEdits, humanizeTime, humanizeVelocity))
         {
             HighResolutionTimer::startTimer(timerIntervalInMS);
-            rewind(time, true);
+            rewind(time);
         }
     }
 
@@ -116,7 +117,7 @@ public:
     bool pauseClock; //Used to halt increasing timeInTicks if next noteOn time lags too much behind timeInTick
 //    bool waitForFirstNote; //If true when play started waitingForFirstNote is set to true and next unplayed note moved to ztl.
     bool waitingForFirstNote; //If set, time does not increment.  This is set false when the first expr note is played.
-    void rewind (double time, bool catchUp=false);
+    void rewind (double time, bool sendChangeMessages=true);
     void listenToSelection();
     void endListen();
 #define CHANGE_MESSAGE_NONE -1
@@ -185,7 +186,7 @@ public:
         return onNotes.contains(seqStep);
     }
     
-    void catchUp();
+    void catchUp(bool sendChangeMessages = false);
 //    void dumpData(int nSteps);
     
     class Listener
@@ -261,6 +262,8 @@ public:
     {
         return notesEditable;
     }
+    
+    void setTempoMultiplier(double value, double currentTime, bool documentReallyChanged);
     
     int lastPlayedSeqStep = -1; //Equal to the step of the target just before the next to be played
     int lastUserPlayedSeqStep = -1; //Previous value of lastPlayedSeqStep

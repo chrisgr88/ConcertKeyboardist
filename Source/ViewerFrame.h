@@ -556,17 +556,18 @@ private:
             ids.add (scoreTempo);
             for (int n=0;n<5;n++)
                 ids.add (spacerId);
-            ids.add (scaledTempo);
+            ids.add (tempoMultiplier);
             for (int n=0;n<5;n++)
                 ids.add (spacerId);
-            ids.add (tempoMultiplier);
+            ids.add (scaledTempo);
             ids.add (saveTempoChange);
             ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_playPause);
             ids.add (_rewind);
-            ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (_listen);
             ids.add (separatorBarId);
         }
@@ -763,6 +764,11 @@ private:
                 String str = getText();
                 str.trimCharactersAtEnd("%");
                 startValue = str.getDoubleValue();
+                mouseIsDown = true;
+            }
+            void mouseUp (const MouseEvent& e) override
+            {
+                mouseIsDown = false;
             }
             void mouseDrag (const MouseEvent& e) override
             {
@@ -772,6 +778,12 @@ private:
                 setText(String(newVal,decimalPlaces)+"%");
                 sendChangeMessage();
             }
+            void setTextWhenMouseNotDown (String text)
+            {
+                if (!mouseIsDown)
+                    setText(text);
+            }
+            bool mouseIsDown;
             double startValue;
             double max, min;
             int decimalPlaces;
