@@ -108,14 +108,12 @@ public:
         }
     }
 
-    std::vector<NoteWithOffTime> upcomingNoteGroup; //Group of notes just past the "nextAvailable" group. Used for highlighting them.
     bool isPlaying;
     bool isListening; //True is we are listening to a selection
     double startListenTime;
     double endListenTime;
     double lastStartTime;
     bool pauseClock; //Used to halt increasing timeInTicks if next noteOn time lags too much behind timeInTick
-//    bool waitForFirstNote; //If true when play started waitingForFirstNote is set to true and next unplayed note moved to ztl.
     bool waitingForFirstNote; //If set, time does not increment.  This is set false when the first expr note is played.
     void rewind (double time, bool sendChangeMessages=true);
     void listenToSelection();
@@ -130,7 +128,6 @@ public:
 #define CHANGE_MESSAGE_NOTE_PLAYED 6
 #define CHANGE_MESSAGE_UNDO 7
     int changeMessageType; //Set before sending a change message - used by viewer to choose desired action
-//    bool inUndoRedo = false;
     //Set before sending a CHANGE_MESSAGE_TWEEN
     double tweenTo;
     double transitionTime;
@@ -294,7 +291,6 @@ public:
     double variableTempoRatio; // variableTempoRatio = variableTimeIncrement/curTimeIncrement
     
     bool appIsActive = true;
-    double getStartTimeOfNextStep();
     int sampleRate;
     std::atomic_bool pauseProcessing;
 private:

@@ -662,17 +662,20 @@ void MIDIProcessor::processBlock ()
                 }
             }
         }
-        if (lastPlayedNoteStep>=0)
-        {
-            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(lastPlayedNoteStep)->getTimeStamp(),
-                                                         sequenceObject.scaledTempoChanges);
-            timeIncrement = 10.0*tempo / 625;
-            variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
-//            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
-//            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
-        }
+//        if (lastPlayedNoteStep>=0)
+//        {
+////            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(lastPlayedNoteStep)->getTimeStamp(),
+////                                                         sequenceObject.scaledTempoChanges);
+//            const double tempo = sequenceObject.getTempo(timeInTicks+leadLag,
+//                                                         sequenceObject.scaledTempoChanges);
+//            std::cout << "timeInTicks, leadLag,  " <<timeInTicks<<" "<< leadLag<<" "<<timeInTicks+leadLag<<" "<<tempo<<"\n";
+//            timeIncrement = 10.0*tempo / 625;
+//            variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
+////            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
+////            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
+//        }
         
-        const double tempo = sequenceObject.getTempo(timeInTicks,sequenceObject.scaledTempoChanges);
+        const double tempo = sequenceObject.getTempo(timeInTicks+leadLag,sequenceObject.scaledTempoChanges);
         timeIncrement = 10.0*tempo / 625;
         variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
     }
@@ -1011,9 +1014,9 @@ void MIDIProcessor::processBlock ()
                         
                     if (earliness < howEarlyIsAllowed)
                     {
-//                        std::cout << "scheduledNotes " << scheduledNotes.size() << "\n";
                         if (scheduledNotes.size()==0)
                             leadLag = noteTimeStamp - timeInTicks;
+//                        std::cout << "leadLag " << leadLag << "\n";
                         availableNotes.add(noteIndex); //This is the triggering note
                         mostRecentNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
                         const double vel = sequenceObject.theSequence.at(noteIndex)->velocity;
@@ -2196,16 +2199,6 @@ void MIDIProcessor::setListenSequence(double startTime, double endTime, Array<in
     //            <<" channel "  <<  listenSequence[i].getChannel()
     //            << " velocity " << (int) listenSequence[i].getVelocity()
     //            << "\n";
-}
-double MIDIProcessor::getStartTimeOfNextStep()
-{
-    int step;
-    for (step=currentSeqStep;step<sequenceObject.theSequence.size();step++)
-    {
-        if (sequenceObject.theSequence.at(step)->targetNote)
-            break;
-    }
-    return sequenceObject.theSequence.at(step)->getTimeStamp();
 }
 
 void MIDIProcessor::hiResTimerCallback()

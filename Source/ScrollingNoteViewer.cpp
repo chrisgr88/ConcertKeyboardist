@@ -761,13 +761,16 @@ void ScrollingNoteViewer::renderOpenGL()
         std::cout << "No vertices" << "\n";
     if  (sequenceChanged && glBufferUpdateCountdown == 0 && vertices.size()>0)
     {
-        glBufferUpdateCountdown = 4; //Number of renders that must pass before we are allowed in here again
+        glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
         resized();
+        int size = vertices.size();
+        std::cout << "vertices.size "<<size<<"\n";
         openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
         openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,
                                                static_cast<GLsizeiptr> (static_cast<size_t> (vertices.size()) * sizeof (Vertex)),
-                                               vertices.getRawDataPointer(), GL_DYNAMIC_DRAW);
+                                               vertices.getRawDataPointer(),
+                                               GL_DYNAMIC_DRAW);
         
         numIndices = 6*(vertices.size()/4);
         //generate buffer object name(s) (names are ints) (indexBuffer is an GLuint)
@@ -1102,6 +1105,7 @@ void ScrollingNoteViewer::makeNoteBars()
 //    if (seqSize==0)
 //        return;
     //Velocity graph
+      
     const double graphHeight = (300.0-15.0)-2*toolbarHeight; //(300.0-15.0) the original viewer height set in MainComponent.cpp
 
     double prevY = graphHeight * pSequence->at(0)->highestVelocityInChain;
@@ -1285,7 +1289,6 @@ void ScrollingNoteViewer::makeNoteBars()
                deferredNoteBars[i].headWidth, deferredNoteBars[i].headHeight,
                deferredNoteBars[i].colHead, deferredNoteBars[i].colBar);
     }
-    
     //Sustain bars
     if (processor->sequenceObject.sustainPedalChanges.size()>0)
     {
@@ -1417,7 +1420,6 @@ void ScrollingNoteViewer::makeNoteBars()
             }
         }
     } //End soft bars
-    
     //Bookmarks
     //        std::cout << processor->sequenceObject.bookmarkTimes.size() << "\n";
     for (int i=0;i<processor->sequenceObject.bookmarkTimes.size();i++)
@@ -1462,6 +1464,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
     if (processor->isPlaying && !processor->waitingForFirstNote)
     {
         const double hLinePos = 2.8 * horizontalScale + sequenceStartPixel + processor->leadLag * pixelsPerTick * horizontalScale;
+//        double tempoTime = sequenceStartPixel/(pixelsPerTick * horizontalScale) + processor->leadLag;
+//        std::cout << "processor->leadLag "<<processor->leadLag<<"\n";
         g.setColour (colourNoteOn);
         g.fillRect(Rectangle<float>(hLinePos,topMargin*verticalScale, 1.1, getHeight()-topMargin*verticalScale));
     }

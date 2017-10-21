@@ -122,6 +122,7 @@ double Sequence::getTempo (double currentTime, std::vector<MidiMessage> &tempos)
     //        << "\n";
     prevTempoChangeIndex = tempoChangeIndex;
     prevTime = currentTime;
+//    std::cout << " getTempo " << currentTime <<" "<<curTempo<< "\n";
     return curTempo;
 }
 
@@ -1173,11 +1174,11 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
       bm.tempoChange = true;
       bm.tempoScaleFactor = 1.0;
       scalingChanges.add(bm);
-//      for (int i=0;i<scalingChanges.size();i++)
-//          std::cout << "scalingChanges "<<scalingChanges[i].time<<" "<<scalingChanges[i].tempoScaleFactor << "\n";
+      for (int i=0;i<scalingChanges.size();i++)
+          std::cout << "scalingChanges "<<scalingChanges[i].time<<" "<<scalingChanges[i].tempoScaleFactor << "\n";
       
       scaledTempoChanges.clear();
-//      std::cout << "tempo changes before " << tempoChanges.size() << "\n";
+      std::cout << "tempo changes before " << tempoChanges.size() << "\n";
       double nextScalingChangeIndex = 0;
       double curScale = scalingChanges[0].tempoScaleFactor;
 
@@ -1203,7 +1204,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
 //          if (tempoChangeIndex<5)
 //              std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
       }
-//      std::cout << "tempo changes after " << scaledTempoChanges.size() << "\n";
+      std::cout << "tempo changes after " << scaledTempoChanges.size() << "\n";
 
 //      Transfer tracks to "theSequence"
 //        std::cout << "Transfer tracks to theSequence \n";
