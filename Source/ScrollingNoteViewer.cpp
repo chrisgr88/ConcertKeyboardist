@@ -42,7 +42,9 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     processor->initialWindowHeight = 88;
     glBufferUpdateCountdown = 0; //Countdown of number of renders to pass before another buffer update is allowed.
     rebuidingGLBuffer = false;
+    rendering = false;
     sequenceChanged = false;
+    ignoreWheel = false;
     prevFileLoaded = File();
     processor->addChangeListener(this); //Sent at the end of rewind  ()
     processor->sequenceObject.addChangeListener(this); //Send at the end of saveSequence()
@@ -355,8 +357,14 @@ void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWh
 {
     processor->leadLag = 0;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
-    if (processor->isPlaying )
+    if (ignoreWheel && processor->getZTLTime(0))
+        return;
+    if (processor->isPlaying && processor->getZTLTime(0))
+    {
+        ignoreWheel = true;
+        startTimer (TIMER_IGNORE_WHEEL, 100);
         processor->play(false,"current");
+    }
     float newShift = horizontalShift-300*wheel.deltaX;
     const double seqStartRelToLeftEdgeInPixels =
         (sequenceStartPixel - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
@@ -744,6 +752,7 @@ void ScrollingNoteViewer::renderOpenGL()
     const ScopedLock myScopedLock (glRenderLock);
     if (!processor->appIsActive)
         return;
+    rendering = true;
     ++frameCounter;
     jassert (OpenGLHelpers::isContextActive());
     
@@ -782,7 +791,10 @@ void ScrollingNoteViewer::renderOpenGL()
         repaint();
     }
     if (numIndices==0)
+    {
+        rendering = false;
         return;
+    }
     
     glEnable (GL_BLEND);
     glEnable(GL_MULTISAMPLE);
@@ -890,6 +902,7 @@ void ScrollingNoteViewer::renderOpenGL()
   } catch (const std::out_of_range& ex) {
       std::cout << " error noteviewer: render openGl" << "\n";
   }
+    rendering = false;
 }
 
 //shutdown openGL
@@ -964,6 +977,8 @@ void ScrollingNoteViewer::createShaders()
 //<#makeKeyboard#>
 void ScrollingNoteViewer::makeKeyboard()
 {
+    if (rendering)
+        return;
     ticksPerQuarter = processor->sequenceObject.getPPQ();
     timeSigChanges = processor->sequenceObject.getTimeSigInfo();
     timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
@@ -1822,6 +1837,11 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             setMouseCursor(MouseCursor::NormalCursor);
         repaint();
     }
+    else if (timerID == TIMER_IGNORE_WHEEL)
+    {
+        ignoreWheel = false;
+        stopTimer(TIMER_IGNORE_WHEEL);
+    }
     else if (timerID == TIMER_TWEEN)
     {
         processor->setTimeInTicks(timeInTicksTweens[animationStep]);
@@ -2312,7 +2332,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
   }
 }
 
-void ScrollingNoteViewer::resized()
+void ScrollingNoteViewer::resized() 
 {
     if (!grabbedInitialWindowSize)
     {

@@ -133,6 +133,7 @@ public:
     virtual void openGLContextClosing() override;
     CriticalSection glRenderLock;
     std::atomic_bool rebuidingGLBuffer;
+    std::atomic_bool rendering;
     CriticalSection mkNoteBars;
     
     Matrix3D<float> getProjectionMatrix(float horizScale, float vertScale) const;
@@ -183,6 +184,9 @@ public:
 #define TIMER_REPAINT_SELECTION 4
 #define TIMER_MOUSE_UP 5
 #define TIMER_PERIODIC 6
+#define TIMER_IGNORE_WHEEL 7
+    
+    bool ignoreWheel;
     Point<int> curDragPosition;
     
     void timerCallback (int timerID) override;

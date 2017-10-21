@@ -2,12 +2,16 @@ To Do
 
 - DONE Save and load tempo bookmarks
 - DONE Bug setting tempo bookmark when score is at initial zero time - always set at time 0
-- Enable tempo graph to show tempo changes
-- Enable playing to respond to tempo changes
+- DONE Enable tempo graph to show tempo changes
+- DONE Enable playing to respond to tempo changes
+- DONE Make tempo display update continually as the score is scrolled
+- DONE Fix bug in first branch of tempo graph
+- DONE More testing of time setting during navigation & start/stop playing.
 
-- Make tempo display update continually as the score is scrolled
-- Fix bug in first branch of tempo graph
-- More testing of time setting during navigation & start/stop playing.
+- Change the time point that real time tempo  updating is based on.  Currently ztl.  Use time position of yellow next-note line?
+- Eliminate creation of spurious bookmarks when creating tempo changes.
+- Allow only one bookmark/tempo change at a given time.
+- Improve tooltip for tempo scaling control 
 
 - Show velocity cursor only when in velocity drawing mode 
 
