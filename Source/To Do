@@ -7,29 +7,25 @@ To Do
 - DONE Make tempo display update continually as the score is scrolled
 - DONE Fix bug in first branch of tempo graph
 - DONE More testing of time setting during navigation & start/stop playing.
+- DEFER Button to show/hide tempo graph?
+- DONE Cosmetic fixes to bottom toolbar
+- DONE? Eliminate creation of spurious bookmarks when creating tempo changes.
+- DONE Show velocity cursor only when in velocity drawing mode 
+- DONE Pressing the adjust or draw velocities buttons should automatically press the show velocity graph button
+- DONE Drag velocity of all selected notes
 
 - Change the time point that real time tempo  updating is based on.  Currently ztl.  Use time position of yellow next-note line?
-- Eliminate creation of spurious bookmarks when creating tempo changes.
+
 - Allow only one bookmark/tempo change at a given time.
 - Improve tooltip for tempo scaling control 
 
-- Show velocity cursor only when in velocity drawing mode 
-
-- DONE Cosmetic fixes to bottom toolbar
-
-- Pressing the adjust or draw velocities buttons should automatically press the show velocity graph button
-
-- Drag velocity of all selected notes
-
 - Drag duration of all selected notes
-
-- DEFER Button to show/hide tempo graph?
 
 - Better detection of when to disable OpenGL
 
 - Change how deletion of sustain and soft bars deterines what to delete.  Use selected notes, not ZTL as indicator.
 
-- Remove green next-to-play marker marker
+- Remove green next-to-play marker
 
 - AutoScroll while dragging selection
 

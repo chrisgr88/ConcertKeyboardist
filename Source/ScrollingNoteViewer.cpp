@@ -357,12 +357,8 @@ void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWh
 {
     processor->leadLag = 0;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
-    if (ignoreWheel && processor->getZTLTime(0))
-        return;
-    if (processor->isPlaying && processor->getZTLTime(0))
+    if (processor->isPlaying && processor->getZTLTime(0)>0.1 && wheel.deltaX>0.0f)
     {
-        ignoreWheel = true;
-        startTimer (TIMER_IGNORE_WHEEL, 100);
         processor->play(false,"current");
     }
     float newShift = horizontalShift-300*wheel.deltaX;
@@ -765,7 +761,7 @@ void ScrollingNoteViewer::renderOpenGL()
         std::cout << "No vertices" << "\n";
     if  (sequenceChanged && glBufferUpdateCountdown == 0 && vertices.size()>0)
     {
-        glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
+        glBufferUpdateCountdown = 4; //Number of renders that must pass before we are allowed in here again
         resized();
         openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
@@ -899,8 +895,8 @@ void ScrollingNoteViewer::renderOpenGL()
     }
     else
         setRectanglePos(nextNoteRect, 0.0f, 2.f, 0.0f, 13.f); //Make invisible with zero width
-  } catch (const std::out_of_range& ex) {
-      std::cout << " error noteviewer: render openGl" << "\n";
+  } catch (const std::exception& e) {
+      std::cout << " error noteviewer: render openGl" << e.what()<< "\n";
   }
     rendering = false;
 }
@@ -1459,6 +1455,8 @@ void ScrollingNoteViewer::updatePlayedNotes()
 void ScrollingNoteViewer::paint (Graphics& g)
 {
 //    std::cout << "Entering paint \n";
+    if (rendering)
+        return;
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
@@ -1770,10 +1768,9 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
     {
-        if (!showingVelocities.getValue())
+        if (drawingVelocities.getValue() || adjustingingVelocities.getValue())
         {
-            drawingVelocities.setValue(false);
-            adjustingingVelocities.setValue(false);
+            showingVelocities.setValue(true);
         }
         if ((prevDrawingVelocities != (bool)drawingVelocities.getValue())
             || (prevAdjustingVelocities != (bool)adjustingingVelocities.getValue()))
@@ -1816,19 +1813,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             if (getMouseCursor()!=marqueeRemovingCursor)
                 setMouseCursor(marqueeRemovingCursor);
         }
-//        else if (markingSelectedNotes)
-//        {
-//            selecting = false;
-//            if (getMouseCursor()!=selectionMarkerCursor)
-//                setMouseCursor(selectionMarkerCursor);
-//        }
-//        else if (clearingSelectedNotes)
-//        {
-//            selecting = false;
-//            if (getMouseCursor()!=selectionUnMarkerCursor)
-//                setMouseCursor(selectionUnMarkerCursor);
-//        }
-        else if (showingVelocities.getValue())
+        else if (drawingVelocities.getValue())
         {
             if (getMouseCursor()!=editVelocityCursor)
                 setMouseCursor(editVelocityCursor);
@@ -1836,11 +1821,6 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         else
             setMouseCursor(MouseCursor::NormalCursor);
         repaint();
-    }
-    else if (timerID == TIMER_IGNORE_WHEEL)
-    {
-        ignoreWheel = false;
-        stopTimer(TIMER_IGNORE_WHEEL);
     }
     else if (timerID == TIMER_TWEEN)
     {
@@ -2300,7 +2280,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     processor->catchUp();
                     processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                                  processor->getZTLTime(horizontalShift));
-//                    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
+//   processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());
                     
                     repaint();
                 }
