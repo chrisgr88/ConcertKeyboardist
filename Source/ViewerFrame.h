@@ -516,7 +516,9 @@ private:
             scoreTempo      = 6,
             scaledTempo      = 7,
             tempoMultiplier   = 8,
-            saveTempoChange = 9
+            saveTempoChange = 9,
+            addBookmark = 10,
+            removeBookmarkOrTempoChange = 11
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -540,6 +542,8 @@ private:
             ids.add (scaledTempo);
             ids.add (tempoMultiplier);
             ids.add (saveTempoChange);
+            ids.add (addBookmark);
+            ids.add (removeBookmarkOrTempoChange);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -561,6 +565,8 @@ private:
                 ids.add (spacerId);
             ids.add (scaledTempo);
             ids.add (saveTempoChange);
+            ids.add (addBookmark);
+            ids.add (removeBookmarkOrTempoChange);
             ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (_play);
@@ -581,8 +587,16 @@ private:
                     
                 case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
                 case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
-                case saveTempoChange:        return createButtonFromZipFileSVG (itemId, "Add Tempo Adjustment Bookmark",
+                case saveTempoChange:        return createButtonFromZipFileSVG (itemId, "Add Tempo Change Marker",
                                                                                 "AddTempoAdjustment.svg");
+                    
+                case addBookmark:        return createButtonFromZipFileSVG (itemId, "Add Bookmark",
+                                                                                "AddBookmark.svg");
+                    
+                case removeBookmarkOrTempoChange:        return createButtonFromZipFileSVG (itemId,
+                                                                                "Remove Bookmark or Tempo Change Marker",
+                                                                                "RemoveBookmarkOrTempoMark.svg");
+                    
                 case scoreTempo:
                 {
                     ScoreTempo *scoreTempo = new ScoreTempo(itemId);

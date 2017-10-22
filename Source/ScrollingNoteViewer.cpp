@@ -1429,7 +1429,7 @@ void ScrollingNoteViewer::makeNoteBars()
         if (processor->sequenceObject.bookmarkTimes[i].tempoChange)
             col = Colour(Colours::red);
         else
-            col = juce::Colour(Colours::white).darker();
+            col = juce::Colour(Colours::whitesmoke);
         addRectangle(x-1.95, 0.0f,     4, (topMargin), col);
     }
     

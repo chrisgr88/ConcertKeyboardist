@@ -381,6 +381,18 @@ void ViewerFrame::buttonClicked (Button* button)
             processor->catchUp(false);
             processor->addRemoveBookmark(BOOKMARK_ADD,true,pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0);
         }
+        else if(AltToolbarItemFactory::ToolbarItemIds::addBookmark == id)
+        {
+            std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
+            processor->catchUp(false);
+            processor->addRemoveBookmark(BOOKMARK_ADD);
+        }
+        else if(AltToolbarItemFactory::ToolbarItemIds::removeBookmarkOrTempoChange == id)
+        {
+            std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
+//            processor->catchUp(false);
+            processor->addRemoveBookmark(BOOKMARK_REMOVE);
+        }
     }
     unfocusAllComponents();
 }
@@ -452,5 +464,5 @@ void ViewerFrame::resized()
     scoreTempoLabel.setBounds(22, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
     scaleFactorLabel.setBounds(138, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
     scaledTempoLabel.setBounds(276, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(585, getHeight()-30, 600, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(585+45, getHeight()-30, 600, noteViewer.getToolbarHeight()-1);
 }
