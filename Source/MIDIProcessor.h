@@ -281,9 +281,10 @@ public:
     void humanizeChordNoteTimes ();
     void humanizeChordNoteVelocities ();
     void setIndividualNotesActivity (Array<Sequence::StepActivity> act); //Used only to restore activity after undo
+    void setIndividualNoteTimes (Array<Sequence::PrevNoteTimes> prevTimes);
     bool getNoteActivity(int step);
     void changeNoteVelocity(int step, float velocity);
-    void changeNoteTimes(Array<int>, double time);
+    Array<Sequence::PrevNoteTimes> changeNoteTimes(Array<int> notes, double time);
     void changeNoteOffTimes(Array<int> steps, double delta);
     Array<int> copyOfSelectedNotes;
     void setCopyOfSelectedNotes(Array<int> sel);
@@ -446,7 +447,35 @@ public:
         Array<int> selection;
         Array<Sequence::StepActivity> prevValues;
     };
-    
+
+    class ActionChangeNoteTimes : public UndoableAction
+    {
+        MIDIProcessor& proc;
+        
+    public:
+        ActionChangeNoteTimes(MIDIProcessor& _proc, double _delta, Array<int> _selection) : proc(_proc)
+        {
+            delta = _delta;
+            selection = _selection;
+        }
+        ~ActionChangeNoteTimes()
+        {
+        }
+        bool perform()
+        {
+            prevValues = proc.changeNoteTimes(selection, delta);
+            return true;
+        }
+        bool undo()
+        {
+            proc.setIndividualNoteTimes(prevValues);
+            return true;
+        }
+    private:
+        double delta;
+        Array<int> selection;
+        Array<Sequence::PrevNoteTimes> prevValues;
+    };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MIDIProcessor)
 };
 #endif  // PLUGINPROCESSOR_H_INCLUDED

@@ -225,7 +225,10 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             else
                 steps.add(noteBeingDraggedOn);
             std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
-            processor->changeNoteTimes(steps, deltaTimeDrag);
+            processor->undoMgr->beginNewTransaction();
+            MIDIProcessor::ActionChangeNoteTimes* action;
+            action = new MIDIProcessor::ActionChangeNoteTimes(*processor, deltaTimeDrag, selectedNotes);
+            processor->undoMgr->perform(action);
             
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getZTLTime(horizontalShift));
             restoreSelectedNotes(pointersToSelectedNotes);
@@ -1507,13 +1510,18 @@ void ScrollingNoteViewer::paint (Graphics& g)
     
     if (!processor->isPlaying)
     {
-        if (processor->undoMgr->inRedo)
-        {
-//            std::cout << "paint inUndo   " << "\n";
-            displayedSelection = processor->sequenceObject.undoneOrRedoneSteps;
-            setSelectedNotes(processor->sequenceObject.undoneOrRedoneSteps);
-            processor->undoMgr->inRedo = false;
-        }
+//        if (processor->undoMgr->inRedo || processor->undoMgr->inUndo)
+//        {
+////            std::cout << "paint inUndo   " << "\n";
+//            displayedSelection.clear();
+//            for (int i=0;i<processor->sequenceObject.undoneOrRedoneSteps.size();i++)
+//            {
+//                displayedSelection.add(processor->sequenceObject.undoneOrRedoneSteps.at(i)->currentStep);
+//            }
+////            displayedSelection = processor->sequenceObject.undoneOrRedoneSteps;
+//            setSelectedNotes(displayedSelection);
+//            processor->undoMgr->inRedo = false;
+//        }
         if (!(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) &&
             (((hoveringOver == HOVER_NOTEHEAD && showingVelocities.getValue()) || draggingVelocity) && hoverStep>=0))
         {
@@ -1748,6 +1756,24 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         else if (processor->changeMessageType == CHANGE_MESSAGE_UNDO)
         {
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+            if (processor->undoMgr->inRedo || processor->undoMgr->inUndo)
+            {
+                displayedSelection.clear();
+                for (int i=0;i<processor->sequenceObject.undoneOrRedoneSteps.size();i++)
+                {
+                    displayedSelection.add(processor->sequenceObject.undoneOrRedoneSteps.at(i)->currentStep);
+                }
+                //            displayedSelection = processor->sequenceObject.undoneOrRedoneSteps;
+                selectedNotes = displayedSelection;
+                
+                setSelectedNotes(displayedSelection);
+                processor->setCopyOfSelectedNotes(displayedSelection);
+                processor->undoMgr->inRedo = false;
+            }
+            for (int i=0;i<displayedSelection.size();i++)
+            {
+                std::cout << "in CHANGE_MESSAGE_UNDO "<<displayedSelection[i]<< "\n";
+            }
             makeKeyboard ();
             makeNoteBars ();
             repaint();

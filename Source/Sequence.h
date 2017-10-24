@@ -33,6 +33,11 @@ public:
         bool active;
     } StepActivity;
     
+    typedef struct PrevNoteTimes {
+        int step;
+        double time;
+    } PrevNoteTimes;
+    
     std::vector<std::shared_ptr<NoteWithOffTime>> theSequence;
     
     bool loadedCkfFile;
@@ -58,7 +63,7 @@ public:
      */
     bool loadDoc = false; //Tells midiProcessor to do a load document when it gets a change message
 //    bool inUndoOrRedo = false;
-    Array<int> undoneOrRedoneSteps; //Used pass changed steps to MidiProcessor so it can restore the selection
+    std::vector<std::shared_ptr<NoteWithOffTime>> undoneOrRedoneSteps; //Used to pass changed steps to MidiProcessor so it can restore the selection
     File fileToLoad;
     Result loadDocument (const File& file) override
     {

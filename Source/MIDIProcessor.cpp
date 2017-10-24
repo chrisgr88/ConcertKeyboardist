@@ -1338,7 +1338,7 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
         }
     }
     if (undoMgr->inUndo || undoMgr->inRedo)
-        setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
+        ;//setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
     else
     {
         sequenceObject.setChangedFlag(true);
@@ -1346,7 +1346,7 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
     }
     //        inUndoRedo = true;
     changeMessageType = CHANGE_MESSAGE_UNDO;
-    sequenceObject.undoneOrRedoneSteps = steps;
+    ;//sequenceObject.undoneOrRedoneSteps = steps;
     sendSynchronousChangeMessage(); //To viewer
     return stepActivityList;
 }
@@ -1823,14 +1823,14 @@ Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection,
     //        std::cout << "chainCommand: interval = " <<inverval<<"\n";
     Array<Sequence::StepActivity> stepActivity = sequenceObject.chain(selection, inverval);
     if (undoMgr->inUndo || undoMgr->inRedo)
-        setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
+        ;//setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
     else
     {
         sequenceObject.setChangedFlag(true);
         catchUp();
     }
     changeMessageType = CHANGE_MESSAGE_UNDO;
-    sequenceObject.undoneOrRedoneSteps = selection;
+    //sequenceObject.undoneOrRedoneSteps = selection;
     sendSynchronousChangeMessage(); //To midiProcessor
     return stepActivity;
 }
@@ -1967,9 +1967,32 @@ void MIDIProcessor::setIndividualNotesActivity (Array<Sequence::StepActivity> ac
         for (int i=0;i<act.size();i++)
             steps.add(act[i].step);
         changeMessageType = CHANGE_MESSAGE_UNDO;
-        sequenceObject.undoneOrRedoneSteps = steps;
-        setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
+        //sequenceObject.undoneOrRedoneSteps = steps;
+        //setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.undoneOrRedoneSteps[0])->getTimeStamp());
         //            inUndoRedo = true;
+        sendSynchronousChangeMessage();
+        changeMessageType = CHANGE_MESSAGE_NONE;
+    }
+    else
+        sequenceObject.undoneOrRedoneSteps.clear();
+}
+
+void MIDIProcessor::setIndividualNoteTimes (Array<Sequence::PrevNoteTimes> prevTimes) //For use in undo
+{
+    for (int i=0;i<prevTimes.size();i++)
+    {
+        double delta = sequenceObject.theSequence.at(prevTimes[i].step)->offTime -
+                            sequenceObject.theSequence.at(prevTimes[i].step)->timeStamp;
+        sequenceObject.theSequence.at(prevTimes[i].step)->timeStamp = prevTimes[i].time;
+        sequenceObject.theSequence.at(prevTimes[i].step)->offTime =
+                    sequenceObject.theSequence.at(prevTimes[i].step)->timeStamp + delta;
+    }
+    if(undoMgr->inUndo)
+    {
+        Array<int> notes;
+        for (int i=0;i<prevTimes.size();i++)
+            notes.add(prevTimes[i].step);
+        changeMessageType = CHANGE_MESSAGE_UNDO;
         sendSynchronousChangeMessage();
         changeMessageType = CHANGE_MESSAGE_NONE;
     }
@@ -1984,58 +2007,7 @@ bool MIDIProcessor::getNoteActivity(int step)
 
 void MIDIProcessor::changeNoteVelocity(int step, float velocity)
 {
-//    std::cout << "changeNoteVelocity before catchUp "<<step<<"\n";
-    //        if (copyOfSelectedNotes.size()<=1)
-    //        {
-//    std::cout << "changeNoteVelocity after catchUp "<<step<<"\n";
     sequenceObject.theSequence.at(step)->velocity = velocity;
-    //        }
-    //        else
-    //        {
-    //            if (copyOfSelectedNotes.size()>=3 && step==copyOfSelectedNotes.getFirst())
-    //            {
-    //                //Ramp from this velocity to existing last note velocity
-    //                const float lastNoteVel = sequenceObject.theSequence.at(copyOfSelectedNotes.getLast())->velocity;
-    //                const int steps = copyOfSelectedNotes.size()-1;
-    //                const float increment = (lastNoteVel-velocity)/steps;
-    //                for (int i=0;i<copyOfSelectedNotes.size()-1;i++)
-    //                {
-    //                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
-    //                    {
-    //                        const float newVel =  lastNoteVel - (steps-i)*increment;
-    //                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = newVel;
-    ////                        std::cout << "New vel " << copyOfSelectedNotes[i] <<" "<<increment<<" "
-    ////                        << " "<<(int)(sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity*127.0)<<"\n";
-    //                    }
-    //                }
-    //            }
-    //            else if (copyOfSelectedNotes.size()>=3 && step==copyOfSelectedNotes.getLast())
-    //            {
-    //                //Ramp from existing first note velocity to this velocity
-    //                const float firstNoteVel = sequenceObject.theSequence.at(copyOfSelectedNotes.getFirst())->velocity;
-    //                const int steps = copyOfSelectedNotes.size()-1;
-    //                const float increment = (velocity-firstNoteVel)/steps;
-    //                for (int i=1;i<copyOfSelectedNotes.size();i++)
-    //                {
-    //                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
-    //                    {
-    //                        const float newVel =  firstNoteVel + i*increment;
-    //                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = newVel;
-    ////                        std::cout << "New vel " << copyOfSelectedNotes[i] <<" "<<increment<<" "
-    ////                        << " "<<(int)(sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity*127.0)<<"\n";
-    //                    }
-    //                }
-    //            }
-    //            else{
-    //                for (int i=0;i<copyOfSelectedNotes.size();i++)
-    //                {
-    //                    if (sequenceObject.theSequence.at(copyOfSelectedNotes[i])->chordTopStep==-1)
-    //                        sequenceObject.theSequence.at(copyOfSelectedNotes[i])->velocity = velocity;
-    //                }
-    //            }
-    //        }
-//    catchUp();
-//    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
 }
 
 void MIDIProcessor::setTempoMultiplier(double value, double currentTime, bool documentReallyChanged)
@@ -2094,9 +2066,17 @@ void MIDIProcessor::setTempoMultiplier(double value, double currentTime, bool do
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, ztlTime);
 }
 
-void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
+Array<Sequence::PrevNoteTimes> MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
 {
-    for (int i=0;i<steps.size();i++)
+    //For steps in selection, construct prevNoteTimesList
+    //Entries in stepActivityList are {int step; bool active}
+    Array<Sequence::PrevNoteTimes> prevNoteTimesList;
+    for (int i=0; i<steps.size(); i++)
+    {
+        const Sequence::PrevNoteTimes pnt = {steps[i], sequenceObject.theSequence.at(steps[i])->getTimeStamp()};
+        prevNoteTimesList.add(pnt);
+    }
+    for (int i=0; i<steps.size(); i++)
     {
         if (sequenceObject.theSequence.at(steps[i])->inChord)
         {
@@ -2106,16 +2086,20 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
                 if (sequenceObject.chords[chordIndex].notePointers.at(i)->noteNumber >
                             sequenceObject.chords[chordIndex].notePointers.at(iHighest)->noteNumber)
                     iHighest = i;
-            if (steps[i] == sequenceObject.chords[chordIndex].notePointers[iHighest]->currentStep)
+            if (sequenceObject.theSequence.at(steps[i])->currentStep ==
+                sequenceObject.chords[chordIndex].notePointers[iHighest]->currentStep)
             {
                 //If it's the chord's top step add all the chord's notes to steps to be changed
                 for (int i=0;i<sequenceObject.chords[chordIndex].notePointers.size();i++)
+                {
                     steps.addIfNotAlreadyThere(sequenceObject.chords[chordIndex].notePointers.at(i)->currentStep);
+                }
                 sequenceObject.chords[chordIndex].chordTimeStamp += delta;
             }
         }
     }
-    for (int i=0;i<steps.size();i++)
+    
+    for (int i=0; i<steps.size(); i++)
     {
 //        int indexOfNextSameNote = -1;
 //        //Adjust the head width if other note of same note number follows closely
@@ -2132,7 +2116,7 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
 //        }
 
         double timeStamp = sequenceObject.theSequence.at(steps[i])->getTimeStamp();
-        double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime(); 
+        double offTime = sequenceObject.theSequence.at(steps[i])->getOffTime();
         timeStamp += delta;
         offTime += delta;
 //        if (indexOfNextSameNote != -1 && (offTime >= sequenceObject.theSequence.at(indexOfNextSameNote)->getTimeStamp()))
@@ -2149,6 +2133,7 @@ void MIDIProcessor::changeNoteTimes(Array<int> steps, double delta)
         ztlTime = getTimeInTicks()-xInTicksFromViewer;
     rewind(ztlTime);
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, ztlTime);
+    return prevNoteTimesList;
 }
 void MIDIProcessor::changeNoteOffTimes(Array<int> steps, double delta)
 {
