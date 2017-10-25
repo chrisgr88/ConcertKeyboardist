@@ -252,7 +252,12 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
                 steps.add(noteBeingDraggedOn);
         }
         const double delta = offTimeAfterDrag - processor->sequenceObject.theSequence.at(noteBeingDraggedOn)->offTime;
-        processor->changeNoteOffTimes(steps, delta);
+//        processor->changeNoteOffTimes(steps, delta);
+        std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
+        processor->undoMgr->beginNewTransaction();
+        MIDIProcessor::ActionChangeNoteOffTimes* action;
+        action = new MIDIProcessor::ActionChangeNoteOffTimes(*processor, delta, pointersToSelectedNotes);
+        processor->undoMgr->perform(action);
         draggingOffTime = false;
         hoveringOver = HOVER_NONE;
     }

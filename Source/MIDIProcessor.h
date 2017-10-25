@@ -282,10 +282,11 @@ public:
     void humanizeChordNoteVelocities ();
     void setIndividualNotesActivity (Array<Sequence::StepActivity> act); //Used only to restore activity after undo
     void setIndividualNoteTimes (Array<Sequence::PrevNoteTimes> prevTimes);
+    void setIndividualNoteOffTimes (Array<Sequence::PrevNoteTimes> prevTimes);
     bool getNoteActivity(int step);
     void changeNoteVelocity(int step, float velocity);
     Array<Sequence::PrevNoteTimes> changeNoteTimes(std::vector<std::shared_ptr<NoteWithOffTime>> notes, double time);
-    void changeNoteOffTimes(Array<int> steps, double delta);
+    Array<Sequence::PrevNoteTimes>  changeNoteOffTimes(std::vector<std::shared_ptr<NoteWithOffTime>> notes, double delta);
     Array<int> copyOfSelectedNotes;
     void setCopyOfSelectedNotes(Array<int> sel);
     void setListenSequence(double startTime, double endTime, Array<int> tracks);
@@ -491,6 +492,42 @@ public:
         bool undo()
         {
             proc.setIndividualNoteTimes(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
+            return true;
+        }
+    private:
+        double delta;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<Sequence::PrevNoteTimes> prevValues;
+    };
+    
+    
+    class ActionChangeNoteOffTimes : public UndoableAction  //ActionChangeNoteOffTimes =========================================
+    {
+        MIDIProcessor& proc;
+        
+    public:
+        ActionChangeNoteOffTimes(MIDIProcessor& _proc, double _delta,
+                              std::vector<std::shared_ptr<NoteWithOffTime>> _selection) : proc(_proc)
+        {
+            delta = _delta;
+            selection = _selection;
+        }
+        ~ActionChangeNoteOffTimes()
+        {
+        }
+        bool perform()
+        {
+            prevValues = proc.changeNoteOffTimes(selection, delta);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            return true;
+        }
+        bool undo()
+        {
+            proc.setIndividualNoteOffTimes(prevValues);
             proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
             proc.changeMessageType = CHANGE_MESSAGE_UNDO;
             proc.sendSynchronousChangeMessage();

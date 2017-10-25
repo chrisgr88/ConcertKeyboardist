@@ -1353,8 +1353,8 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
 
 Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> steps, String timeSpec)
 {
+    Array<Sequence::PrevNoteTimes> prevNoteTimesList;
     try {
-        Array<Sequence::PrevNoteTimes> prevNoteTimesList;
         if (!sequenceObject.getLoadingFile())
         {
             for (int i=0; i<steps.size(); i++)
@@ -1468,10 +1468,10 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
         pauseProcessing = false;
-        return prevNoteTimesList;
     } catch (const std::out_of_range& ex) {
         std::cout << " error in timeHumanizeChords " << "\n";
     }
+    return prevNoteTimesList;
 }
 
 void MIDIProcessor::velocityHumanizeChords (Array<int> steps)
@@ -2011,22 +2011,46 @@ void MIDIProcessor::setIndividualNoteTimes (Array<Sequence::PrevNoteTimes> prevT
         prevTimes[i].note->timeStamp = prevTimes[i].time;
         prevTimes[i].note->offTime += delta;
     }
-    if(undoMgr->inUndo)
-    {
-        std::vector<std::shared_ptr<NoteWithOffTime>> notes;
-        for (int i=0;i<prevTimes.size();i++)
-            notes.push_back(prevTimes[i].note);
-        
-        double ztlTime;
-        if (xInTicksFromViewer==0)
-            ztlTime = getTimeInTicks();
-        else
-            ztlTime = getTimeInTicks()-xInTicksFromViewer;
-        setTimeInTicks(ztlTime);
-        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, timeInTicks);
-    }
+//    if(undoMgr->inUndo)
+//    {
+//        std::vector<std::shared_ptr<NoteWithOffTime>> notes;
+//        for (int i=0;i<prevTimes.size();i++)
+//            notes.push_back(prevTimes[i].note);
+//        
+    double ztlTime;
+    if (xInTicksFromViewer==0)
+        ztlTime = getTimeInTicks();
+    else
+        ztlTime = getTimeInTicks()-xInTicksFromViewer;
+    setTimeInTicks(ztlTime);
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, timeInTicks);
+//    }
 //    else
 //        sequenceObject.selectionToRestoreForUndoRedo.clear();
+}
+
+void MIDIProcessor::setIndividualNoteOffTimes (Array<Sequence::PrevNoteTimes> prevOffTimes) //For use in undo
+{
+    for (int i=0;i<prevOffTimes.size();i++)
+    {
+        prevOffTimes[i].note->offTime = prevOffTimes[i].time;
+    }
+//    if(undoMgr->inUndo)
+//    {
+//        std::vector<std::shared_ptr<NoteWithOffTime>> notes;
+//        for (int i=0;i<prevOffTimes.size();i++)
+//            notes.push_back(prevOffTimes[i].note);
+//        
+    double ztlTime;
+    if (xInTicksFromViewer==0)
+        ztlTime = getTimeInTicks();
+    else
+        ztlTime = getTimeInTicks()-xInTicksFromViewer;
+    setTimeInTicks(ztlTime);
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, timeInTicks);
+//    }
+    //    else
+    //        sequenceObject.selectionToRestoreForUndoRedo.clear();
 }
 
 bool MIDIProcessor::getNoteActivity(int step)
@@ -2150,16 +2174,25 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::changeNoteTimes(std::vector<std::s
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, ztlTime);
     return prevNoteTimesList;
 }
-void MIDIProcessor::changeNoteOffTimes(Array<int> steps, double delta)
+Array<Sequence::PrevNoteTimes>  MIDIProcessor::changeNoteOffTimes(std::vector<std::shared_ptr<NoteWithOffTime>> notes, double delta)
 {
 //    std::cout << "changeNoteOffTimes "<<steps.size()<<" "<< delta<<"\n";
-    for (int i=0;i<steps.size();i++)
+    Array<Sequence::PrevNoteTimes> prevNoteTimesList;
+    if (!sequenceObject.getLoadingFile())
     {
-        const double proposedOffTime = sequenceObject.theSequence.at(steps[i])->offTime+delta;
-        if (proposedOffTime>(sequenceObject.theSequence.at(steps[i])->getTimeStamp()+10))
-            sequenceObject.theSequence.at(steps[i])->setOfftime(proposedOffTime);
+        for (int i=0; i<notes.size(); i++)
+        {
+            const Sequence::PrevNoteTimes act = {notes.at(i), notes.at(i)->getOffTime()};
+            prevNoteTimesList.add(act);
+        }
+    }
+    for (int i=0;i<notes.size();i++)
+    {
+        const double proposedOffTime = notes.at(i)->offTime+delta;
+        if (proposedOffTime>(notes.at(i)->getTimeStamp()+10))
+            notes.at(i)->setOfftime(proposedOffTime);
         else
-            sequenceObject.theSequence.at(steps[i])->setOfftime(sequenceObject.theSequence.at(steps[i])->getTimeStamp()+10);
+            notes.at(i)->setOfftime(notes.at(i)->getTimeStamp()+10);
     }
     sequenceObject.setChangedFlag(true);
     catchUp();
@@ -2169,7 +2202,7 @@ void MIDIProcessor::changeNoteOffTimes(Array<int> steps, double delta)
     else
         ztlTime = getTimeInTicks()-xInTicksFromViewer;
     buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, ztlTime);
-//    std::cout << "changeNoteOffTimes after buildSequence"<<"\n";
+    return prevNoteTimesList;
 }
 void MIDIProcessor::setCopyOfSelectedNotes(Array<int> sel)
 {
