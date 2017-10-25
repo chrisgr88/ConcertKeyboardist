@@ -34,7 +34,7 @@ public:
     } StepActivity;
     
     typedef struct PrevNoteTimes {
-        int step;
+        std::shared_ptr<NoteWithOffTime> note;
         double time;
     } PrevNoteTimes;
     
@@ -63,7 +63,7 @@ public:
      */
     bool loadDoc = false; //Tells midiProcessor to do a load document when it gets a change message
 //    bool inUndoOrRedo = false;
-    std::vector<std::shared_ptr<NoteWithOffTime>> undoneOrRedoneSteps; //Used to pass changed steps to MidiProcessor so it can restore the selection
+    std::vector<std::shared_ptr<NoteWithOffTime>> selectionToRestoreForUndoRedo; //Used to pass changed steps to MidiProcessor so it can restore the selection
     File fileToLoad;
     Result loadDocument (const File& file) override
     {

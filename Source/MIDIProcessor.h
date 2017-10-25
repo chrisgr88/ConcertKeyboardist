@@ -284,7 +284,7 @@ public:
     void setIndividualNoteTimes (Array<Sequence::PrevNoteTimes> prevTimes);
     bool getNoteActivity(int step);
     void changeNoteVelocity(int step, float velocity);
-    Array<Sequence::PrevNoteTimes> changeNoteTimes(Array<int> notes, double time);
+    Array<Sequence::PrevNoteTimes> changeNoteTimes(std::vector<std::shared_ptr<NoteWithOffTime>> notes, double time);
     void changeNoteOffTimes(Array<int> steps, double delta);
     Array<int> copyOfSelectedNotes;
     void setCopyOfSelectedNotes(Array<int> sel);
@@ -365,7 +365,7 @@ private:
         {
             inUndo = true;
             bool result = UndoManager::undo();
-            inUndo = false;
+//            inUndo = false;
             return result;
         }
         
@@ -373,7 +373,7 @@ private:
         {
             inRedo = true;
             bool result = UndoManager::redo();
-            inRedo = false;
+//            inRedo = false;
             return result;
         }
         
@@ -453,7 +453,8 @@ public:
         MIDIProcessor& proc;
         
     public:
-        ActionChangeNoteTimes(MIDIProcessor& _proc, double _delta, Array<int> _selection) : proc(_proc)
+        ActionChangeNoteTimes(MIDIProcessor& _proc, double _delta,
+                              std::vector<std::shared_ptr<NoteWithOffTime>> _selection) : proc(_proc)
         {
             delta = _delta;
             selection = _selection;
@@ -464,16 +465,21 @@ public:
         bool perform()
         {
             prevValues = proc.changeNoteTimes(selection, delta);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
             return true;
         }
         bool undo()
         {
             proc.setIndividualNoteTimes(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
             return true;
         }
     private:
         double delta;
-        Array<int> selection;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
         Array<Sequence::PrevNoteTimes> prevValues;
     };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MIDIProcessor)

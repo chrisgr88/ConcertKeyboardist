@@ -227,7 +227,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
             processor->undoMgr->beginNewTransaction();
             MIDIProcessor::ActionChangeNoteTimes* action;
-            action = new MIDIProcessor::ActionChangeNoteTimes(*processor, deltaTimeDrag, selectedNotes);
+            action = new MIDIProcessor::ActionChangeNoteTimes(*processor, deltaTimeDrag, pointersToSelectedNotes);
             processor->undoMgr->perform(action);
             
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getZTLTime(horizontalShift));
@@ -1510,18 +1510,19 @@ void ScrollingNoteViewer::paint (Graphics& g)
     
     if (!processor->isPlaying)
     {
-//        if (processor->undoMgr->inRedo || processor->undoMgr->inUndo)
-//        {
-////            std::cout << "paint inUndo   " << "\n";
-//            displayedSelection.clear();
-//            for (int i=0;i<processor->sequenceObject.undoneOrRedoneSteps.size();i++)
-//            {
-//                displayedSelection.add(processor->sequenceObject.undoneOrRedoneSteps.at(i)->currentStep);
-//            }
-////            displayedSelection = processor->sequenceObject.undoneOrRedoneSteps;
-//            setSelectedNotes(displayedSelection);
-//            processor->undoMgr->inRedo = false;
-//        }
+        if (processor->undoMgr->inRedo || processor->undoMgr->inUndo)
+        {
+//            std::cout << "paint inUndo   " << "\n";
+            displayedSelection.clear();
+            for (int i=0;i<processor->sequenceObject.selectionToRestoreForUndoRedo.size();i++)
+            {
+                displayedSelection.add(processor->sequenceObject.selectionToRestoreForUndoRedo.at(i)->currentStep);
+            }
+//            displayedSelection = processor->sequenceObject.selectionToRestoreForUndoRedo;
+            setSelectedNotes(displayedSelection);
+            processor->undoMgr->inUndo = false;
+            processor->undoMgr->inRedo = false;
+        }
         if (!(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) &&
             (((hoveringOver == HOVER_NOTEHEAD && showingVelocities.getValue()) || draggingVelocity) && hoverStep>=0))
         {
@@ -1600,7 +1601,13 @@ void ScrollingNoteViewer::paint (Graphics& g)
 //        std::cout << "in Paint displayedSelection "<< displayedSelection.size()<<"\n";
         for (int i=0;i<displayedSelection.size();i++)
         {
-//            std::cout << "Paint DisplayedSelection "<< i<<" "<<displayedSelection[i]<<"\n";
+//            std::cout << "Paint DisplayedSelection "
+//            <<" "<<(processor->undoMgr->inRedo || processor->undoMgr->inUndo)
+//            <<" "<<pSequence->at(displayedSelection[i])
+//            <<" isSelected-> "<<pSequence->at(displayedSelection[i])->isSelected
+//            <<" "<<displayedSelection[i]
+//            <<" "<<pSequence->at(displayedSelection[i])->currentStep
+//            <<"\n";
             const Rectangle<float> scaledHead = pSequence->at(displayedSelection[i])->head;
             const Rectangle<float> head = Rectangle<float>(
                  scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
@@ -1755,25 +1762,26 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_UNDO)
         {
+//            std::cout << "in CHANGE_MESSAGE_UNDO "<< "\n";
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
             if (processor->undoMgr->inRedo || processor->undoMgr->inUndo)
             {
                 displayedSelection.clear();
-                for (int i=0;i<processor->sequenceObject.undoneOrRedoneSteps.size();i++)
+                for (int i=0;i<processor->sequenceObject.selectionToRestoreForUndoRedo.size();i++)
                 {
-                    displayedSelection.add(processor->sequenceObject.undoneOrRedoneSteps.at(i)->currentStep);
+                    displayedSelection.add(processor->sequenceObject.selectionToRestoreForUndoRedo.at(i)->currentStep);
                 }
-                //            displayedSelection = processor->sequenceObject.undoneOrRedoneSteps;
+                //            displayedSelection = processor->sequenceObject.selectionToRestoreForUndoRedo;
                 selectedNotes = displayedSelection;
                 
                 setSelectedNotes(displayedSelection);
                 processor->setCopyOfSelectedNotes(displayedSelection);
                 processor->undoMgr->inRedo = false;
             }
-            for (int i=0;i<displayedSelection.size();i++)
-            {
-                std::cout << "in CHANGE_MESSAGE_UNDO "<<displayedSelection[i]<< "\n";
-            }
+//            for (int i=0;i<displayedSelection.size();i++)
+//            {
+//                std::cout << "in CHANGE_MESSAGE_UNDO "<<displayedSelection[i]<< "\n";
+//            }
             makeKeyboard ();
             makeNoteBars ();
             repaint();
@@ -2089,7 +2097,9 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 for (int i=0;i<newlySelectedNotes.size();i++)
                 {
                     if (!selectedNotes.contains(newlySelectedNotes[i]) && !marqueeRemovingNotes)
+                    {
                         displayedSelection.add(newlySelectedNotes[i]);
+                    }
                     if (pSequence->at(newlySelectedNotes[i])->getTimeStamp()<minSelNoteTime)
                         minSelNoteTime = pSequence->at(newlySelectedNotes[i])->getTimeStamp();
                     if (pSequence->at(newlySelectedNotes[i])->getTimeStamp()>maxSelNoteTime)
@@ -2201,6 +2211,12 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             else if (editingNote) //Dragging on note head
             {
 //                std::cout << "Note head drag : hover step = "<<hoverStep <<"\n";
+                if (!displayedSelection.contains(hoverStep))
+                {
+                    displayedSelection.clear();
+                    displayedSelection.add(hoverStep);
+                    setSelectedNotes(displayedSelection);
+                }
                 float deltaX = noteEditAnchor.getX() - Desktop::getMousePosition().getX();
                 float deltaY = noteEditAnchor.getY() - Desktop::getMousePosition().getY();
                 if (!draggingVelocity && !draggingTime && !draggingOffTime && !drawingVelocity)

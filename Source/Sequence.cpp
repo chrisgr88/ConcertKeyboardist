@@ -1420,7 +1420,9 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
           } customCompare;
           std::sort(theSequence.begin(), theSequence.end(), customCompare);
         for (int step=0;step<theSequence.size();step++)
+        {
             theSequence.at(step)->currentStep = step;
+        }
         //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
         if(alreadyChained) //If loaded from ck file or previously created for this new midi file by chain ()
         {
