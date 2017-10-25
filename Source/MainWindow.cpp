@@ -286,6 +286,7 @@ ApplicationProperties& getAppProperties();
             
             if (std::regex_match(htSpec, justRand) || std::regex_match(htSpec, randAndSlope) ||
                 std::regex_match(htSpec, randAndSlopeAndSeed) || std::regex_match(htSpec, randAndSeed))
+                chordTimeHumanizeSpec = htSpec;
                 midiProcessor.sequenceObject.setChordTimeHumanize(htSpec, true);
             perform(CommandIDs::timeHumanizeSelection);
         }
@@ -1067,7 +1068,15 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = pViewerFrame->noteViewer.stashSelectedNotes();
-                    midiProcessor.timeHumanizeChords(midiProcessor.copyOfSelectedNotes);
+//                    midiProcessor.timeHumanizeChords(midiProcessor.copyOfSelectedNotes, chordTimeHumanizeSpec);
+                    
+                    midiProcessor.undoMgr->beginNewTransaction();
+                    MIDIProcessor::ActionTimeHumanizeChords* action;
+                    action = new MIDIProcessor::ActionTimeHumanizeChords(midiProcessor, chordTimeHumanizeSpec,
+                                                                         pViewerFrame->noteViewer.getSelectedNotes());
+                    midiProcessor.undoMgr->perform(action);
+                    
+                    
                     pViewerFrame->noteViewer.restoreSelectedNotes(pointersToSelectedNotes);
                 }
                 break;

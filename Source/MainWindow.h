@@ -221,6 +221,8 @@ private:
     ScopedPointer<PluginListWindow> pluginListWindow;
     ScopedPointer<TracksWindow> tracksWindow;
     
+    String chordTimeHumanizeSpec;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
 };
 

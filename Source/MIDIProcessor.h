@@ -268,7 +268,7 @@ public:
     double getLastUserPlayedStepTime();
     Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps);
     
-    void timeHumanizeChords (Array<int> steps);
+    Array<Sequence::PrevNoteTimes> timeHumanizeChords (Array<int> steps, String timeSpec);
     void velocityHumanizeChords (Array<int> steps);
     
     enum PedalType {sustPedal, softPedal};
@@ -500,6 +500,44 @@ public:
     private:
         double delta;
         std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<Sequence::PrevNoteTimes> prevValues;
+    };
+    
+    class ActionTimeHumanizeChords : public UndoableAction   //ActionTimeHumanizeChords =============================================
+    {
+        MIDIProcessor& proc;
+        
+    public:
+        ActionTimeHumanizeChords(MIDIProcessor& _proc, String _timeSpec , Array<int> _selection) : proc(_proc)
+        {
+            selectedSteps = _selection;
+            timeSpec = _timeSpec;
+            
+            selection.clear();
+            for (int i=0; i<_selection.size();i++)
+                selection.push_back(proc.sequenceObject.theSequence.at(_selection[i]));
+        }
+        ~ActionTimeHumanizeChords()
+        {
+        }
+        bool perform()
+        {
+            prevValues = proc.timeHumanizeChords(selectedSteps, timeSpec);
+            return true;
+        }
+        bool undo()
+        {
+            proc.setIndividualNoteTimes(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
+            return true;
+        }
+    private:
+        String timeSpec;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<int> selectedSteps;
         Array<Sequence::PrevNoteTimes> prevValues;
     };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MIDIProcessor)

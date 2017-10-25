@@ -1351,11 +1351,22 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
     return stepActivityList;
 }
 
-void MIDIProcessor::timeHumanizeChords (Array<int> steps)
+Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> steps, String timeSpec)
 {
     try {
+        Array<Sequence::PrevNoteTimes> prevNoteTimesList;
+        if (!sequenceObject.getLoadingFile())
+        {
+            for (int i=0; i<steps.size(); i++)
+            {
+                const Sequence::PrevNoteTimes act = {sequenceObject.theSequence.at(steps[i]),
+                    sequenceObject.theSequence.at(steps[i])->getTimeStamp()};
+                prevNoteTimesList.add(act);
+            }
+        }
+        
         pauseProcessing = true;
-        String timeSpec = sequenceObject.chordTimeHumanize;
+//        String timeSpec = sequenceObject.chordTimeHumanize;
         const String randomnessStr = timeSpec.initialSectionContainingOnly("0123456789");
         String chordDurationStr =  timeSpec.getLastCharacters(timeSpec.length()-randomnessStr.length());
         String seedStr = chordDurationStr.fromFirstOccurrenceOf(":", false, true);
@@ -1457,6 +1468,7 @@ void MIDIProcessor::timeHumanizeChords (Array<int> steps)
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
         pauseProcessing = false;
+        return prevNoteTimesList;
     } catch (const std::out_of_range& ex) {
         std::cout << " error in timeHumanizeChords " << "\n";
     }
@@ -2087,15 +2099,6 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::changeNoteTimes(std::vector<std::s
 {
     //For steps in selection, construct prevNoteTimesList
     //Entries in stepActivityList are {int step; bool active}
-    Array<Sequence::PrevNoteTimes> prevNoteTimesList;
-//    if (!sequenceObject.getLoadingFile())
-//    {
-//        for (int i=0; i<notes.size(); i++)
-//        {
-//            const Sequence::PrevNoteTimes act = {notes.at(i), notes.at(i)->getTimeStamp()};
-//            prevNoteTimesList.add(act);
-//        }
-//    }
     std::vector<std::shared_ptr<NoteWithOffTime>> notesToChange = notes;
     for (int i=0; i<notes.size(); i++)
     {
@@ -2119,6 +2122,7 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::changeNoteTimes(std::vector<std::s
             }
         }
     }
+    Array<Sequence::PrevNoteTimes> prevNoteTimesList;
     if (!sequenceObject.getLoadingFile())
     {
         for (int i=0; i<notesToChange.size(); i++)
