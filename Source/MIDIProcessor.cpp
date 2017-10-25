@@ -1823,7 +1823,14 @@ Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection,
     //        std::cout << "chainCommand: interval = " <<inverval<<"\n";
     Array<Sequence::StepActivity> stepActivity = sequenceObject.chain(selection, inverval);
     if (undoMgr->inUndo || undoMgr->inRedo)
-        ;//setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.selectionToRestoreForUndoRedo[0])->getTimeStamp());
+    {
+        double ztlTime;
+        if (xInTicksFromViewer==0)
+            ztlTime = getTimeInTicks();
+        else
+            ztlTime = getTimeInTicks()-xInTicksFromViewer;
+        setTimeInTicks(ztlTime);
+    }
     else
     {
         sequenceObject.setChangedFlag(true);
@@ -1970,6 +1977,13 @@ void MIDIProcessor::setIndividualNotesActivity (Array<Sequence::StepActivity> ac
         //sequenceObject.selectionToRestoreForUndoRedo = steps;
         //setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.selectionToRestoreForUndoRedo[0])->getTimeStamp());
         //            inUndoRedo = true;
+        double ztlTime;
+        if (xInTicksFromViewer==0)
+            ztlTime = getTimeInTicks();
+        else
+            ztlTime = getTimeInTicks()-xInTicksFromViewer;
+        setTimeInTicks(ztlTime);
+        
         sendSynchronousChangeMessage();
         changeMessageType = CHANGE_MESSAGE_NONE;
     }
@@ -1991,12 +2005,13 @@ void MIDIProcessor::setIndividualNoteTimes (Array<Sequence::PrevNoteTimes> prevT
         for (int i=0;i<prevTimes.size();i++)
             notes.push_back(prevTimes[i].note);
         
-//        sequenceObject.selectionToRestoreForUndoRedo = notes;
-        setTimeInTicks(notes[0]->getTimeStamp());
+        double ztlTime;
+        if (xInTicksFromViewer==0)
+            ztlTime = getTimeInTicks();
+        else
+            ztlTime = getTimeInTicks()-xInTicksFromViewer;
+        setTimeInTicks(ztlTime);
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, timeInTicks);
-//        changeMessageType = CHANGE_MESSAGE_UNDO;
-//        sendSynchronousChangeMessage();
-//        changeMessageType = CHANGE_MESSAGE_NONE;
     }
 //    else
 //        sequenceObject.selectionToRestoreForUndoRedo.clear();

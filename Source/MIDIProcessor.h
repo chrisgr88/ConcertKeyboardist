@@ -350,7 +350,8 @@ private:
     double timerIntervalInMS; //SC//Length of ticks in ms to provide a given tempo assuming a ppq of 960
     double timeIncrement;
     double variableTimeIncrement;//Amount to increase time at each tick, based on ppq of 960.Adjusted based on actual ppq of this midi file.
-    class MyUndoManager : public UndoManager
+    
+    class MyUndoManager : public UndoManager //MyUndoManager ============================================================
     {
     public:
         MyUndoManager ()
@@ -384,7 +385,7 @@ private:
 public:
     MyUndoManager *undoMgr;
     
-    class ActionSetNoteActivity : public UndoableAction
+    class ActionSetNoteActivity : public UndoableAction //ActionSetNoteActivity =============================================
     {
         MIDIProcessor& proc;
         
@@ -393,6 +394,10 @@ public:
         {
             setActive = setNotesActive;
             steps = stps;
+            
+            selection.clear();
+            for (int i=0; i<stps.size();i++)
+                selection.push_back(proc.sequenceObject.theSequence.at(stps[i]));
         }
         ~ActionSetNoteActivity()
         {
@@ -400,26 +405,33 @@ public:
         bool perform()
         {
             prevValues = proc.setNoteListActivity(setActive, steps);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
             return true;
         }
         bool undo()
         {
             proc.setIndividualNotesActivity(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
             return true;
         }
     private:
         bool setActive;
         Array<int> steps;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
         Array<Sequence::StepActivity> prevValues;
     };
     
-    class ActionChain : public UndoableAction
+    class ActionChain : public UndoableAction      //ActionChain =============================================
     {
         MIDIProcessor& proc;
         
     public:
         ActionChain(MIDIProcessor& _proc, double _interval, Array<int> _selection) : proc(_proc)
         {
+            selectedSteps = _selection;
             if (_interval>0)
             {
                 inverval = _interval;
@@ -427,28 +439,36 @@ public:
             }
             else
                 inverval = proc.sequenceObject.chainingInterval;
-            selection = _selection;
+            
+            selection.clear();
+            for (int i=0; i<_selection.size();i++)
+                selection.push_back(proc.sequenceObject.theSequence.at(_selection[i]));
         }
         ~ActionChain()
         {
         }
         bool perform()
         {
-            prevValues = proc.chainCommand(selection, inverval);
+            prevValues = proc.chainCommand(selectedSteps, inverval);
             return true;
         }
         bool undo()
         {
             proc.setIndividualNotesActivity(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
             return true;
         }
     private:
         double inverval;
-        Array<int> selection;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<int> selectedSteps;
         Array<Sequence::StepActivity> prevValues;
     };
 
-    class ActionChangeNoteTimes : public UndoableAction
+    class ActionChangeNoteTimes : public UndoableAction  //ActionChangeNoteTimes =============================================
     {
         MIDIProcessor& proc;
         
