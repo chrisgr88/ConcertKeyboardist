@@ -238,6 +238,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else if (draggingVelocity)
     {
+        //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
         Array<Sequence::NoteVelocities> newVelocities;
 //        velocitiesAfterDragOrDraw.clear();
         for (int i=0;i<notesBeingDraggedOn.size();i++)
@@ -253,11 +254,9 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         MIDIProcessor::ActionChangeVelocities* action;
         action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
         processor->undoMgr->perform(action);
-         processor->catchUp();
-         processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+        processor->catchUp();
+        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                       processor->getZTLTime(horizontalShift));
-        
-        //perform command changing velocities to velocitiesAfterDragOrDraw
         draggingVelocity = false;
         hoveringOver = HOVER_NONE;
     }
@@ -283,6 +282,23 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else if (drawingVelocity)
     {
+        //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
+        Array<Sequence::NoteVelocities> newVelocities;
+        for (int i=0;i<selectedNotes.size();i++)
+        {
+            Sequence::NoteVelocities vel;
+            vel.note = pSequence->at(selectedNotes[i]);
+            vel.velocity = pSequence->at(selectedNotes[i])->getVelocity();
+            newVelocities.add(vel);
+            pSequence->at(selectedNotes[i])->velocity = velsStartDrag[i];
+        }
+        processor->undoMgr->beginNewTransaction();
+        MIDIProcessor::ActionChangeVelocities* action;
+        action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
+        processor->undoMgr->perform(action);
+        processor->catchUp();
+        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+                                     processor->getZTLTime(horizontalShift));
         drawingVelocity = false;
         hoveringOver = HOVER_NONE;
         startTimer(TIMER_MOUSE_UP, 1);
@@ -1948,6 +1964,9 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //        double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
         if (showingVelocities.getValue() && drawingVelocities.getValue() && !drawingVelocity)// && ModifierKeys::getCurrentModifiers().isCommandDown())
         {
+            velsStartDrag.clear();
+            for (int i=0;i<selectedNotes.size();i++)
+                velsStartDrag.add(pSequence->at(selectedNotes[i])->getVelocity());
             drawingVelocity = true;
         }
         else if (drawingVelocity)
