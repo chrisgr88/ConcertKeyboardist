@@ -1159,7 +1159,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
       {
           if (bookmarkTimes[i].tempoChange)
               scalingChanges.add(bookmarkTimes[i]);
-          std::cout << "scalingChanges "<<scalingChanges.getLast().time<<" "<<scalingChanges.getLast().tempoScaleFactor << "\n";
+//          std::cout << "scalingChanges "<<scalingChanges.getLast().time<<" "<<scalingChanges.getLast().tempoScaleFactor << "\n";
       }
       if (scalingChanges.size()==0 || scalingChanges[0].time > 0.0)
       {

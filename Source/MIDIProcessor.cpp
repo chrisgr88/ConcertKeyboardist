@@ -1474,11 +1474,21 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
     return prevNoteTimesList;
 }
 
-void MIDIProcessor::velocityHumanizeChords (Array<int> steps)
+Array<Sequence::NoteVelocities> MIDIProcessor::velocityHumanizeChords (Array<int> steps, String velSpec)
 {
+    Array<Sequence::NoteVelocities> prevNoteVelList;
     try {
         pauseProcessing = true;
-        String velSpec = sequenceObject.chordVelocityHumanize;
+        if (!sequenceObject.getLoadingFile())
+        {
+            for (int i=0; i<steps.size(); i++)
+            {
+                const Sequence::NoteVelocities act = {sequenceObject.theSequence.at(steps[i]),
+                    sequenceObject.theSequence.at(steps[i])->velocity};
+                prevNoteVelList.add(act);
+            }
+        }
+        
         Array<double> strengths;
         std::string numStr = velSpec.toStdString();
         std::string delimiter = ",";
@@ -1530,6 +1540,7 @@ void MIDIProcessor::velocityHumanizeChords (Array<int> steps)
     } catch (const std::out_of_range& ex) {
         std::cout << " error in velocityHumanizeChords " << "\n";
     }
+    return prevNoteVelList;
 }
 
 void MIDIProcessor::addPedalChange(PedalType pType)

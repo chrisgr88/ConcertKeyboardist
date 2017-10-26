@@ -222,6 +222,7 @@ private:
     ScopedPointer<TracksWindow> tracksWindow;
     
     String chordTimeHumanizeSpec;
+    String chordVelocityHumanizeSpec;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
 };

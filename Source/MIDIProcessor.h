@@ -269,7 +269,7 @@ public:
     Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps);
     
     Array<Sequence::PrevNoteTimes> timeHumanizeChords (Array<int> steps, String timeSpec);
-    void velocityHumanizeChords (Array<int> steps);
+    Array<Sequence::NoteVelocities> velocityHumanizeChords (Array<int> steps, String velSpec);
     
     enum PedalType {sustPedal, softPedal};
     void addPedalChange(PedalType pType);
@@ -577,6 +577,44 @@ public:
         std::vector<std::shared_ptr<NoteWithOffTime>> selection;
         Array<int> selectedSteps;
         Array<Sequence::PrevNoteTimes> prevValues;
+    };
+    
+    class ActionVelocityHumanizeChords : public UndoableAction   //ActionVelocityHumanizeChords ====================================
+    {
+        MIDIProcessor& proc;
+        
+    public:
+        ActionVelocityHumanizeChords(MIDIProcessor& _proc, String _velSpec , Array<int> _selection) : proc(_proc)
+        {
+            selectedSteps = _selection;
+            velSpec = _velSpec;
+            
+            selection.clear();
+            for (int i=0; i<_selection.size();i++)
+                selection.push_back(proc.sequenceObject.theSequence.at(_selection[i]));
+        }
+        ~ActionVelocityHumanizeChords()
+        {
+        }
+        bool perform()
+        {
+            prevValues = proc.velocityHumanizeChords(selectedSteps, velSpec);
+            return true;
+        }
+        bool undo()
+        {
+            proc.restoreNoteVelocities(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
+            return true;
+        }
+    private:
+        String velSpec;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<int> selectedSteps;
+        Array<Sequence::NoteVelocities> prevValues;
     };
     
     class ActionChangeVelocities : public UndoableAction   //ActionChangeVelocities =============================================

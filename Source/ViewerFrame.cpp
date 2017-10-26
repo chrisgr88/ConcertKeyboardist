@@ -52,8 +52,8 @@ altToolbarFactory(this)
             (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pHumanizeStartTime->setWidth(65);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
-            pHumanizeStartTime->textBox.setText("50");
-            humanizeTimeAmount = "50";
+            pHumanizeStartTime->textBox.setText("40"); //This value should be initialized in MainWindow
+            humanizeTimeAmount = "40";
         }
         else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeVelocityBox)
         {
@@ -62,7 +62,7 @@ altToolbarFactory(this)
             (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pHumanizeVelocity->setWidth(65);
             pHumanizeVelocity->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
-            pHumanizeVelocity->textBox.setText(".6,.8");
+            pHumanizeVelocity->textBox.setText(".6,.8"); //This value should be initialized in MainWindow
             humanizeVelocityAmount = ".6,.8";
         }
         else

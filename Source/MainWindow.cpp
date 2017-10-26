@@ -105,22 +105,11 @@ void PluginWindow::closeAllCurrentlyOpenWindows()
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
-    MainWindow::MainWindow (String name)
-    : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
+    MainWindow::MainWindow (String name) : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
-//        formatManager.addDefaultFormats();
-//        ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
-//        
-//        if (savedPluginList != nullptr)
-//            knownPluginList.recreateFromXml (*savedPluginList);
-//        
-//        pluginSortMethod = (KnownPluginList::SortMethod) getAppProperties().getUserSettings()
-//        ->getIntValue ("pluginSortMethod", KnownPluginList::sortByManufacturer);
-//        
-//        knownPluginList.addChangeListener (this);
-        
-        
         ckBlockClosing = false;
+        chordVelocityHumanizeSpec = ".6,.8";
+        chordTimeHumanizeSpec = "40";
         startTimer(100);
         //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", 99);
         setUsingNativeTitleBar (true);
@@ -261,7 +250,8 @@ ApplicationProperties& getAppProperties();
         {
             const String hV = String(message.fromLastOccurrenceOf(":", false, true));
 //            std::cout << "Performing HumanizeVelocity " <<hV<<"\n";
-            midiProcessor.sequenceObject.setChordVelocityHumanize(hV, true);
+            chordVelocityHumanizeSpec = hV;
+//            midiProcessor.sequenceObject.setChordVelocityHumanize(hV, true);
             perform(CommandIDs::velHumanizeSelection);
         }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "humanizeTime")
@@ -1068,23 +1058,24 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = pViewerFrame->noteViewer.stashSelectedNotes();
-//                    midiProcessor.timeHumanizeChords(midiProcessor.copyOfSelectedNotes, chordTimeHumanizeSpec);
-                    
                     midiProcessor.undoMgr->beginNewTransaction();
                     MIDIProcessor::ActionTimeHumanizeChords* action;
                     action = new MIDIProcessor::ActionTimeHumanizeChords(midiProcessor, chordTimeHumanizeSpec,
                                                                          pViewerFrame->noteViewer.getSelectedNotes());
                     midiProcessor.undoMgr->perform(action);
-                    
-                    
                     pViewerFrame->noteViewer.restoreSelectedNotes(pointersToSelectedNotes);
                 }
                 break;
             case CommandIDs::velHumanizeSelection:
                 std::cout <<"velHumanizeSelection\n";
                 if (!midiProcessor.isPlaying)
-                    midiProcessor.velocityHumanizeChords(midiProcessor.copyOfSelectedNotes);
-//                    midiProcessor.humanizeChordNoteVelocities();
+                {
+                    midiProcessor.undoMgr->beginNewTransaction();
+                    MIDIProcessor::ActionVelocityHumanizeChords* action;
+                    action = new MIDIProcessor::ActionVelocityHumanizeChords(midiProcessor, chordVelocityHumanizeSpec,
+                                                                         pViewerFrame->noteViewer.getSelectedNotes());
+                    midiProcessor.undoMgr->perform(action);
+                }
                 break;
             case CommandIDs::addSustain:
                 {
