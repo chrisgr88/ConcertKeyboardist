@@ -2058,10 +2058,28 @@ bool MIDIProcessor::getNoteActivity(int step)
     return sequenceObject.theSequence.at(step)->targetNote;
 }
 
-void MIDIProcessor::changeNoteVelocity(int step, float velocity)
+Array<Sequence::NoteVelocities> MIDIProcessor::changeNoteVelocities(Array<Sequence::NoteVelocities> changeList)
 {
-    sequenceObject.theSequence.at(step)->velocity = velocity;
+    Array<Sequence::NoteVelocities> preVels;
+    for (int i=0;i<changeList.size();i++)
+    {
+        Sequence::NoteVelocities velRecord;
+        velRecord.note = changeList[i].note;
+        velRecord.velocity = changeList[i].note->velocity;
+        preVels.add(velRecord);
+        changeList[i].note->velocity = changeList[i].velocity;
+    }
+    return preVels;
 }
+
+void MIDIProcessor::restoreNoteVelocities(Array<Sequence::NoteVelocities> changeList)
+{
+    for (int i=0;i<changeList.size();i++)
+    {
+        changeList[i].note->velocity = changeList[i].velocity;
+    }
+}
+
 
 void MIDIProcessor::setTempoMultiplier(double value, double currentTime, bool documentReallyChanged)
 {

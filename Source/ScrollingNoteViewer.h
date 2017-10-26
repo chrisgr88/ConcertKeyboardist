@@ -347,6 +347,8 @@ public:
     Value showingVelocities; //Edit velocity mode, toggled by graphVelocities toolbar button
     Value drawingVelocities; //Draw velocity mode, toggled by drawVelocities toolbar button
     bool prevDrawingVelocities = false;
+//    Array<float> preDragOrDrawVelocities;   //Group velocity drags into an undo transaction - to reset viewer state before perform
+    Array<float> velocitiesAfterDragOrDraw; //Used to group velocity drags into an undo transaction - passed to createAction
     Value adjustingingVelocities; //Adjust velocity mode, toggled by adjustVelocities toolbar button
     bool prevAdjustingVelocities = false;
     bool altKeyPressed; //Holding this key enables editingVelocities

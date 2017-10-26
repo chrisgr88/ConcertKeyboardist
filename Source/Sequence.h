@@ -38,6 +38,11 @@ public:
         double time;
     } PrevNoteTimes;
     
+    typedef struct NoteVelocities {
+        std::shared_ptr<NoteWithOffTime> note;
+        float velocity;
+    } ChangeVelocities;
+    
     std::vector<std::shared_ptr<NoteWithOffTime>> theSequence;
     
     bool loadedCkfFile;

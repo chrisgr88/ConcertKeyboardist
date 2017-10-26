@@ -284,7 +284,8 @@ public:
     void setIndividualNoteTimes (Array<Sequence::PrevNoteTimes> prevTimes);
     void setIndividualNoteOffTimes (Array<Sequence::PrevNoteTimes> prevTimes);
     bool getNoteActivity(int step);
-    void changeNoteVelocity(int step, float velocity);
+    Array<Sequence::NoteVelocities> changeNoteVelocities(Array<Sequence::NoteVelocities>);
+    void restoreNoteVelocities(Array<Sequence::NoteVelocities>);
     Array<Sequence::PrevNoteTimes> changeNoteTimes(std::vector<std::shared_ptr<NoteWithOffTime>> notes, double time);
     Array<Sequence::PrevNoteTimes>  changeNoteOffTimes(std::vector<std::shared_ptr<NoteWithOffTime>> notes, double delta);
     Array<int> copyOfSelectedNotes;
@@ -576,6 +577,41 @@ public:
         std::vector<std::shared_ptr<NoteWithOffTime>> selection;
         Array<int> selectedSteps;
         Array<Sequence::PrevNoteTimes> prevValues;
+    };
+    
+    class ActionChangeVelocities : public UndoableAction   //ActionChangeVelocities =============================================
+    {
+        MIDIProcessor& proc;
+        
+    public:
+        ActionChangeVelocities(MIDIProcessor& _proc, Array<Sequence::NoteVelocities> _newVelocities) : proc(_proc)
+        {
+            newVelocities = _newVelocities;
+            selection.clear();
+            for (int i=0; i<_newVelocities.size();i++)
+                selection.push_back(_newVelocities[i].note);
+        }
+        ~ActionChangeVelocities()
+        {
+        }
+        bool perform()
+        {
+            prevVelocities = proc.changeNoteVelocities(newVelocities);
+            return true;
+        }
+        bool undo()
+        {
+            proc.restoreNoteVelocities(prevVelocities);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
+            return true;
+        }
+    private:
+        Array<Sequence::NoteVelocities> newVelocities;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<Sequence::NoteVelocities> prevVelocities;
     };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MIDIProcessor)
 };

@@ -238,6 +238,26 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else if (draggingVelocity)
     {
+        Array<Sequence::NoteVelocities> newVelocities;
+//        velocitiesAfterDragOrDraw.clear();
+        for (int i=0;i<notesBeingDraggedOn.size();i++)
+        {
+            Sequence::NoteVelocities vel;
+            vel.note = pSequence->at(notesBeingDraggedOn[i]);
+            vel.velocity = pSequence->at(notesBeingDraggedOn[i])->getVelocity();
+            newVelocities.add(vel);
+//            velocitiesAfterDragOrDraw.add(pSequence->at(notesBeingDraggedOn[i])->getVelocity());
+            pSequence->at(notesBeingDraggedOn[i])->velocity = velsStartDrag[i];
+        }
+        processor->undoMgr->beginNewTransaction();
+        MIDIProcessor::ActionChangeVelocities* action;
+        action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
+        processor->undoMgr->perform(action);
+         processor->catchUp();
+         processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+                                      processor->getZTLTime(horizontalShift));
+        
+        //perform command changing velocities to velocitiesAfterDragOrDraw
         draggingVelocity = false;
         hoveringOver = HOVER_NONE;
     }
