@@ -356,9 +356,10 @@ private:
     class MyUndoManager : public UndoManager //MyUndoManager ============================================================
     {
     public:
-        MyUndoManager ()
+        MyUndoManager (int maxNumberOfUnitsToKeep = 30000,
+                        int minimumTransactionsToKeep = 30)
         {
-            
+            UndoManager::UndoManager(maxNumberOfUnitsToKeep, minimumTransactionsToKeep);
         }
         ~MyUndoManager ()
         {

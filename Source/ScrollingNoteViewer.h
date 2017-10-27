@@ -31,6 +31,23 @@
 #include "MIDIProcessor.h"
 //[/Headers]
 
+struct ViewStateInfo
+{
+    //public:
+    static int initialWidth;
+    //    static int a;
+    static int initialHeight;
+    static int initialPPT; //Initial pixels per tick
+    static int viewWidth;
+    static int viewHeight;
+};
+//These are in the cpp file
+//int ViewStateInfo::initialWidth = 0;
+//int initialHeight = 0;
+//int initialPPT = 0; //Initial pixels per tick
+//int viewWidth = 0;
+//int viewHeight = 0;
+
 struct Vertex  // class storing the information about a single vertex
 {
     float position[2];
@@ -75,6 +92,19 @@ public:
     //==============================================================================
     ScrollingNoteViewer (MIDIProcessor *p);
     ~ScrollingNoteViewer();
+    
+    bool tickIsVisible(double tick) //True if given time is visible in the viewer
+    {
+        double ltp = leadTimeProportionOfWidth * ViewStateInfo::viewWidth;
+        double positionOfTime = ltp - (processor->getZTLTime(99)-tick)*pixelsPerTick * horizontalScale;
+//        positionOfTime += 484;
+        std::cout << "positionOfTime "<<positionOfTime
+        <<" leadTimeInTicks "<<leadTimeInTicks
+        <<" viewWidth "<<ViewStateInfo::viewWidth
+        <<" onScreen "<<(0<positionOfTime && positionOfTime<ViewStateInfo::viewWidth)<<"\n";
+        
+        return (0<positionOfTime && positionOfTime<ViewStateInfo::viewWidth);
+    }
     
     int seqSize = 0;
     MouseCursor editVelocityCursor;

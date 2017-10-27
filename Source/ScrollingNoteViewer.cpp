@@ -24,6 +24,12 @@ Copyright (c) 2015 - ROLI Ltd.
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
 
+int ViewStateInfo::initialWidth = 0;
+int ViewStateInfo::initialHeight = 0;
+int ViewStateInfo::initialPPT = 0; //Initial pixels per tick
+int ViewStateInfo::viewWidth = 0;
+int ViewStateInfo::viewHeight = 0;
+
 GLint ScrollingNoteViewer::Uniforms::viewMatrixHandle;
 GLint ScrollingNoteViewer::Uniforms::projectionMatrixHandle;
 //==============================================================================
@@ -1025,7 +1031,7 @@ void ScrollingNoteViewer::makeKeyboard()
     ticksPerQuarter = processor->sequenceObject.getPPQ();
     timeSigChanges = processor->sequenceObject.getTimeSigInfo();
     timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
-    pixelsPerTick = initialWidth/(ticksPerQuarter * numerator * initialMeasuresAcrossWindow);
+    pixelsPerTick = ViewStateInfo::initialWidth/(ticksPerQuarter * numerator * initialMeasuresAcrossWindow);
     leadTimeInTicks = ((getWidth()-wKbd+leftMargin)/pixelsPerTick)*leadTimeProportionOfWidth;
     processor->setLeadTimeInTicks(leadTimeInTicks);
     sequenceStartPixel = leadTimeInTicks*pixelsPerTick;
@@ -1817,12 +1823,21 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
                 
                 setSelectedNotes(displayedSelection);
                 processor->setCopyOfSelectedNotes(displayedSelection);
-                processor->undoMgr->inRedo = false;
+                
+                if (selectedNotes.size()>0)
+                    std::cout << "selectedNotes[0] visible "
+                    <<tickIsVisible(processor->sequenceObject.theSequence.at(selectedNotes[0])->getTimeStamp())<<"\n";
+                
+                double goToTime;
+                if (selectedNotes.size()>0)
+                {
+                    if (tickIsVisible(processor->sequenceObject.theSequence.at(selectedNotes[0])->getTimeStamp()))
+                        goToTime = processor->getZTLTime(-1);
+                    else
+                        goToTime = processor->sequenceObject.theSequence.at(selectedNotes[0])->getTimeStamp();
+                    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, goToTime);
+                }
             }
-//            for (int i=0;i<displayedSelection.size();i++)
-//            {
-//                std::cout << "in CHANGE_MESSAGE_UNDO "<<displayedSelection[i]<< "\n";
-//            }
             makeKeyboard ();
             makeNoteBars ();
             repaint();
@@ -2406,12 +2421,17 @@ void ScrollingNoteViewer::resized()
 {
     if (!grabbedInitialWindowSize)
     {
-        initialWidth = getWidth();
+        ViewStateInfo::initialWidth = getWidth();
 //        initialHeight = getHeight ();
         processor->initialWindowHeight = getHeight ();
         grabbedInitialWindowSize = true;
     }
+    int foo;
     initialHeight = processor->initialWindowHeight;
+    if (getWidth()>0)
+        ViewStateInfo::viewWidth = getWidth();
+    else
+        foo=0;
 //    std::cout << "resized - trackVerticalSize, verticalScale: before " << trackVerticalSize <<" "<<verticalScale;
     verticalScale = (float)getHeight()/initialHeight;
     makeKeyboard ();
