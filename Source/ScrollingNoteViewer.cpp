@@ -1973,11 +1973,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 //        std::cout <<"Entering TIMER_MOUSE_DRAG "<<"\n";
         stopTimer(TIMER_MOUSE_DRAG);
         static double prevY;
-//        double xx = Desktop::getInstance().getMousePosition().getX();
-//        double yy = Desktop::getInstance().getMousePosition().getY();
         double y = curDragPosition.getY();
-//        double hh = Desktop::getInstance().getDisplays().getMainDisplay().totalArea.getHeight();
-        if (showingVelocities.getValue() && drawingVelocities.getValue() && !drawingVelocity)// && ModifierKeys::getCurrentModifiers().isCommandDown())
+        if (showingVelocities.getValue() && drawingVelocities.getValue() && !drawingVelocity)
         {
             velsStartDrag.clear();
             for (int i=0;i<selectedNotes.size();i++)
@@ -2016,16 +2013,6 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             repaint();
             return;
         }
-//        if (yy<=0)
-//        {
-//            Desktop::getInstance().setMousePosition(Point<int> (xx,5));
-//            mouseBeforeDrag.setY(mouseBeforeDrag.getY()+5);
-//        }
-//        else if (prevY<=y && yy > Desktop::getInstance().getDisplays().getMainDisplay().userArea.getHeight())
-//        {
-//            Desktop::getInstance().setMousePosition(Point<int> (xx,hh-5));
-//            mouseBeforeDrag.setY(mouseBeforeDrag.getY()-5);
-//        }
         prevY = y;
         
         if (zoomDragStarting)
@@ -2087,10 +2074,9 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             if (selecting)// && !ModifierKeys::getCurrentModifiers().isAltDown())
             {
                 int xInTicksLeft = 0;
-                int xInTicksRight = 99;
+                int xInTicksRight = -1;
                 Rectangle<float> selRect = Rectangle<float>();
                 if (!ModifierKeys::getCurrentModifiers().isCommandDown())
-                    ;//clearSelectedNotes();
                 //Use latest point to extend the selection region (region may be a Rectangle or Path)
                 if (selectionAnchor.getX() > curDragPosition.getX())
                 {
@@ -2128,7 +2114,41 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                                                                                 (float)selectionRect.getRight(),
                                                                                 (float)selectionRect.getBottom()
                                                                                 );
-
+                
+                float shiftDelta = 0;
+                bool autoScrolling = false;
+                if (curDragPosition.getX()<10)
+                {
+                    shiftDelta = 5;
+                    autoScrolling = true;
+                }
+                else
+                    if (curDragPosition.getX()>(ViewStateInfo::viewWidth-10))
+                {
+                    shiftDelta = -5;
+                    autoScrolling = true;
+                }
+                if (autoScrolling && !(horizontalShift==0 && shiftDelta>0))
+                {
+                    float shift = horizontalShift+shiftDelta;
+                    selectionAnchor = selectionAnchor.translated(shiftDelta, 0);
+                    if (horizontalShift<0)
+                        horizontalShift = 0;
+                    const double seqStartRelToLeftEdgeInPixels =
+                    (sequenceStartPixel - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
+                     shift)*horizontalScale;
+                    double seqDurationInPixels = processor->sequenceObject.seqDurationInTicks*pixelsPerTick;
+                    double scaledSeqDurationInPixels = seqDurationInPixels*horizontalScale*horizontalScale;
+                    const double seqEndRelToLeftEdgeInPixels = seqStartRelToLeftEdgeInPixels + scaledSeqDurationInPixels;
+                    if (seqStartRelToLeftEdgeInPixels > sequenceStartPixel*horizontalScale)
+                        shift = processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
+                    else if (seqEndRelToLeftEdgeInPixels < sequenceStartPixel*horizontalScale)
+                        shift =  processor->getTimeInTicks()*pixelsPerTick*horizontalScale - scaledSeqDurationInPixels/horizontalScale;
+                    setHorizontalShift(shift);
+                    processor->sendChangeMessage();
+                    repaint();
+                }
+                
                 //Check all sequence steps within time range of region to see if they are in the region
                 newlySelectedNotes.clear();
                 for (int step=0;step<pSequence->size();step++)
