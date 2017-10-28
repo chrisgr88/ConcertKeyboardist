@@ -260,7 +260,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         MIDIProcessor::ActionChangeVelocities* action;
         action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
         processor->undoMgr->perform(action);
-        processor->catchUp();
+//        processor->catchUp();
         processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                       processor->getZTLTime(horizontalShift));
         draggingVelocity = false;
@@ -302,7 +302,8 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         MIDIProcessor::ActionChangeVelocities* action;
         action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
         processor->undoMgr->perform(action);
-        processor->catchUp();
+//        processor->setTimeInTicks(processor->getZTLTime(99));
+//        processor->catchUp();
         processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                      processor->getZTLTime(horizontalShift));
         drawingVelocity = false;
