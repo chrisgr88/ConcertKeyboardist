@@ -1863,7 +1863,12 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
     {
-        if (drawingVelocities.getValue() || adjustingingVelocities.getValue())
+        if (prevShowingVelocities != (bool)showingVelocities.getValue() && !showingVelocities.getValue())
+        {
+            drawingVelocities.setValue(false);
+            adjustingingVelocities.setValue(false);
+        }
+        else if (drawingVelocities.getValue() || adjustingingVelocities.getValue())
         {
             showingVelocities.setValue(true);
         }
@@ -1896,6 +1901,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 }
             }
         }
+        prevShowingVelocities = showingVelocities.getValue();
         
         //Cursor setting
         if (marqueeAddingNotes)
@@ -2403,7 +2409,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     
 //                    for (int i=0;i<notesBeingDraggedOn.size();i++)
 //                        std::cout <<processor->sequenceObject.theSequence.at(notesBeingDraggedOn[i])->velocity<<" ";
-                    processor->catchUp();
+//                    processor->catchUp();
                     processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                                  processor->getZTLTime(horizontalShift));
 //   processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getSequenceReadHead());

@@ -375,6 +375,7 @@ public:
     
     
     Value showingVelocities; //Edit velocity mode, toggled by graphVelocities toolbar button
+    bool prevShowingVelocities = false;
     Value drawingVelocities; //Draw velocity mode, toggled by drawVelocities toolbar button
     bool prevDrawingVelocities = false;
 //    Array<float> preDragOrDrawVelocities;   //Group velocity drags into an undo transaction - to reset viewer state before perform

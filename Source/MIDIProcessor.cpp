@@ -2224,7 +2224,7 @@ Array<Sequence::PrevNoteTimes>  MIDIProcessor::changeNoteOffTimes(std::vector<st
             notes.at(i)->setOfftime(notes.at(i)->getTimeStamp()+10);
     }
     sequenceObject.setChangedFlag(true);
-    catchUp();
+//    catchUp();
     double ztlTime;
     if (xInTicksFromViewer==0)
         ztlTime = getTimeInTicks();
