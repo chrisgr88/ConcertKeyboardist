@@ -396,7 +396,8 @@ void ScrollingNoteViewer::mouseDrag (const MouseEvent& event)
 {
     if (!event.source.hasMouseMovedSignificantlySincePressed())
         return;
-    if (hoveringOver!=HOVER_NOTETRACK)
+//    if (hoveringOver!=HOVER_NOTETRACK)
+    if (event.position.getY()<topMargin*verticalScale)
         event.source.enableUnboundedMouseMovement(true, false);
     const double x = event.position.getX();
     mouseXinTicks = ((x - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale + processor->getTimeInTicks();
@@ -1981,14 +1982,14 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         stopTimer(TIMER_MOUSE_DRAG);
         static double prevY;
         double y = curDragPosition.getY();
-        if (showingVelocities.getValue() && drawingVelocities.getValue() && !drawingVelocity)
+        if (showingVelocities.getValue() && drawingVelocities.getValue() && !drawingVelocity && !zoomDragStarting)
         {
             velsStartDrag.clear();
             for (int i=0;i<selectedNotes.size();i++)
                 velsStartDrag.add(pSequence->at(selectedNotes[i])->getVelocity());
             drawingVelocity = true;
         }
-        else if (drawingVelocity)
+        else if (drawingVelocity && !zoomOrScrollDragging)
         {
 //            std::cout
 //            << " curDragPosition " << curDragPosition.getX()<<","<<curDragPosition.getY()
@@ -2002,7 +2003,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 const int noteTS = pSequence->at(selectedNotes[ntNdx])->getTimeStamp();
                 const int xInTicks = std::round(mouseXinTicks);
                 const float diff = noteTS > xInTicks ? noteTS - xInTicks : xInTicks - noteTS;
-                if (diff<=100)
+                if (diff<=100/horizontalScale)
                 {
                     float velocity = 1.0f-(y + topMargin/verticalScale - toolbarHeight)/(getHeight() - topMargin);
                     velocity = velocity < 0.0f?0.0f:velocity;
