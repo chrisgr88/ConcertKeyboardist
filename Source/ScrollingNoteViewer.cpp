@@ -1826,14 +1826,17 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
                 setSelectedNotes(displayedSelection);
                 processor->setCopyOfSelectedNotes(displayedSelection);
                 
-                if (selectedNotes.size()>0)
-                    std::cout << "selectedNotes[0] visible "
-                    <<tickIsVisible(processor->sequenceObject.theSequence.at(selectedNotes[0])->getTimeStamp())<<"\n";
-                
                 double goToTime;
                 if (selectedNotes.size()>0)
                 {
-                    if (tickIsVisible(processor->sequenceObject.theSequence.at(selectedNotes[0])->getTimeStamp()))
+                    bool anyTickVisible = false;
+                    for (int i=0; i<selectedNotes.size();i++)
+                        if(tickIsVisible(processor->sequenceObject.theSequence.at(selectedNotes[i])->getTimeStamp()))
+                        {
+                            anyTickVisible=true;
+                            break;
+                        }
+                    if (anyTickVisible)
                         goToTime = processor->getZTLTime(-1);
                     else
                         goToTime = processor->sequenceObject.theSequence.at(selectedNotes[0])->getTimeStamp();
