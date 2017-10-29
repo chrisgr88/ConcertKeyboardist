@@ -593,18 +593,28 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         //    std::cout << "fileType " << fileType << "\n";
         //    std::cout << "lastTimeStamp " << midiFile.getLastTimestamp() << "\n";
         
-        
-        
-        MidiMessageSequence tempoChangeEvents;
-        
         originalPpq = midiFile.getTimeFormat(); //This is only used in converting the midi file to a standard of 960 ppq.
         std::cout << "originalPpq " << originalPpq << "\n";
         if (originalPpq<0)
             ppq = 960;
         else
             ppq = originalPpq;
-        
-        midiFile.findAllTempoEvents(tempoChangeEvents);
+
+        bool tempoMap = false;
+        MidiMessageSequence tempoChangeEvents;
+        File tempoMapFile = fileToLoad.withFileExtension("tempo.mid");
+        MidiFile midiTempoMapFile;
+        if (tempoMapFile.exists())
+        {
+            std::cout << "Found tempo map " <<"\n";
+            FileInputStream tempoStream(tempoMapFile);
+            if(!midiTempoMapFile.readFrom(tempoStream))
+                std::cout << "error reading tempo map " <<"\n";
+            midiTempoMapFile.findAllTempoEvents(tempoChangeEvents);
+            tempoMap = true;
+        }
+        else
+            midiFile.findAllTempoEvents(tempoChangeEvents);
         tempoChanges.clear();
         double prevTempo = -1;
         for (int i=0;i<tempoChangeEvents.getNumEvents();i++)
@@ -631,7 +641,10 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
         tempoChangeEvents.clear();
         
         MidiMessageSequence timesigChangeEvents;
-        midiFile.findAllTimeSigEvents(timesigChangeEvents);
+        if (tempoMap)
+            midiTempoMapFile.findAllTimeSigEvents(timesigChangeEvents);
+        else
+            midiFile.findAllTimeSigEvents(timesigChangeEvents);
         timeSigChanges.clear();
         for (int i=0;i<timesigChangeEvents.getNumEvents();i++)
         {
