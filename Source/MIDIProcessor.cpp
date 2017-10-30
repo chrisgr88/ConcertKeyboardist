@@ -711,7 +711,10 @@ void MIDIProcessor::processBlock ()
     if (midiMessages.getNumEvents() > 0)
     {
         for (MidiBuffer::Iterator it (midiMessages); it.getNextEvent (msg, samplePosition);) //Get next event into msg
+        {
             exprEvents.add(msg);
+//            std::cout<< "nn "<< (int) msg.getNoteNumber()<<"\n";
+        }
     }
     midiMessages.clear();
     
@@ -1162,7 +1165,7 @@ void MIDIProcessor::processBlock ()
                                     + (1.0-sequenceObject.exprVelToScoreVelRatio)*thisNoteOriginalVelocity;
                     
                     if (exprVel<highVelInChain)
-                        velocity = std::round((proportionedVelocity/highVelInChain) * thisNoteOriginalVelocity);
+                        velocity = (proportionedVelocity/highVelInChain) * thisNoteOriginalVelocity;
                     else
                         velocity = proportionedVelocity;
                 }
