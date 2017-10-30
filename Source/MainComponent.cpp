@@ -102,12 +102,14 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     std::cout << "Loading plugin "<<pluginDescription->descriptiveName <<"\n";
     const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
     const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
+    
     String errorMsg;
     if (thePlugin)
     {
         thePlugin->suspendProcessing(true);
         thePlayer.setProcessor(nullptr);
-        thePlugin = nullptr;
+        audioDeviceManager.closeAudioDevice();
+//        thePlugin = nullptr;
     }
     AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
     thePlugin = pPlugin;
@@ -128,6 +130,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     thePlayer.setProcessor(thePlugin);
     audioDeviceManager.addAudioCallback (&thePlayer);
     thePlugin->suspendProcessing(false);
+    audioDeviceManager.restartLastAudioDevice();
     
     MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
     processor->pluginMessageCollector = &mmc;
