@@ -229,7 +229,6 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
         if (sendChangeMessages)
             sendSynchronousChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
-    //    std::vector<std::shared_ptr<NoteWithOffTime>> theSequence = sequenceObject.getSequence();
         HighResolutionTimer::stopTimer();
         panic = true;
         isPlaying = false;
@@ -243,7 +242,6 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         duplicateNote = -1;
         prevNoteOnLag = 0;
         prevTimeInTicks = 0;
-    //    sequenceObject.suppressSpeedAdjustment = false;
         sequenceObject.noteIsOn.clear();
         for (int i=0;i<(16*128);i++)
             sequenceObject.noteIsOn.push_back(false);

@@ -98,10 +98,10 @@ public:
         double ltp = leadTimeProportionOfWidth * ViewStateInfo::viewWidth;
         double positionOfTime = ltp - (processor->getZTLTime(99)-tick)*pixelsPerTick * horizontalScale;
 //        positionOfTime += 484;
-        std::cout << "positionOfTime "<<positionOfTime
-        <<" leadTimeInTicks "<<leadTimeInTicks
-        <<" viewWidth "<<ViewStateInfo::viewWidth
-        <<" onScreen "<<(0<positionOfTime && positionOfTime<ViewStateInfo::viewWidth)<<"\n";
+//        std::cout << "positionOfTime "<<positionOfTime
+//        <<" leadTimeInTicks "<<leadTimeInTicks
+//        <<" viewWidth "<<ViewStateInfo::viewWidth
+//        <<" onScreen "<<(0<positionOfTime && positionOfTime<ViewStateInfo::viewWidth)<<"\n";
         
         return (0<positionOfTime && positionOfTime<ViewStateInfo::viewWidth);
     }

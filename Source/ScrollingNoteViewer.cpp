@@ -1741,17 +1741,20 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         {
             if (processor->sequenceObject.fileToLoad != prevFileLoaded)
                 clearSelectedNotes();
-            if (processor->getTimeInTicks()==0)
+            if (animationStep==0) //Skip rebuilding gl objects in the middle of tewwning
             {
-                makeKeyboard ();
-                makeNoteBars ();
-                sequenceChanged = true;
-            }
-            else
-            {
-                makeKeyboard ();
-                makeNoteBars ();
-                sequenceChanged = true;
+                    if (processor->getTimeInTicks()==0)
+                    {
+                        makeKeyboard();
+                        makeNoteBars();
+                        sequenceChanged = true;
+                    }
+                    else
+                    {
+                        makeKeyboard();
+                        makeNoteBars();
+                        sequenceChanged = true;
+                    }
             }
             setHorizontalShift(0);
             prevFileLoaded = processor->sequenceObject.fileToLoad;
@@ -1843,8 +1846,11 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
                     processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, goToTime);
                 }
             }
-            makeKeyboard ();
-            makeNoteBars ();
+            if (animationStep==0)
+            {
+//            makeKeyboard();
+//            makeNoteBars();
+            }
             repaint();
         }
         if (grabbedInitialWindowSize)
