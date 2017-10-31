@@ -1741,7 +1741,8 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         {
             if (processor->sequenceObject.fileToLoad != prevFileLoaded)
                 clearSelectedNotes();
-            if (animationStep==0) //Skip rebuilding gl objects in the middle of tewwning
+//            std::cout <<"animationStep "<<animationStep<<"\n";
+            if (animationStep<=1) //Skip rebuilding gl objects in the middle of tweening
             {
                     if (processor->getTimeInTicks()==0)
                     {
@@ -1794,6 +1795,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
 //            count2++;
 //            std::cout << "CHANGE_MESSAGE_START_PLAYING " << count2<< " "<<horizontalShift<< "\n";
 //            nSteps = -1;
+            animationStep = 0;
             processor->setNotesEditable(false);
             setHorizontalShift(0.0);
         }
