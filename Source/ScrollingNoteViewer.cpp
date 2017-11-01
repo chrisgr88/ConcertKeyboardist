@@ -1098,11 +1098,7 @@ void ScrollingNoteViewer::makeNoteBars()
   try {
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     rebuidingGLBuffer = true;
-//    std::cout
-//    << "MNB: theSequence.size " << processor->sequenceObject.theSequence.size()
-//    << " first track " << processor->sequenceObject.theSequence.at(0)->track
-//    << " first noteNumber " << processor->sequenceObject.theSequence.at(0)->noteNumber
-//    << "\n";
+//    std::cout << "in makeNoteBars animationStep "<<animationStep<< "\n";
     if (processor->initialWindowHeight<topMargin)
         return;
     float initialHeight = processor->initialWindowHeight;
@@ -1736,7 +1732,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
   try {
     if ((MIDIProcessor*)broadcaster == processor) //Triggered at the end of rewind() in MIDIProcessor
     {
-//        std::cout << " ViewerCallback:  " <<  processor->changeMessageType <<"\n";
+//        std::cout << " ViewerCallback:  " <<  processor->changeMessageType <<" animationStep "<<animationStep<<"\n";
         if (processor->changeMessageType == CHANGE_MESSAGE_REWIND)
         {
             if (processor->sequenceObject.fileToLoad != prevFileLoaded)
@@ -1850,8 +1846,8 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             }
             if (animationStep==0)
             {
-//            makeKeyboard();
-//            makeNoteBars();
+                makeKeyboard();
+                makeNoteBars();
             }
             repaint();
         }
@@ -1946,6 +1942,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         if (animationStep==nSteps)
         {
             nSteps = -1;
+            animationStep = 0;
             stopTimer(TIMER_TWEEN);
         }
     }
