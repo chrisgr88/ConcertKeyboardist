@@ -133,7 +133,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
     processor->pluginMessageCollector = &mmc;
     thePlugin->setPlayHead(processor);
-    processor->synthMessageCollectorReset(sampRate);
+    processor->pluginMessageCollectorReset(sampRate);
     thePlayer.getMidiMessageCollector().reset(sampRate);
 }
 

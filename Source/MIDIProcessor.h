@@ -208,7 +208,7 @@ public:
      @see addListener
      */
     void removeListener (Listener* listener);
-    void synthMessageCollectorReset(const double rate)
+    void pluginMessageCollectorReset(const double rate)
     {
 //        synthMessageCollector.reset(rate);
         pluginMessageCollectorIsReset = true;
@@ -224,7 +224,6 @@ public:
     int noteOnOffFifoBuffer [FIFO_SIZE];
     AbstractFifo noteOnOffFifo;
     bool pluginMessageCollectorIsReset;
-    MidiMessageCollector synthMessageCollector;
     MidiMessageCollector *pluginMessageCollector;
     
     void prepareToSave()

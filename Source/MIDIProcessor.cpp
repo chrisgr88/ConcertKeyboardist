@@ -14,6 +14,7 @@ MIDIProcessor::MIDIProcessor() :
     sequenceObject.addChangeListener(this);
     undoMgr = new MyUndoManager(100000,50);
     pluginMessageCollectorIsReset = false;
+    pluginMessageCollector = nullptr;
     reset(44.1);
     isPlaying = false;
     isListening = false;

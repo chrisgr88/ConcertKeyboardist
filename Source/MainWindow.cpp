@@ -358,10 +358,13 @@ ApplicationProperties& getAppProperties();
         o.runModal();
         ckBlockClosing = false;
         ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
-        getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
+//        getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
         getAppProperties().getUserSettings()->saveIfNeeded();
         const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
-        midiProcessor.synthMessageCollectorReset(sampRate);
+//        std::cout << "synthMessageCollector "<<(int) midiProcessor.synthMessageCollector<<"\n";
+//        midiProcessor.synthMessageCollectorReset(sampRate);
+        if (midiProcessor.pluginMessageCollector)
+            midiProcessor.pluginMessageCollector->reset(sampRate);
     }
     
     void MainWindow::menuBarActivated (bool isActive)
