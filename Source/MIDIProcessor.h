@@ -309,8 +309,11 @@ private:
         msg.setTimeStamp(t);
 //            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
         if (pluginMessageCollectorIsReset)
-            pluginMessageCollector->addMessageToQueue (msg);
+        {
+            if (pluginMessageCollector)
+                pluginMessageCollector->addMessageToQueue (msg);
             midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
+        }
     }
     double timeInTicks = -1;
     int leadTimeInTicks; //How much space in ticks to allow to left of the ztl in viewer window

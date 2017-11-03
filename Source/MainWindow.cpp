@@ -107,6 +107,8 @@ ApplicationProperties& getAppProperties();
 
     MainWindow::MainWindow (String name) : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
+        midiOutEnabled = true;
+        pluginEnabled = true;
         ckBlockClosing = false;
         chordVelocityHumanizeSpec = ".6,.8";
         chordTimeHumanizeSpec = "40";
@@ -399,6 +401,16 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("Show plugin window...", String(), category, 0);
                 result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
                 break;
+            case CommandIDs::enablePlugin:
+                result.setInfo ("Enable plugin", String(), category, 0);
+                result.setTicked(pluginEnabled);
+//                result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
+                break;
+            case CommandIDs::enableMidiOut:
+                result.setInfo ("Enable midi out", String(), category, 0);
+                result.setTicked(midiOutEnabled);
+                //                result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
+                break;
             case CommandIDs::fileOpen:
                 result.setInfo ("Open...", "Open or import a file", category, 0);
                 result.defaultKeypresses.add (KeyPress ('o', ModifierKeys::commandModifier, 0));
@@ -612,7 +624,8 @@ ApplicationProperties& getAppProperties();
 //            menu.addItem (250, "Unload plugin");
             menu.addSeparator();
 //            menu.addItem (251, "Show plugin window");
-            menu.addCommandItem (&getCommandManager(), CommandIDs::showPlugWindow);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::enableMidiOut);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::enablePlugin);
 //            menu.addItem (252, "Show all programs");
 //            menu.addItem (253, "Show all parameters");
 //            menu.addItem (254, "Configure audio I/O");
@@ -756,6 +769,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::audioMidiSettings,
             CommandIDs::showPluginListEditor,
             CommandIDs::showPlugWindow,
+            CommandIDs::enablePlugin,
+            CommandIDs::enableMidiOut,
             CommandIDs::fileOpen,
             CommandIDs::fileRecent,
             CommandIDs::fileSave,
@@ -835,6 +850,18 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                     if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
                         w->toFront (true);
                 }
+                break;
+            }
+            case CommandIDs::enablePlugin:
+            {
+                std::cout << "Enable plugin" <<"\n";
+                pluginEnabled = !pluginEnabled;
+                break;
+            }
+            case CommandIDs::enableMidiOut:
+            {
+                std::cout << "Enable midi out" <<"\n";
+                midiOutEnabled = !midiOutEnabled;
                 break;
             }
             case CommandIDs::fileOpen:
