@@ -552,9 +552,9 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
  <#loadSequence#>
  */
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
-bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanizeTimes, bool humanizeVelocities)
+bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 {
-//    std::cout << "entering loadSequence \n";
+    std::cout << "entering loadSequence \n";
     targetNoteTimes.clear();
   try {
         
@@ -1444,6 +1444,10 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
 //            std::cout<< "Chain in loadSequence " << "\n";
             for (int step=0; step<theSequence.size();step++)
             {
+                
+                int foo;
+                if (step==512)
+                    foo=0;
                 if (prevTS != theSequence.at(step)->getTimeStamp() && theSequence.at(step)->targetNote)
                 {
                     if (step>0)
@@ -1452,7 +1456,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
                     firstInThisChain = step;
                     theSequence.at(step)->firstInChain = step;
                 }
-                else
+                else if (!theSequence.at(step)->targetNote)
                 {
                     if (step>0)
                     {
@@ -1584,7 +1588,7 @@ bool Sequence::loadSequence(LoadType loadFile, Retain retainEdits, bool humanize
     //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
 //    compareAllNotes("End of loadSequence");
 
-//    std::cout << "End of loadSequence \n";
+    std::cout << "End of loadSequence \n";
     return true;//(theSequence.size()>0);
 } //End of loadSequence
 

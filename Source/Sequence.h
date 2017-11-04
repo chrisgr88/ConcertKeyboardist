@@ -221,7 +221,7 @@ public:
 
     enum Retain {doRetainEdits, doNotRetainEdits};
     enum LoadType {loadFile, reAnalyzeOnly, updateChords};
-    bool loadSequence(LoadType justRebuildSequence, Retain retainEdits, bool humanizeTimes=false, bool humanizeVelocities=false);
+    bool loadSequence (LoadType justRebuildSequence, Retain retainEdits);
     Array<StepActivity> chain(Array<int> selection, double interval);
     double chainingInterval;
     

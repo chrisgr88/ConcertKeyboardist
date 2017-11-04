@@ -92,16 +92,17 @@ public:
     }
     
     //enum LoadType {loadFile, reAnalyzeOnly};
-    void buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time,
-                            bool humanizeTime=false, bool humanizeVelocity=false)
+    void buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time)
     {
 //        std::cout << "entering buildSequenceAsOf \n";
         pauseGLRendering = true;
         HighResolutionTimer::stopTimer();
         if (type==Sequence::loadFile)
+        {
             lastUserPlayedSeqStep=-1;
-        
-        if (sequenceObject.loadSequence(type, retainEdits, humanizeTime, humanizeVelocity))
+            pluginEnabled = false;
+        }
+        if (sequenceObject.loadSequence(type, retainEdits))
         {
             HighResolutionTimer::startTimer(timerIntervalInMS);
             rewind(time);
@@ -214,11 +215,6 @@ public:
         pluginMessageCollectorIsReset = true;
         pluginMessageCollector->reset(rate);
     }
-    enum class MidiDestination {internalSynth = 0, output = 1, pluginSynth = 2};
-    void setMidiDestination ( MidiDestination dest )
-    {
-        midiDestination = dest;
-    }
     
 #define FIFO_SIZE 50
     int noteOnOffFifoBuffer [FIFO_SIZE];
@@ -295,24 +291,26 @@ public:
     bool appIsActive = true;
     int sampleRate;
     std::atomic_bool pauseProcessing;
+    bool pluginEnabled;
+    bool midiOutEnabled;
 private:
     //==============================================================================
 
     std::vector<NoteWithOffTime> listenSequence;
     double listenStep;
     MidiOutput *midiOutput;
-    MidiDestination midiDestination;
     bool notesEditable; //Whether notes can be edited in the viewer
     void sendMidiMessage(MidiMessage msg)
     {
         double t = Time::getMillisecondCounterHiRes()*0.001;
         msg.setTimeStamp(t);
 //            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
+        if (midiOutEnabled)
+            midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
         if (pluginMessageCollectorIsReset)
         {
             if (pluginMessageCollector)
                 pluginMessageCollector->addMessageToQueue (msg);
-            midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
         }
     }
     double timeInTicks = -1;

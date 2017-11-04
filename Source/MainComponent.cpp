@@ -23,7 +23,6 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         processor->sequenceObject.addActionListener(this);
         setLookAndFeel (&lookAndFeel);
         processor->reset(44.1);
-        processor->setMidiDestination (MIDIProcessor::MidiDestination::output);
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
         audioDeviceManager.initialise (0, 2, savedAudioState, true);
@@ -114,7 +113,10 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     thePlugin = pPlugin;
     processor->sequenceObject.thePlugin = pPlugin;
     if (thePlugin)
+    {
         std::cout << "Loaded plugin \n";
+        processor->pluginEnabled = true;
+    }
     else
         std::cout << "Plugin error "<<errorMsg<<"\n";
     
@@ -129,7 +131,6 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     thePlayer.setProcessor(thePlugin);
     audioDeviceManager.addAudioCallback (&thePlayer);
     thePlugin->suspendProcessing(false);
-    
     MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
     processor->pluginMessageCollector = &mmc;
     thePlugin->setPlayHead(processor);

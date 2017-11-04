@@ -899,13 +899,9 @@ void MIDIProcessor::processBlock ()
 //                    midiOutput->sendMessageNow(noteOff);
                     double t = Time::getMillisecondCounterHiRes()*0.001;
                     noteOff.setTimeStamp(t);
-//                    noteOff.setTimeStamp(99.0);
-//                    synthMessageCollector.addMessageToQueue (noteOff);
                     if (pluginMessageCollectorIsReset)
-                        pluginMessageCollector->addMessageToQueue(noteOff);
+                        sendMidiMessage(noteOff);
                     sendMidiMessage(noteOff);
-//                    std::cout<<"at 3 noteOff "<<stepToTurnOff<<"\n";
-                    
                     sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber,
                                                  sequenceObject.theSequence.at(step)->channel, false);
                     const int index = onNotes.indexOf(stepToTurnOff);
@@ -1468,7 +1464,7 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
             }
         }
         catchUp();
-        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
         pauseProcessing = false;
     } catch (const std::out_of_range& ex) {
         std::cout << " error in timeHumanizeChords " << "\n";
@@ -1537,7 +1533,7 @@ Array<Sequence::NoteVelocities> MIDIProcessor::velocityHumanizeChords (Array<int
             }
         }
         catchUp();
-        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
+        buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
         pauseProcessing = false;
     } catch (const std::out_of_range& ex) {
         std::cout << " error in velocityHumanizeChords " << "\n";
@@ -1922,7 +1918,7 @@ void MIDIProcessor::humanizeChordNoteTimes ()
 //        std::cout << "Time Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
     }
     catchUp();
-    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), true, false);
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
     if (copyOfSelectedNotes.size()==0)
         return;
     pauseProcessing = true;
@@ -1984,7 +1980,7 @@ void MIDIProcessor::humanizeChordNoteVelocities ()
 //        std::cout << "Vel Humanize chord step "<<chordsToHumanize[i]<<" "<< sequenceObject.chords[chordsToHumanize[i]].timeSpec << "\n";
     }
     catchUp();
-    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead(), false, true);
+    buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
     
     pauseProcessing = false;
 }

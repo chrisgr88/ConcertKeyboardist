@@ -816,7 +816,7 @@ void ScrollingNoteViewer::renderOpenGL()
         glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
         resized();
         int size = vertices.size();
-        std::cout << "vertices.size "<<size<<"\n";
+//        std::cout << "vertices.size "<<size<<"\n";
         openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
         openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,

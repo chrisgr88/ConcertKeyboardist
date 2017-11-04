@@ -212,10 +212,7 @@ public:
     MIDIProcessor midiProcessor;
     ViewerFrame* pViewerFrame;
     ScopedPointer<MainComponent> mainComponent;
-    bool pluginEnabled;
-    bool midiOutEnabled;
 
-    
 private:
 //    AudioPluginFormatManager formatManager;
 //    KnownPluginList knownPluginList;

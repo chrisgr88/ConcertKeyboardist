@@ -107,8 +107,8 @@ ApplicationProperties& getAppProperties();
 
     MainWindow::MainWindow (String name) : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
-        midiOutEnabled = true;
-        pluginEnabled = true;
+        midiProcessor.midiOutEnabled = true;
+        midiProcessor.pluginEnabled = false;
         ckBlockClosing = false;
         chordVelocityHumanizeSpec = ".6,.8";
         chordTimeHumanizeSpec = "40";
@@ -403,13 +403,19 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::enablePlugin:
                 result.setInfo ("Enable plugin", String(), category, 0);
-                result.setTicked(pluginEnabled);
-//                result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
+                if (midiProcessor.pluginEnabled)
+                {
+                    result.setTicked(midiProcessor.pluginEnabled);
+                }
+                else
+                {
+                    result.setActive(false);
+                    result.setTicked(false);
+                }
                 break;
             case CommandIDs::enableMidiOut:
                 result.setInfo ("Enable midi out", String(), category, 0);
-                result.setTicked(midiOutEnabled);
-                //                result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
+                result.setTicked(midiProcessor.midiOutEnabled);
                 break;
             case CommandIDs::fileOpen:
                 result.setInfo ("Open...", "Open or import a file", category, 0);
@@ -855,13 +861,13 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             case CommandIDs::enablePlugin:
             {
                 std::cout << "Enable plugin" <<"\n";
-                pluginEnabled = !pluginEnabled;
+                midiProcessor.pluginEnabled = !midiProcessor.pluginEnabled;
                 break;
             }
             case CommandIDs::enableMidiOut:
             {
                 std::cout << "Enable midi out" <<"\n";
-                midiOutEnabled = !midiOutEnabled;
+                midiProcessor.midiOutEnabled = !midiProcessor.midiOutEnabled;
                 break;
             }
             case CommandIDs::fileOpen:
