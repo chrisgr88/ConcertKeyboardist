@@ -1446,7 +1446,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             {
                 
                 int foo;
-                if (step==512)
+                if (step==449)
                     foo=0;
                 if (prevTS != theSequence.at(step)->getTimeStamp() && theSequence.at(step)->targetNote)
                 {
@@ -1582,7 +1582,19 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
           std::cout << " error loadSequence: finding triggered and triggeredOff notes " << "\n";
       }
     }
-        
+    
+//    //The following ensures that any notes that part of the same chain and simultaneous in time
+//    //are set to be triggered by this target note.
+//    for (int step=0; step<theSequence.size();step++)
+//    {
+//        if(theSequence.at(step)->targetNote)
+//        {
+//            const int timeOfTargetNote = theSequence.at(step)->getTimeStamp();
+//            for (int ii=theSequence.at(step)->firstInChain;ii<step;ii++)
+//                if (theSequence.at(step)->getTimeStamp() == timeOfTargetNote)
+//                    theSequence.at(ii)->triggeredBy = step;
+//        }
+//    }
     setLoadingFile(false);
 //    dumpData(0, 20, -1);
     //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
@@ -1681,6 +1693,7 @@ void Sequence::dumpData(int start, int end, int nn)
     }
     std::cout
     << " step "
+    << " ptr "
     << " track "
     << " channel "
     << " nn "
@@ -1709,6 +1722,7 @@ void Sequence::dumpData(int start, int end, int nn)
             String note = MidiMessage::getMidiNoteName (theSequence.at(i)->noteNumber, true, true, 3);
             std::cout
             << i <<" "
+            << theSequence.at(i) <<" "
             << (int)theSequence.at(i)->track <<" "
             << theSequence.at(i)->channel <<" "
             << theSequence.at(i)->noteNumber <<" "

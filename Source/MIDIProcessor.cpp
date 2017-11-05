@@ -186,7 +186,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
                 {
                     const MidiMessage noteOff = MidiMessage::noteOff(sequenceObject.theSequence.at(onNotes[i])->channel,
                                                                      sequenceObject.theSequence.at(onNotes[i])->noteNumber,
-                                                                     sequenceObject.theSequence.at(onNotes[i])->getVelocity());
+                                                                     0.0f);
                                     sendMidiMessage(noteOff);
                 }
                 MidiMessage allNotesOff = MidiMessage::controllerEvent(chan, 123, 0);
@@ -1430,8 +1430,11 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
             std::normal_distribution<double> distribution(0.0,standardDeviation);
             sequenceObject.chords[chIndex].timeRandSeed = seed;
             //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
+            int prevTargetNote = -1;
             for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
             {
+                if (chordNotes.at(i)->targetNote)
+                    prevTargetNote = i;
                 double proposedNoteTime = thisChordTimeStamp;// + i*increment;
                 double rawRandomAdd;
 //                for (int z=0;z<10;z++)
@@ -1461,6 +1464,18 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
 //                                          << std::endl;
                 const int offset = chordNotes[i]->getTimeStamp() - thisChordTimeStamp;
                 sequenceObject.chords[chIndex].offsets.push_back(offset);
+            }
+            if (prevTargetNote!=-1) //If there was a target note in this chord
+            {
+                //Then instead make the top chord note be the target note
+                std::cout << "prevTargetNote " << chordNotes.at(prevTargetNote)->currentStep
+                <<" nn "<<chordNotes.at(prevTargetNote)->noteNumber
+                <<" newTargetNote "<< chordNotes.at(0)->currentStep
+                <<" nn "<< chordNotes.at(0)->noteNumber<< "\n";
+                chordNotes.at(0)->targetNote = true;
+                //And make the previous target note not be one
+                chordNotes.at(prevTargetNote)->targetNote = false;
+                chordNotes.at(prevTargetNote)->triggeredBy = chordNotes.at(0)->currentStep;
             }
         }
         catchUp();

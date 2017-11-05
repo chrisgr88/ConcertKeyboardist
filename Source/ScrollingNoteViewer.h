@@ -197,7 +197,6 @@ public:
     Image getKeysImage() { return keysImage; }
     int getKeysWidth() {return leftMargin+wKbd;}
     int getToolbarHeight() { return toolbarHeight;}
-    int getTopMargin() { return verticalScale*topMargin;}
     String getHoverInfo() {return hoverInfo;}
     void makeNoteBars();
     void updatePlayedNotes(); //Just updates the note bar heads in the exising vertex and index buffers
@@ -487,8 +486,8 @@ private:
     GLuint vertexBuffer, indexBuffer;
     int numIndices = 0;
     float delta = 0.002;
-    float x;
-    float y;
+//    float x;
+//    float yy;
     float pos = 0;
     float desktopScale;
     float horizontalScale;
