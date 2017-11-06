@@ -40,6 +40,9 @@ struct ViewStateInfo
     static int initialPPT; //Initial pixels per tick
     static int viewWidth;
     static int viewHeight;
+    static float verticalScale;
+    static float horizontalScale;
+    static float trackVerticalSize;
 };
 //These are in the cpp file
 //int ViewStateInfo::initialWidth = 0;
@@ -472,7 +475,7 @@ private:
     bool refresh = true;
     int nKeys;
     SortedSet<int> notesUsed;
-    float trackVerticalSize;
+//    float trackVerticalSize;
     float noteBarWidthRatio; //As fraction of track width
     std::array<float, 128> noteYs;
     Image keysImage;
@@ -491,7 +494,7 @@ private:
     float pos = 0;
     float desktopScale;
     float horizontalScale;
-    float verticalScale;
+//    float verticalScale;
     float prevMouseDragX;
     int positionLine;
 

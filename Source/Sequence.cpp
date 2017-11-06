@@ -539,7 +539,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
                 theSequence.at(step)->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
                 firstInThisChain = step;
                 theSequence.at(step)->firstInChain = step;
-                theSequence.at(step)->targetNote = true;
+                theSequence.at(step)->targetNote = true; 
             }
         }
     }
