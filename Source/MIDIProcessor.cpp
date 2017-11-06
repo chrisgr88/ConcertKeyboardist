@@ -1375,7 +1375,10 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
         struct {
             bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
             {
-                return a->noteNumber > b->noteNumber;
+                if (a->noteNumber == b->noteNumber)
+                    return a->channel < b->channel;
+                else
+                    return a->noteNumber > b->noteNumber;
             }
         } customCompare2;
         Array<int> chordsToProcess;
@@ -1429,16 +1432,8 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
             std::default_random_engine generator(seed);
             std::normal_distribution<double> distribution(0.0,standardDeviation);
             sequenceObject.chords[chIndex].timeRandSeed = seed;
-            //double increment = -1 * chordDirection * chordDuration / (chordNotes.size()-1);
-//            int prevTargetNote = -1;
-            //Process one chord's notes
-//            if (chordNotes.at(0)->targetNote)
-//                prevTargetNote = 0;
             for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
             {
-//                if (chordNotes.at(i)->targetNote)
-//                    prevTargetNote = i;
-                chordNotes.at(i)->targetNote = false;
                 double proposedNoteTime = thisChordTimeStamp;// + i*increment;
                 double rawRandomAdd;
                 rawRandomAdd = distribution(generator);
@@ -1457,54 +1452,39 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
                     chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
                 else
                     chordNotes.at(i)->setOfftime(sequenceObject.seqDurationInTicks);
-//                    std::cout <<  chordNotes.at(i)->currentStep
-//                      << " randomAdd " << randomAdd
-//                      << " timeStamp " << chordNotes.at(i)->getTimeStamp()
-//                      << std::endl;
+                    std::cout <<  chordNotes.at(i)->currentStep
+                      << " randomAdd " << randomAdd
+                      << " timeStamp " << chordNotes.at(i)->getTimeStamp()
+                      << std::endl;
                 const int offset = chordNotes[i]->getTimeStamp() - thisChordTimeStamp;
                 sequenceObject.chords[chIndex].offsets.push_back(offset);
             }
         }
-//        for (int chNum=0;chNum<chordsToProcess.size();chNum++)
-//        {
-//            const int chIndex = chordsToProcess[chNum];
-//            std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
-//            if (chordNotes.size()==0)
-//                continue;
-//            int prevTargetNote = -1;
-//            for (int i=0; i<chordNotes.size(); i++)
-//            {
-//                if (chordNotes.at(i)->targetNote)
-//                    prevTargetNote = i;
-//            }
-//            if (prevTargetNote!=-1) //There was a target note in this chord so chaining needs to be adjusted
-//            {
-//                //Set firstInChain for all notes to be the first note
-//                //Set all autoplayed to false
-//                //Set all notes chainTrigger to be the targetNote?
-//                for (int i=0; i<chordNotes.size(); i++)
-//                {
-//                    chordNotes.at(i)->firstInChain = chordNotes.at(i)->currentStep;
-//                    chordNotes.at(i)->autoplayedNote = false;
-//                    chordNotes.at(i)->chainTrigger = chordNotes.at(0)->currentStep;
-//                    if (chordNotes.at(i)->triggeredBy < chordNotes.at(i)->currentStep)
-//                        sequenceObject.theSequence.at(chordNotes.at(i)->triggeredBy)->triggers = -1;
-//                }
-//                //Set first note triggeredBy to be -1 and each subsequent one to be triggered by the previous
-//                //Set the first note's targetNote field to true and others to false
-//                chordNotes.at(0)->triggeredBy = -1;
-//                chordNotes.at(0)->targetNote = true;
-//                for (int i=1; i<chordNotes.size(); i++)
-//                {
-//                    chordNotes.at(i)->triggeredBy = chordNotes.at(i)->currentStep-1;
-//                    chordNotes.at(i)->targetNote = false;
-//                }
-//                //Set triggers to be sequential where each note triggers the next except the last which is set to -1
-//                for (int i=0; i<chordNotes.size()-1; i++)
-//                    chordNotes.at(i)->triggers = chordNotes.at(i)->currentStep+1;
-//                chordNotes.at(chordNotes.size()-1)->triggers = -1;
-//            }
-//        }
+        for (int chNum=0;chNum<chordsToProcess.size();chNum++)
+        {
+            const int chIndex = chordsToProcess[chNum];
+            std::vector<std::shared_ptr<NoteWithOffTime>> chordNotes = sequenceObject.chords.at(chIndex).notePointers;
+            if (chordNotes.size()==0)
+                continue;
+            bool foundTargetNote = false;
+            double latestNoteTime = -1;
+            Array<int> chordSteps;
+            for (int i=0; i<chordNotes.size(); i++)
+            {
+                chordSteps.add(chordNotes.at(i)->currentStep);
+                if (chordNotes.at(i)->getTimeStamp() > latestNoteTime)
+                    latestNoteTime = chordNotes.at(i)->getTimeStamp();
+                if (chordNotes.at(i)->targetNote)
+                {
+                    foundTargetNote = true;
+                }
+            }
+            if (foundTargetNote) //There was a target note in this chord so chaining needs to be adjusted
+            {
+                const double chordWidth = latestNoteTime - chordNotes.at(0)->getTimeStamp();
+//                sequenceObject.chain(chordSteps, chordWidth);
+            }
+        }
         catchUp();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getSequenceReadHead());
         pauseProcessing = false;
@@ -1757,7 +1737,12 @@ void MIDIProcessor::createChord()
     }
     struct {
         bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
-        {return a->noteNumber > b->noteNumber;}
+        {
+            if (a->noteNumber == b->noteNumber)
+                return a->channel < b->channel;
+            else
+                return a->noteNumber > b->noteNumber;
+        }
     } customCompare2;
     std::sort(chordNotes.begin(), chordNotes.end(),customCompare2);
     int chordIndex = sequenceObject.newChordFromSteps(chordNotes);

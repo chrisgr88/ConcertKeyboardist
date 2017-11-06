@@ -1254,7 +1254,12 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                 bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
                 {
                     if (a->getTimeStamp()==b->getTimeStamp())
-                        return a->noteNumber > b->noteNumber;
+                    {
+                        if (a->noteNumber == b->noteNumber)
+                            return a->channel < b->channel;
+                        else
+                            return a->noteNumber > b->noteNumber;
+                    }
                     else
                         return a->getTimeStamp() < b->getTimeStamp();
                 }
@@ -1426,9 +1431,19 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
               bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
               {
                   if (a->getTimeStamp()==b->getTimeStamp())
-                      return a->noteNumber > b->noteNumber;
+                  {
+                      if (a->noteNumber == b->noteNumber)
+                          return a->channel < b->channel;
+                      else
+                          return a->noteNumber > b->noteNumber;
+                  }
                   else
                       return a->getTimeStamp() < b->getTimeStamp();
+                  
+//                  if (a->getTimeStamp()==b->getTimeStamp())
+//                      return a->noteNumber > b->noteNumber;
+//                  else
+//                      return a->getTimeStamp() < b->getTimeStamp();
               }
           } customCompare;
           std::sort(theSequence.begin(), theSequence.end(), customCompare);
@@ -1444,10 +1459,6 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 //            std::cout<< "Chain in loadSequence " << "\n";
             for (int step=0; step<theSequence.size();step++)
             {
-                
-                int foo;
-                if (step==449)
-                    foo=0;
                 if (prevTS != theSequence.at(step)->getTimeStamp() && theSequence.at(step)->targetNote)
                 {
                     if (step>0)
