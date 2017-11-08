@@ -139,8 +139,7 @@ private:
     Label fileNameLabel;
     Label hoverStepInfo;
     Label scoreTempoLabel;
-    Label scaledTempoLabel;
-    Label scaleFactorLabel;
+    Label adjustedTempoLabel;
     ComponentBoundsConstrainer resizeLimits;
     
     Toolbar altToolbar;
@@ -555,7 +554,7 @@ private:
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
             ids.add (separatorBarId);
-            for (int n=0;n<6;n++)
+            for (int n=0;n<8;n++)
                 ids.add (spacerId);
             ids.add (scoreTempo);
             for (int n=0;n<5;n++)
@@ -600,19 +599,19 @@ private:
                 case scoreTempo:
                 {
                     ScoreTempo *scoreTempo = new ScoreTempo(itemId);
-                    scoreTempo->setTooltip("Tempo");
+                    scoreTempo->setTooltip("Suggested Tempo");
                     return scoreTempo;
                 }
-                case scaledTempo:
-                {
-                    ScaledTempo *scaledTempo = new ScaledTempo(itemId);
-                    scaledTempo->setTooltip("Tempo");
-                    return scaledTempo;
-                }
+//                case scaledTempo:
+//                {
+//                    ScaledTempo *scaledTempo = new ScaledTempo(itemId);
+//                    scaledTempo->setTooltip("Tempo");
+//                    return scaledTempo;
+//                }
                 case tempoMultiplier:
                 {
-                    TempoMultiplier *tempoMultiplier = new TempoMultiplier (itemId);
-                    tempoMultiplier->setTooltip("Tempo Scale Factor");
+                    AdjustedTempo *tempoMultiplier = new AdjustedTempo (itemId);
+                    tempoMultiplier->setTooltip("Tempo");
                     return tempoMultiplier;
                 }
                 default:
@@ -776,7 +775,7 @@ private:
             void mouseDown (const MouseEvent& e) override
             {
                 String str = getText();
-                str.trimCharactersAtEnd("%");
+//                str.trimCharactersAtEnd("%");
                 startValue = str.getDoubleValue();
                 mouseIsDown = true;
             }
@@ -789,7 +788,7 @@ private:
                 double newVal = startValue-e.getDistanceFromDragStartY();
                 if (newVal<min) newVal=min;
                 if (newVal>max) newVal=max;
-                setText(String(newVal,decimalPlaces)+"%");
+                setText(String(newVal,decimalPlaces));
                 sendChangeMessage();
             }
             void setTextWhenMouseNotDown (String text)
@@ -804,10 +803,10 @@ private:
         };
         
         //=================================================
-        class TempoMultiplier : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
+        class AdjustedTempo : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
         {
         public:
-            TempoMultiplier (const int toolbarItemId)
+            AdjustedTempo (const int toolbarItemId)
             : ToolbarItemComponent (toolbarItemId, "Tempo Multiplier", false)
             {
                 ToolbarItemComponent::addAndMakeVisible (numberBox);
@@ -826,7 +825,7 @@ private:
                 numberBox.setFont (Font (19.00f, Font::plain));
                 numberBox.setColour (TextEditor::ColourIds::textColourId, Colours::darkgrey);
                 numberBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey).brighter());
-                numberBox.setTooltip("Tempo Scale Factor");
+                numberBox.setTooltip("Tempo");
             }
             
             void setWidth(int width)
@@ -859,7 +858,7 @@ private:
             }
             void setValue(double val)
             {
-                numberBox.setText(String(val,numberBox.decimalPlaces)+"%");
+                numberBox.setText(String(val,numberBox.decimalPlaces));
             }
             void textEditorReturnKeyPressed (TextEditor&) override
             {
@@ -894,7 +893,7 @@ private:
     MainToolbarItemFactory::ChainAmountBox *pChainAmountBox;
     AltToolbarItemFactory::ScoreTempo *pScoreTempo;
     AltToolbarItemFactory::ScaledTempo *pScaledTempo;
-    AltToolbarItemFactory::TempoMultiplier *pTempoMultiplier;
+    AltToolbarItemFactory::AdjustedTempo *pAdjustedTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     

@@ -73,9 +73,9 @@ altToolbarFactory(this)
         int id = altToolbar.getItemId(i);
         if (id == AltToolbarItemFactory::ToolbarItemIds::tempoMultiplier)
         {
-            pTempoMultiplier = (AltToolbarItemFactory::TempoMultiplier *)altToolbar.getItemComponent(i);
-            pTempoMultiplier->numberBox.setFont (Font (19.00f, Font::bold));
-            pTempoMultiplier->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).brighter());
+            pAdjustedTempo = (AltToolbarItemFactory::AdjustedTempo *)altToolbar.getItemComponent(i);
+            pAdjustedTempo->numberBox.setFont (Font (19.00f, Font::bold));
+            pAdjustedTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).brighter());
         }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
         {
@@ -92,23 +92,17 @@ altToolbarFactory(this)
     hoverStepInfo.setJustificationType (Justification::left);
     hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
-    scoreTempoLabel.setText("Score Tempo",NotificationType::dontSendNotification);
+    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
     scoreTempoLabel.setFont (Font (14.00f, Font::bold));
     scoreTempoLabel.setJustificationType (Justification::right);
     scoreTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
     addAndMakeVisible (scoreTempoLabel);
     
-    scaledTempoLabel.setText("Scaled Tempo",NotificationType::dontSendNotification);
-    scaledTempoLabel.setFont (Font (14.00f, Font::bold));
-    scaledTempoLabel.setJustificationType (Justification::right);
-    scaledTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
-    addAndMakeVisible (scaledTempoLabel);
-    
-    scaleFactorLabel.setText("Scale Factor",NotificationType::dontSendNotification);
-    scaleFactorLabel.setFont (Font (14.00f, Font::bold));
-    scaleFactorLabel.setJustificationType (Justification::right);
-    scaleFactorLabel.setColour (Label::textColourId, Colours::darkgrey);
-    addAndMakeVisible (scaleFactorLabel);
+    adjustedTempoLabel.setText("Tempo",NotificationType::dontSendNotification);
+    adjustedTempoLabel.setFont (Font (14.00f, Font::bold));
+    adjustedTempoLabel.setJustificationType (Justification::right);
+    adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
+    addAndMakeVisible (adjustedTempoLabel);
     
     playableKeys = "qwertyuiopasdfghjklzxcvbnm;',./[]";
 
@@ -184,12 +178,15 @@ void ViewerFrame::timerCallback()
         pHumanizeVelocity->returnPressed = false;
     }
 
-    if (pTempoMultiplier->changed)
-    {
-        std::cout << "pTempoMultiplier->changed " << pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0 << "\n";
-        processor->setTempoMultiplier(pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0,
-                                                     processor->getZTLTime(noteViewer.horizontalShift), true);
-        pTempoMultiplier->changed = false;
+    if (pAdjustedTempo->changed)
+    {//!
+        std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getText().getDoubleValue() << "\n";
+        processor->setTempoMultiplier(
+            pAdjustedTempo->numberBox.getText().getDoubleValue()/
+            processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),processor->sequenceObject.tempoChanges),
+            processor->getZTLTime(noteViewer.horizontalShift),
+            true);
+        pAdjustedTempo->changed = false;
         grabKeyboardFocus();
     }
     else
@@ -206,15 +203,6 @@ void ViewerFrame::timerCallback()
 //        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
 //            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
     }
-    if (pScaledTempo->returnPressed)
-        ;
-    else
-    {
-//        double scaledTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
-//                                                                processor->sequenceObject.scaledTempoChanges);
-//        if (!pScaledTempo->textBox.hasKeyboardFocus(true))
-//            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
-    }
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -227,15 +215,16 @@ void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
         
         const double scaledTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
                                                                 processor->sequenceObject.scaledTempoChanges);
-        if (!pScaledTempo->textBox.hasKeyboardFocus(true))
-            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
+//        if (!pScaledTempo->textBox.hasKeyboardFocus(true))
+//            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
         const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
                                                                processor->sequenceObject.tempoChanges);
         if (!pScoreTempo->textBox.hasKeyboardFocus(true))
             pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
         
-        pTempoMultiplier->setValue(std::round(processor->sequenceObject.
-                                              getTempoMultipier(processor->getZTLTime(noteViewer.horizontalShift))*100.0));
+//        pTempoMultiplier->setValue(std::round(processor->sequenceObject.
+//                                              getTempoMultipier(processor->getZTLTime(noteViewer.horizontalShift))*100.0));
+        pAdjustedTempo->setValue(std::round(scaledTempo));
     }
     else if (cb == &noteViewer)
     {
@@ -379,7 +368,9 @@ void ViewerFrame::buttonClicked (Button* button)
         {
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
             processor->catchUp(false);
-            processor->addRemoveBookmark(BOOKMARK_ADD,true,pTempoMultiplier->numberBox.getText().getDoubleValue()/100.0);
+            const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
+                                                                         processor->sequenceObject.tempoChanges);
+            processor->addRemoveBookmark(BOOKMARK_ADD,true,pAdjustedTempo->numberBox.getText().getDoubleValue()/scoreTempo);
         }
         else if(AltToolbarItemFactory::ToolbarItemIds::addBookmark == id)
         {
@@ -437,23 +428,24 @@ void ViewerFrame::paint (Graphics& g)
 
 void ViewerFrame::resized()
 {
-    if (mainToolbar.isVertical())
+    if (altToolbar.isVertical())
         ;//mainToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
     else
-        mainToolbar.setBounds (getLocalBounds().removeFromTop  (noteViewer.getToolbarHeight()));
+        altToolbar.setBounds (getLocalBounds().removeFromTop(noteViewer.getToolbarHeight()));
     
     altToolbarVisible = true;
     if (altToolbarVisible)
     {
-        if (altToolbar.isVertical())
+        if (mainToolbar.isVertical())
             ;//altToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
         else
         {
             Rectangle<int> shifted = getLocalBounds();//.removeFromBottom(noteViewer.getToolbarHeight());
+//            Rectangle<int> shifted = getLocalBounds().removeFromTop(noteViewer.getToolbarHeight());
             shifted.setHeight(noteViewer.getToolbarHeight());
 //            shifted.setTop(getLocalBounds().getHeight()-noteViewer.getToolbarHeight());
             shifted.translate(0,  getLocalBounds().getHeight()-noteViewer.getToolbarHeight());
-            altToolbar.setBounds (shifted);
+            mainToolbar.setBounds (shifted);
         }
     }
     
@@ -461,8 +453,7 @@ void ViewerFrame::resized()
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
     
-    scoreTempoLabel.setBounds(22, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
-    scaleFactorLabel.setBounds(138, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
-    scaledTempoLabel.setBounds(276, getHeight()-30, 80, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(585+45, getHeight()-30, 600, noteViewer.getToolbarHeight()-1);
+    scoreTempoLabel.setBounds(22, 0, 100, noteViewer.getToolbarHeight()-1);
+    adjustedTempoLabel.setBounds(155, 0, 80, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(585+45, 0, 600, noteViewer.getToolbarHeight()-1);
 }
