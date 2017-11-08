@@ -363,8 +363,14 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("fileSaveAs");
         else if(AltToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
             sendActionMessage("loadPluginMenu");
+        else if(AltToolbarItemFactory::ToolbarItemIds::audioSettings == id)
+            sendActionMessage("audioSettings");
+        
         else if(AltToolbarItemFactory::ToolbarItemIds::editPlugin == id)
             sendActionMessage("editPlugin");
+        else if(AltToolbarItemFactory::ToolbarItemIds::scoreInfo == id)
+            sendActionMessage("scoreInfo");
+
         else if(AltToolbarItemFactory::ToolbarItemIds::_play == id)
             sendActionMessage("play");
         else if(AltToolbarItemFactory::ToolbarItemIds::_stop == id)
