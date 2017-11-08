@@ -161,9 +161,9 @@ private:
         // are the ones we'll use in this demo.
         enum ToolbarItemIds
         {
-            doc_open        = 1,
-            doc_save        = 2,
-            doc_saveAs      = 3,
+//            doc_open        = 1,
+//            doc_save        = 2,
+//            doc_saveAs      = 3,
             edit_undo       = 4,
             edit_redo       = 5,
             _toggleActivity     = 25,
@@ -183,9 +183,9 @@ private:
             _humanizeTimeBox    = 19,
             _humanizeVelocity   = 20,
             _humanizeVelocityBox = 21,
-            _help                = 22,
-            loadPlugin      = 23,
-            editPlugin      = 24
+            _help                = 22//,
+//            loadPlugin      = 23,
+//            editPlugin      = 24
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -196,9 +196,9 @@ private:
         
         void getAllToolbarItemIds (Array<int>& ids) override
         {
-            ids.add (doc_open);
-            ids.add (doc_save);
-            ids.add (doc_saveAs);
+//            ids.add (doc_open);
+//            ids.add (doc_save);
+//            ids.add (doc_saveAs);
             ids.add (edit_undo);
             ids.add (edit_redo);
             ids.add (_toggleActivity);
@@ -221,19 +221,19 @@ private:
             ids.add (separatorBarId);
             ids.add (_help);
             ids.add (spacerId);
-            ids.add (loadPlugin);
-            ids.add (editPlugin);
+//            ids.add (loadPlugin);
+//            ids.add (editPlugin);
             ids.add (flexibleSpacerId);
         }
         
         void getDefaultItemSet (Array<int>& ids) override
         {
-            ids.add (doc_open);
-            ids.add (doc_save);
-            ids.add (doc_saveAs);
-            ids.add (spacerId);
-            ids.add (loadPlugin);
-            ids.add (editPlugin);
+//            ids.add (doc_open);
+//            ids.add (doc_save);
+//            ids.add (doc_saveAs);
+//            ids.add (spacerId);
+//            ids.add (loadPlugin);
+//            ids.add (editPlugin);
 //            for (int n=0;n<8;n++)
 //                ids.add (spacerId);
             ids.add (spacerId);
@@ -271,11 +271,11 @@ private:
         {
             switch (itemId)
             {
-                case doc_open: return  createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
-                case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
-                case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
-                case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
-                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Edit Plugin", "EditPluginButton.svg");
+//                case doc_open: return  createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
+//                case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
+//                case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
+//                case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
+//                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Edit Plugin", "EditPluginButton.svg");
                 case edit_undo:         return createButtonFromZipFileSVG (itemId, "Undo", "edit-undo.svg");
                 case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
                     
@@ -507,16 +507,21 @@ private:
         // are the ones we'll use in this demo.
         enum ToolbarItemIds
         {
-            _play           = 1,
-            _stop           = 2,
-            _playPause      = 3,
-            _rewind         = 4,
-            _listen         = 5,
-            scoreTempo      = 6,
-            scaledTempo      = 7,
-            tempoMultiplier   = 8,
-            saveTempoChange = 9,
-            addBookmark = 10,
+            doc_open        = 1,
+            doc_save        = 2,
+            doc_saveAs      = 3,
+            loadPlugin      = 23,
+            editPlugin      = 24,
+            _play           = 5,
+            _stop           = 6,
+            _playPause      = 7,
+            _rewind         = 8,
+            _listen         = 9,
+            scoreTempo      = 10,
+            scaledTempo      = 11,
+            adjustedTempo   = 12,
+            saveTempoChange = 13,
+            addBookmark = 14,
             removeBookmarkOrTempoChange = 11
         };
         
@@ -532,6 +537,11 @@ private:
             // go in our toolbar. Any items you might want to add must be listed here. The
             // order in which they are listed will be used by the toolbar customisation panel.
             
+            ids.add (doc_open);
+            ids.add (doc_save);
+            ids.add (doc_saveAs);
+            ids.add (loadPlugin);
+            ids.add (editPlugin);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_playPause);
@@ -539,7 +549,7 @@ private:
             ids.add (_listen);
             ids.add (scoreTempo);
             ids.add (scaledTempo);
-            ids.add (tempoMultiplier);
+            ids.add (adjustedTempo);
             ids.add (saveTempoChange);
             ids.add (addBookmark);
             ids.add (removeBookmarkOrTempoChange);
@@ -553,19 +563,19 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
+            ids.add (spacerId);
+            ids.add (spacerId);
+            ids.add (doc_open);
+            ids.add (doc_save);
+            ids.add (doc_saveAs);
+            ids.add (loadPlugin);
+            ids.add (editPlugin);
             ids.add (separatorBarId);
             for (int n=0;n<8;n++)
                 ids.add (spacerId);
-            ids.add (scoreTempo);
-            for (int n=0;n<5;n++)
-                ids.add (spacerId);
-            ids.add (tempoMultiplier);
-            for (int n=0;n<5;n++)
-                ids.add (spacerId);
-            ids.add (scaledTempo);
-            ids.add (saveTempoChange);
-            ids.add (addBookmark);
-            ids.add (removeBookmarkOrTempoChange);
+//            ids.add (scoreTempo);
+
+            ids.add (spacerId);
             ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (_play);
@@ -575,12 +585,26 @@ private:
             ids.add (separatorBarId);
             ids.add (_listen);
             ids.add (separatorBarId);
+            for (int n=0;n<3;n++)
+                ids.add (spacerId);
+            ids.add (adjustedTempo);
+            for (int n=0;n<2;n++)
+                ids.add (spacerId);
+            ids.add (separatorBarId);
+            ids.add (saveTempoChange);
+            ids.add (addBookmark);
+            ids.add (removeBookmarkOrTempoChange);
         }
         
         ToolbarItemComponent* createItem (int itemId) override
         {
             switch (itemId)
             {
+                case doc_open:      return  createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
+                case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
+                case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
+                case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
+                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Edit Plugin", "EditPluginButton.svg");
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
                     
@@ -608,7 +632,7 @@ private:
 //                    scaledTempo->setTooltip("Tempo");
 //                    return scaledTempo;
 //                }
-                case tempoMultiplier:
+                case adjustedTempo:
                 {
                     AdjustedTempo *tempoMultiplier = new AdjustedTempo (itemId);
                     tempoMultiplier->setTooltip("Tempo");
@@ -837,9 +861,9 @@ private:
             {
                 if (isVertical)
                     return false;
-                preferredSize = 62;
-                minSize = 62;
-                maxSize = 62;
+                preferredSize = 55;
+                minSize = 55;
+                maxSize = 55;
                 numberBox.addChangeListener(this);
                 return true;
             }

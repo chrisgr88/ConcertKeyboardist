@@ -50,7 +50,7 @@ altToolbarFactory(this)
             
             pHumanizeStartTime =
             (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
-            pHumanizeStartTime->setWidth(65);
+            pHumanizeStartTime->setWidth(40);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("40"); //This value should be initialized in MainWindow
             humanizeTimeAmount = "40";
@@ -71,16 +71,16 @@ altToolbarFactory(this)
     for (int i=0; i<altToolbar.getNumItems(); i++)
     {
         int id = altToolbar.getItemId(i);
-        if (id == AltToolbarItemFactory::ToolbarItemIds::tempoMultiplier)
+        if (id == AltToolbarItemFactory::ToolbarItemIds::adjustedTempo)
         {
             pAdjustedTempo = (AltToolbarItemFactory::AdjustedTempo *)altToolbar.getItemComponent(i);
             pAdjustedTempo->numberBox.setFont (Font (19.00f, Font::bold));
             pAdjustedTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).brighter());
         }
-        else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
-        {
-            pScoreTempo = (AltToolbarItemFactory::ScoreTempo *) altToolbar.getItemComponent(i);
-        }
+//        else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
+//        {
+//            pScoreTempo = (AltToolbarItemFactory::ScoreTempo *) altToolbar.getItemComponent(i);
+//        }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scaledTempo)
         {
             pScaledTempo = (AltToolbarItemFactory::ScaledTempo *) altToolbar.getItemComponent(i);
@@ -92,13 +92,13 @@ altToolbarFactory(this)
     hoverStepInfo.setJustificationType (Justification::left);
     hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
-    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
+//    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
     scoreTempoLabel.setFont (Font (14.00f, Font::bold));
-    scoreTempoLabel.setJustificationType (Justification::right);
+    scoreTempoLabel.setJustificationType (Justification::left);
     scoreTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
     addAndMakeVisible (scoreTempoLabel);
     
-    adjustedTempoLabel.setText("Tempo",NotificationType::dontSendNotification);
+    adjustedTempoLabel.setText("BPM",NotificationType::dontSendNotification);
     adjustedTempoLabel.setFont (Font (14.00f, Font::bold));
     adjustedTempoLabel.setJustificationType (Justification::right);
     adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
@@ -194,15 +194,15 @@ void ViewerFrame::timerCallback()
 //        pTempoMultiplier->setValue(std::round(processor->sequenceObject.getTempoMultipier(processor->getTimeInTicks())*100.0));
     }
     
-    if (pScoreTempo->returnPressed)
-        ;
-    else
-    {
-//        double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
-//                                                               processor->sequenceObject.tempoChanges);
-//        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
-//            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
-    }
+//    if (pScoreTempo->returnPressed)
+//        ;
+//    else
+//    {
+////        double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
+////                                                               processor->sequenceObject.tempoChanges);
+////        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
+////            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
+//    }
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -219,8 +219,9 @@ void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
 //            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
         const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
                                                                processor->sequenceObject.tempoChanges);
-        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
-            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
+//        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
+//            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
+        scoreTempoLabel.setText("("+String(std::round(scoreTempo))+")",NotificationType::dontSendNotification);
         
 //        pTempoMultiplier->setValue(std::round(processor->sequenceObject.
 //                                              getTempoMultipier(processor->getZTLTime(noteViewer.horizontalShift))*100.0));
@@ -256,15 +257,13 @@ void ViewerFrame::buttonClicked (Button* button)
     if (inMainToolbar)
     {
         int id = mainToolbar.getItemId(i);
-        if (MainToolbarItemFactory::ToolbarItemIds::doc_open == id)
-        {
-            sendActionMessage("fileOpen");
-        }
-        else if(MainToolbarItemFactory::ToolbarItemIds::doc_save == id)
-            sendActionMessage("fileSave");
-        else if(MainToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
-            sendActionMessage("fileSaveAs");
-        else if(MainToolbarItemFactory::ToolbarItemIds::edit_undo == id)
+//        if (MainToolbarItemFactory::ToolbarItemIds::doc_open == id)
+//            sendActionMessage("fileOpen");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::doc_save == id)
+//            sendActionMessage("fileSave");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
+//            sendActionMessage("fileSaveAs");
+        if(MainToolbarItemFactory::ToolbarItemIds::edit_undo == id)
             sendActionMessage("editUndo");
         else if(MainToolbarItemFactory::ToolbarItemIds::edit_redo == id)
             sendActionMessage("editRedo");
@@ -346,17 +345,27 @@ void ViewerFrame::buttonClicked (Button* button)
         {
             sendActionMessage("help");
         }
-        else if(MainToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
-        {
-            sendActionMessage("loadPluginMenu");
-        }
-        else if(MainToolbarItemFactory::ToolbarItemIds::editPlugin == id)
-            sendActionMessage("editPlugin");
+//        else if(MainToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
+//        {
+//            sendActionMessage("loadPluginMenu");
+//        }
+//        else if(MainToolbarItemFactory::ToolbarItemIds::editPlugin == id)
+//            sendActionMessage("editPlugin");
     }
     else //in alt toolbar
     {
         int id = altToolbar.getItemId(i);
-        if(AltToolbarItemFactory::ToolbarItemIds::_play == id)
+        if (AltToolbarItemFactory::ToolbarItemIds::doc_open == id)
+            sendActionMessage("fileOpen");
+        else if(AltToolbarItemFactory::ToolbarItemIds::doc_save == id)
+            sendActionMessage("fileSave");
+        else if(AltToolbarItemFactory::ToolbarItemIds::doc_saveAs == id)
+            sendActionMessage("fileSaveAs");
+        else if(AltToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
+            sendActionMessage("loadPluginMenu");
+        else if(AltToolbarItemFactory::ToolbarItemIds::editPlugin == id)
+            sendActionMessage("editPlugin");
+        else if(AltToolbarItemFactory::ToolbarItemIds::_play == id)
             sendActionMessage("play");
         else if(AltToolbarItemFactory::ToolbarItemIds::_stop == id)
             sendActionMessage("pause");
@@ -453,7 +462,7 @@ void ViewerFrame::resized()
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
     
-    scoreTempoLabel.setBounds(22, 0, 100, noteViewer.getToolbarHeight()-1);
-    adjustedTempoLabel.setBounds(155, 0, 80, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(585+45, 0, 600, noteViewer.getToolbarHeight()-1);
+    scoreTempoLabel.setBounds(205+278+60+15, 0, 70, noteViewer.getToolbarHeight()-1);
+    adjustedTempoLabel.setBounds(464, 0, 45, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(710, 0, 545, noteViewer.getToolbarHeight()-1);
 }
