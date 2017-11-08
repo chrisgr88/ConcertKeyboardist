@@ -107,6 +107,9 @@ ApplicationProperties& getAppProperties();
 
     MainWindow::MainWindow (String name) : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
     {
+        Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
+        int screenWidth = r.getWidth();
+        int screenHeight = r.getHeight();
         midiProcessor.midiOutEnabled = true;
         midiProcessor.pluginEnabled = false;
         ckBlockClosing = false;
@@ -119,9 +122,47 @@ ApplicationProperties& getAppProperties();
         pViewerFrame = mainComponent->getViewerFrame();
         pViewerFrame->addActionListener(this);
         setContentOwned (mainComponent, true);
-        setResizable(true, false);
-        //        centreWithSize (getWidth(), getHeight());
+#ifdef _WIN32
+        //define something for Windows (32-bit and 64-bit, this part is common)
+#ifdef _WIN64
+        //define something for Windows (64-bit only)
+#else
+        //define something for Windows (32-bit only)
+#endif
+#elif __APPLE__
+#include "TargetConditionals.h"
+        std::cout << "Apple \n";
+#if TARGET_IPHONE_SIMULATOR
+        // iOS Simulator
+        std::cout << "iOS Simulator \n";
+#elif TARGET_OS_IPHONE
+        // iOS device
+        std::cout << "iOS device \n";
+        setResizable(false, false);
+        setTitleBarHeight(0);
+        menuBarActivated(false);
+        setFullScreen(true);
+        setResizable(false, false);
+#elif TARGET_OS_MAC
+        // Other kinds of Mac OS
+        std::cout << "Mac OS device \n";
         restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
+        setResizable(true, false);
+#else
+#   error "Unknown Apple platform"
+#endif
+#elif __linux__
+        // linux
+#elif __unix__ // all unices not caught above
+        // Unix
+#elif defined(_POSIX_VERSION)
+        // POSIX
+#else
+#   error "Unknown compiler"
+#endif
+        
+        //        centreWithSize (getWidth(), getHeight());
+//        restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
 //        setUsingNativeTitleBar(false);
         setVisible (true);
         
@@ -134,6 +175,9 @@ ApplicationProperties& getAppProperties();
         
         if (fileToOpen.existsAsFile())
             midiProcessor.loadSpecifiedFile(fileToOpen);
+#if TARGET_OS_IPHONE
+        
+#else
 #if JUCE_MAC
         PopupMenu extra_menu;
         extra_menu.addItem (123, "About ConcertKeyboardist");
@@ -143,6 +187,7 @@ ApplicationProperties& getAppProperties();
         MainWindow::setMacMainMenu (this, &extra_menu);
 #else
         setMenuBar (this);
+#endif
 #endif
         addKeyListener (this);
         addKeyListener (getCommandManager().getKeyMappings());

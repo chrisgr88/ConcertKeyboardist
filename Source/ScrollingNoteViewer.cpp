@@ -67,6 +67,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     draggingVelocity = false;
     drawingVelocity = false;
     draggingOffTime = false;
+    sequenceStartPixel = -1;
 //    showVelocityIndicator = false;
     
     setPaintingIsUnclipped(true);
@@ -1570,9 +1571,10 @@ void ScrollingNoteViewer::paint (Graphics& g)
     g.setFont(f);
     g.setColour (Colours::white);
     const String measTxt = String(meas)+"/"+String(totalMeas-1)+" ["+String(processor->getZTLTime(horizontalShift)/10.0,1)+"]";
-    if (processor->sequenceObject.measureTimes.size()>0)
-        g.drawText(measTxt, sequenceStartPixel+6, 3.0*ViewStateInfo::verticalScale, 150,
-                   9*ViewStateInfo::verticalScale, juce::Justification::centredLeft);
+    if (sequenceStartPixel!=-1)
+        if (processor->sequenceObject.measureTimes.size()>0)
+            g.drawText(measTxt, sequenceStartPixel+6, 3.0*ViewStateInfo::verticalScale, 150,
+                       9*ViewStateInfo::verticalScale, juce::Justification::centredLeft);
     
     if (!processor->isPlaying)
     {
