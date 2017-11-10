@@ -187,7 +187,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             }
         }
     }
-    if (selecting)//(marqueeAddingNotes||marqueeRemovingNotes||markingSelectedNotes||clearingSelectedNotes) && !showingVelocities.getValue())
+    if (selecting)
     {
         selecting = false;
         marqueeRemovingNotes = false;
@@ -225,8 +225,6 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         repaint();
     }
     stopTimer(TIMER_MOUSE_HOLD);
-//    const double x = event.position.getX();
-//    const double y = event.position.getY();
     if (draggingTime)
     {
         if (deltaTimeDrag != -1)
@@ -241,7 +239,6 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
             MIDIProcessor::ActionChangeNoteTimes* action;
             action = new MIDIProcessor::ActionChangeNoteTimes(*processor, deltaTimeDrag, pointersToSelectedNotes);
             processor->undoMgr->perform(action);
-            
             processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getZTLTime(horizontalShift));
             restoreSelectedNotes(pointersToSelectedNotes);
         }
@@ -252,21 +249,18 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     {
         //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
         Array<Sequence::NoteVelocities> newVelocities;
-//        velocitiesAfterDragOrDraw.clear();
         for (int i=0;i<notesBeingDraggedOn.size();i++)
         {
             Sequence::NoteVelocities vel;
             vel.note = pSequence->at(notesBeingDraggedOn[i]);
             vel.velocity = pSequence->at(notesBeingDraggedOn[i])->getVelocity();
             newVelocities.add(vel);
-//            velocitiesAfterDragOrDraw.add(pSequence->at(notesBeingDraggedOn[i])->getVelocity());
             pSequence->at(notesBeingDraggedOn[i])->velocity = velsStartDrag[i];
         }
         processor->undoMgr->beginNewTransaction();
         MIDIProcessor::ActionChangeVelocities* action;
         action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
         processor->undoMgr->perform(action);
-//        processor->catchUp();
         processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                       processor->getZTLTime(horizontalShift));
         draggingVelocity = false;
@@ -283,7 +277,6 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
                 steps.add(noteBeingDraggedOn);
         }
         const double delta = offTimeAfterDrag - processor->sequenceObject.theSequence.at(noteBeingDraggedOn)->offTime;
-//        processor->changeNoteOffTimes(steps, delta);
         std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
         processor->undoMgr->beginNewTransaction();
         MIDIProcessor::ActionChangeNoteOffTimes* action;
@@ -308,8 +301,6 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
         MIDIProcessor::ActionChangeVelocities* action;
         action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
         processor->undoMgr->perform(action);
-//        processor->setTimeInTicks(processor->getZTLTime(99));
-//        processor->catchUp();
         processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                      processor->getZTLTime(horizontalShift));
         drawingVelocity = false;
@@ -380,9 +371,7 @@ void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
     }
     else
         hoveringOver = HOVER_NONE;
-//    draggingVelocity = false;
-//    draggingTime = false;
-//    draggingOffTime = false;
+    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getZTLTime(horizontalShift));
     drawingVelocity = false;
     repaint();
   } catch (const std::out_of_range& ex) {
@@ -1115,6 +1104,7 @@ void ScrollingNoteViewer::makeNoteBars()
 //    float ViewStateInfo::initialHeight = processor->initialWindowHeight;
     if (ViewStateInfo::viewHeight<0.0000001f)
         return;
+      horizontalScale = processor->sequenceObject.sequenceProps.getDoubleValue("horizontalScale", var(1.0));
     const float rescaleHeight = ((float)ViewStateInfo::initialHeight)/ViewStateInfo::viewHeight;
       float unscaledTVS = ViewStateInfo::trackVerticalSize/ViewStateInfo::verticalScale;
 //      std::cout
@@ -1156,10 +1146,12 @@ void ScrollingNoteViewer::makeNoteBars()
 
     //Beat & measure lines
     for (int beat=0; beat<processor->sequenceObject.beatTimes.size(); beat++)
-        addRectangle(processor->sequenceObject.beatTimes[beat]*pixelsPerTick-1.0,topMargin,0.8,ViewStateInfo::initialHeight-topMargin, Colour(0xFFB0B0B0).darker());
+        addRectangle(processor->sequenceObject.beatTimes[beat]*pixelsPerTick-1.6,topMargin,0.8/
+                     sqrt(horizontalScale),ViewStateInfo::initialHeight-topMargin, Colour(0xFFB0B0B0).darker());
     
     for (int measure=0; measure<processor->sequenceObject.measureTimes.size(); measure++)
-        addRectangle(processor->sequenceObject.measureTimes[measure]*pixelsPerTick-1.0,topMargin,1.0,ViewStateInfo::initialHeight-topMargin, Colour(0xFFE0E0E0).darker());
+        addRectangle(processor->sequenceObject.measureTimes[measure]*pixelsPerTick-2.2,topMargin,1.0/
+                     sqrt(horizontalScale),ViewStateInfo::initialHeight-topMargin, Colour(0xFFE0E0E0));
     
     //Last line
     addRectangle(seqDurationInTicks*pixelsPerTick-1.0f,0.f,2.0f,ViewStateInfo::initialHeight, Colour(0xFFC0C0C0));
@@ -1500,7 +1492,7 @@ void ScrollingNoteViewer::makeNoteBars()
             col = Colour(Colours::red);
         else
             col = juce::Colour(Colours::whitesmoke);
-        addRectangle(x-1.95, 0.0f,     4, (topMargin), col);
+        addRectangle(x-1.95, 0.0f, 5/sqrt(horizontalScale), topMargin , col);
     }
     
 //    //Position of next note to play
@@ -2092,20 +2084,12 @@ void ScrollingNoteViewer::timerCallback (int timerID)
             {
                 horizontalScale = fmaxf(minScale,rawScale);
                 const double seqLengthInPixels = processor->sequenceObject.seqDurationInTicks*pixelsPerTick;
-                //            double proportionOfSequenceLeftOfMouse = preDragXinTicks/processor->sequenceObject.seqDurationInTicks;
-                
                 double proportionOfSequenceLeftOfMouse = (preDragXinTicks-processor->getTimeInTicks())/processor->sequenceObject.seqDurationInTicks;
                 double shiftLeft = preDragHorizShift-seqLengthInPixels *
                 proportionOfSequenceLeftOfMouse*(absScaleChangeWithCorrectSign);
-                
                 float shift = (curDragPosition.getX() - mouseBeforeDrag.getX());
-                
                 setHorizontalShift(shiftLeft+shift);
-                
-                processor->sequenceObject.sequenceProps.setValue("horizontalScale",
-                                                                 var(horizontalScale));
-                //        std::cout << "scale " <<minScale<<" "<<preDragScale<<" "<<absScaleChange << " " << horizontalScale << "\n";
-                //            prevMouseDragX = event.position.getX();
+                processor->sequenceObject.sequenceProps.setValue("horizontalScale", var(horizontalScale));
                 repaint();
             }
         }

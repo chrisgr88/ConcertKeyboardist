@@ -179,8 +179,7 @@ private:
             _humanizeTime       = 18,
             _humanizeTimeBox    = 19,
             _humanizeVelocity   = 20,
-            _humanizeVelocityBox = 21,
-            _help                = 22
+            _humanizeVelocityBox = 21
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -211,7 +210,6 @@ private:
             ids.add (_humanizeTimeBox);
             ids.add (_humanizeVelocityBox);
             ids.add (separatorBarId);
-            ids.add (_help);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
         }
@@ -245,7 +243,6 @@ private:
             ids.add (_addSoft);
             ids.add (_deleteSoft);
             ids.add (spacerId);
-            ids.add(_help);
             ids.add (flexibleSpacerId);
         }
         
@@ -317,8 +314,6 @@ private:
                     txtBox->textBox.setTooltip("Maximum Time Randomization in Milliseconds");
                     return txtBox;
                 }
-                    
-                case _help: return createButtonFromZipFileSVG (itemId, "Open Help in Browser", "help.svg");
                 default:
                     break;
             }
@@ -501,7 +496,8 @@ private:
             adjustedTempo   = 12,
             saveTempoChange = 13,
             addBookmark = 14,
-            removeBookmarkOrTempoChange = 11
+            removeBookmarkOrTempoChange = 11,
+            _help                = 22
         };
         
         void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
@@ -523,6 +519,7 @@ private:
             ids.add (editPlugin);
             ids.add (audioSettings);
             ids.add (scoreInfo);
+            ids.add (_help);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_playPause);
@@ -554,13 +551,17 @@ private:
             ids.add (separatorBarId);
             ids.add (audioSettings);
             ids.add (scoreInfo);
+            ids.add (saveTempoChange);
+            ids.add (addBookmark);
+            ids.add (removeBookmarkOrTempoChange);
             ids.add (separatorBarId);
+            ids.add (_help);
+            ids.add (separatorBarId);
+            for (int n=0;n<3;n++)
+                ids.add (spacerId);
+            ids.add (adjustedTempo);
             for (int n=0;n<4;n++)
                 ids.add (spacerId);
-//            ids.add (scoreTempo);
-
-            ids.add (spacerId);
-            ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (_play);
             ids.add (_stop);
@@ -568,16 +569,8 @@ private:
             ids.add (_rewind);
             ids.add (separatorBarId);
             ids.add (_listen);
+  
             ids.add (separatorBarId);
-            for (int n=0;n<3;n++)
-                ids.add (spacerId);
-            ids.add (adjustedTempo);
-            for (int n=0;n<2;n++)
-                ids.add (spacerId);
-            ids.add (separatorBarId);
-            ids.add (saveTempoChange);
-            ids.add (addBookmark);
-            ids.add (removeBookmarkOrTempoChange);
         }
         
         ToolbarItemComponent* createItem (int itemId) override
@@ -591,6 +584,7 @@ private:
                 case editPlugin:        return createButtonFromZipFileSVG (itemId, "Edit Plugin", "EditPluginButton.svg");
                 case audioSettings:        return createButtonFromZipFileSVG (itemId, "Audio Settings", "AudioSettingsTool.svg");
                 case scoreInfo:        return createButtonFromZipFileSVG (itemId, "Score Info", "ScoreInfoTool.svg");
+                case _help: return createButtonFromZipFileSVG (itemId, "Open Help in Browser", "help.svg");
                 case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
                 case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
                     

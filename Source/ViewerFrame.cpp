@@ -93,13 +93,13 @@ altToolbarFactory(this)
     hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
 //    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
-    scoreTempoLabel.setFont (Font (14.00f, Font::bold));
+    scoreTempoLabel.setFont (Font (18.00f, Font::bold));
     scoreTempoLabel.setJustificationType (Justification::left);
     scoreTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
     addAndMakeVisible (scoreTempoLabel);
     
     adjustedTempoLabel.setText("BPM",NotificationType::dontSendNotification);
-    adjustedTempoLabel.setFont (Font (14.00f, Font::bold));
+    adjustedTempoLabel.setFont (Font (18.00f, Font::bold));
     adjustedTempoLabel.setJustificationType (Justification::right);
     adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
     addAndMakeVisible (adjustedTempoLabel);
@@ -341,10 +341,6 @@ void ViewerFrame::buttonClicked (Button* button)
         {
             sendActionMessage("humanizeTime:"+String(pHumanizeStartTime->textBox.getText()));
         }
-        else if(MainToolbarItemFactory::ToolbarItemIds::_help == id)
-        {
-            sendActionMessage("help");
-        }
 //        else if(MainToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
 //        {
 //            sendActionMessage("loadPluginMenu");
@@ -363,13 +359,14 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("fileSaveAs");
         else if(AltToolbarItemFactory::ToolbarItemIds::loadPlugin == id)
             sendActionMessage("loadPluginMenu");
+        
         else if(AltToolbarItemFactory::ToolbarItemIds::audioSettings == id)
             sendActionMessage("audioSettings");
+        else if(AltToolbarItemFactory::ToolbarItemIds::scoreInfo == id)
+            sendActionMessage("scoreInfo");
         
         else if(AltToolbarItemFactory::ToolbarItemIds::editPlugin == id)
             sendActionMessage("editPlugin");
-        else if(AltToolbarItemFactory::ToolbarItemIds::scoreInfo == id)
-            sendActionMessage("scoreInfo");
 
         else if(AltToolbarItemFactory::ToolbarItemIds::_play == id)
             sendActionMessage("play");
@@ -398,6 +395,10 @@ void ViewerFrame::buttonClicked (Button* button)
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
 //            processor->catchUp(false);
             processor->addRemoveBookmark(BOOKMARK_REMOVE);
+        }
+        else if(AltToolbarItemFactory::ToolbarItemIds::_help == id)
+        {
+            sendActionMessage("help");
         }
     }
     unfocusAllComponents();
@@ -468,7 +469,7 @@ void ViewerFrame::resized()
     noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
                      getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
     
-    scoreTempoLabel.setBounds(205+278+60+15, 0, 70, noteViewer.getToolbarHeight()-1);
-    adjustedTempoLabel.setBounds(464, 0, 45, noteViewer.getToolbarHeight()-1);
+    scoreTempoLabel.setBounds(205+278+60+33-130+21, 2, 70, noteViewer.getToolbarHeight()-1);
+    adjustedTempoLabel.setBounds(484-132+21, 2, 45, noteViewer.getToolbarHeight()-1);
     hoverStepInfo.setBounds(710, 0, 545, noteViewer.getToolbarHeight()-1);
 }

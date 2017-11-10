@@ -1019,8 +1019,8 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             sequenceProps.setValue("autoPlaySustains", var(true));
             sequenceProps.setValue("autoPlaySofts", var(true));
             sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
-            
             sequenceProps.setValue("horizontalScale", var(1.0));
+            std::cout <<"D:horizontalScale  "<<1.0<<"\n";
         }
         //Get values from sequenceProps
         chordTimeHumanize = sequenceProps.getValue("chordTimeHumanize", var("1.0"));

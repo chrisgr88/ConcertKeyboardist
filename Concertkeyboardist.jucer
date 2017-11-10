@@ -9,6 +9,34 @@
       <FILE id="GcQUY3" name="TracksComponent.h" compile="0" resource="0"
             file="Source/TracksComponent.h"/>
       <GROUP id="{EC8297D7-1F95-3949-37E8-625A410B096D}" name="Resources">
+        <GROUP id="{8FA504BC-BA8F-8715-7065-A0DF9FEFF275}" name="Documentation">
+          <GROUP id="{C140BE19-1147-3889-6F02-250BA393F7FD}" name="Common">
+            <GROUP id="{2DCFBA73-639B-6CF5-26D3-269FDD4A45F0}" name="img">
+              <FILE id="A4FVWn" name="CKEditingTools.jpg" compile="0" resource="1"
+                    file="Documentation/Common/img/CKEditingTools.jpg"/>
+              <FILE id="SnEcNH" name="CKEditingTools.snagproj" compile="0" resource="1"
+                    file="Documentation/Common/img/CKEditingTools.snagproj"/>
+              <FILE id="sSlOFo" name="CKTransportToolbar.jpg" compile="0" resource="1"
+                    file="Documentation/Common/img/CKTransportToolbar.jpg"/>
+              <FILE id="NUkHnZ" name="CKTransportToolbar.snagproj" compile="0" resource="1"
+                    file="Documentation/Common/img/CKTransportToolbar.snagproj"/>
+              <FILE id="YGwsrf" name="ConcertKeyboardistWindowOverview.jpg" compile="0"
+                    resource="1" file="Documentation/Common/img/ConcertKeyboardistWindowOverview.jpg"/>
+              <FILE id="i1jWM6" name="ConcertKeyboardistWindowOverview.snagproj"
+                    compile="0" resource="1" file="Documentation/Common/img/ConcertKeyboardistWindowOverview.snagproj"/>
+              <FILE id="gWTLdo" name="GeosonixUI.jpg" compile="0" resource="1" file="Documentation/Common/img/GeosonixUI.jpg"/>
+              <FILE id="JyDV9x" name="GeosonixUI.png" compile="0" resource="1" file="Documentation/Common/img/GeosonixUI.png"/>
+            </GROUP>
+          </GROUP>
+          <GROUP id="{951D2AD0-EB82-7F53-633D-B3E46740A152}" name="EN">
+            <FILE id="A76vBD" name="builddoc.sh" compile="0" resource="1" file="Documentation/EN/builddoc.sh"/>
+            <FILE id="I4qROh" name="BuildHtmlWithPandoc.sh" compile="0" resource="1"
+                  file="Documentation/EN/BuildHtmlWithPandoc.sh"/>
+            <FILE id="BPk5z1" name="ckdoc.htm" compile="0" resource="1" file="Documentation/EN/ckdoc.htm"/>
+            <FILE id="aanmXT" name="ckdoc.html" compile="0" resource="1" file="Documentation/EN/ckdoc.html"/>
+            <FILE id="MrHWHN" name="ckdoc.md" compile="0" resource="1" file="Documentation/EN/ckdoc.md"/>
+          </GROUP>
+        </GROUP>
         <FILE id="iIotgF" name="AppIcon.png" compile="0" resource="1" file="Resources/AppIcon.png"/>
         <FILE id="NfcAew" name="icons.zip" compile="0" resource="1" file="Resources/icons.zip"/>
         <FILE id="OuTkJX" name="juce_module_info" compile="0" resource="1"

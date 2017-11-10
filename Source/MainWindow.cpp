@@ -232,13 +232,10 @@ ApplicationProperties& getAppProperties();
             perform (CommandIDs::fileSave);
         else if (message == "fileOpen")
             perform (CommandIDs::fileOpen);
-        
         else if (message == "fileSaveAs")
             perform (CommandIDs::fileSaveAs);
-        
         else if (message == "editUndo")
             perform (CommandIDs::editUndo);
-        
         else if (message == "editRedo")
             perform (CommandIDs::editRedo);
         else if (message == "play")
@@ -247,10 +244,8 @@ ApplicationProperties& getAppProperties();
             perform (CommandIDs::playPause);
         else if (message == "rewind")
             perform (CommandIDs::rewind);
-        
         else if (message == "listenToSelection")
             perform (CommandIDs::listenToSelection);
-        
         else if (message == "loadPluginMenu")
         {
             Point<int> pos = getMouseXYRelative();
@@ -273,21 +268,18 @@ ApplicationProperties& getAppProperties();
                     w->toFront (true);
             }
         }
-        
+        else if (message == "audioSettings")
+        {
+            perform (CommandIDs::audioMidiSettings);
+        }
+        else if (message == "scoreInfo")
+        {
+            perform (CommandIDs::scoreSettings);
+        }
         else if (message == "toggleActivity")
             perform (CommandIDs::toggleSelectedNotesActive);
-        
-//        else if (message == "marqueeSelectionAdd")
-//            perform (CommandIDs::marqueeSelectionAdd);
-//        else if (message == "marqueeSelectionRemove")
-//            perform (CommandIDs::marqueeSelectionRemove);
-//        else if (message == "markSelectedNote")
-//            perform (CommandIDs::markSelectedNotes);
-//        else if (message == "clearSelectedNotes")
-//            perform (CommandIDs::clearSelectedNotes);
         else if (message == "clearAllSelection")
             perform (CommandIDs::clearAllSelection);
-        
         else if (message.upToFirstOccurrenceOf(":",false,true) == "chain")
         {
             midiProcessor.sequenceObject.chainingInterval = String(message.fromLastOccurrenceOf(":", false, true)).getDoubleValue();
