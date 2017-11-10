@@ -1197,29 +1197,27 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 
       for (int tempoChangeIndex=0;tempoChangeIndex<tempoChanges.size();tempoChangeIndex++)
       {
-          while (scalingChanges[nextScalingChangeIndex].time < tempoChanges[tempoChangeIndex].getTimeStamp())
+          while (scalingChanges[nextScalingChangeIndex].time <= tempoChanges[tempoChangeIndex].getTimeStamp())
           {
               curScale = scalingChanges[nextScalingChangeIndex].tempoScaleFactor;
               MidiMessage  msg = MidiMessage::tempoMetaEvent(tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
                                     * 1000000.0 / curScale);
               msg.setTimeStamp(scalingChanges[nextScalingChangeIndex].time);
               scaledTempoChanges.push_back(msg);
-              const double tempo = 60.0/scaledTempoChanges.back().getTempoSecondsPerQuarterNote();
-              if (tempoChangeIndex<5)
-                  std::cout
-                  << " curScale " <<curScale
-                  << " tempoChanges "<<tempoChanges[nextScalingChangeIndex].getTimeStamp()
-                  <<" "<<tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-                  << " scaledTempoChanges[i] "<<scaledTempoChanges[nextScalingChangeIndex].getTimeStamp()
-                  <<" "<<scaledTempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-                  <<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
+//              if (tempoChangeIndex<5)
+//                  std::cout
+//                  << " curScale " <<curScale
+//                  << " tempoChanges "<<tempoChanges[nextScalingChangeIndex].getTimeStamp()
+//                  <<" "<<tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
+//                  << " scaledTempoChanges[i] "<<scaledTempoChanges[nextScalingChangeIndex].getTimeStamp()
+//                  <<" "<<scaledTempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
+//                  <<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
               nextScalingChangeIndex++;
           }
           MidiMessage  msg = MidiMessage::tempoMetaEvent(tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
                                                          * 1000000.0 / curScale);
           msg.setTimeStamp(tempoChanges[tempoChangeIndex].getTimeStamp());
           scaledTempoChanges.push_back(msg);
-          const double tempo = 60.0/scaledTempoChanges.back().getTempoSecondsPerQuarterNote();
 //          if (tempoChangeIndex<5)
 //              std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
       }

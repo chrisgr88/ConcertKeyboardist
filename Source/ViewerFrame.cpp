@@ -200,8 +200,8 @@ void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
                                                                 processor->sequenceObject.scaledTempoChanges);
         const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
                                                                processor->sequenceObject.tempoChanges);
-        scoreTempoLabel.setText(String(std::round(1000.0*scaledTempo/scoreTempo)/10.0)+"%",NotificationType::dontSendNotification);
-        std::cout << "scaledTempo, scoreTempor " << scaledTempo<<" "<<scoreTempo << "\n";
+        scoreTempoLabel.setText(String(std::round(100.0*scaledTempo/scoreTempo))+"%",NotificationType::dontSendNotification);
+//        std::cout << "scaledTempo, scoreTempo " << scaledTempo<<" "<<scoreTempo << "\n";
         pAdjustedTempo->setValue(scaledTempo);
     }
     else if (cb == &noteViewer)
