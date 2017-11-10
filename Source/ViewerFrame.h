@@ -769,8 +769,10 @@ private:
         {
         public:
             DraggableNumberBox ()
-            {}
-            void setRange (double mn=1.0, double mx=100.0, int dp=2)
+            {
+                mouseIsDown = false;
+            }
+            void setRange (double mn=1.0, double mx=100.0, int dp=1)
             {
                 max=mx;
                 min=mn;
@@ -778,9 +780,7 @@ private:
             }
             void mouseDown (const MouseEvent& e) override
             {
-                String str = getText();
-//                str.trimCharactersAtEnd("%");
-                startValue = str.getDoubleValue();
+                startValue = preciseValue;
                 mouseIsDown = true;
             }
             void mouseUp (const MouseEvent& e) override
@@ -792,15 +792,23 @@ private:
                 double newVal = startValue-e.getDistanceFromDragStartY();
                 if (newVal<min) newVal=min;
                 if (newVal>max) newVal=max;
+                preciseValue = newVal;
                 setText(String(newVal,decimalPlaces));
                 sendChangeMessage();
             }
-            void setTextWhenMouseNotDown (String text)
+            void setValueWhenMouseNotDown (double val)
             {
-                if (!mouseIsDown)
-                    setText(text);
+//                if (!mouseIsDown)
+                preciseValue = val;
+                setText(String(val,decimalPlaces));
+//                    setText(text);
+            }
+            double getValue()
+            {
+                return preciseValue;
             }
             bool mouseIsDown;
+            double preciseValue;
             double startValue;
             double max, min;
             int decimalPlaces;
@@ -826,10 +834,11 @@ private:
                 numberBox.setText("");
                 numberBox.setBounds (180, 45, 20, 18);
                 numberBox.setRange (10,300.0,0);
-                numberBox.setFont (Font (19.00f, Font::plain));
-                numberBox.setColour (TextEditor::ColourIds::textColourId, Colours::darkgrey);
+                numberBox.setFont (Font (18.00f, Font::plain));
+                numberBox.setColour (TextEditor::ColourIds::textColourId, Colours::black);
                 numberBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey).brighter());
                 numberBox.setTooltip("Tempo");
+                numberBox.decimalPlaces = 1;
             }
             
             void setWidth(int width)
@@ -862,7 +871,7 @@ private:
             }
             void setValue(double val)
             {
-                numberBox.setText(String(val,numberBox.decimalPlaces));
+                numberBox.setValueWhenMouseNotDown(val);
             }
             void textEditorReturnKeyPressed (TextEditor&) override
             {
@@ -878,8 +887,8 @@ private:
                 numberBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
             }
             DraggableNumberBox numberBox;
-            bool changed = false;
-        }; //RealTimeTempo
+            bool changed = true;
+        }; //AdjustedTempo
         
         ViewerFrame *pViewerFrame;
     };

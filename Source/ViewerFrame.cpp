@@ -74,8 +74,8 @@ altToolbarFactory(this)
         if (id == AltToolbarItemFactory::ToolbarItemIds::adjustedTempo)
         {
             pAdjustedTempo = (AltToolbarItemFactory::AdjustedTempo *)altToolbar.getItemComponent(i);
-            pAdjustedTempo->numberBox.setFont (Font (19.00f, Font::bold));
-            pAdjustedTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).brighter());
+            pAdjustedTempo->numberBox.setFont (Font (18.00f, Font::plain));
+            pAdjustedTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).darker());
         }
 //        else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
 //        {
@@ -93,13 +93,13 @@ altToolbarFactory(this)
     hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
     
 //    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
-    scoreTempoLabel.setFont (Font (18.00f, Font::bold));
+    scoreTempoLabel.setFont (Font (18.00f, Font::plain ));
     scoreTempoLabel.setJustificationType (Justification::left);
-    scoreTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
+    scoreTempoLabel.setColour (Label::textColourId, Colours::grey);
     addAndMakeVisible (scoreTempoLabel);
     
     adjustedTempoLabel.setText("BPM",NotificationType::dontSendNotification);
-    adjustedTempoLabel.setFont (Font (18.00f, Font::bold));
+    adjustedTempoLabel.setFont (Font (18.00f, Font::plain));
     adjustedTempoLabel.setJustificationType (Justification::right);
     adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
     addAndMakeVisible (adjustedTempoLabel);
@@ -146,7 +146,6 @@ void ViewerFrame::timerCallback()
 //        repaint();
         processor->sequenceObject.propertiesChanged = false;
 //    }
-    
     if (pChainAmountBox->returnPressed)
     {
         std::cout << "Return pressed - chainAmount" <<pChainAmountBox->textBox.getText().getDoubleValue()<<"\n";
@@ -155,7 +154,6 @@ void ViewerFrame::timerCallback()
         grabKeyboardFocus();
         pChainAmountBox->returnPressed = false;
     }
-    
     if (pHumanizeStartTime->returnPressed)
     {
         //        std::cout << "HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
@@ -177,12 +175,11 @@ void ViewerFrame::timerCallback()
         grabKeyboardFocus();
         pHumanizeVelocity->returnPressed = false;
     }
-
     if (pAdjustedTempo->changed)
     {//!
-        std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getText().getDoubleValue() << "\n";
+        std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getValue() << "\n";
         processor->setTempoMultiplier(
-            pAdjustedTempo->numberBox.getText().getDoubleValue()/
+            pAdjustedTempo->numberBox.getValue()/   //->numberBox.getText().getDoubleValue()/
             processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),processor->sequenceObject.tempoChanges),
             processor->getZTLTime(noteViewer.horizontalShift),
             true);
@@ -191,18 +188,7 @@ void ViewerFrame::timerCallback()
     }
     else
     {
-//        pTempoMultiplier->setValue(std::round(processor->sequenceObject.getTempoMultipier(processor->getTimeInTicks())*100.0));
     }
-    
-//    if (pScoreTempo->returnPressed)
-//        ;
-//    else
-//    {
-////        double scoreTempo = processor->sequenceObject.getTempo(processor->getTimeInTicks(),
-////                                                               processor->sequenceObject.tempoChanges);
-////        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
-////            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
-//    }
 }
 
 void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
@@ -210,22 +196,13 @@ void ViewerFrame::changeListenerCallback (ChangeBroadcaster* cb)
     if (cb == processor)
     {
         String txt = processor->sequenceObject.getScoreFileName();
-//        std::cout << "ViewerFrame::CLB tempoMultipier " << std::round(processor->sequenceObject.
-//                                                                          getTempoMultipier(processor->getZTLTime(noteViewer.horizontalShift))*100.0) << "\n";
-        
         const double scaledTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
                                                                 processor->sequenceObject.scaledTempoChanges);
-//        if (!pScaledTempo->textBox.hasKeyboardFocus(true))
-//            pScaledTempo->textBox.setText(String(std::round(scaledTempo)));
         const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
                                                                processor->sequenceObject.tempoChanges);
-//        if (!pScoreTempo->textBox.hasKeyboardFocus(true))
-//            pScoreTempo->textBox.setText(String(std::round(scoreTempo)));
-        scoreTempoLabel.setText("("+String(std::round(scoreTempo))+")",NotificationType::dontSendNotification);
-        
-//        pTempoMultiplier->setValue(std::round(processor->sequenceObject.
-//                                              getTempoMultipier(processor->getZTLTime(noteViewer.horizontalShift))*100.0));
-        pAdjustedTempo->setValue(std::round(scaledTempo));
+        scoreTempoLabel.setText(String(std::round(1000.0*scaledTempo/scoreTempo)/10.0)+"%",NotificationType::dontSendNotification);
+        std::cout << "scaledTempo, scoreTempor " << scaledTempo<<" "<<scoreTempo << "\n";
+        pAdjustedTempo->setValue(scaledTempo);
     }
     else if (cb == &noteViewer)
     {
