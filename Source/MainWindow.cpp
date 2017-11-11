@@ -110,7 +110,7 @@ ApplicationProperties& getAppProperties();
         Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
         int screenWidth = r.getWidth();
         int screenHeight = r.getHeight();
-        midiProcessor.midiOutEnabled = true;
+        midiProcessor.midiOutEnabled = false;
         midiProcessor.pluginEnabled = false;
         ckBlockClosing = false;
         chordVelocityHumanizeSpec = ".6,.8";
@@ -404,6 +404,17 @@ ApplicationProperties& getAppProperties();
 //        midiProcessor.synthMessageCollectorReset(sampRate);
         if (midiProcessor.pluginMessageCollector)
             midiProcessor.pluginMessageCollector->reset(sampRate);
+        const StringArray midiInputs (MidiInput::getDevices());
+        midiProcessor.midiOutEnabled = false;
+        for (int i = 0; i < midiInputs.size(); ++i)
+        {
+            if (mainComponent->audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
+            {
+                midiProcessor.midiOutEnabled = true;
+                std::cout <<"Midi "<<midiInputs[i]<<"\n";
+                break;
+            }
+        }
     }
     
     void MainWindow::menuBarActivated (bool isActive)

@@ -15,6 +15,7 @@ Sequence::Sequence()
                      "Load a Concert Keyboardist or MIDI File",
                      "Save a Concert Keyboardist File")
 {
+    tempoChanges.clear();
     triggeredNoteLimit = 60;
     tempoControl = TempoControl::autoTempo;
     waitForFirstNote = true;

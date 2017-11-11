@@ -214,8 +214,12 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
 //    std::cout << "Rewind: time " << time
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
 //    << "\n";
+    std::cout << "Rewind " << "\n";
     if (sequenceObject.theSequence.size()==0)
+    {
+        std::cout << "Failed rewind " << "\n";
         return;
+    }
     try {
         pauseProcessing = true;
         listenStep = 0;

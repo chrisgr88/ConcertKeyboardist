@@ -177,14 +177,16 @@ void ViewerFrame::timerCallback()
     }
     if (pAdjustedTempo->changed)
     {//!
-        std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getValue() << "\n";
-        processor->setTempoMultiplier(
-            pAdjustedTempo->numberBox.getValue()/   //->numberBox.getText().getDoubleValue()/
-            processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),processor->sequenceObject.tempoChanges),
-            processor->getZTLTime(noteViewer.horizontalShift),
-            true);
-        pAdjustedTempo->changed = false;
-        grabKeyboardFocus();
+        if (processor->sequenceObject.tempoChanges.size()>0)
+        {
+            std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getValue() << "\n";
+            const int ztlTime = processor->getZTLTime(noteViewer.horizontalShift);
+            const double tempoMult =    pAdjustedTempo->numberBox.getValue()/
+                                        processor->sequenceObject.getTempo(ztlTime,processor->sequenceObject.tempoChanges);
+            processor->setTempoMultiplier(tempoMult, ztlTime, true);
+            pAdjustedTempo->changed = false;
+            grabKeyboardFocus();
+        }
     }
     else
     {

@@ -38,6 +38,7 @@ MainComponent::MainComponent(MIDIProcessor *p) :
             if (audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
             {
 //                setMidiInput (i);
+                processor->midiOutEnabled = true;
                 std::cout <<"Midi "<<midiInputs[i]<<"\n";
                 break;
             }

@@ -1093,23 +1093,20 @@ void ScrollingNoteViewer::makeKeyboard()
 }
 
 //###
-//makeNoteBars (highlighted as of time of sequenceReadHead)
 void ScrollingNoteViewer::makeNoteBars()
 {
   try {
+    std::cout << "trying to enter makeNoteBars " << "\n";
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     rebuidingGLBuffer = true;
-    if (processor->initialWindowHeight<topMargin)
+    if (processor->initialWindowHeight<topMargin || ViewStateInfo::viewHeight<0.0000001f)
+    {
+        std::cout << "failed enter makeNoteBars " << "\n";
         return;
-//    float ViewStateInfo::initialHeight = processor->initialWindowHeight;
-    if (ViewStateInfo::viewHeight<0.0000001f)
-        return;
-      horizontalScale = processor->sequenceObject.sequenceProps.getDoubleValue("horizontalScale", var(1.0));
+    }
+    horizontalScale = processor->sequenceObject.sequenceProps.getDoubleValue("horizontalScale", var(1.0));
     const float rescaleHeight = ((float)ViewStateInfo::initialHeight)/ViewStateInfo::viewHeight;
-      float unscaledTVS = ViewStateInfo::trackVerticalSize/ViewStateInfo::verticalScale;
-//      std::cout
-//      << "makeNoteBars: unscaledTVS "<<unscaledTVS
-//      << "\n";
+    const float unscaledTVS = ViewStateInfo::trackVerticalSize/ViewStateInfo::verticalScale;
     vertices.clear();
     indices.clear();
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
