@@ -394,6 +394,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
     } catch (const std::out_of_range& ex) {
         std::cout << " error 3 in rewind " << "\n";
     }
+    std::cout << "Exit Rewind " << "\n";
 //    std::cout << " leaving rewind " << "\n";
 }
 

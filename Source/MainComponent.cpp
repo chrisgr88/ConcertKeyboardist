@@ -92,7 +92,10 @@ void MainComponent::actionListenerCallback (const String& message)
 //        std::cout <<"Loaded sysex plugState  checksum "<<checksum
 //        <<" size "<<processor->sequenceObject.pluginState.getSize()<<"\n";
 //        if (processor->sequenceObject.pluginState.getSize()>0)
+//#include "TargetConditionals.h"
+#if !(TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE)
         thePlugin->setStateInformation(m.getData(), (int)m.getSize());
+#endif
     }
 };
 

@@ -132,17 +132,23 @@ ApplicationProperties& getAppProperties();
 #elif __APPLE__
 #include "TargetConditionals.h"
         std::cout << "Apple \n";
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
         // iOS Simulator
         std::cout << "iOS Simulator \n";
-#elif TARGET_OS_IPHONE
-        // iOS device
         std::cout << "iOS device \n";
         setResizable(false, false);
         setTitleBarHeight(0);
         menuBarActivated(false);
         setFullScreen(true);
         setResizable(false, false);
+//#elif TARGET_OS_IPHONE
+//        // iOS device
+//        std::cout << "iOS device \n";
+//        setResizable(false, false);
+//        setTitleBarHeight(0);
+//        menuBarActivated(false);
+//        setFullScreen(true);
+//        setResizable(false, false);
 #elif TARGET_OS_MAC
         // Other kinds of Mac OS
         std::cout << "Mac OS device \n";

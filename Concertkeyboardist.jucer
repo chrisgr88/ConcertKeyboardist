@@ -64,7 +64,8 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="iIotgF" documentExtensions=".mid">
+    <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="iIotgF" documentExtensions=".mid"
+               vst3Folder="">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="10.10 SDK" osxArchitecture="default"
                        isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>
@@ -88,7 +89,9 @@
         <MODULEPATH id="juce_cryptography" path="JUCE.git/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="portraitlandscape">
+    <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="landscape" vst3Folder=""
+                  bigIcon="iIotgF" smallIcon="iIotgF" UIFileSharingEnabled="1"
+                  iosDevelopmentTeamID="Y6ELW6M79S" keepCustomXcodeSchemes="1">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"/>

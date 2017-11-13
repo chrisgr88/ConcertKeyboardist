@@ -2125,6 +2125,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                                                                            curDragPosition.getX(),curDragPosition.getY());
                     }
                 }
+                
                 xInTicksLeft = ((selectionRect.getX() - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/
                 horizontalScale + processor->getTimeInTicks();
                 
