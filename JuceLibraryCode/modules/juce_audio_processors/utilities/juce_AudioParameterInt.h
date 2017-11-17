@@ -61,10 +61,15 @@ public:
     /** Returns the parameter's range. */
     Range<int> getRange() const noexcept        { return Range<int> (minValue, maxValue); }
 
+protected:
+    /** Override this method if you are interested in receiving callbacks
+        when the parameter value changes.
+    */
+    virtual void valueChanged (int newValue);
 
 private:
     //==============================================================================
-    int minValue, maxValue;
+    const int minValue, maxValue, rangeOfValues;
     float value, defaultValue;
 
     float getValue() const override;

@@ -130,15 +130,35 @@ URL::DownloadTask* URL::DownloadTask::createFallbackDownloader (const URL& urlTo
     return nullptr;
 }
 
-URL::DownloadTask::DownloadTask() : contentLength (-1), downloaded (0), finished (false), error (false), httpCode (-1) {}
+URL::DownloadTask::DownloadTask() {}
 URL::DownloadTask::~DownloadTask() {}
 
 //==============================================================================
-URL::URL()
-{
-}
+URL::URL() noexcept {}
 
 URL::URL (const String& u)  : url (u)
+{
+    init();
+}
+
+URL::URL (File localFile)
+{
+    while (! localFile.isRoot())
+    {
+        url = "/" + addEscapeChars (localFile.getFileName(), false) + url;
+        localFile = localFile.getParentDirectory();
+    }
+
+    url = addEscapeChars (localFile.getFileName (), false) + url;
+    if (! url.startsWithChar (L'/'))
+        url = "/" + url;
+
+    url = "file://" + url;
+
+    jassert (isWellFormed());
+}
+
+void URL::init()
 {
     int i = url.indexOfChar ('?');
 
@@ -170,29 +190,31 @@ URL::URL (const String& u)  : url (u)
 
 URL::URL (const String& u, int)  : url (u) {}
 
+URL::URL (URL&& other)
+    : url             (static_cast<String&&> (other.url)),
+      postData        (static_cast<MemoryBlock&&> (other.postData)),
+      parameterNames  (static_cast<StringArray&&> (other.parameterNames)),
+      parameterValues (static_cast<StringArray&&> (other.parameterValues)),
+      filesToUpload   (static_cast<ReferenceCountedArray<Upload>&&> (other.filesToUpload))
+{
+}
+
+URL& URL::operator= (URL&& other)
+{
+    url             = static_cast<String&&> (other.url);
+    postData        = static_cast<MemoryBlock&&> (other.postData);
+    parameterNames  = static_cast<StringArray&&> (other.parameterNames);
+    parameterValues = static_cast<StringArray&&> (other.parameterValues);
+    filesToUpload   = static_cast<ReferenceCountedArray<Upload>&&> (other.filesToUpload);
+
+    return *this;
+}
+
+URL::~URL() {}
+
 URL URL::createWithoutParsing (const String& u)
 {
     return URL (u, 0);
-}
-
-URL::URL (const URL& other)
-    : url (other.url),
-      postData (other.postData),
-      parameterNames (other.parameterNames),
-      parameterValues (other.parameterValues),
-      filesToUpload (other.filesToUpload)
-{
-}
-
-URL& URL::operator= (const URL& other)
-{
-    url = other.url;
-    postData = other.postData;
-    parameterNames = other.parameterNames;
-    parameterValues = other.parameterValues;
-    filesToUpload = other.filesToUpload;
-
-    return *this;
 }
 
 bool URL::operator== (const URL& other) const
@@ -207,10 +229,6 @@ bool URL::operator== (const URL& other) const
 bool URL::operator!= (const URL& other) const
 {
     return ! operator== (other);
-}
-
-URL::~URL()
-{
 }
 
 namespace URLHelpers
@@ -250,6 +268,7 @@ namespace URLHelpers
     static int findStartOfNetLocation (const String& url)
     {
         int start = findEndOfScheme (url);
+
         while (url[start] == '/')
             ++start;
 
@@ -300,19 +319,19 @@ bool URL::isWellFormed() const
 
 String URL::getDomain() const
 {
-    const int start = URLHelpers::findStartOfNetLocation (url);
-    const int end1 = url.indexOfChar (start, '/');
-    const int end2 = url.indexOfChar (start, ':');
+    auto start = URLHelpers::findStartOfNetLocation (url);
+    auto end1 = url.indexOfChar (start, '/');
+    auto end2 = url.indexOfChar (start, ':');
 
-    const int end = (end1 < 0 && end2 < 0) ? std::numeric_limits<int>::max()
-                            : ((end1 < 0 || end2 < 0) ? jmax (end1, end2)
-                               : jmin (end1, end2));
+    auto end = (end1 < 0 && end2 < 0) ? std::numeric_limits<int>::max()
+                                      : ((end1 < 0 || end2 < 0) ? jmax (end1, end2)
+                                                                : jmin (end1, end2));
     return url.substring (start, end);
 }
 
 String URL::getSubPath() const
 {
-    const int startOfPath = URLHelpers::findStartOfPath (url);
+    auto startOfPath = URLHelpers::findStartOfPath (url);
 
     return startOfPath <= 0 ? String()
         : url.substring (startOfPath);
@@ -323,9 +342,43 @@ String URL::getScheme() const
     return url.substring (0, URLHelpers::findEndOfScheme (url) - 1);
 }
 
+#ifndef JUCE_ANDROID
+bool URL::isLocalFile() const
+{
+    return (getScheme() == "file");
+}
+
+File URL::getLocalFile() const
+{
+    return fileFromFileSchemeURL (*this);
+}
+#endif
+
+File URL::fileFromFileSchemeURL (const URL& fileURL)
+{
+    if (! fileURL.isLocalFile())
+    {
+        jassertfalse;
+        return {};
+    }
+
+    auto path = removeEscapeChars (fileURL.getDomain());
+
+   #ifndef JUCE_WINDOWS
+    path = File::getSeparatorString() + path;
+   #endif
+
+    auto urlElements = StringArray::fromTokens (fileURL.getSubPath(), "/", "");
+
+    for (auto urlElement : urlElements)
+        path += File::getSeparatorString() + removeEscapeChars (urlElement);
+
+    return path;
+}
+
 int URL::getPort() const
 {
-    const int colonPos = url.indexOfChar (URLHelpers::findStartOfNetLocation (url), ':');
+    auto colonPos = url.indexOfChar (URLHelpers::findStartOfNetLocation (url), ':');
 
     return colonPos > 0 ? url.substring (colonPos + 1).getIntValue() : 0;
 }
@@ -366,7 +419,7 @@ void URL::createHeadersAndPostData (String& headers, MemoryBlock& postDataToWrit
         // (this doesn't currently support mixing custom post-data with uploads..)
         jassert (postData.getSize() == 0);
 
-        const String boundary (String::toHexString (Random::getSystemRandom().nextInt64()));
+        auto boundary = String::toHexString (Random::getSystemRandom().nextInt64());
 
         headers << "Content-Type: multipart/form-data; boundary=" << boundary << "\r\n";
 
@@ -379,22 +432,20 @@ void URL::createHeadersAndPostData (String& headers, MemoryBlock& postDataToWrit
                  << "\r\n--" << boundary;
         }
 
-        for (int i = 0; i < filesToUpload.size(); ++i)
+        for (auto* f : filesToUpload)
         {
-            const Upload& f = *filesToUpload.getObjectPointerUnchecked(i);
+            data << "\r\nContent-Disposition: form-data; name=\"" << f->parameterName
+                 << "\"; filename=\"" << f->filename << "\"\r\n";
 
-            data << "\r\nContent-Disposition: form-data; name=\"" << f.parameterName
-                 << "\"; filename=\"" << f.filename << "\"\r\n";
-
-            if (f.mimeType.isNotEmpty())
-                data << "Content-Type: " << f.mimeType << "\r\n";
+            if (f->mimeType.isNotEmpty())
+                data << "Content-Type: " << f->mimeType << "\r\n";
 
             data << "Content-Transfer-Encoding: binary\r\n\r\n";
 
-            if (f.data != nullptr)
-                data << *f.data;
+            if (f->data != nullptr)
+                data << *f->data;
             else
-                data << f.file;
+                data << f->file;
 
             data << "\r\n--" << boundary;
         }
@@ -419,8 +470,8 @@ bool URL::isProbablyAWebsiteURL (const String& possibleURL)
 {
     static const char* validProtocols[] = { "http:", "ftp:", "https:" };
 
-    for (int i = 0; i < numElementsInArray (validProtocols); ++i)
-        if (possibleURL.startsWithIgnoreCase (validProtocols[i]))
+    for (auto* protocol : validProtocols)
+        if (possibleURL.startsWithIgnoreCase (protocol))
             return true;
 
     if (possibleURL.containsChar ('@')
@@ -435,7 +486,7 @@ bool URL::isProbablyAWebsiteURL (const String& possibleURL)
 
 bool URL::isProbablyAnEmailAddress (const String& possibleEmailAddress)
 {
-    const int atSign = possibleEmailAddress.indexOfChar ('@');
+    auto atSign = possibleEmailAddress.indexOfChar ('@');
 
     return atSign > 0
         && possibleEmailAddress.lastIndexOfChar ('.') > (atSign + 1)
@@ -443,16 +494,19 @@ bool URL::isProbablyAnEmailAddress (const String& possibleEmailAddress)
 }
 
 //==============================================================================
-WebInputStream* URL::createInputStream (const bool usePostCommand,
-                                        OpenStreamProgressCallback* const progressCallback,
-                                        void* const progressCallbackContext,
-                                        String headers,
-                                        const int timeOutMs,
-                                        StringPairArray* const responseHeaders,
-                                        int* statusCode,
-                                        const int numRedirectsToFollow,
-                                        String httpRequestCmd) const
+InputStream* URL::createInputStream (const bool usePostCommand,
+                                     OpenStreamProgressCallback* const progressCallback,
+                                     void* const progressCallbackContext,
+                                     String headers,
+                                     const int timeOutMs,
+                                     StringPairArray* const responseHeaders,
+                                     int* statusCode,
+                                     const int numRedirectsToFollow,
+                                     String httpRequestCmd) const
 {
+    if (isLocalFile())
+        return getLocalFile().createInputStream();
+
     ScopedPointer<WebInputStream> wi (new WebInputStream (*this, usePostCommand));
 
     struct ProgressCallbackCaller : WebInputStream::Listener
@@ -504,10 +558,10 @@ WebInputStream* URL::createInputStream (const bool usePostCommand,
 }
 
 //==============================================================================
-bool URL::readEntireBinaryStream (MemoryBlock& destData,
-                                  const bool usePostCommand) const
+bool URL::readEntireBinaryStream (MemoryBlock& destData, bool usePostCommand) const
 {
-    const ScopedPointer<InputStream> in (createInputStream (usePostCommand));
+    const ScopedPointer<InputStream> in (isLocalFile() ? getLocalFile().createInputStream()
+                                                       : static_cast<InputStream*> (createInputStream (usePostCommand)));
 
     if (in != nullptr)
     {
@@ -518,9 +572,10 @@ bool URL::readEntireBinaryStream (MemoryBlock& destData,
     return false;
 }
 
-String URL::readEntireTextStream (const bool usePostCommand) const
+String URL::readEntireTextStream (bool usePostCommand) const
 {
-    const ScopedPointer<InputStream> in (createInputStream (usePostCommand));
+    const ScopedPointer<InputStream> in (isLocalFile() ? getLocalFile().createInputStream()
+                                                       : static_cast<InputStream*> (createInputStream (usePostCommand)));
 
     if (in != nullptr)
         return in->readEntireStreamAsString();
@@ -528,7 +583,7 @@ String URL::readEntireTextStream (const bool usePostCommand) const
     return {};
 }
 
-XmlElement* URL::readEntireXmlStream (const bool usePostCommand) const
+XmlElement* URL::readEntireXmlStream (bool usePostCommand) const
 {
     return XmlDocument::parse (readEntireTextStream (usePostCommand));
 }
@@ -601,7 +656,7 @@ URL URL::withDataToUpload (const String& parameterName, const String& filename,
 //==============================================================================
 String URL::removeEscapeChars (const String& s)
 {
-    String result (s.replaceCharacter ('+', ' '));
+    auto result = s.replaceCharacter ('+', ' ');
 
     if (! result.containsChar ('%'))
         return result;
@@ -628,9 +683,9 @@ String URL::removeEscapeChars (const String& s)
     return String::fromUTF8 (utf8.getRawDataPointer(), utf8.size());
 }
 
-String URL::addEscapeChars (const String& s, const bool isParameter, bool roundBracketsAreLegal)
+String URL::addEscapeChars (const String& s, bool isParameter, bool roundBracketsAreLegal)
 {
-    String legalChars (isParameter ? "_-.*!'"
+    String legalChars (isParameter ? "_-.~"
                                    : ",$_-.*!'");
 
     if (roundBracketsAreLegal)
@@ -640,7 +695,7 @@ String URL::addEscapeChars (const String& s, const bool isParameter, bool roundB
 
     for (int i = 0; i < utf8.size(); ++i)
     {
-        const char c = utf8.getUnchecked(i);
+        auto c = utf8.getUnchecked(i);
 
         if (! (CharacterFunctions::isLetterOrDigit (c)
                  || legalChars.containsChar ((juce_wchar) c)))
@@ -657,12 +712,12 @@ String URL::addEscapeChars (const String& s, const bool isParameter, bool roundB
 //==============================================================================
 bool URL::launchInDefaultBrowser() const
 {
-    String u (toString (true));
+    auto u = toString (true);
 
     if (u.containsChar ('@') && ! u.containsChar (':'))
         u = "mailto:" + u;
 
-    return Process::openDocument (u, String());
+    return Process::openDocument (u, {});
 }
 
 } // namespace juce

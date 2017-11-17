@@ -37,8 +37,9 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
                std::function<float (const String&)> textToValue,
                bool meta,
                bool automatable,
-               bool discrete)
-        : AudioProcessorParameterWithID (parameterID, paramName, labelText),
+               bool discrete,
+               AudioProcessorParameter::Category category)
+        : AudioProcessorParameterWithID (parameterID, paramName, labelText, category),
           owner (s), valueToTextFunction (valueToText), textToValueFunction (textToValue),
           range (r), value (defaultVal), defaultValue (defaultVal),
           listenersNeedCalling (true),
@@ -191,18 +192,16 @@ AudioProcessorParameterWithID* AudioProcessorValueTreeState::createAndAddParamet
                                                                                     std::function<float (const String&)> textToValueFunction,
                                                                                     bool isMetaParameter,
                                                                                     bool isAutomatableParameter,
-                                                                                    bool isDiscreteParameter)
+                                                                                    bool isDiscreteParameter,
+                                                                                    AudioProcessorParameter::Category category)
 {
     // All parameters must be created before giving this manager a ValueTree state!
     jassert (! state.isValid());
-   #if ! JUCE_LINUX
-    jassert (MessageManager::getInstance()->isThisTheMessageThread());
-   #endif
 
     Parameter* p = new Parameter (*this, paramID, paramName, labelText, r,
                                   defaultVal, valueToTextFunction, textToValueFunction,
                                   isMetaParameter, isAutomatableParameter,
-                                  isDiscreteParameter);
+                                  isDiscreteParameter, category);
     processor.addParameter (p);
     return p;
 }
@@ -256,7 +255,7 @@ ValueTree AudioProcessorValueTreeState::getOrCreateChildValueTree (const String&
     {
         v = ValueTree (valueType);
         v.setProperty (idPropertyID, paramID, undoManager);
-        state.addChild (v, -1, undoManager);
+        state.appendChild (v, undoManager);
     }
 
     return v;

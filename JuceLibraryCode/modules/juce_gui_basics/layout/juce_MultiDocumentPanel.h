@@ -242,7 +242,7 @@ public:
     Colour getBackgroundColour() const noexcept                         { return backgroundColour; }
 
     /** If the panel is being used in tabbed mode, this returns the TabbedComponent that's involved. */
-    TabbedComponent* getCurrentTabbedComponent() const noexcept         { return tabComponent; }
+    TabbedComponent* getCurrentTabbedComponent() const noexcept         { return tabComponent.get(); }
 
     //==============================================================================
     /** A subclass must override this to say whether its currently ok for a document
@@ -285,15 +285,14 @@ public:
 
 private:
     //==============================================================================
-    LayoutMode mode;
-    Array <Component*> components;
+    LayoutMode mode = MaximisedWindowsWithTabs;
+    Array<Component*> components;
     ScopedPointer<TabbedComponent> tabComponent;
-    Colour backgroundColour;
-    int maximumNumDocuments, numDocsBeforeTabsUsed;
+    Colour backgroundColour { Colours::lightblue };
+    int maximumNumDocuments = 0, numDocsBeforeTabsUsed = 0;
 
-    class TabbedComponentInternal;
+    struct TabbedComponentInternal;
     friend class MultiDocumentPanelWindow;
-    friend class TabbedComponentInternal;
 
     Component* getContainerComp (Component*) const;
     void updateOrder();

@@ -2222,7 +2222,7 @@ public:
     /** Returns the object that was set by setCachedComponentImage().
         @see setCachedComponentImage
     */
-    CachedComponentImage* getCachedComponentImage() const noexcept      { return cachedImage; }
+    CachedComponentImage* getCachedComponentImage() const noexcept      { return cachedImage.get(); }
 
     /** Sets a flag to indicate whether mouse drag events on this Component should be ignored when it is inside a
         Viewport with drag-to-scroll functionality enabled. This is useful for Components such as sliders that
@@ -2261,7 +2261,7 @@ private:
     ScopedPointer<Positioner> positioner;
     ScopedPointer<AffineTransform> affineTransform;
     Array<Component*> childComponentList;
-    LookAndFeel* lookAndFeel = nullptr;
+    WeakReference<LookAndFeel> lookAndFeel;
     MouseCursor cursor;
     ImageEffectFilter* effect = nullptr;
     ScopedPointer<CachedComponentImage> cachedImage;
@@ -2270,7 +2270,7 @@ private:
     friend class MouseListenerList;
     friend struct ContainerDeletePolicy<MouseListenerList>;
     ScopedPointer<MouseListenerList> mouseListeners;
-    ScopedPointer<Array<KeyListener*> > keyListeners;
+    ScopedPointer<Array<KeyListener*>> keyListeners;
     ListenerList<ComponentListener> componentListeners;
     NamedValueSet properties;
 

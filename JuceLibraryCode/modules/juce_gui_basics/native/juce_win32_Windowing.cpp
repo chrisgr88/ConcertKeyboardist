@@ -617,6 +617,7 @@ private:
 };
 
 //==============================================================================
+Image createSnapshotOfNativeWindow (void*);
 Image createSnapshotOfNativeWindow (void* nativeWindowHandle)
 {
     auto hwnd = (HWND) nativeWindowHandle;
@@ -963,6 +964,7 @@ public:
     ~HWNDComponentPeer()
     {
         shadower = nullptr;
+        currentTouches.deleteAllTouchesForPeer (this);
 
         // do this before the next bit to avoid messages arriving for this window
         // before it's destroyed
@@ -1179,8 +1181,8 @@ public:
     {
         auto r = getWindowRect (hwnd);
 
-        if (! (isPositiveAndBelow (localPos.x, (int) (r.right - r.left))
-                && isPositiveAndBelow (localPos.y, (int) (r.bottom - r.top))))
+        if (! (isPositiveAndBelow (localPos.x, r.right - r.left)
+                && isPositiveAndBelow (localPos.y, r.bottom - r.top)))
             return false;
 
         POINT p = { localPos.x + r.left + windowBorder.getLeft(),
@@ -2358,7 +2360,7 @@ private:
     {
         auto isCancel = false;
 
-        const auto touchIndex = currentTouches.getIndexOfTouch (touch.dwID);
+        const auto touchIndex = currentTouches.getIndexOfTouch (this, touch.dwID);
         const auto time = getMouseEventTime();
         const auto pos = globalToLocal ({ touch.x / 100.0f, touch.y / 100.0f });
         const auto pressure = touchPressure;
@@ -2652,8 +2654,7 @@ private:
     {
         updateKeyModifiers();
 
-        juce_wchar textChar = (juce_wchar) key;
-
+        auto textChar = (juce_wchar) key;
         const int virtualScanCode = (flags >> 16) & 0xff;
 
         if (key >= '0' && key <= '9')
@@ -3385,7 +3386,7 @@ private:
                     compositionRange.setLength (0);
 
                     target->setHighlightedRegion (Range<int>::emptyRange (compositionRange.getEnd()));
-                    target->setTemporaryUnderlining (Array<Range<int> >());
+                    target->setTemporaryUnderlining ({});
                 }
 
                 if (auto hImc = ImmGetContext (hWnd))
@@ -3413,7 +3414,7 @@ private:
                                                  Range<int>::emptyRange (-1));
 
                         reset();
-                        target->setTemporaryUnderlining (Array<Range<int> >());
+                        target->setTemporaryUnderlining ({});
                     }
                     else if ((lParam & GCS_COMPSTR) != 0) // (composition is still in-progress)
                     {
@@ -3491,7 +3492,7 @@ private:
                 if (attributeSizeBytes > 0)
                 {
                     // Get attributes (8 bit flag per character):
-                    HeapBlock<char> attributes ((size_t) attributeSizeBytes);
+                    HeapBlock<char> attributes (attributeSizeBytes);
                     ImmGetCompositionString (hImc, GCS_COMPATTR, attributes, (DWORD) attributeSizeBytes);
 
                     selectionStart = 0;
@@ -4124,7 +4125,7 @@ void* MouseCursor::createStandardMouseCursor (const MouseCursor::StandardCursorT
                       16,0,0,2,52,148,47,0,200,185,16,130,90,12,74,139,107,84,123,39,132,117,151,116,132,146,248,60,209,138,
                       98,22,203,114,34,236,37,52,77,217,247,154,191,119,110,240,193,128,193,95,163,56,60,234,98,135,2,0,59 };
 
-                dragHandCursor = CustomMouseCursorInfo (ImageFileFormat::loadFrom (dragHandData, sizeof (dragHandData)), 8, 7).create();
+                dragHandCursor = CustomMouseCursorInfo (ImageFileFormat::loadFrom (dragHandData, sizeof (dragHandData)), { 8, 7 }).create();
             }
 
             return dragHandCursor;
@@ -4142,7 +4143,7 @@ void* MouseCursor::createStandardMouseCursor (const MouseCursor::StandardCursorT
                   252,114,147,74,83,5,50,68,147,208,217,16,71,149,252,124,5,0,59,0,0 };
                 const int copyCursorSize = 119;
 
-                copyCursor = CustomMouseCursorInfo (ImageFileFormat::loadFrom (copyCursorData, copyCursorSize), 1, 3).create();
+                copyCursor = CustomMouseCursorInfo (ImageFileFormat::loadFrom (copyCursorData, copyCursorSize), { 1, 3 }).create();
             }
 
             return copyCursor;

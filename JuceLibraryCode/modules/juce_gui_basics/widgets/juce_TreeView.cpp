@@ -124,7 +124,7 @@ public:
                             dragImage.multiplyAllAlphas (0.6f);
 
                             auto imageOffset = pos.getPosition() - e.getPosition();
-                            dragContainer->startDragging (dragDescription, &owner, dragImage, true, &imageOffset);
+                            dragContainer->startDragging (dragDescription, &owner, dragImage, true, &imageOffset, &e.source);
                         }
                         else
                         {
@@ -1018,8 +1018,8 @@ void TreeView::showDragHighlight (const InsertPoint& insertPos) noexcept
 
 void TreeView::hideDragHighlight() noexcept
 {
-    dragInsertPointHighlight = nullptr;
-    dragTargetGroupHighlight = nullptr;
+    dragInsertPointHighlight.reset();
+    dragTargetGroupHighlight.reset();
 }
 
 void TreeView::handleDrag (const StringArray& files, const SourceDetails& dragSourceDetails)

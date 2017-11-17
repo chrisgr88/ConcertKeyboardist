@@ -212,6 +212,13 @@ LookAndFeel_V2::LookAndFeel_V2()
         FileSearchPathListComponent::backgroundColourId,        0xffffffff,
 
         FileChooserDialogBox::titleTextColourId,                0xff000000,
+
+        SidePanel::backgroundColour,                            0xffffffff,
+        SidePanel::titleTextColour,                             0xff000000,
+        SidePanel::shadowBaseColour,                            0xff000000,
+        SidePanel::dismissButtonNormalColour,                   textButtonColour,
+        SidePanel::dismissButtonOverColour,                     textButtonColour,
+        SidePanel::dismissButtonDownColour,                     0xff4444ff,
     };
 
     for (int i = 0; i < numElementsInArray (standardColours); i += 2)
@@ -1273,8 +1280,7 @@ void LookAndFeel_V2::drawLinearSliderBackground (Graphics& g, int x, int y, int 
         const float iy = y + height * 0.5f - sliderRadius * 0.5f;
         const float ih = sliderRadius;
 
-        g.setGradientFill (ColourGradient (gradCol1, 0.0f, iy,
-                                           gradCol2, 0.0f, iy + ih, false));
+        g.setGradientFill (ColourGradient::vertical (gradCol1, iy, gradCol2, iy + ih));
 
         indent.addRoundedRectangle (x - sliderRadius * 0.5f, iy,
                                     width + sliderRadius, ih,
@@ -1285,8 +1291,7 @@ void LookAndFeel_V2::drawLinearSliderBackground (Graphics& g, int x, int y, int 
         const float ix = x + width * 0.5f - sliderRadius * 0.5f;
         const float iw = sliderRadius;
 
-        g.setGradientFill (ColourGradient (gradCol1, ix, 0.0f,
-                                           gradCol2, ix + iw, 0.0f, false));
+        g.setGradientFill (ColourGradient::horizontal (gradCol1, ix, gradCol2, ix + iw));
 
         indent.addRoundedRectangle (ix, y - sliderRadius * 0.5f,
                                     iw, height + sliderRadius,
@@ -1494,7 +1499,7 @@ class LookAndFeel_V2::SliderLabelComp  : public Label
 public:
     SliderLabelComp() : Label ({}, {}) {}
 
-    void mouseWheelMove (const MouseEvent&, const MouseWheelDetails&) {}
+    void mouseWheelMove (const MouseEvent&, const MouseWheelDetails&) override {}
 };
 
 Label* LookAndFeel_V2::createSliderTextBox (Slider& slider)
@@ -1765,10 +1770,8 @@ void LookAndFeel_V2::drawDocumentWindowTitleBar (DocumentWindow& window, Graphic
 
     const bool isActive = window.isActiveWindow();
 
-    g.setGradientFill (ColourGradient (window.getBackgroundColour(),
-                                       0.0f, 0.0f,
-                                       window.getBackgroundColour().contrasting (isActive ? 0.15f : 0.05f),
-                                       0.0f, (float) h, false));
+    g.setGradientFill (ColourGradient::vertical (window.getBackgroundColour(), 0,
+                                                 window.getBackgroundColour().contrasting (isActive ? 0.15f : 0.05f), (float) h));
     g.fillAll();
 
     Font font (h * 0.65f, Font::bold);
@@ -2778,6 +2781,30 @@ void LookAndFeel_V2::drawKeymapChangeButton (Graphics& g, int width, int height,
         g.setColour (textColour.withAlpha (0.4f));
         g.drawRect (0, 0, width, height);
     }
+}
+//==============================================================================
+Font LookAndFeel_V2::getSidePanelTitleFont (SidePanel&)
+{
+    return Font (18.0f);
+}
+
+Justification LookAndFeel_V2::getSidePanelTitleJustification (SidePanel& panel)
+{
+    return panel.isPanelOnLeft() ? Justification::centredRight
+                                 : Justification::centredLeft;
+}
+
+Path LookAndFeel_V2::getSidePanelDismissButtonShape (SidePanel& panel)
+{
+    Path p;
+    const float size = 10.0f;
+
+    if (panel.isPanelOnLeft())
+        p.addTriangle (size, 0.0f, 0.0f, size * 0.5f, size, size);
+    else
+        p.addTriangle (0.0f, 0.0f, size, size * 0.5f, 0.0f, size);
+
+    return p;
 }
 
 //==============================================================================

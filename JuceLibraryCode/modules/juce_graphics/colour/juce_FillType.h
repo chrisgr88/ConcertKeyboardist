@@ -36,7 +36,7 @@ namespace juce
 
     @see Graphics::setFillType, DrawablePath::setFill
 */
-class JUCE_API  FillType
+class JUCE_API  FillType  final
 {
 public:
     //==============================================================================
@@ -52,6 +52,11 @@ public:
         @see setGradient
     */
     FillType (const ColourGradient& gradient);
+
+    /** Creates a gradient fill type.
+        @see setGradient
+    */
+    FillType (ColourGradient&& gradient);
 
     /** Creates a tiled image fill type. The transform allows you to set the scaling, offset
         and rotation of the pattern.

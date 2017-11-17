@@ -35,7 +35,7 @@
 
   ID:               juce_gui_basics
   vendor:           juce
-  version:          5.1.2
+  version:          5.2.0
   name:             JUCE GUI core classes
   description:      Basic user-interface components and related classes.
   website:          http://www.juce.com/juce
@@ -248,6 +248,7 @@ namespace juce
 #include "widgets/juce_ToolbarItemComponent.h"
 #include "widgets/juce_ToolbarItemFactory.h"
 #include "widgets/juce_ToolbarItemPalette.h"
+#include "menus/juce_BurgerMenuComponent.h"
 #include "buttons/juce_ToolbarButton.h"
 #include "misc/juce_DropShadower.h"
 #include "misc/juce_JUCESplashScreen.h"
@@ -263,6 +264,7 @@ namespace juce
 #include "windows/juce_ThreadWithProgressWindow.h"
 #include "windows/juce_TooltipWindow.h"
 #include "layout/juce_MultiDocumentPanel.h"
+#include "layout/juce_SidePanel.h"
 #include "filebrowser/juce_FileBrowserListener.h"
 #include "filebrowser/juce_DirectoryContentsList.h"
 #include "filebrowser/juce_DirectoryContentsDisplayComponent.h"

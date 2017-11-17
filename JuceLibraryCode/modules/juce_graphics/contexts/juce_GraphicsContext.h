@@ -40,7 +40,7 @@ namespace juce
 
     @see Component::paint
 */
-class JUCE_API  Graphics
+class JUCE_API  Graphics  final
 {
 public:
     //==============================================================================
@@ -82,9 +82,11 @@ public:
     */
     void setOpacity (float newOpacity);
 
-    /** Sets the context to use a gradient for its fill pattern.
-    */
+    /** Sets the context to use a gradient for its fill pattern. */
     void setGradientFill (const ColourGradient& gradient);
+
+    /** Sets the context to use a gradient for its fill pattern. */
+    void setGradientFill (ColourGradient&& gradient);
 
     /** Sets the context to use a tiled image pattern for filling.
         Make sure that you don't delete this image while it's still being used by

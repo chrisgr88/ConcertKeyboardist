@@ -53,6 +53,11 @@
   #import <Carbon/Carbon.h> // still needed for SetSystemUIMode()
  #endif
 
+#elif JUCE_IOS
+ #if JUCE_PUSH_NOTIFICATIONS && defined (__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+  #import <UserNotifications/UserNotifications.h>
+ #endif
+
 //==============================================================================
 #elif JUCE_WINDOWS
  #include <windowsx.h>
@@ -197,6 +202,7 @@ namespace juce
 #include "layout/juce_ResizableCornerComponent.cpp"
 #include "layout/juce_ResizableEdgeComponent.cpp"
 #include "layout/juce_ScrollBar.cpp"
+#include "layout/juce_SidePanel.cpp"
 #include "layout/juce_StretchableLayoutManager.cpp"
 #include "layout/juce_StretchableLayoutResizerBar.cpp"
 #include "layout/juce_StretchableObjectResizer.cpp"
@@ -209,6 +215,7 @@ namespace juce
 #include "lookandfeel/juce_LookAndFeel_V3.cpp"
 #include "lookandfeel/juce_LookAndFeel_V4.cpp"
 #include "menus/juce_MenuBarComponent.cpp"
+#include "menus/juce_BurgerMenuComponent.cpp"
 #include "menus/juce_MenuBarModel.cpp"
 #include "menus/juce_PopupMenu.cpp"
 #include "positioning/juce_MarkerList.cpp"

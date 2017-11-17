@@ -122,10 +122,10 @@ public:
     bool isConnected() const;
 
     /** Returns the socket that this connection is using (or nullptr if it uses a pipe). */
-    StreamingSocket* getSocket() const noexcept                 { return socket; }
+    StreamingSocket* getSocket() const noexcept                 { return socket.get(); }
 
     /** Returns the pipe that this connection is using (or nullptr if it uses a socket). */
-    NamedPipe* getPipe() const noexcept                         { return pipe; }
+    NamedPipe* getPipe() const noexcept                         { return pipe.get(); }
 
     /** Returns the name of the machine at the other end of this connection.
         This may return an empty string if the name is unknown.
@@ -176,15 +176,13 @@ public:
 
 private:
     //==============================================================================
-    WeakReference<InterprocessConnection>::Master masterReference;
-    friend class WeakReference<InterprocessConnection>;
     CriticalSection pipeAndSocketLock;
     ScopedPointer<StreamingSocket> socket;
     ScopedPointer<NamedPipe> pipe;
-    bool callbackConnectionState;
+    bool callbackConnectionState = false;
     const bool useMessageThread;
     const uint32 magicMessageHeader;
-    int pipeReceiveMessageTimeout;
+    int pipeReceiveMessageTimeout = -1;
 
     friend class InterprocessConnectionServer;
     void initialiseWithSocket (StreamingSocket*);
@@ -202,6 +200,7 @@ private:
     void runThread();
     int writeData (void*, int);
 
+    JUCE_DECLARE_WEAK_REFERENCEABLE (InterprocessConnection)
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InterprocessConnection)
 };
 
