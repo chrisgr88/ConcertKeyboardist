@@ -62,6 +62,7 @@ MainComponent::MainComponent(MIDIProcessor *p) :
 MainComponent::~MainComponent()
     {
         knownPluginList.removeChangeListener (this);
+        setLookAndFeel(nullptr);
         audioDeviceManager.closeAudioDevice();
     }
 

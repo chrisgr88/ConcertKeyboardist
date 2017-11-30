@@ -189,7 +189,6 @@ ApplicationProperties& getAppProperties();
         extra_menu.addItem (123, "About ConcertKeyboardist");
         extra_menu.addSeparator();
         extra_menu.addItem (0x999, "Preferences...");
-        //        extra_menu.addCommandItem(&getCommandManager(), CommandIDs::fileOpen, "Preferences...");
         MainWindow::setMacMainMenu (this, &extra_menu);
 #else
         setMenuBar (this);
@@ -469,6 +468,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::enableMidiOut:
                 result.setInfo ("Enable midi out", String(), category, 0);
+                std::cout << "midiProcessor.midiOutEnabled "<<midiProcessor.midiOutEnabled<<"\n";
                 result.setTicked(midiProcessor.midiOutEnabled);
                 break;
             case CommandIDs::fileOpen:
@@ -920,8 +920,13 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             }
             case CommandIDs::enableMidiOut:
             {
-                std::cout << "Enable midi out" <<"\n";
-                midiProcessor.midiOutEnabled = !midiProcessor.midiOutEnabled;
+                std::cout << "Enable midi out " <<midiProcessor.midiOutEnabled<<"\n";
+//                if (!midiProcessor.midiOutEnabled)
+                    midiProcessor.midiOutEnabled = true;
+//                else
+//                    midiProcessor.midiOutEnabled = false;
+//                getCommandManager().commandStatusChanged();
+                std::cout << "midiOutEnabled " <<midiProcessor.midiOutEnabled<<"\n";
                 break;
             }
             case CommandIDs::fileOpen:
