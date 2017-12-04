@@ -396,9 +396,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         }
         for (int trackStep=0;trackStep<allNotes.at(trk).size();trackStep++)
         {
-            int foo3;
-            if (allNotes.at(trk).at(trackStep)->currentStep==4)
-                foo3=0;
             double proposedOnTime = allNotes.at(trk).at(trackStep)->getTimeStamp();
             double proposedOffTime = allNotes.at(trk).at(trackStep)->offTime;
 //            if (allNotes.at(trk).at(trackStep)->currentStep<12)
@@ -421,13 +418,13 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             //Adjust the head width if other note of same note number follows closely
             const int thisTrackStep = trackStep;
             const int thisNoteNumber = allNotes.at(trk).at(trackStep)->noteNumber;
-            for (int nxtNoteTrackStep=thisTrackStep+1;nxtNoteTrackStep<allNotes.at(trk).size()-2;nxtNoteTrackStep++)
+
+            int lastNextStepToCheck = ((int)allNotes.at(trk).size())-2;
+            for (int nxtNoteTrackStep=thisTrackStep+1; nxtNoteTrackStep<lastNextStepToCheck; nxtNoteTrackStep++)
             {
                 if (allNotes.at(trk).at(nxtNoteTrackStep)->noteNumber==thisNoteNumber)
                 {
                     trackStepNextSameNote = nxtNoteTrackStep;
-//                    if (allNotes.at(trk).at(trackStep)->currentStep<20)
-//                        std::cout<< "trackStep,  trackStepNextSameNote "<< trackStep<<" "<<trackStepNextSameNote<< "\n";
                     break;
                 }
             }
@@ -1062,12 +1059,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                         
                         if (msg->getOffTime() <= msg->getTimeStamp()) //In a correct sequence this should not happen
                              msg->setOfftime(msg->getTimeStamp()+50); //But if it does, make a short note with non neg duration
-                        int foo;
-                        if (msg->getOffTime()==4851)
-                            foo=0;
-                        int foo2;
-                        if (msg->getOffTime()==4851)
-                            foo2=0;
+
                         const double ts = msg->getTimeStamp();
                         msg->setTimeStamp(960.0*ts/ppq);
                         msg->originalVelocity = msg->velocity;
