@@ -553,22 +553,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 {
     std::cout << "entering loadSequence \n";
-    targetNoteTimes.clear();
   try {
-        
-    if (retainEdits == doNotRetainEdits)
-    {
-        chainingInterval = 120.0;
-        bookmarkTimes.clear();
-        if (loadFile==LoadType::loadFile)
-        {
-            //This is not a LoadType::reAnalyzeOnly so clear everything
-            chords.clear();
-            allNotes.clear();
-        }
-    }
-    setLoadingFile(true);
-    
     if (fileToLoad.getFileName().length() > 0 && loadFile == Sequence::loadFile)
     {
 //        std::cout << "entering loadSequence: load file \n";
@@ -576,6 +561,19 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             std::cout << "File " << fileToLoad.getFullPathName() << " does not exist.\n";
             return false;
         }
+        targetNoteTimes.clear();
+        if (retainEdits == doNotRetainEdits)
+        {
+            chainingInterval = 120.0;
+            bookmarkTimes.clear();
+            if (loadFile==LoadType::loadFile)
+            {
+                //This is not a LoadType::reAnalyzeOnly so clear everything
+                chords.clear();
+                allNotes.clear();
+            }
+        }
+        setLoadingFile(true);
         String fileName = fileToLoad.getFileName();
         setScoreFile(fileToLoad); //This is just used by the file name display
         setFile (fileToLoad.withFileExtension(".ckf"));

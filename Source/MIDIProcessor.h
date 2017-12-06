@@ -95,12 +95,11 @@ public:
     void buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time)
     {
 //        std::cout << "entering buildSequenceAsOf \n";
-        pauseGLRendering = true;
         HighResolutionTimer::stopTimer();
         if (type==Sequence::loadFile)
         {
             lastUserPlayedSeqStep=-1;
-            pluginEnabled = false;
+//            pluginEnabled = false;
         }
         if (sequenceObject.loadSequence(type, retainEdits))
         {
@@ -110,7 +109,7 @@ public:
     }
 
     bool isPlaying;
-    bool isListening; //True is we are listening to a selection
+    bool isListening; //True means  we are listening to a selection
     double startListenTime;
     double endListenTime;
     double lastStartTime;
@@ -171,13 +170,6 @@ public:
 
     int startStep, endStep;
     double resetToTime;
-    
-    bool pauseGLRendering;
-    inline bool getPauseGLRendering() //Called by renderOpenGL to determine if pause should be started or stopped
-    {
-        return true;
-//        return pauseGLRendering;
-    }
     
     bool noteIsOn(int seqStep)
     {
