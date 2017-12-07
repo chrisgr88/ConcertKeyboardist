@@ -77,7 +77,7 @@ public:
             if (!file.isDirectory())
             {
                 String fn = file.getFullPathName();
-                sequenceObject.setScoreFile(file);
+//                sequenceObject.setScoreFile(file);
                 
                 sequenceObject.loadDocument(File(fn));//This is not "loadSequence" but triggers loading it with loadSequence
             }
@@ -86,26 +86,23 @@ public:
     }
     void loadSpecifiedFile (File file)//const bool showMessageOnFailure)
     {
-        sequenceObject.setScoreFile(file);
-        sequenceObject.loadDocument(file);
+//        sequenceObject.setScoreFile(file); //Sets the name of the file to display in the main window
+        if (sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
+            sequenceObject.loadDocument(file);
         //return Result::fail (TRANS("User cancelled"));
     }
     
-    //enum LoadType {loadFile, reAnalyzeOnly};
     void buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time)
     {
 //        std::cout << "entering buildSequenceAsOf \n";
         HighResolutionTimer::stopTimer();
-        if (type==Sequence::loadFile)
-        {
-            lastUserPlayedSeqStep=-1;
-//            pluginEnabled = false;
-        }
-        if (sequenceObject.loadSequence(type, retainEdits))
-        {
-            HighResolutionTimer::startTimer(timerIntervalInMS);
+        if (sequenceObject.loadSequence(type, retainEdits)) {
             rewind(time);
+        } else {
+            //Report error
+            AlertWindow::showMessageBox(AlertWindow::AlertIconType::WarningIcon, "Warning", "Failed to Load File");
         }
+        HighResolutionTimer::startTimer(timerIntervalInMS);
     }
 
     bool isPlaying;
@@ -566,7 +563,7 @@ public:
             return true;
         }
     private:
-        String timeSpec;
+        String timeSpec = String();
         std::vector<std::shared_ptr<NoteWithOffTime>> selection;
         Array<int> selectedSteps;
         Array<Sequence::PrevNoteTimes> prevValues;
@@ -604,7 +601,7 @@ public:
             return true;
         }
     private:
-        String velSpec;
+        String velSpec  = String();
         std::vector<std::shared_ptr<NoteWithOffTime>> selection;
         Array<int> selectedSteps;
         Array<Sequence::NoteVelocities> prevValues;

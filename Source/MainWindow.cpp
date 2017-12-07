@@ -10,7 +10,7 @@
 
 #include "MainWindow.h"
 
-//==============================================================================
+//PluginWindow ==============================================================================
 static Array<PluginWindow*> activePluginWindows;
 
 PluginWindow::PluginWindow (AudioProcessorEditor* pluginEditor, AudioProcessor* o, WindowFormatType t)
@@ -102,6 +102,7 @@ void PluginWindow::closeAllCurrentlyOpenWindows()
     }
 }
 
+//MainWindow==============================================
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
@@ -166,8 +167,8 @@ ApplicationProperties& getAppProperties();
 #else
 #   error "Unknown compiler"
 #endif
-        
-        //        centreWithSize (getWidth(), getHeight());
+
+//        centreWithSize (getWidth(), getHeight());
 //        restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
 //        setUsingNativeTitleBar(false);
         setVisible (true);
@@ -468,7 +469,6 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::enableMidiOut:
                 result.setInfo ("Enable midi out", String(), category, 0);
-                std::cout << "midiProcessor.midiOutEnabled "<<midiProcessor.midiOutEnabled<<"\n";
                 result.setTicked(midiProcessor.midiOutEnabled);
                 break;
             case CommandIDs::fileOpen:
@@ -742,7 +742,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 String path = recent.getFullPathName();
     //            std::cout << "Load recent file " << recentFiles.getNumFiles() << " " <<  path << " " << recentFiles.toString() << "\n";
                 
-                if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
+//                if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                     midiProcessor.loadSpecifiedFile(recent);
                 Component::toFront(true);
                 if (tracksWindow)
@@ -800,19 +800,6 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 {
                     mainComponent->loadPlugin(desc);
                 }
-//
-//                if (desc != NULL)
-//                {
-//                    std::cout << "Loading plugin "<<desc->descriptiveName <<"\n";
-//                    const PluginDescription *pPID = knownPluginList.getType(knownPluginList.getIndexChosenByMenu (menuItemID));
-//                    
-//                    String errorMsg;
-//                    AudioPluginInstance* loaded = formatManager.createPluginInstance(*pPID, 500,500,errorMsg);
-//                    if (loaded)
-//                    {
-//                        std::cout << "Loaded plugin "<<getChosenType (menuItemID)->descriptiveName <<"\n";
-//                    }
-//                }
             }
         }
     }
@@ -846,10 +833,6 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::clearAllSelection,
             CommandIDs::selectAll,
             CommandIDs::toggleSelectedNotesActive,
-//            CommandIDs::marqueeSelectionAdd,
-//            CommandIDs::marqueeSelectionRemove,
-//            CommandIDs::markSelectedNotes,
-//            CommandIDs::clearSelectedNotes,
             CommandIDs::setSelectedNotesActive,
             CommandIDs::setSelectedNotesInactive,
             CommandIDs::chainSelectedNotes,
@@ -865,7 +848,6 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::drawVelocities,
             CommandIDs::create_chord,
             CommandIDs::delete_chord,
-            
             CommandIDs::rewind,
             CommandIDs::previousTargetNote,
             CommandIDs::previousMeasure,
@@ -920,13 +902,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             }
             case CommandIDs::enableMidiOut:
             {
-                std::cout << "Enable midi out " <<midiProcessor.midiOutEnabled<<"\n";
-//                if (!midiProcessor.midiOutEnabled)
-                    midiProcessor.midiOutEnabled = true;
-//                else
-//                    midiProcessor.midiOutEnabled = false;
-//                getCommandManager().commandStatusChanged();
-                std::cout << "midiOutEnabled " <<midiProcessor.midiOutEnabled<<"\n";
+                std::cout << "Enable midi out" <<"\n";
+                midiProcessor.midiOutEnabled = !midiProcessor.midiOutEnabled;
                 break;
             }
             case CommandIDs::fileOpen:
@@ -948,25 +925,16 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     File file = midiProcessor.sequenceObject.getLastDocumentOpened();
-                    if (!file.getFullPathName().endsWith("[ck].mid"))
+                    if (file.getFullPathName().endsWith("[ck].mid"))
+                        midiProcessor.sequenceObject.saveDocument(midiProcessor.sequenceObject.getLastDocumentOpened());
+                    else
                     {
                         midiProcessor.sequenceObject.saveAs(File(), true, true, true);
-
-                        
                         RecentlyOpenedFilesList recentFiles;
-                        recentFiles.restoreFromString (getAppProperties().getUserSettings()
-                                                       ->getValue ("recentConcertKeyboardistFiles"));
-    //                    int num1 = recentFiles.getNumFiles();
+                        recentFiles.restoreFromString(getAppProperties().getUserSettings()->getValue("recentConcertKeyboardistFiles"));
                         recentFiles.removeFile(file);
-                        getAppProperties().getUserSettings()
-                        ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
-    //                    int num2 = recentFiles.getNumFiles();                    
-                        
-
-    //                    std::cout <<"N files before, after"<<num1<<" "<<num2<<"\n";
+                        getAppProperties().getUserSettings()->setValue("recentConcertKeyboardistFiles", recentFiles.toString());
                     }
-                    else
-                        midiProcessor.sequenceObject.saveDocument(midiProcessor.sequenceObject.getLastDocumentOpened());
                     Component::toFront(true);
                 }
                 break;

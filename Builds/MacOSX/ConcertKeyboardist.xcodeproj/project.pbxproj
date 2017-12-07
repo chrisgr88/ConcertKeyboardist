@@ -72,7 +72,6 @@
 		5DFBC4E856D85CBFAC2D2F73 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ScrollingNoteViewer.cpp; path = ../../Source/ScrollingNoteViewer.cpp; sourceTree = "SOURCE_ROOT"; };
 		6989727F4D7CDD67AFFC521F = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollingNoteViewer.h; path = ../../Source/ScrollingNoteViewer.h; sourceTree = "SOURCE_ROOT"; };
 		6D385DBD8DF3A4908B966D46 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NoteWithOffTime.h; path = ../../Source/NoteWithOffTime.h; sourceTree = "SOURCE_ROOT"; };
-		6F605A936F7498CE5405C9B4 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_basics"; path = "../../JUCE.git/modules/juce_audio_basics"; sourceTree = "SOURCE_ROOT"; };
 		712B8EEA0CE55F70BC3901B7 = {isa = PBXFileReference; lastKnownFileType = file.md; name = ckdoc.md; path = ../../Documentation/EN/ckdoc.md; sourceTree = "SOURCE_ROOT"; };
 		7145572555EFA675AA824857 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_gui_extra.mm"; path = "../../JuceLibraryCode/include_juce_gui_extra.mm"; sourceTree = "SOURCE_ROOT"; };
 		79153CFD4898987E0EF1BEB6 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_opengl"; path = "../../JuceLibraryCode/modules/juce_opengl"; sourceTree = "SOURCE_ROOT"; };
@@ -124,6 +123,7 @@
 		E712571C31C9DD7554721577 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_events"; path = "../../JuceLibraryCode/modules/juce_events"; sourceTree = "SOURCE_ROOT"; };
 		E941FB40405867C9771E296B = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_cryptography.mm"; path = "../../JuceLibraryCode/include_juce_cryptography.mm"; sourceTree = "SOURCE_ROOT"; };
 		E96B30780710D2F35A1C8C4E = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BinaryData2.cpp; path = ../../JuceLibraryCode/BinaryData2.cpp; sourceTree = "SOURCE_ROOT"; };
+		F1C88B94F7896926F927116E = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_basics"; path = "../../JuceLibraryCode/modules/juce_audio_basics"; sourceTree = "SOURCE_ROOT"; };
 		F4F1E789793E28D38095C1BD = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_gui_extra"; path = "../../JuceLibraryCode/modules/juce_gui_extra"; sourceTree = "SOURCE_ROOT"; };
 		F7064566D13EBF9A6548E52E = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_graphics"; path = "../../JuceLibraryCode/modules/juce_graphics"; sourceTree = "SOURCE_ROOT"; };
 		F770F05453C3C80A3CA80752 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BinaryData.cpp; path = ../../JuceLibraryCode/BinaryData.cpp; sourceTree = "SOURCE_ROOT"; };
@@ -177,7 +177,7 @@
 		C69BCE512948465235B05858 = {isa = PBXGroup; children = (
 					47DF0B5F0B14AE411808F7CE, ); name = ConcertKeyboardist; sourceTree = "<group>"; };
 		38592324982B511EF7CF4FE1 = {isa = PBXGroup; children = (
-					6F605A936F7498CE5405C9B4,
+					F1C88B94F7896926F927116E,
 					D787E5391321C6269F49AD1D,
 					2709534624D225C32C3C5693,
 					4B6B33166C513BE01A2D211F,
@@ -265,7 +265,7 @@
 					"JucePlugin_Build_AAX=0",
 					"JucePlugin_Build_Standalone=0", );
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = ("\"/Users/chrisgr/SDKs/VST3 SDK\"", "../../JuceLibraryCode", "../../JUCE.git/modules", "../../JuceLibraryCode/modules", "$(inherited)");
+				HEADER_SEARCH_PATHS = ("\"/Users/chrisgr/SDKs/VST3 SDK\"", "../../JuceLibraryCode", "../../JuceLibraryCode/modules", "$(inherited)");
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -300,7 +300,7 @@
 					"JucePlugin_Build_Standalone=0", );
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = ("\"/Users/chrisgr/SDKs/VST3 SDK\"", "../../JuceLibraryCode", "../../JUCE.git/modules", "../../JuceLibraryCode/modules", "$(inherited)");
+				HEADER_SEARCH_PATHS = ("\"/Users/chrisgr/SDKs/VST3 SDK\"", "../../JuceLibraryCode", "../../JuceLibraryCode/modules", "$(inherited)");
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";

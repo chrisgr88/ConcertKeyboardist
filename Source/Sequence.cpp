@@ -552,699 +552,714 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
 bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 {
-    std::cout << "entering loadSequence \n";
-  try {
-    if (fileToLoad.getFileName().length() > 0 && loadFile == Sequence::loadFile)
+    std::cout << "entering loadSequence "<< fileToLoad.getFileName()<<"\n";
+    try
     {
-//        std::cout << "entering loadSequence: load file \n";
-        if (!fileToLoad.exists()) {
-            std::cout << "File " << fileToLoad.getFullPathName() << " does not exist.\n";
-            return false;
-        }
-        targetNoteTimes.clear();
-        if (retainEdits == doNotRetainEdits)
+        if (fileToLoad.getFileName().length() > 0 && loadFile == Sequence::loadFile)
         {
-            chainingInterval = 120.0;
-            bookmarkTimes.clear();
-            if (loadFile==LoadType::loadFile)
-            {
-                //This is not a LoadType::reAnalyzeOnly so clear everything
-                chords.clear();
-                allNotes.clear();
+        //        std::cout << "entering loadSequence: load file \n";
+            if (causeLoadFailure)
+                return false;
+            if (!fileToLoad.exists()) {
+                std::cout << "File " << fileToLoad.getFullPathName() << " does not exist.\n";
+                return false;
             }
-        }
-        setLoadingFile(true);
-        String fileName = fileToLoad.getFileName();
-        setScoreFile(fileToLoad); //This is just used by the file name display
-        setFile (fileToLoad.withFileExtension(".ckf"));
-        setLastDocumentOpened(fileToLoad);
-        short fileType;
-        FileInputStream inputStream(fileToLoad);
-        if(!midiFile.readFrom(inputStream))
-            jassert(false);
-        //    std::cout << "numTracks " << midiFile.getNumTracks() << "\n";
-        //    std::cout << "timeFormat " << midiFile.getTimeFormat() << "\n";
-        
-        fileType = 0;//midiFile.getFileType();
-        //    std::cout << "fileType " << fileType << "\n";
-        //    std::cout << "lastTimeStamp " << midiFile.getLastTimestamp() << "\n";
-        
-        originalPpq = midiFile.getTimeFormat(); //This is only used in converting the midi file to a standard of 960 ppq.
-        std::cout << "originalPpq " << originalPpq << "\n";
-        if (originalPpq<0)
-            ppq = 960;
-        else
-            ppq = originalPpq;
 
-        bool tempoMap = false;
-        MidiMessageSequence tempoChangeEvents;
-        File tempoMapFile = fileToLoad.withFileExtension("tempo.mid");
-        MidiFile midiTempoMapFile;
-        if (tempoMapFile.exists())
-        {
-            std::cout << "Found tempo map " <<"\n";
-            FileInputStream tempoStream(tempoMapFile);
-            if(!midiTempoMapFile.readFrom(tempoStream))
-                std::cout << "error reading tempo map " <<"\n";
-            midiTempoMapFile.findAllTempoEvents(tempoChangeEvents);
-            tempoMap = true;
-        }
-        else
-            midiFile.findAllTempoEvents(tempoChangeEvents);
-        tempoChanges.clear();
-        double prevTempo = -1;
-        for (int i=0;i<tempoChangeEvents.getNumEvents();i++)
-        {
-            MidiMessage msg = tempoChangeEvents.getEventPointer(i)->message;
-            msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
-            tempoChanges.push_back(msg);
-            const double secPerQtr = msg.getTempoSecondsPerQuarterNote();
-            const double tempo = (1.0/secPerQtr)*(60.0);
-            if (tempo!=prevTempo)
-//                std::cout << "tempoChange at " << msg.timeStamp << " " << tempo << "\n";
-            prevTempo = tempo;
-        }
-//        std::cout << "# tempoChangeEvents " << tempoChangeEvents.getNumEvents() << "\n";
-        if (tempoChanges.size()==0)
-        {
-            MidiMessage msg = MidiMessage::tempoMetaEvent(60000000 / 120);
-            tempoChanges.push_back(msg);
-        }
-        MidiMessage lastTempoChg = tempoChanges[tempoChanges.size()-1];
-        lastTempoChg.setTimeStamp(9999999999);
-        tempoChanges.push_back(lastTempoChg);
-        
-        tempoChangeEvents.clear();
-        
-        MidiMessageSequence timesigChangeEvents;
-        if (tempoMap)
-            midiTempoMapFile.findAllTimeSigEvents(timesigChangeEvents);
-        else
-            midiFile.findAllTimeSigEvents(timesigChangeEvents);
-        timeSigChanges.clear();
-        for (int i=0;i<timesigChangeEvents.getNumEvents();i++)
-        {
-            MidiMessage msg = timesigChangeEvents.getEventPointer(i)->message;
-            msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
-            msg.getTimeSignatureInfo(numerator, denominator);
-            timeSigChanges.add(msg);
-//            std::cout << "Time sig change " << msg.timeStamp << " " << numerator << " " << denominator << "\n";
-        }
-        if (timeSigChanges.size() > 0)
-            timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
-        else
-            timeSigChanges.add(MidiMessage::timeSignatureMetaEvent(4, 4));
-
-//      timeIncrement=960.0*tempo*(numerator/denominator)/60000.0;//Per tick.  960 is ppq, always the same
-        
-        numTracks = midiFile.getNumTracks();
-        
-        //Track overview
-        if (retainEdits==Sequence::doNotRetainEdits)
-        {
-            trackDetails.clear();
-            programChanges.clear();
-            for (int i=0;i<16;i++)
-                programChanges.push_back(-1);
-            areThereProgramChanges = false;
-            
-            seqDurationInTicks = 0;
-            for (int trk=0;trk<numTracks;trk++)
+            targetNoteTimes.clear();
+            if (retainEdits == doNotRetainEdits)
             {
-                String txt = "";
-                const MidiMessageSequence *theTrack = midiFile.getTrack(trk);
-                const int numEvents = theTrack->getNumEvents();
-        //        std::cout << "Track " << trk << " events " << numEvents << "\n";
-                int nNoteOns = 0;
-                int nSysex = 0;
-                int nMeta = 0;
-                int nTrackMeta = 0;
-                int nChannelMeta = 0;
-                int nKeySigMeta = 0;
-                int nTimeSigMeta = 0;
-                int nSustains = 0;
-                int nSofts = 0;
-                int nSostenutos = 0;
-                int nOtherContr = 0;
-                int channel = -1;
-                TrackDetail trkDetail;
-                trkDetail.startMeasure = -1;
-                trkDetail.endMeasure = -1;
-                for (int i=0;i<numEvents;i++) 
+                chainingInterval = 120.0;
+                bookmarkTimes.clear();
+                if (loadFile==LoadType::loadFile)
                 {
-                    MidiMessage msg = theTrack->getEventPointer(i)->message;
-    //                std::cout << "trk " << trk << " channel " << msg.getChannel() << "\n";
-                    
-                    if (msg.isTextMetaEvent())
-                    {
-                        txt += msg.getTextFromTextMetaEvent();
-                    }
+                    //This is not a LoadType::reAnalyzeOnly so clear everything
+                    chords.clear();
+                    allNotes.clear();
+                }
+            }
+            setLoadingFile(true);
+            String fileName = fileToLoad.getFileName();
+            setScoreFile(fileToLoad); //This is just used by the file name display
+            setFile (fileToLoad.withFileExtension(".ckf"));
+            setLastDocumentOpened(fileToLoad);
+            short fileType;
+            FileInputStream inputStream(fileToLoad);
+            if(!midiFile.readFrom(inputStream))
+                jassert(false);
+            //    std::cout << "numTracks " << midiFile.getNumTracks() << "\n";
+            //    std::cout << "timeFormat " << midiFile.getTimeFormat() << "\n";
 
-                    if (msg.isProgramChange())
+            fileType = 0;//midiFile.getFileType();
+            //    std::cout << "fileType " << fileType << "\n";
+            //    std::cout << "lastTimeStamp " << midiFile.getLastTimestamp() << "\n";
+
+            originalPpq = midiFile.getTimeFormat(); //This is only used in converting the midi file to a standard of 960 ppq.
+            std::cout << "originalPpq " << originalPpq << "\n";
+            if (originalPpq<0)
+                ppq = 960;
+            else
+                ppq = originalPpq;
+
+            bool tempoMap = false;
+            MidiMessageSequence tempoChangeEvents;
+            File tempoMapFile = fileToLoad.withFileExtension("tempo.mid");
+            MidiFile midiTempoMapFile;
+            if (tempoMapFile.exists())
+            {
+                std::cout << "Found tempo map " <<"\n";
+                FileInputStream tempoStream(tempoMapFile);
+                if(!midiTempoMapFile.readFrom(tempoStream))
+                    std::cout << "error reading tempo map " <<"\n";
+                midiTempoMapFile.findAllTempoEvents(tempoChangeEvents);
+                tempoMap = true;
+            }
+            else
+                midiFile.findAllTempoEvents(tempoChangeEvents);
+            tempoChanges.clear();
+            double prevTempo = -1;
+            for (int i=0;i<tempoChangeEvents.getNumEvents();i++)
+            {
+                MidiMessage msg = tempoChangeEvents.getEventPointer(i)->message;
+                msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
+                tempoChanges.push_back(msg);
+                const double secPerQtr = msg.getTempoSecondsPerQuarterNote();
+                const double tempo = (1.0/secPerQtr)*(60.0);
+                if (tempo!=prevTempo)
+        //                std::cout << "tempoChange at " << msg.timeStamp << " " << tempo << "\n";
+                prevTempo = tempo;
+            }
+        //        std::cout << "# tempoChangeEvents " << tempoChangeEvents.getNumEvents() << "\n";
+            if (tempoChanges.size()==0)
+            {
+                MidiMessage msg = MidiMessage::tempoMetaEvent(60000000 / 120);
+                tempoChanges.push_back(msg);
+            }
+            MidiMessage lastTempoChg = tempoChanges[tempoChanges.size()-1];
+            lastTempoChg.setTimeStamp(9999999999);
+            tempoChanges.push_back(lastTempoChg);
+
+            tempoChangeEvents.clear();
+
+            MidiMessageSequence timesigChangeEvents;
+            if (tempoMap)
+                midiTempoMapFile.findAllTimeSigEvents(timesigChangeEvents);
+            else
+                midiFile.findAllTimeSigEvents(timesigChangeEvents);
+            timeSigChanges.clear();
+            for (int i=0;i<timesigChangeEvents.getNumEvents();i++)
+            {
+                MidiMessage msg = timesigChangeEvents.getEventPointer(i)->message;
+                msg.setTimeStamp(960.0*msg.getTimeStamp()/ppq);
+                msg.getTimeSignatureInfo(numerator, denominator);
+                timeSigChanges.add(msg);
+        //            std::cout << "Time sig change " << msg.timeStamp << " " << numerator << " " << denominator << "\n";
+            }
+            if (timeSigChanges.size() > 0)
+                timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
+            else
+                timeSigChanges.add(MidiMessage::timeSignatureMetaEvent(4, 4));
+
+        //      timeIncrement=960.0*tempo*(numerator/denominator)/60000.0;//Per tick.  960 is ppq, always the same
+
+            numTracks = midiFile.getNumTracks();
+
+            //Track overview
+            if (retainEdits==Sequence::doNotRetainEdits)
+            {
+                trackDetails.clear();
+                programChanges.clear();
+                for (int i=0;i<16;i++)
+                    programChanges.push_back(-1);
+                areThereProgramChanges = false;
+
+                seqDurationInTicks = 0;
+                for (int trk=0;trk<numTracks;trk++)
+                {
+                    String txt = "";
+                    const MidiMessageSequence *theTrack = midiFile.getTrack(trk);
+                    const int numEvents = theTrack->getNumEvents();
+            //        std::cout << "Track " << trk << " events " << numEvents << "\n";
+                    int nNoteOns = 0;
+                    int nSysex = 0;
+                    int nMeta = 0;
+                    int nTrackMeta = 0;
+                    int nChannelMeta = 0;
+                    int nKeySigMeta = 0;
+                    int nTimeSigMeta = 0;
+                    int nSustains = 0;
+                    int nSofts = 0;
+                    int nSostenutos = 0;
+                    int nOtherContr = 0;
+                    int channel = -1;
+                    TrackDetail trkDetail;
+                    trkDetail.startMeasure = -1;
+                    trkDetail.endMeasure = -1;
+                    for (int i=0;i<numEvents;i++)
                     {
-                        programChanges[msg.getChannel()-1] = msg.getProgramChangeNumber();
-                        areThereProgramChanges = true;
-                        trkDetail.instrument = String(MidiMessage::getGMInstrumentName(msg.getProgramChangeNumber()));
-                    }
-                    if (msg.isController())
-                    {
-                        if (msg.isSustainPedalOn())
+                        MidiMessage msg = theTrack->getEventPointer(i)->message;
+        //                std::cout << "trk " << trk << " channel " << msg.getChannel() << "\n";
+
+                        if (msg.isTextMetaEvent())
                         {
-//                            std::cout << "Sustain on" << trk << "\n";
-                            nSustains++;
+                            txt += msg.getTextFromTextMetaEvent();
                         }
-                        if (msg.isSostenutoPedalOn()) nSostenutos++;
-                        if (msg.isSoftPedalOn())
-                            nSofts++;
-                        if (!msg.isSustainPedalOn() && !msg.isSostenutoPedalOn() && !msg.isSoftPedalOn())
-                            nOtherContr++;
+
+                        if (msg.isProgramChange())
+                        {
+                            programChanges[msg.getChannel()-1] = msg.getProgramChangeNumber();
+                            areThereProgramChanges = true;
+                            trkDetail.instrument = String(MidiMessage::getGMInstrumentName(msg.getProgramChangeNumber()));
+                        }
+                        if (msg.isController())
+                        {
+                            if (msg.isSustainPedalOn())
+                            {
+        //                            std::cout << "Sustain on" << trk << "\n";
+                                nSustains++;
+                            }
+                            if (msg.isSostenutoPedalOn()) nSostenutos++;
+                            if (msg.isSoftPedalOn())
+                                nSofts++;
+                            if (!msg.isSustainPedalOn() && !msg.isSostenutoPedalOn() && !msg.isSoftPedalOn())
+                                nOtherContr++;
+                        }
+                        if (msg.isNoteOn())
+                        {
+                            if (theTrack->getTimeOfMatchingKeyUp(i) > seqDurationInTicks)
+                                seqDurationInTicks = theTrack->getTimeOfMatchingKeyUp(i);
+                            nNoteOns++;
+                            const double ts = msg.getTimeStamp();
+                            if (trkDetail.startMeasure == -1)
+                                trkDetail.startMeasure = ts; //Will convert to measure later.
+                            trkDetail.endMeasure = ts; //Will convert to measure later
+                            channel = msg.getChannel();
+                        }
+                        if (msg.isSysEx()) nSysex++;
+                        if (msg.isMetaEvent()) nMeta++;
+                        if (msg.isTrackMetaEvent()) nTrackMeta++;
+                        if (msg.isMidiChannelMetaEvent()) nChannelMeta++;
+                        if (msg.isKeySignatureMetaEvent()) nKeySigMeta++;
+                        if (msg.isTimeSignatureMetaEvent()) nTimeSigMeta++;
+                        if (msg.isTrackNameEvent())
+                            trkDetail.description = msg.getTextFromTextMetaEvent();
+                        else
+                            trkDetail.description = "";
                     }
-                    if (msg.isNoteOn())
-                    {
-                        if (theTrack->getTimeOfMatchingKeyUp(i) > seqDurationInTicks)
-                            seqDurationInTicks = theTrack->getTimeOfMatchingKeyUp(i);
-                        nNoteOns++;
-                        const double ts = msg.getTimeStamp();
-                        if (trkDetail.startMeasure == -1)
-                            trkDetail.startMeasure = ts; //Will convert to measure later.
-                        trkDetail.endMeasure = ts; //Will convert to measure later
-                        channel = msg.getChannel();
-                    }
-                    if (msg.isSysEx()) nSysex++;
-                    if (msg.isMetaEvent()) nMeta++;
-                    if (msg.isTrackMetaEvent()) nTrackMeta++;
-                    if (msg.isMidiChannelMetaEvent()) nChannelMeta++;
-                    if (msg.isKeySignatureMetaEvent()) nKeySigMeta++;
-                    if (msg.isTimeSignatureMetaEvent()) nTimeSigMeta++;
-                    if (msg.isTrackNameEvent())
-                        trkDetail.description = msg.getTextFromTextMetaEvent();
+                    trkDetail.description = txt;
+                    trkDetail.nNotes = nNoteOns;
+                    trkDetail.nSustains = nSustains;
+                    trkDetail.nSofts = nSofts;
+                    trkDetail.originalChannel = channel;
+        //            if (trkDetail.description.length()!=0 || trkDetail.instrument.length()!=0 ||
+        //                        trkDetail.nNotes!=0 || trkDetail.nSustains!=0 || trkDetail.nSofts !=0)
+        //                trkDetail.showInList = true;
+        //            else
+        //                trkDetail.showInList = false;
+
+                    if (trkDetail.nNotes>0)
+                        trkDetail.playability = TrackTypes::Track_Play;
+                    else if (trkDetail.nSustains>0 || trkDetail.nSofts>0)
+                        trkDetail.playability = TrackTypes::Track_Controllers;
                     else
-                        trkDetail.description = "";
-                }
-                trkDetail.description = txt;
-                trkDetail.nNotes = nNoteOns;
-                trkDetail.nSustains = nSustains;
-                trkDetail.nSofts = nSofts;
-                trkDetail.originalChannel = channel;
-    //            if (trkDetail.description.length()!=0 || trkDetail.instrument.length()!=0 ||
-    //                        trkDetail.nNotes!=0 || trkDetail.nSustains!=0 || trkDetail.nSofts !=0)
-    //                trkDetail.showInList = true;
-    //            else
-    //                trkDetail.showInList = false;
-                
-                if (trkDetail.nNotes>0)
-                    trkDetail.playability = TrackTypes::Track_Play;
-                else if (trkDetail.nSustains>0 || trkDetail.nSofts>0)
-                    trkDetail.playability = TrackTypes::Track_Controllers;
-                else
-                    trkDetail.playability = TrackTypes::Track_Other;
-                trackDetails.add(trkDetail);
-                }
-            }
-        seqDurationInTicks = 960.0*seqDurationInTicks/ppq;
-//        std::cout << "seqDurationInTicks " << seqDurationInTicks << "\n";
-        if (retainEdits==Sequence::doNotRetainEdits)
-        {
-            //Beat & measure lines
-            beatTimes.clear();
-            measureTimes.clear();
-            int tickPosition = 0;
-            for (int timeSigIndex=0;timeSigChanges.size()>timeSigIndex;timeSigIndex++)
-            {
-                timeSigChanges[timeSigIndex].getTimeSignatureInfo(numerator, denominator);
-                const float ticksPerBeat = getPPQ() * 4.0/(float)denominator;
-                
-                int startTick;
-                if (timeSigIndex==0)
-                    startTick = 0;
-                else
-                    startTick = timeSigChanges[timeSigIndex].getTimeStamp();
-                int endTick;
-                if (timeSigChanges.size()>timeSigIndex+1)
-                    endTick = timeSigChanges[timeSigIndex+1].getTimeStamp();
-                else
-                    endTick = seqDurationInTicks;
-                
-                //        bool up = false;
-                const int sectionDurationInBeats = (endTick - startTick) / ticksPerBeat;
-                for (int beat=0;beat<sectionDurationInBeats;beat++)
-                {
-                    if (beat%numerator == 0) //Measure
-                    {
-                        measureTimes.push_back(tickPosition);
-    //                    if (measureTimes.size()<30)
-    //                        std::cout << measureTimes.size() <<  " measuretime "  << tickPosition << "\n";
-                        beatTimes.push_back(tickPosition);
+                        trkDetail.playability = TrackTypes::Track_Other;
+                    trackDetails.add(trkDetail);
                     }
-                    else //Beat
-                        beatTimes.push_back(tickPosition);
-                    tickPosition += ticksPerBeat;
+                }
+            seqDurationInTicks = 960.0*seqDurationInTicks/ppq;
+        //        std::cout << "seqDurationInTicks " << seqDurationInTicks << "\n";
+            if (retainEdits==Sequence::doNotRetainEdits)
+            {
+                //Beat & measure lines
+                beatTimes.clear();
+                measureTimes.clear();
+                int tickPosition = 0;
+                for (int timeSigIndex=0;timeSigChanges.size()>timeSigIndex;timeSigIndex++)
+                {
+                    timeSigChanges[timeSigIndex].getTimeSignatureInfo(numerator, denominator);
+                    const float ticksPerBeat = getPPQ() * 4.0/(float)denominator;
+
+                    int startTick;
+                    if (timeSigIndex==0)
+                        startTick = 0;
+                    else
+                        startTick = timeSigChanges[timeSigIndex].getTimeStamp();
+                    int endTick;
+                    if (timeSigChanges.size()>timeSigIndex+1)
+                        endTick = timeSigChanges[timeSigIndex+1].getTimeStamp();
+                    else
+                        endTick = seqDurationInTicks;
+
+                    //        bool up = false;
+                    const int sectionDurationInBeats = (endTick - startTick) / ticksPerBeat;
+                    for (int beat=0;beat<sectionDurationInBeats;beat++)
+                    {
+                        if (beat%numerator == 0) //Measure
+                        {
+                            measureTimes.push_back(tickPosition);
+        //                    if (measureTimes.size()<30)
+        //                        std::cout << measureTimes.size() <<  " measuretime "  << tickPosition << "\n";
+                            beatTimes.push_back(tickPosition);
+                        }
+                        else //Beat
+                            beatTimes.push_back(tickPosition);
+                        tickPosition += ticksPerBeat;
+                    }
+                }
+                measureTimes.push_back(seqDurationInTicks);
+                beatTimes.push_back(seqDurationInTicks);
+
+                //Compute start and end measure in each track with any notes
+                for (int trk=0;trk<trackDetails.size();trk++)
+                {
+                    bool foundStart = false;
+                    if (trackDetails[trk].startMeasure != -1) //If we found any note
+                    {
+                        TrackDetail trkDetail = trackDetails[trk];
+                        //The following were determined during the scan of all events (including noteOns) in each track
+                        const int startInTicks = 960.0*trackDetails[trk].startMeasure/ppq;
+                        const int endInTicks = 960.0*trackDetails[trk].endMeasure/ppq;
+        //                std::cout << "start ticks, end ticks " << trk <<" "<<startInTicks << " " << endInTicks << "\n";
+                        int m;
+                        for (m=0;m<measureTimes.size()-1;m++)
+                        {
+        //                    std::cout << "measure, time " << m <<" "<<measureTimes[m] << "\n";
+                            if (!foundStart && measureTimes[m]<=startInTicks && startInTicks<measureTimes[m+1])
+                            {
+                                trkDetail = trackDetails[trk];
+                                trkDetail.startMeasure = m+1;
+                                trackDetails.set(trk, trkDetail);
+                                foundStart = true;
+                            }
+                            if (foundStart && measureTimes[m]<=endInTicks && endInTicks<measureTimes[m+1])
+                            {
+                                trkDetail = trackDetails[trk];
+                                trkDetail.endMeasure = m+1;
+                                trackDetails.set(trk, trkDetail);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-            measureTimes.push_back(seqDurationInTicks);
-            beatTimes.push_back(seqDurationInTicks);
-            
-            //Compute start and end measure in each track with any notes
+
+            MidiMessageSequence ckfSysex; //All sysex records from our app's "properties" track
+        //    std::cout << "nTracks " << numTracks << "\n";
+            loadedCkfFile = false;
+            alreadyChained = false;
+            if (midiFile.getNumTracks()>1)
+            {
+                midiFile.getTrack(numTracks-1)->extractSysExMessages(ckfSysex);
+        //        std::cout << "nSysexRecords " << ckfSysex.getNumEvents() << "\n";
+                if (ckfSysex.getNumEvents()>0)
+                {
+                    int sysexSize = ckfSysex.getEventPointer(0)->message.getSysExDataSize();
+                    HeapBlock<char> allSysex;
+                    allSysex.allocate(sysexSize, true);
+
+                    char *pSysex;
+                    pSysex = (char*) ckfSysex.getEventPointer(0)->message.getSysExData();
+                    String sysexStr;
+                    for (int i=0; i<sysexSize; i++)
+                    {
+                        char ch = *(pSysex+i);
+                        String st = String::charToString(ch);
+                        sysexStr.append(st, 1);
+                    }
+        //                std::cout << "read sysexStr - length = " << sysexStr.length() << " " << "\n";
+                    if (sysexSize>0)
+                    {
+                        if (0==memcmp(sysexTrackMarker, pSysex, sizeof(sysexTrackMarker)))
+                        {
+        //                        std::cout <<"This is a ckf file."<<"\n";
+                            loadedCkfFile = true;
+                            alreadyChained = true;
+                            numTracks -= 1; //Don't read sysex track into sequence
+                        }
+        //                    else
+        //                        std::cout <<"This is not a ckf file."<<"\n";
+                    }
+                }
+            }
+            if (loadedCkfFile)
+            {
+                sequenceProps.clear();
+                String pluginStateB64 = String();
+                String pluginIdentString = String();
+                for (int sysexBlockNum=1; sysexBlockNum<ckfSysex.getNumEvents(); sysexBlockNum++)
+                {
+                    int sysexSize = ckfSysex.getEventPointer(sysexBlockNum)->message.getSysExDataSize();
+                    char *pSysex;
+                    pSysex = (char*) ckfSysex.getEventPointer(sysexBlockNum)->message.getSysExData();
+                    String sysexStr;
+                    for (int i=0; i<sysexSize; i++)
+                    {
+                        char ch = *(pSysex+i);
+                        String st = String::charToString(ch);
+                        sysexStr.append(st, 1);
+                    }
+                    String key = sysexStr.upToFirstOccurrenceOf(":", false, true);
+                    String value = sysexStr.fromFirstOccurrenceOf(":", false, true);
+        //                std::cout <<"sysexStr - key, value "<<key << " *** " << value <<"\n";
+                    if (key == "bookmark")
+                    {
+                        StringArray values;
+                        values.addTokens(value, " ", "\"");
+                        Bookmark bm;// = value.getDoubleValue();
+                        bm.time = values[0].getDoubleValue();
+                        if (values[2].getIntValue() == 0)
+                        {
+                            bm.tempoChange = false;
+                            bm.tempoScaleFactor = 1.0;
+                        }
+                        else
+                        {
+                            bm.tempoChange = true;
+                            bm.tempoScaleFactor = values[3].getDoubleValue();
+                        }
+                        std::cout <<"read bookmark "<< bm.time << " " << bm.tempoChange<<" "<<bm.tempoScaleFactor <<"\n";
+                        bookmarkTimes.add(bm);
+                    }
+                    else if (retainEdits==Sequence::doNotRetainEdits && key == "trackDetails")
+                    {
+                        StringArray values;
+                        values.addTokens(value, " ", "\"");
+                        const int track = values[0].getIntValue();
+                        int playability = values[1].getIntValue();
+        //                    std::cout << "track " << track <<" playability " << playability <<" "<<trackDetails[track].nNotes<<"\n";
+                        if (playability==TrackTypes::Track_Autoplay)
+                            playability = TrackTypes::Track_Play;
+                        const int assignedChannel = values[2].getIntValue();
+                        TrackDetail trkDet = trackDetails[track];
+                        trkDet.playability = playability;
+                        trkDet.assignedChannel = assignedChannel;
+                        trackDetails.set(track, trkDet);
+        //                    std::cout << "loadedTrack " <<track <<" playability "<<playability <<" assignedChannel "<<assignedChannel <<"\n";
+                    }
+                    else if (key == "tnt") //target Note Times
+                    {
+                        double tnt = value.getDoubleValue();
+                        if (originalPpq==96)
+                            tnt = tnt*10;
+                        targetNoteTimes.add(tnt);
+                    }
+                    else if (key == "chordDetails") //Each chord
+                    {
+        //                    String propertyStr = String("chordDetails:")+String(chords[i].timeStamp) +" "+String(chords[i].scaleFactor)+
+        //                    +" "+chords[i].timeSpec+" "+String(chords[i].timeRandScale)+" "+String(chords[i].timeRandSeed)
+        //                    +" "+chords[i].velSpec+" "+String(chords[i].velRandScale)+" "+String(chords[i].velRandSeed);
+
+                        ChordDetail chDet;
+                        StringArray values;
+                        values.addTokens(value, " ", "\"");
+                        chDet.chordTimeStamp = values[0].getIntValue() * ((originalPpq==96)?10:1);
+                        chDet.scaleFactor=values[1].getFloatValue();
+                        chDet.timeSpec = values[2];
+                        if (chDet.timeSpec=="random" || chDet.timeSpec=="arp") //Ignore obsolete property names
+                            chDet.timeSpec = "manual";
+                        chDet.timeRandScale=values[3].getFloatValue();
+                        chDet.timeRandSeed=values[4].getIntValue();
+                        chDet.velSpec=values[5];
+                        chDet.velRandScale=values[6].getFloatValue();
+                        chDet.velRandSeed=values[7].getIntValue();
+                        chords.push_back(chDet);
+        //                    if (chords.size()<5)
+        //                        std::cout << "Loaded chord "<< chords.size()-1<<" "<< chords.back().timeStamp <<" "<<chords.back().timeSpec << "\n";
+                    }
+                    else if (key == "chordNote") //Each note that is a member of a chord
+                    {
+                        StringArray values;
+                        values.addTokens(value, " ", "\"");
+                        const int chordIndex = values[0].getIntValue();
+                        int offset = values[1].getIntValue() * ((originalPpq==96)?10:1);
+                        const String noteId = values[2];
+                        if (chordIndex<chords.size())
+                        {
+                            if (offset>200000 || offset<-200000)
+                            {
+                                offset = 0;
+                            }
+                            chords.at(chordIndex).offsets.push_back(offset);
+                            chords.at(chordIndex).noteIds.push_back(noteId);
+                        }
+                    }
+                    else if (key == "pluginIdentString")
+                    {
+                        pluginIdentString = value;
+                    }
+                    else if (key == "plugState")
+                    {
+                        pluginStateB64 += value;
+                    }
+                    else
+                        sequenceProps.setValue(key, value);
+                }
+                if (pluginIdentString.length()>0)
+                {
+                    std::cout <<"pluginIdentString "<< pluginIdentString<<"\n";
+                    pluginIdentString = "loadPlugin:"+pluginIdentString;
+                    sendActionMessage(pluginIdentString);
+                }
+                if (pluginStateB64.length()>0)
+                {
+        //                MemoryBlock pluginState;
+        //                pluginState.fromBase64Encoding(pluginStateB64);
+        //                MD5 md = MD5(pluginState);
+        //                String checksum = md.toHexString();
+        //                std::cout <<"Read sysex plugState  "<<checksum<<" "<<pluginStateB64.length()<<" "<<pluginState.getSize()<<"\n";
+                    String pluginStateString = "pluginStateChange:"+pluginStateB64;
+                    sendActionMessage(pluginStateString);
+                }
+            }
+            else //midi file
+            {
+                //Defaults for a new midi file
+                sequenceProps.setValue("tempoMultiplier", var(1.0));
+                sequenceProps.setValue("chordTimeHumanize", var(0.0));
+                sequenceProps.setValue("chordVelocityHumanize", var(1.0));
+                sequenceProps.setValue("autoPlaySustains", var(true));
+                sequenceProps.setValue("autoPlaySofts", var(true));
+                sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
+                sequenceProps.setValue("horizontalScale", var(1.0));
+                std::cout <<"D:horizontalScale  "<<1.0<<"\n";
+            }
+            //Get values from sequenceProps
+            chordTimeHumanize = sequenceProps.getValue("chordTimeHumanize", var("1.0"));
+            chordVelocityHumanize = sequenceProps.getValue("chordVelocityHumanize", var("68"));
+            autoPlaySustains = sequenceProps.getBoolValue("autoPlaySustains", var(true));
+            autoPlaySofts = sequenceProps.getBoolValue("autoPlaySofts", var(true));
+            exprVelToScoreVelRatio = sequenceProps.getDoubleValue("exprVelToScoreVelRatio", var(1.0));
+
+            StringPairArray props = sequenceProps.getAllProperties();
+            StringArray keys = props.getAllKeys();
+            StringArray vals = props.getAllValues();
+        //        std::cout <<"Properties loaded: " <<"\n";
+        //        for (int i=0;i<props.size();i++)
+        //            std::cout <<" property: " << keys[i] << " / " << vals[i] <<"\n";
+            ckfSysex.clear();
+            sendChangeMessage(); //Is this needed?
+            setChangedFlag (false);
+
+            if (allNotes.size()==0) //Assemble allNotes[ ][ ]
+            {
+                for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
+                {
+                    const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
+                    const int numEvents = theTrack->getNumEvents();
+                    allNotes.push_back(std::vector<std::shared_ptr<NoteWithOffTime>>());
+                    int noteCount=0;
+                    for (int i=0;i<numEvents;i++)
+                    {
+                        if (theTrack->getEventPointer(i)->message.isNoteOn())
+                        {
+                            std::shared_ptr<NoteWithOffTime> msg (new NoteWithOffTime);
+                            msg->track = trkNumber;
+                            msg->setTimeStamp(theTrack->getEventPointer(i)->message.getTimeStamp());
+                            msg->channel = theTrack->getEventPointer(i)->message.getChannel();
+                            msg->noteNumber = theTrack->getEventPointer(i)->message.getNoteNumber();
+                            msg->velocity = theTrack->getEventPointer(i)->message.getFloatVelocity();
+                            msg->setOfftime(theTrack->getTimeOfMatchingKeyUp(i));
+
+                            if (msg->getOffTime() <= msg->getTimeStamp()) //In a correct sequence this should not happen
+                                 msg->setOfftime(msg->getTimeStamp()+50); //But if it does, make a short note with non neg duration
+                            int foo;
+                            if (msg->getOffTime()==4851)
+                                foo=0;
+                            int foo2;
+                            if (msg->getOffTime()==4851)
+                                foo2=0;
+                            const double ts = msg->getTimeStamp();
+                            msg->setTimeStamp(960.0*ts/ppq);
+                            msg->originalVelocity = msg->velocity;
+                            const double ot = 960.0*msg->getOffTime()/ppq;
+                            msg->setOfftime(ot);
+                            msg->indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));
+                            allNotes.at(trkNumber).push_back(msg);
+                            noteCount++;
+                        }
+                    }
+                }
+            }
+            theControllers.clear();
+            for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
+            {
+                //Controllers
+                const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
+                if (theTrack!=NULL)
+                {
+                    for (int i=0;i<theTrack->getNumEvents();i++)
+                    {
+                        if (theTrack->getEventPointer(i)->message.isController())
+                        {
+                            ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
+                            theControllers.push_back(ctrMsg);
+                        }
+                    }
+                }
+            }
+            //Extract pedal changes
+            sustainPedalChanges.clear();
+            softPedalChanges.clear();
+            bool sustainOn;
+            bool softOn;
+            int trackWithSustains = -1;
+            int maxSustainsInATrack = -1;
             for (int trk=0;trk<trackDetails.size();trk++)
             {
-                bool foundStart = false;
-                if (trackDetails[trk].startMeasure != -1) //If we found any note
+                if (trackDetails[trk].nSustains>maxSustainsInATrack)
                 {
-                    TrackDetail trkDetail = trackDetails[trk];
-                    //The following were determined during the scan of all events (including noteOns) in each track
-                    const int startInTicks = 960.0*trackDetails[trk].startMeasure/ppq;
-                    const int endInTicks = 960.0*trackDetails[trk].endMeasure/ppq;
-    //                std::cout << "start ticks, end ticks " << trk <<" "<<startInTicks << " " << endInTicks << "\n";
-                    int m;
-                    for (m=0;m<measureTimes.size()-1;m++)
+                    maxSustainsInATrack = trackDetails[trk].nSustains;
+                    trackWithSustains = trk;
+                }
+            }
+            int trackWithSofts = -1;
+            int maxSoftsInATrack = -1;
+            for (int trk=0;trk<trackDetails.size();trk++)
+            {
+                if (trackDetails[trk].nSofts>maxSoftsInATrack)
+                {
+                    maxSoftsInATrack = trackDetails[trk].nSofts;
+                    trackWithSofts = trk;
+                }
+            }
+            for (int i=0;i<theControllers.size();i++)
+            {
+                ControllerMessage ctrMsg = theControllers[i];
+                ctrMsg.setTimeStamp(960.0*ctrMsg.getTimeStamp()/ppq);
+                if (ctrMsg.track==trackWithSustains && ctrMsg.getControllerNumber()==64)   //Sustain pedal
+                {
+        //                std::cout<< ctrMsg.getTimeStamp()<<" sust Track " << ctrMsg.track<<" "<<ctrMsg.getControllerValue()<<"\n";
+                    if ((ctrMsg.isSustainPedalOn() && !sustainOn)||trackWithSustains==-1)
                     {
-    //                    std::cout << "measure, time " << m <<" "<<measureTimes[m] << "\n";
-                        if (!foundStart && measureTimes[m]<=startInTicks && startInTicks<measureTimes[m+1])
-                        {
-                            trkDetail = trackDetails[trk];
-                            trkDetail.startMeasure = m+1;
-                            trackDetails.set(trk, trkDetail);
-                            foundStart = true;
-                        }
-                        if (foundStart && measureTimes[m]<=endInTicks && endInTicks<measureTimes[m+1])
-                        {
-                            trkDetail = trackDetails[trk];
-                            trkDetail.endMeasure = m+1;
-                            trackDetails.set(trk, trkDetail);
-                            break;
-                        }
+                        Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
+                        sustainPedalChanges.push_back(pedalMsg);
+                        sustainOn = true;
+                    }
+                    else if (ctrMsg.isSustainPedalOff() && sustainOn)
+                    {
+                        Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
+                        sustainPedalChanges.push_back(pedalMsg);
+                        sustainOn = false;
                     }
                 }
-            }
-        }
-        
-        MidiMessageSequence ckfSysex; //All sysex records from our app's "properties" track
-    //    std::cout << "nTracks " << numTracks << "\n";
-        loadedCkfFile = false;
-        alreadyChained = false;
-        if (midiFile.getNumTracks()>1)
-        {
-            midiFile.getTrack(numTracks-1)->extractSysExMessages(ckfSysex);
-    //        std::cout << "nSysexRecords " << ckfSysex.getNumEvents() << "\n";
-            if (ckfSysex.getNumEvents()>0)
-            {
-                int sysexSize = ckfSysex.getEventPointer(0)->message.getSysExDataSize();
-                HeapBlock<char> allSysex;
-                allSysex.allocate(sysexSize, true);
-                
-                char *pSysex;
-                pSysex = (char*) ckfSysex.getEventPointer(0)->message.getSysExData();
-                String sysexStr;
-                for (int i=0; i<sysexSize; i++)
+                else if (ctrMsg.track==trackWithSofts && (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff()))  //Soft pedal
                 {
-                    char ch = *(pSysex+i);
-                    String st = String::charToString(ch);
-                    sysexStr.append(st, 1);
-                }
-//                std::cout << "read sysexStr - length = " << sysexStr.length() << " " << "\n";
-                if (sysexSize>0)
-                {
-                    if (0==memcmp(sysexTrackMarker, pSysex, sizeof(sysexTrackMarker)))
+                    if ((ctrMsg.isSoftPedalOn() && !softOn))
                     {
-//                        std::cout <<"This is a ckf file."<<"\n";
-                        loadedCkfFile = true;
-                        alreadyChained = true;
-                        numTracks -= 1; //Don't read sysex track into sequence
+                        Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
+                        softPedalChanges.push_back(pedalMsg);
+                        softOn = true;
                     }
-//                    else
-//                        std::cout <<"This is not a ckf file."<<"\n";
-                }
-            }
-        }
-        if (loadedCkfFile)
-        {
-            sequenceProps.clear();
-            String pluginStateB64;
-            String pluginIdentString;
-            for (int sysexBlockNum=1; sysexBlockNum<ckfSysex.getNumEvents(); sysexBlockNum++)
-            {
-                int sysexSize = ckfSysex.getEventPointer(sysexBlockNum)->message.getSysExDataSize();
-                char *pSysex;
-                pSysex = (char*) ckfSysex.getEventPointer(sysexBlockNum)->message.getSysExData();
-                String sysexStr;
-                for (int i=0; i<sysexSize; i++)
-                {
-                    char ch = *(pSysex+i);
-                    String st = String::charToString(ch);
-                    sysexStr.append(st, 1);
-                }
-                String key = sysexStr.upToFirstOccurrenceOf(":", false, true);
-                String value = sysexStr.fromFirstOccurrenceOf(":", false, true);
-//                std::cout <<"sysexStr - key, value "<<key << " *** " << value <<"\n";
-                if (key == "bookmark")
-                {
-                    StringArray values;
-                    values.addTokens(value, " ", "\"");
-                    Bookmark bm;// = value.getDoubleValue();
-                    bm.time = values[0].getDoubleValue();
-                    if (values[2].getIntValue() == 0)
+                    else if ((ctrMsg.isSoftPedalOff() && softOn))
                     {
-                        bm.tempoChange = false;
-                        bm.tempoScaleFactor = 1.0;
+                        Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
+                        softPedalChanges.push_back(pedalMsg);
+                        softOn = false;
                     }
-                    else
-                    {
-                        bm.tempoChange = true;
-                        bm.tempoScaleFactor = values[3].getDoubleValue();
-                    }
-                    std::cout <<"read bookmark "<< bm.time << " " << bm.tempoChange<<" "<<bm.tempoScaleFactor <<"\n";
-                    bookmarkTimes.add(bm);
-                }
-                else if (retainEdits==Sequence::doNotRetainEdits && key == "trackDetails")
-                {
-                    StringArray values;
-                    values.addTokens(value, " ", "\"");
-                    const int track = values[0].getIntValue();
-                    int playability = values[1].getIntValue();
-//                    std::cout << "track " << track <<" playability " << playability <<" "<<trackDetails[track].nNotes<<"\n";
-                    if (playability==TrackTypes::Track_Autoplay)
-                        playability = TrackTypes::Track_Play;
-                    const int assignedChannel = values[2].getIntValue();
-                    TrackDetail trkDet = trackDetails[track];
-                    trkDet.playability = playability;
-                    trkDet.assignedChannel = assignedChannel;
-                    trackDetails.set(track, trkDet);
-//                    std::cout << "loadedTrack " <<track <<" playability "<<playability <<" assignedChannel "<<assignedChannel <<"\n";
-                }
-                else if (key == "tnt") //target Note Times
-                {
-                    double tnt = value.getDoubleValue();
-                    if (originalPpq==96)
-                        tnt = tnt*10;
-                    targetNoteTimes.add(tnt);
-                }
-                else if (key == "chordDetails") //Each chord
-                {
-//                    String propertyStr = String("chordDetails:")+String(chords[i].timeStamp) +" "+String(chords[i].scaleFactor)+
-//                    +" "+chords[i].timeSpec+" "+String(chords[i].timeRandScale)+" "+String(chords[i].timeRandSeed)
-//                    +" "+chords[i].velSpec+" "+String(chords[i].velRandScale)+" "+String(chords[i].velRandSeed);
-                    
-                    ChordDetail chDet;
-                    StringArray values;
-                    values.addTokens(value, " ", "\"");
-                    chDet.chordTimeStamp = values[0].getIntValue() * ((originalPpq==96)?10:1);
-                    chDet.scaleFactor=values[1].getFloatValue();
-                    chDet.timeSpec = values[2];
-                    if (chDet.timeSpec=="random" || chDet.timeSpec=="arp") //Ignore obsolete property names
-                        chDet.timeSpec = "manual";
-                    chDet.timeRandScale=values[3].getFloatValue();
-                    chDet.timeRandSeed=values[4].getIntValue();
-                    chDet.velSpec=values[5];
-                    chDet.velRandScale=values[6].getFloatValue();
-                    chDet.velRandSeed=values[7].getIntValue();
-                    chords.push_back(chDet);
-//                    if (chords.size()<5)
-//                        std::cout << "Loaded chord "<< chords.size()-1<<" "<< chords.back().timeStamp <<" "<<chords.back().timeSpec << "\n";
-                }
-                else if (key == "chordNote") //Each note that is a member of a chord
-                {
-                    StringArray values;
-                    values.addTokens(value, " ", "\"");
-                    const int chordIndex = values[0].getIntValue();
-                    int offset = values[1].getIntValue() * ((originalPpq==96)?10:1);
-                    const String noteId = values[2];
-                    if (chordIndex<chords.size())
-                    {
-                        if (offset>200000 || offset<-200000)
-                        {
-                            offset = 0;
-                        }
-                        chords.at(chordIndex).offsets.push_back(offset);
-                        chords.at(chordIndex).noteIds.push_back(noteId);
-                    }
-                }
-                else if (key == "pluginIdentString")
-                {
-                    pluginIdentString = value;
-                }
-                else if (key == "plugState")
-                {
-                    pluginStateB64 += value;
-                }
-                else
-                    sequenceProps.setValue(key, value);
-            }
-            if (pluginIdentString.length()>0)
-            {
-                std::cout <<"pluginIdentString "<< pluginIdentString<<"\n";
-                pluginIdentString = "loadPlugin:"+pluginIdentString;
-                sendActionMessage(pluginIdentString);
-            }
-            if (pluginStateB64.length()>0)
-            {
-//                MemoryBlock pluginState;
-//                pluginState.fromBase64Encoding(pluginStateB64);
-//                MD5 md = MD5(pluginState);
-//                String checksum = md.toHexString();
-//                std::cout <<"Read sysex plugState  "<<checksum<<" "<<pluginStateB64.length()<<" "<<pluginState.getSize()<<"\n";
-                String pluginStateString = "pluginStateChange:"+pluginStateB64;
-                sendActionMessage(pluginStateString);
-            }
-        }
-        else //midi file
-        {
-            //Defaults for a new midi file
-            sequenceProps.setValue("tempoMultiplier", var(1.0));
-            sequenceProps.setValue("chordTimeHumanize", var(0.0));
-            sequenceProps.setValue("chordVelocityHumanize", var(1.0));
-            sequenceProps.setValue("autoPlaySustains", var(true));
-            sequenceProps.setValue("autoPlaySofts", var(true));
-            sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
-            sequenceProps.setValue("horizontalScale", var(1.0));
-            std::cout <<"D:horizontalScale  "<<1.0<<"\n";
-        }
-        //Get values from sequenceProps
-        chordTimeHumanize = sequenceProps.getValue("chordTimeHumanize", var("1.0"));
-        chordVelocityHumanize = sequenceProps.getValue("chordVelocityHumanize", var("68"));
-        autoPlaySustains = sequenceProps.getBoolValue("autoPlaySustains", var(true));
-        autoPlaySofts = sequenceProps.getBoolValue("autoPlaySofts", var(true));
-        exprVelToScoreVelRatio = sequenceProps.getDoubleValue("exprVelToScoreVelRatio", var(1.0));
-        
-        StringPairArray props = sequenceProps.getAllProperties();
-        StringArray keys = props.getAllKeys();
-        StringArray vals = props.getAllValues();
-//        std::cout <<"Properties loaded: " <<"\n";
-//        for (int i=0;i<props.size();i++)
-//            std::cout <<" property: " << keys[i] << " / " << vals[i] <<"\n";
-        ckfSysex.clear();
-        sendChangeMessage(); //Is this needed?
-        setChangedFlag (false);
-        
-        if (allNotes.size()==0) //Assemble allNotes[ ][ ]
-        {
-            for (int trkNumber=0;trkNumber<numTracks;trkNumber++)
-            {
-                const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
-                const int numEvents = theTrack->getNumEvents();
-                allNotes.push_back(std::vector<std::shared_ptr<NoteWithOffTime>>());
-                int noteCount=0;
-                for (int i=0;i<numEvents;i++)
-                {
-                    if (theTrack->getEventPointer(i)->message.isNoteOn())
-                    {
-                        std::shared_ptr<NoteWithOffTime> msg (new NoteWithOffTime);
-                        msg->track = trkNumber;
-                        msg->setTimeStamp(theTrack->getEventPointer(i)->message.getTimeStamp());
-                        msg->channel = theTrack->getEventPointer(i)->message.getChannel();
-                        msg->noteNumber = theTrack->getEventPointer(i)->message.getNoteNumber();
-                        msg->velocity = theTrack->getEventPointer(i)->message.getFloatVelocity();
-                        msg->setOfftime(theTrack->getTimeOfMatchingKeyUp(i));
-                        
-                        if (msg->getOffTime() <= msg->getTimeStamp()) //In a correct sequence this should not happen
-                             msg->setOfftime(msg->getTimeStamp()+50); //But if it does, make a short note with non neg duration
-
-                        const double ts = msg->getTimeStamp();
-                        msg->setTimeStamp(960.0*ts/ppq);
-                        msg->originalVelocity = msg->velocity;
-                        const double ot = 960.0*msg->getOffTime()/ppq;
-                        msg->setOfftime(ot);
-                        msg->indexInTrack = theTrack->getIndexOf(theTrack->getEventPointer(i));
-                        allNotes.at(trkNumber).push_back(msg);
-                        noteCount++;
-                    }
-                }
-            }
-        }
-        theControllers.clear();
-        for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
-        {
-            //Controllers
-            const MidiMessageSequence *theTrack = midiFile.getTrack(trkNumber);
-            if (theTrack!=NULL)
-            {
-                for (int i=0;i<theTrack->getNumEvents();i++)
-                {
-                    if (theTrack->getEventPointer(i)->message.isController())
-                    {
-                        ControllerMessage ctrMsg(trkNumber, theTrack->getEventPointer(i)->message);
-                        theControllers.push_back(ctrMsg);
-                    }
-                }
-            }
-        }
-        //Extract pedal changes
-        sustainPedalChanges.clear();
-        softPedalChanges.clear();
-        bool sustainOn;
-        bool softOn;
-        int trackWithSustains = -1;
-        int maxSustainsInATrack = -1;
-        for (int trk=0;trk<trackDetails.size();trk++)
-        {
-            if (trackDetails[trk].nSustains>maxSustainsInATrack)
-            {
-                maxSustainsInATrack = trackDetails[trk].nSustains;
-                trackWithSustains = trk;
-            }
-        }
-        int trackWithSofts = -1;
-        int maxSoftsInATrack = -1;
-        for (int trk=0;trk<trackDetails.size();trk++)
-        {
-            if (trackDetails[trk].nSofts>maxSoftsInATrack)
-            {
-                maxSoftsInATrack = trackDetails[trk].nSofts;
-                trackWithSofts = trk;
-            }
-        }
-        for (int i=0;i<theControllers.size();i++)
-        {
-            ControllerMessage ctrMsg = theControllers[i];
-            ctrMsg.setTimeStamp(960.0*ctrMsg.getTimeStamp()/ppq);
-            if (ctrMsg.track==trackWithSustains && ctrMsg.getControllerNumber()==64)   //Sustain pedal
-            {
-//                std::cout<< ctrMsg.getTimeStamp()<<" sust Track " << ctrMsg.track<<" "<<ctrMsg.getControllerValue()<<"\n";
-                if ((ctrMsg.isSustainPedalOn() && !sustainOn)||trackWithSustains==-1)
-                {
-                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
-                    sustainPedalChanges.push_back(pedalMsg);
-                    sustainOn = true;
-                }
-                else if (ctrMsg.isSustainPedalOff() && sustainOn)
-                {
-                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
-                    sustainPedalChanges.push_back(pedalMsg);
-                    sustainOn = false;
-                }
-            }
-            else if (ctrMsg.track==trackWithSofts && (ctrMsg.isSoftPedalOn() || ctrMsg.isSoftPedalOff()))  //Soft pedal
-            {
-                if ((ctrMsg.isSoftPedalOn() && !softOn))
-                {
-                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
-                    softPedalChanges.push_back(pedalMsg);
-                    softOn = true;
-                }
-                else if ((ctrMsg.isSoftPedalOff() && softOn))
-                {
-                    Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
-                    softPedalChanges.push_back(pedalMsg);
-                    softOn = false;
                 }
             }
         }
     }
-  } catch (const std::out_of_range& ex) {
+    catch (const std::out_of_range& ex)
+    {
       std::cout << " error loadSequence: reloading file " << "\n";
-  }
+    }
     
     //End of reloading file ###
-  try {
-    theSequence.clear();
-      
-      //Use tempo scaling bookmarks to create scaledTempoChanges vector
-      Array<Bookmark> scalingChanges;
-      for (int i=0;i<bookmarkTimes.size();i++)
-      {
-          if (bookmarkTimes[i].tempoChange)
-              scalingChanges.add(bookmarkTimes[i]);
-//          std::cout << "scalingChanges "<<scalingChanges.getLast().time<<" "<<scalingChanges.getLast().tempoScaleFactor << "\n";
-      }
-      if (scalingChanges.size()==0 || scalingChanges[0].time > 0.0)
-      {
+    try
+    {
+        theSequence.clear();
+
+          //Use tempo scaling bookmarks to create scaledTempoChanges vector
+          Array<Bookmark> scalingChanges;
+          for (int i=0;i<bookmarkTimes.size();i++)
+          {
+              if (bookmarkTimes[i].tempoChange)
+                  scalingChanges.add(bookmarkTimes[i]);
+    //          std::cout << "scalingChanges "<<scalingChanges.getLast().time<<" "<<scalingChanges.getLast().tempoScaleFactor << "\n";
+          }
+          if (scalingChanges.size()==0 || scalingChanges[0].time > 0.0)
+          {
+              Bookmark bm;
+              bm.time = 0;
+              bm.tempoChange = true;
+              bm.tempoScaleFactor = 1.0;
+              scalingChanges.insert(0,bm);
+          }
           Bookmark bm;
-          bm.time = 0;
+          bm.time = 99999999999;
           bm.tempoChange = true;
           bm.tempoScaleFactor = 1.0;
-          scalingChanges.insert(0,bm);
-      }
-      Bookmark bm;
-      bm.time = 99999999999;
-      bm.tempoChange = true;
-      bm.tempoScaleFactor = 1.0;
-      scalingChanges.add(bm);
-//      for (int i=0;i<scalingChanges.size();i++)
-//          std::cout << "scalingChanges "<<scalingChanges[i].time<<" "<<scalingChanges[i].tempoScaleFactor << "\n";
-      
-      scaledTempoChanges.clear();
-//      std::cout << "tempo changes before " << tempoChanges.size() << "\n";
-      double nextScalingChangeIndex = 0;
-      double curScale = scalingChanges[0].tempoScaleFactor;
+          scalingChanges.add(bm);
+    //      for (int i=0;i<scalingChanges.size();i++)
+    //          std::cout << "scalingChanges "<<scalingChanges[i].time<<" "<<scalingChanges[i].tempoScaleFactor << "\n";
 
-      for (int tempoChangeIndex=0;tempoChangeIndex<tempoChanges.size();tempoChangeIndex++)
-      {
-          while (scalingChanges[nextScalingChangeIndex].time <= tempoChanges[tempoChangeIndex].getTimeStamp())
+          scaledTempoChanges.clear();
+    //      std::cout << "tempo changes before " << tempoChanges.size() << "\n";
+          double nextScalingChangeIndex = 0;
+          double curScale = scalingChanges[0].tempoScaleFactor;
+
+          for (int tempoChangeIndex=0;tempoChangeIndex<tempoChanges.size();tempoChangeIndex++)
           {
-              curScale = scalingChanges[nextScalingChangeIndex].tempoScaleFactor;
+              while (scalingChanges[nextScalingChangeIndex].time <= tempoChanges[tempoChangeIndex].getTimeStamp())
+              {
+                  curScale = scalingChanges[nextScalingChangeIndex].tempoScaleFactor;
+                  MidiMessage  msg = MidiMessage::tempoMetaEvent(tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
+                                        * 1000000.0 / curScale);
+                  msg.setTimeStamp(scalingChanges[nextScalingChangeIndex].time);
+                  scaledTempoChanges.push_back(msg);
+    //              if (tempoChangeIndex<5)
+    //                  std::cout
+    //                  << " curScale " <<curScale
+    //                  << " tempoChanges "<<tempoChanges[nextScalingChangeIndex].getTimeStamp()
+    //                  <<" "<<tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
+    //                  << " scaledTempoChanges[i] "<<scaledTempoChanges[nextScalingChangeIndex].getTimeStamp()
+    //                  <<" "<<scaledTempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
+    //                  <<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
+                  nextScalingChangeIndex++;
+              }
               MidiMessage  msg = MidiMessage::tempoMetaEvent(tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-                                    * 1000000.0 / curScale);
-              msg.setTimeStamp(scalingChanges[nextScalingChangeIndex].time);
+                                                             * 1000000.0 / curScale);
+              msg.setTimeStamp(tempoChanges[tempoChangeIndex].getTimeStamp());
               scaledTempoChanges.push_back(msg);
-//              if (tempoChangeIndex<5)
-//                  std::cout
-//                  << " curScale " <<curScale
-//                  << " tempoChanges "<<tempoChanges[nextScalingChangeIndex].getTimeStamp()
-//                  <<" "<<tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-//                  << " scaledTempoChanges[i] "<<scaledTempoChanges[nextScalingChangeIndex].getTimeStamp()
-//                  <<" "<<scaledTempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-//                  <<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
-              nextScalingChangeIndex++;
+    //          if (tempoChangeIndex<5)
+    //              std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
           }
-          MidiMessage  msg = MidiMessage::tempoMetaEvent(tempoChanges[tempoChangeIndex].getTempoSecondsPerQuarterNote()
-                                                         * 1000000.0 / curScale);
-          msg.setTimeStamp(tempoChanges[tempoChangeIndex].getTimeStamp());
-          scaledTempoChanges.push_back(msg);
-//          if (tempoChangeIndex<5)
-//              std::cout << "Scaling tempo change "<<tempo<<" "<<scaledTempoChanges.back().getTimeStamp() << "\n";
-      }
-//      std::cout << "tempo changes after " << scaledTempoChanges.size() << "\n";
+    //      std::cout << "tempo changes after " << scaledTempoChanges.size() << "\n";
 
-//      Transfer tracks to "theSequence"
-//        std::cout << "Transfer tracks to theSequence \n";
-    for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
-    {
-        const int numEvents = (int)allNotes.at(trkNumber).size();
-//        std::cout
-//        << "Loading track "<< trkNumber;
-        //Notes
-        if (isActiveTrack(trkNumber))
+    //      Transfer tracks to "theSequence"
+    //        std::cout << "Transfer tracks to theSequence \n";
+        for (int trkNumber=0;trkNumber<allNotes.size();trkNumber++)
         {
-//            std::cout
-//            << ", noteOns "<< trackDetails[trkNumber].nNotes
-//            << "\n";
-            for (int i=0;i<numEvents;i++)
+            const int numEvents = (int)allNotes.at(trkNumber).size();
+    //        std::cout
+    //        << "Loading track "<< trkNumber;
+            //Notes
+            if (isActiveTrack(trkNumber))
             {
-                theSequence.push_back(allNotes[trkNumber][i]);
-                //                std::cout << "msg.pRecordsWithEdits " <<   stepNum << " "<<
-//                " "<< theSequence[stepNum].pRecordsWithEdits->size() <<"\n";;
-//
-//                std::cout <<theSequence.size()<< " Add note: Track, TimeStamp, NN " << msg.track  << ", "
-//                << msg.timeStamp<< " " << msg.getNoteNumber() <<"\n";
+    //            std::cout
+    //            << ", noteOns "<< trackDetails[trkNumber].nNotes
+    //            << "\n";
+                for (int i=0;i<numEvents;i++)
+                {
+                    theSequence.push_back(allNotes[trkNumber][i]);
+                    //                std::cout << "msg.pRecordsWithEdits " <<   stepNum << " "<<
+    //                " "<< theSequence[stepNum].pRecordsWithEdits->size() <<"\n";;
+    //
+    //                std::cout <<theSequence.size()<< " Add note: Track, TimeStamp, NN " << msg.track  << ", "
+    //                << msg.timeStamp<< " " << msg.getNoteNumber() <<"\n";
+                }
             }
         }
     }
-  } catch (const std::out_of_range& ex) {
-      std::cout << " error loadSequence: building theSequence " << "\n";
-  }
+    catch (const std::out_of_range& ex)
+    {
+        std::cout << " error loadSequence: building theSequence " << "\n";
+    }
     
     if (theSequence.size()>0)
     {
-        try {
+        try
+        {
             struct {
                 bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
                 {
@@ -1279,8 +1294,10 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                 if (theSequence.at(step)->getOffTime() > seqDurationInTicks)
                     seqDurationInTicks = theSequence.at(step)->getOffTime();
             }
-        } catch (const std::out_of_range& ex) {
-          std::cout << " error loadSequence: before chord processing " << "\n";
+        }
+        catch (const std::out_of_range& ex)
+        {
+            std::cout << " error loadSequence: before chord processing " << "\n";
         }
         
         //seqDurationInTicks = theSequence.back()->getTimeStamp(); //We update this here so that it reflects currently active tracks
@@ -1289,7 +1306,8 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
         //Build the chords list if we either loaded a midi file or loaded a ckf file (and probably read a chords list)
         //Issue - What if sequence does not include all tracks?
 //        std::cout << "Build the chords list \n";
-        try {
+        try
+        {
             if (loadFile==Sequence::loadFile || loadFile==Sequence::updateChords)
             {
                 if (loadFile!=Sequence::updateChords && loadedCkfFile==true &&
@@ -1390,12 +1408,15 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                     }
                 }
             }
-        } catch (const std::out_of_range& ex) {
+        }
+        catch (const std::out_of_range& ex)
+        {
             std::cout << " error loadSequence: updating chords " << "\n";
         }
         
-    //###
-        try {
+        //###
+        try
+        {
             if (targetNoteTimes.size()>0)
             {
                 double prevTimeStamp = -1;
@@ -1415,199 +1436,185 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                     prevTimeStamp = timeStamp;
                 }
             }
-        } catch (const std::out_of_range& ex) {
+        }
+        catch (const std::out_of_range& ex)
+        {
             std::cout << " error loadSequence: processing chords " << "\n";
         }
 
-//        for (int i=0;i<chords.size();i++)
-//            std::cout << "Chord "<<i<<" "<<chords[i].timeStamp<<" "<<chords[i].nNotes<<"\n";
-      try {
-          struct {
-              bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
-              {
-                  if (a->getTimeStamp()==b->getTimeStamp())
-                  {
-                      if (a->noteNumber == b->noteNumber)
-                          return a->channel < b->channel;
+        try
+        {
+            struct {
+                bool operator()(std::shared_ptr<NoteWithOffTime> a, std::shared_ptr<NoteWithOffTime> b) const
+                {
+                      if (a->getTimeStamp()==b->getTimeStamp())
+                      {
+                          if (a->noteNumber == b->noteNumber)
+                              return a->channel < b->channel;
+                          else
+                              return a->noteNumber > b->noteNumber;
+                      }
                       else
-                          return a->noteNumber > b->noteNumber;
-                  }
-                  else
-                      return a->getTimeStamp() < b->getTimeStamp();
-                  
-//                  if (a->getTimeStamp()==b->getTimeStamp())
-//                      return a->noteNumber > b->noteNumber;
-//                  else
-//                      return a->getTimeStamp() < b->getTimeStamp();
-              }
-          } customCompare;
-          std::sort(theSequence.begin(), theSequence.end(), customCompare);
-        for (int step=0;step<theSequence.size();step++)
-        {
-            theSequence.at(step)->currentStep = step;
-        }
-        //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
-        if(alreadyChained) //If loaded from ck file or previously created for this new midi file by chain ()
-        {
-            int firstInThisChain = 0;
-            double prevTS = -1.0;
-//            std::cout<< "Chain in loadSequence " << "\n";
-            for (int step=0; step<theSequence.size();step++)
-            {
-                if (prevTS != theSequence.at(step)->getTimeStamp() && theSequence.at(step)->targetNote)
-                {
-                    if (step>0)
-                        theSequence.at(step-1)->triggers = -1;//Last note in chain triggers nothing
-                    theSequence.at(step)->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
-                    firstInThisChain = step;
-                    theSequence.at(step)->firstInChain = step;
-                }
-                else if (!theSequence.at(step)->targetNote)
-                {
-                    if (step>0)
-                    {
-                        theSequence.at(step-1)->triggers = step;
-                        theSequence.at(step)->triggeredBy = step-1;
-                    }
-                    else
-                        theSequence.at(step)->triggeredBy = step-1;
-                    theSequence.at(step)->firstInChain = firstInThisChain;
-                }
-                prevTS = theSequence.at(step)->getTimeStamp();
-            }
-        }
-        else
-        {
-            chain(Array<int>(),chainingInterval); //This is used only for when a plain midi file is loaded
-            alreadyChained = true;
-        }
-    
-        
-        //Find chainTriggers and set this property for all steps in a given chain
-//        std::cout <<"Find chainTriggers \n";
-        assert (theSequence.size()>0);
-        int step = 0;
-        int chainTrigger = 0;
-        while (step < theSequence.size())
-        {
-            //If this step is a firstInChain scan all notes with time stamp equal to that of the firstInChain for the shortest note
-            if (theSequence.at(step)->targetNote)
-            {
-                chainTrigger = step;
-//                int highestNote = -1;
-                int stepOfhighestNote = step;
-                int subStep = step;
-                while (subStep<theSequence.size()-1 && theSequence.at(subStep)->getTimeStamp()==theSequence.at(theSequence.at(step)->firstInChain)->getTimeStamp())
-                {
-                    if (theSequence.at(subStep)->noteNumber >= theSequence.at(stepOfhighestNote)->noteNumber)
-                    {
-                        stepOfhighestNote = subStep;
-                    }
-                    subStep++;
-                }
-                chainTrigger = stepOfhighestNote;
-            }
-            assert(0<=chainTrigger && chainTrigger<theSequence.size());
-            theSequence.at(step)->chainTrigger = chainTrigger;
-            step++;
-        }
+                          return a->getTimeStamp() < b->getTimeStamp();
 
-        //Store highest velocity in each chain in every step of the chain
-        for (int step=0;step<theSequence.size();step++)
-        {
-            int firstInChain = step;
-            float highestVelocity = -1;
-            int firstStep = step;
-            bool enteredLoop = false;
-            while (step<theSequence.size() && theSequence.at(step)->firstInChain==firstInChain)
-            {
-                enteredLoop = true;
-                if (theSequence.at(step)->velocity > highestVelocity)
-                    highestVelocity = theSequence.at(step)->velocity;
-                step++;
-            }
-            if (enteredLoop)
-                step--;
-            
-            //Store highest velocity in this chain in every step of this chain
-            for (int i=firstStep; i<=step; i++ )
-            {
-                theSequence.at(i)->highestVelocityInChain = highestVelocity;
-            }
-        }
-        
-        //Determine which steps are triggeredNotes and triggeredOffNotes
-        //triggeredNotes are steps that start no later than the triggeredNoteLimit from the chainTrigger.
-        //triggeredOffNotes are triggeredNotes that end before the END of the next chainTrigger note.
-//        std::cout << "Determine which steps are triggered notes \n";
-      } catch (const std::out_of_range& ex) {
-          std::cout << " error loadSequence: chaining " << "\n";
-      }
-
-      try {
-        for (int step=0; step<theSequence.size();step++)
-        {
-            if ( theSequence.at(step)->getTimeStamp() <= theSequence.at(theSequence.at(step)->chainTrigger)->getTimeStamp()+triggeredNoteLimit)
-            {
-                theSequence.at(step)->triggeredNote=true;
-                //Scan for nextFirstInChain
-                int nextFirstInChain = theSequence.at(step)->firstInChain+1;
-                while (nextFirstInChain<theSequence.size()-1 && theSequence.at(nextFirstInChain)->triggeredBy != -1)
-                    nextFirstInChain++;
-                
-                //Two cases for a step to be a triggeredOffNote:
-                //1) Where a the step ends before the next chain trigger
-                //2) Where the step's offtime is no more than the start of any triggered note of the chain that starts after it)
-                if (nextFirstInChain<theSequence.size()-1
-                    && theSequence.at(step)->triggeredNote && theSequence.at(step)->getOffTime() < theSequence.at(nextFirstInChain)->getTimeStamp())
-                    theSequence.at(step)->triggeredOffNote = true;
-                else
-                    theSequence.at(step)->triggeredOffNote = false;
-                
-                //Scan for case (2) above
-                int i = nextFirstInChain;
-                bool shouldSustain = false;
-                while (i<theSequence.size() && theSequence.at(i)->getTimeStamp()<= theSequence.at(nextFirstInChain)->getTimeStamp()+triggeredNoteLimit) //All triggered notes in next chain
-                {
-                    if (theSequence.at(step)->getOffTime() > theSequence.at(i)->getTimeStamp())
-                    {
-                        shouldSustain = true;
-                        break;
-                    }
-                    i++;
+    //                  if (a->getTimeStamp()==b->getTimeStamp())
+    //                      return a->noteNumber > b->noteNumber;
+    //                  else
+    //                      return a->getTimeStamp() < b->getTimeStamp();
                 }
-                theSequence.at(step)->triggeredOffNote = !shouldSustain;
-                theSequence.at(step)->autoplayedNote = false;
+            } customCompare;
+            std::sort(theSequence.begin(), theSequence.end(), customCompare);
+            for (int step=0;step<theSequence.size();step++)
+            {
+                theSequence.at(step)->currentStep = step;
+            }
+            //        //This reconstructs the chains using targetNoteTimes loaded from the ck file or constructed by chain command
+            if(alreadyChained) //If loaded from ck file or previously created for this new midi file by chain ()
+            {
+                int firstInThisChain = 0;
+                double prevTS = -1.0;
+        //            std::cout<< "Chain in loadSequence " << "\n";
+                for (int step=0; step<theSequence.size();step++)
+                {
+                    if (prevTS != theSequence.at(step)->getTimeStamp() && theSequence.at(step)->targetNote)
+                    {
+                        if (step>0)
+                            theSequence.at(step-1)->triggers = -1;//Last note in chain triggers nothing
+                        theSequence.at(step)->triggeredBy = -1; //This will be set based on the shortest note near the start of this group, done below
+                        firstInThisChain = step;
+                        theSequence.at(step)->firstInChain = step;
+                    }
+                    else if (!theSequence.at(step)->targetNote)
+                    {
+                        if (step>0)
+                        {
+                            theSequence.at(step-1)->triggers = step;
+                            theSequence.at(step)->triggeredBy = step-1;
+                        }
+                        else
+                            theSequence.at(step)->triggeredBy = step-1;
+                        theSequence.at(step)->firstInChain = firstInThisChain;
+                    }
+                    prevTS = theSequence.at(step)->getTimeStamp();
+                }
             }
             else
             {
-                theSequence.at(step)->autoplayedNote = true;
+                chain(Array<int>(),chainingInterval); //This is used only for when a plain midi file is loaded
+                alreadyChained = true;
+            }
+
+            //Find chainTriggers and set this property for all steps in a given chain
+            //        std::cout <<"Find chainTriggers \n";
+            assert (theSequence.size()>0);
+            int step = 0;
+            int chainTrigger = 0;
+            while (step < theSequence.size())
+            {
+                //If this step is a firstInChain scan all notes with time stamp equal to that of the firstInChain for the shortest note
+                if (theSequence.at(step)->targetNote)
+                {
+                    chainTrigger = step;
+        //                int highestNote = -1;
+                    int stepOfhighestNote = step;
+                    int subStep = step;
+                    while (subStep<theSequence.size()-1 && theSequence.at(subStep)->getTimeStamp()==theSequence.at(theSequence.at(step)->firstInChain)->getTimeStamp())
+                    {
+                        if (theSequence.at(subStep)->noteNumber >= theSequence.at(stepOfhighestNote)->noteNumber)
+                        {
+                            stepOfhighestNote = subStep;
+                        }
+                        subStep++;
+                    }
+                    chainTrigger = stepOfhighestNote;
+                }
+                assert(0<=chainTrigger && chainTrigger<theSequence.size());
+                theSequence.at(step)->chainTrigger = chainTrigger;
+                step++;
+            }
+
+            //Store highest velocity in each chain in every step of the chain
+            for (int step=0;step<theSequence.size();step++)
+            {
+                int firstInChain = step;
+                float highestVelocity = -1;
+                int firstStep = step;
+                bool enteredLoop = false;
+                while (step<theSequence.size() && theSequence.at(step)->firstInChain==firstInChain)
+                {
+                    enteredLoop = true;
+                    if (theSequence.at(step)->velocity > highestVelocity)
+                        highestVelocity = theSequence.at(step)->velocity;
+                    step++;
+                }
+                if (enteredLoop)
+                    step--;
+
+                //Store highest velocity in this chain in every step of this chain
+                for (int i=firstStep; i<=step; i++ )
+                {
+                    theSequence.at(i)->highestVelocityInChain = highestVelocity;
+                }
+            }
+        } catch (const std::out_of_range& ex) {
+            std::cout << " error loadSequence: chaining " << "\n";
+        }
+
+        try
+        {
+            //Determine which steps are triggeredNotes and triggeredOffNotes
+            // triggeredNotes are steps that start no later than the triggeredNoteLimit from the chainTrigger.//triggeredOffNotes are triggeredNotes that end before the END of the next chainTrigger note.
+            //        std::cout << "Determine which steps are triggered notes \n";
+            for (int step=0; step<theSequence.size();step++)
+            {
+                if ( theSequence.at(step)->getTimeStamp() <= theSequence.at(theSequence.at(step)->chainTrigger)->getTimeStamp()+triggeredNoteLimit)
+                {
+                    theSequence.at(step)->triggeredNote=true;
+                    //Scan for nextFirstInChain
+                    int nextFirstInChain = theSequence.at(step)->firstInChain+1;
+                    while (nextFirstInChain<theSequence.size()-1 && theSequence.at(nextFirstInChain)->triggeredBy != -1)
+                        nextFirstInChain++;
+
+                    //Two cases for a step to be a triggeredOffNote:
+                    //1) Where a the step ends before the next chain trigger
+                    //2) Where the step's offtime is no more than the start of any triggered note of the chain that starts after it)
+                    if (nextFirstInChain<theSequence.size()-1
+                        && theSequence.at(step)->triggeredNote && theSequence.at(step)->getOffTime() < theSequence.at(nextFirstInChain)->getTimeStamp())
+                        theSequence.at(step)->triggeredOffNote = true;
+                    else
+                        theSequence.at(step)->triggeredOffNote = false;
+
+                    //Scan for case (2) above
+                    int i = nextFirstInChain;
+                    bool shouldSustain = false;
+                    while (i<theSequence.size() && theSequence.at(i)->getTimeStamp()<= theSequence.at(nextFirstInChain)->getTimeStamp()+triggeredNoteLimit) //All triggered notes in next chain
+                    {
+                        if (theSequence.at(step)->getOffTime() > theSequence.at(i)->getTimeStamp())
+                        {
+                            shouldSustain = true;
+                            break;
+                        }
+                        i++;
+                    }
+                    theSequence.at(step)->triggeredOffNote = !shouldSustain;
+                    theSequence.at(step)->autoplayedNote = false;
+                }
+                else
+                {
+                    theSequence.at(step)->autoplayedNote = true;
+                }
             }
         }
-      } catch (const std::out_of_range& ex) {
-          std::cout << " error loadSequence: finding triggered and triggeredOff notes " << "\n";
-      }
+        catch (const std::out_of_range& ex)
+        {
+            std::cout << " error loadSequence: finding triggered and triggeredOff notes " << "\n";
+        }
     }
-    
-//    //The following ensures that any notes that part of the same chain and simultaneous in time
-//    //are set to be triggered by this target note.
-//    for (int step=0; step<theSequence.size();step++)
-//    {
-//        if(theSequence.at(step)->targetNote)
-//        {
-//            const int timeOfTargetNote = theSequence.at(step)->getTimeStamp();
-//            for (int ii=theSequence.at(step)->firstInChain;ii<step;ii++)
-//                if (theSequence.at(step)->getTimeStamp() == timeOfTargetNote)
-//                    theSequence.at(ii)->triggeredBy = step;
-//        }
-//    }
+
     setLoadingFile(false);
-//    dumpData(0, 20, -1);
-    //We assume that rewind will always be called after loadSequence, and that rewind calls sendChangeMessage
-//    compareAllNotes("End of loadSequence");
 
     std::cout << "End of loadSequence \n";
-    return true;//(theSequence.size()>0);
+    return true;
 } //End of loadSequence
 
 SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)
@@ -1770,3 +1777,9 @@ Array<MidiMessage> Sequence::getCurrentTimeSig(double timeStamp)
 {
     return Array<MidiMessage>();
 }
+
+//Sets the name of the file to display in the main window
+//void Sequence::setScoreFile(File file) {
+//    scoreFile = file;
+//    propertiesChanged = true;
+//}

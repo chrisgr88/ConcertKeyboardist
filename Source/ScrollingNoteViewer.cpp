@@ -991,7 +991,7 @@ void ScrollingNoteViewer::createShaders()
     "}\n";
     
     ScopedPointer<OpenGLShaderProgram> newShader (new OpenGLShaderProgram (openGLContext));
-    String statusText;
+    String statusText = String();
     
     if (newShader->addVertexShader (OpenGLHelpers::translateVertexShaderToV3 (vertexShader))
         && newShader->addFragmentShader (OpenGLHelpers::translateFragmentShaderToV3 (fragmentShader))
@@ -2478,7 +2478,7 @@ void ScrollingNoteViewer::resized()
 
 //    std::cout << "resized - ViewStateInfo::trackVerticalSize, verticalScale: before " << trackVerticalSize <<" "<<verticalScale;
 
-    if (processor->sequenceObject.theSequence.size()>0)
+    if (processor->sequenceObject.theSequence.empty())
         makeKeyboard ();
 }
 

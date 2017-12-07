@@ -457,7 +457,7 @@ private:
     Point<float> mouseBeforeDrag;
     int hoverStep; //Step over which mouse pointer hovers.  -1 if none.
     int hoverChord; //Chord over which mouse pointer hovers.  -1 if none.
-    String hoverInfo;
+    String hoverInfo = String();
 #define HOVER_NONE 0
 #define HOVER_NOTEHEAD 1
 #define HOVER_NOTEBAR 2

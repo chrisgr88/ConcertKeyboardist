@@ -149,7 +149,8 @@ public:
         
         recentFiles.addFile (file);
 //        std::cout << "setLastDocumentOpened " << recentFiles.getNumFiles() << " " <<  file.getFullPathName() << " " << recentFiles.toString() << "\n";
-        
+
+//        std::cout << "setLastDocumentOpened "<<recentFiles.toString()<<"\n";
         getAppProperties().getUserSettings()
         ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
     }
@@ -222,6 +223,7 @@ public:
     enum Retain {doRetainEdits, doNotRetainEdits};
     enum LoadType {loadFile, reAnalyzeOnly, updateChords};
     bool loadSequence (LoadType justRebuildSequence, Retain retainEdits);
+    bool causeLoadFailure = false;
     Array<StepActivity> chain(Array<int> selection, double interval);
     double chainingInterval;
     

@@ -400,7 +400,7 @@ void ViewerFrame::fileDoubleClicked (const File& file) {
     if (!file.isDirectory())
     {
         String fn = file.getFullPathName();
-        processor->sequenceObject.setScoreFile(file);
+//        processor->sequenceObject.setScoreFile(file);
         processor->buildSequenceAsOf(Sequence::loadFile, Sequence::doNotRetainEdits, 0.0);
         fileBrowser->setVisible(false);
         Rectangle<int> r = noteViewer.getBounds();

@@ -1518,7 +1518,7 @@ Array<Sequence::NoteVelocities> MIDIProcessor::velocityHumanizeChords (Array<int
         std::string numStr = velSpec.toStdString();
         std::string delimiter = ",";
         size_t pos = 0;
-        std::string token;
+        std::string token = std::string();
         while ((pos = numStr.find(delimiter)) != std::string::npos) {
             token = numStr.substr(0, pos);
             strengths.add(String(token).getDoubleValue());

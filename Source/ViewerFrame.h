@@ -128,7 +128,7 @@ private:
     ScopedPointer<FileBrowserComponent> fileBrowser;
     ScopedPointer<WildcardFileFilter> fileFilter;
     ScopedPointer<TextEditor> textEditor;
-    String playableKeys;
+    String playableKeys = String();
     Array<bool> keysThatAreDown; //String containing characters of keys that are down (for playing from computer keyboard)
     
     TextButton playStopButton;
@@ -911,8 +911,8 @@ private:
     MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
     
     double chainAmount;
-    String humanizeVelocityAmount;
-    String humanizeTimeAmount;
+    String humanizeVelocityAmount = String();
+    String humanizeTimeAmount = String();
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
 };
 
