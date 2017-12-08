@@ -553,6 +553,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 {
     std::cout << "entering loadSequence "<< fileToLoad.getFileName()<<"\n";
+    targetNoteTimes.clear();
     try
     {
         if (fileToLoad.getFileName().length() > 0 && loadFile == Sequence::loadFile)
@@ -565,7 +566,6 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                 return false;
             }
 
-            targetNoteTimes.clear();
             if (retainEdits == doNotRetainEdits)
             {
                 chainingInterval = 120.0;
