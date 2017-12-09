@@ -168,7 +168,7 @@ void ViewerFrame::timerCallback()
         String temp = pHumanizeVelocity->textBox.getText();
         humanizeVelocityAmount.clear();
         for (int i=0;i<temp.length();i++)
-            if (temp.substring(i,i+1).containsAnyOf(".0123456789,"))
+            if (temp.substring(i,i+1).containsAnyOf  (".0123456789,"))
                 humanizeVelocityAmount.append(temp.substring(i,i+1), 1);
                 
         sendActionMessage("humanizeVelocity:"+String(humanizeVelocityAmount));
@@ -418,37 +418,29 @@ void ViewerFrame::paint (Graphics& g)
 {
     g.setColour(Colours::purple);
     g.fillRect(0,0,getWidth(),noteViewer.getToolbarHeight()); //Command bar
-    g.drawImageAt(noteViewer.getKeysImage(), 0, noteViewer.getToolbarHeight()); //Keyboard
+    g.drawImageAt(noteViewer.getKeysImage(), 0, 0); //Keyboard
 }
 
 void ViewerFrame::resized()
 {
-    if (altToolbar.isVertical())
-        ;//mainToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
-    else
-        altToolbar.setBounds (getLocalBounds().removeFromTop(noteViewer.getToolbarHeight()));
-    
-    altToolbarVisible = true;
-    if (altToolbarVisible)
-    {
-        if (mainToolbar.isVertical())
-            ;//altToolbar.setBounds (getLocalBounds().removeFromLeft (noteViewer.getToolbarHeight()));
-        else
-        {
-            Rectangle<int> shifted = getLocalBounds();//.removeFromBottom(noteViewer.getToolbarHeight());
-//            Rectangle<int> shifted = getLocalBounds().removeFromTop(noteViewer.getToolbarHeight());
-            shifted.setHeight(noteViewer.getToolbarHeight());
-//            shifted.setTop(getLocalBounds().getHeight()-noteViewer.getToolbarHeight());
-            shifted.translate(0,  getLocalBounds().getHeight()-noteViewer.getToolbarHeight());
-            mainToolbar.setBounds (shifted);
-        }
-    }
-    
-//    int tbHeightMultiplier = altToolbarVisible?2:1;
-    noteViewer.setBounds(noteViewer.getKeysWidth(), noteViewer.getToolbarHeight(),
-                     getWidth()-noteViewer.getKeysWidth(), getHeight()-noteViewer.getToolbarHeight()*2);
-    
-    scoreTempoLabel.setBounds(205+278+60+33-130+21, 2, 70, noteViewer.getToolbarHeight()-1);
-    adjustedTempoLabel.setBounds(484-132+21, 2, 45, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(710, 0, 545, noteViewer.getToolbarHeight()-1);
+    float tbH = noteViewer.getToolbarHeight();
+
+    noteViewer.setBounds(noteViewer.getKeysWidth(), 0, getWidth()-noteViewer.getKeysWidth(), getHeight()-tbH*2);
+
+    mainToolbar.setBounds(noteViewer.getKeysWidth(), noteViewer.getHeight(), getWidth()-noteViewer.getKeysWidth(), tbH);
+
+    altToolbar.setBounds(noteViewer.getKeysWidth(), noteViewer.getHeight()+tbH, getWidth()-noteViewer.getKeysWidth(), tbH);
+
+//    altToolbarVisible = true;
+//    if (altToolbarVisible)
+//    {
+//        Rectangle<int> shifted = getLocalBounds();//.removeFromBottom(noteViewer.getToolbarHeight());
+//        shifted.setHeight(noteViewer.getToolbarHeight());
+//        shifted.translate(0,  getLocalBounds().getHeight()-noteViewer.getToolbarHeight());
+//        mainToolbar.setBounds (shifted);
+//    }
+
+    scoreTempoLabel.setBounds(205+278+60+33-130+21+24, noteViewer.getHeight()+tbH+2, 70, noteViewer.getToolbarHeight()-1);
+    adjustedTempoLabel.setBounds(484-132+21+22, noteViewer.getHeight()+tbH+2, 45, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(710, noteViewer.getHeight()+tbH, 545, noteViewer.getToolbarHeight()-1);
 }
