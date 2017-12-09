@@ -1053,7 +1053,7 @@ void ScrollingNoteViewer::makeKeyboard()
     //left margin
     keysGr.setColour(Colours::black);
     keysGr.fillRect(0,0,roundToInt(leftMargin),roundToInt(ViewStateInfo::viewHeight));
-    keysGr.setColour(Colours::grey);
+    keysGr.setColour(Colour(64,64,64));
     //topMargin
     int topMarg = ViewStateInfo::verticalScale*topMargin;
     keysGr.fillRect(0, 0, roundToInt(wKbd+leftMargin), topMarg);
@@ -2478,7 +2478,7 @@ void ScrollingNoteViewer::resized()
 
 //    std::cout << "resized - ViewStateInfo::trackVerticalSize, verticalScale: before " << trackVerticalSize <<" "<<verticalScale;
 
-    if (processor->sequenceObject.theSequence.empty())
+    if (processor->sequenceObject.theSequence.size()>0)
         makeKeyboard ();
 }
 

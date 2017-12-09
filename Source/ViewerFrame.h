@@ -41,6 +41,7 @@ public:
     void resized() override;
     double timeInTicks;
     double prevTimeInTicks = -1.0;
+    int separatorLineWidth = 1.5;
     ModifierKeys mods;
     
     void timerCallback() override;
@@ -216,8 +217,8 @@ private:
         
         void getDefaultItemSet (Array<int>& ids) override
         {
-            for (int n=0;n<12;n++)
-                ids.add (spacerId);
+//            for (int n=0;n<12;n++)
+//                ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
@@ -543,8 +544,8 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
-            for (int n=0;n<12;n++)
-                ids.add (spacerId);
+//            for (int n=0;n<12;n++)
+//                ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (doc_open);
             ids.add (doc_save);

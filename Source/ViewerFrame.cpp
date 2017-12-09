@@ -26,12 +26,12 @@ altToolbarFactory(this)
     
     addAndMakeVisible(mainToolbar);
     mainToolbar.addDefaultItems (mainFactory);
-    mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
+    mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(25,25,25));
     mainFactory.addChangeListener(this);
 
     addAndMakeVisible(altToolbar);
     altToolbar.addDefaultItems (altToolbarFactory);
-    altToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colours::lightgrey);
+    altToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(25,25,25));
     altToolbarFactory.addChangeListener(this);
     
     for (int i=0; i<mainToolbar.getNumItems(); i++)
@@ -90,7 +90,7 @@ altToolbarFactory(this)
     addAndMakeVisible (hoverStepInfo);
     hoverStepInfo.setFont (Font (15.00f, Font::bold));
     hoverStepInfo.setJustificationType (Justification::left);
-    hoverStepInfo.setColour (Label::textColourId, Colours::darkgrey);
+    hoverStepInfo.setColour (Label::textColourId, Colours::lightgrey);
     
 //    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
     scoreTempoLabel.setFont (Font (18.00f, Font::plain ));
@@ -416,20 +416,36 @@ void ViewerFrame::browserRootChanged (const File& newRoot) {}; /** Callback when
 //==============================================================================
 void ViewerFrame::paint (Graphics& g)
 {
-    g.setColour(Colours::purple);
-    g.fillRect(0,0,getWidth(),noteViewer.getToolbarHeight()); //Command bar
+    g.setColour(Colour(127,127,127));
+    g.fillRect(noteViewer.getKeysWidth()-2,
+               noteViewer.getHeight(),
+               2,
+               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.fillRect(0,
+               noteViewer.getHeight(),
+               noteViewer.getKeysWidth()-2,
+               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.setColour(Colour(64,64,64));
+    g.fillRect(0,
+               noteViewer.getHeight(),
+               noteViewer.getKeysWidth()-2,
+               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    
     g.drawImageAt(noteViewer.getKeysImage(), 0, 0); //Keyboard
+    
+    g.fillRect(300, noteViewer.getHeight(), getWidth(), separatorLineWidth);
+    g.fillRect(300, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth, getWidth(), separatorLineWidth);
 }
 
 void ViewerFrame::resized()
 {
     float tbH = noteViewer.getToolbarHeight();
 
-    noteViewer.setBounds(noteViewer.getKeysWidth(), 0, getWidth()-noteViewer.getKeysWidth(), getHeight()-tbH*2);
+    noteViewer.setBounds(noteViewer.getKeysWidth(), 0, getWidth()-noteViewer.getKeysWidth(), getHeight()-tbH*2-separatorLineWidth*2);
 
-    mainToolbar.setBounds(0, noteViewer.getHeight(), getWidth(), tbH);
+    mainToolbar.setBounds(250, noteViewer.getHeight()+separatorLineWidth, getWidth(), tbH);
 
-    altToolbar.setBounds(0, noteViewer.getHeight()+tbH, getWidth(), tbH);
+    altToolbar.setBounds(250, noteViewer.getHeight()+tbH+separatorLineWidth*2, getWidth(), tbH);
 
 //    altToolbarVisible = true;
 //    if (altToolbarVisible)
@@ -441,8 +457,8 @@ void ViewerFrame::resized()
 //    }
 
 //    scoreTempoLabel.setBounds(205+278+60+33-130-14, noteViewer.getHeight()+tbH+2, 70, noteViewer.getToolbarHeight()-1);
-    const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + 4;
-    scoreTempoLabel.setBounds(adjTempoLeft-8, noteViewer.getHeight()+noteViewer.getToolbarHeight()+2,
+    const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + separatorLineWidth*2;
+    scoreTempoLabel.setBounds(adjTempoLeft-8, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth,
                               70, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(adjTempoLeft+80, noteViewer.getHeight()+tbH+2, 545, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(noteViewer.getKeysWidth(), noteViewer.getHeight(), 250, (tbH+separatorLineWidth)*2);
 }

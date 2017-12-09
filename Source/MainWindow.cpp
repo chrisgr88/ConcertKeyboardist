@@ -106,7 +106,7 @@ void PluginWindow::closeAllCurrentlyOpenWindows()
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
-    MainWindow::MainWindow (String name) : DocumentWindow (name, Colours::lightgrey, DocumentWindow::allButtons)
+    MainWindow::MainWindow (String name) : DocumentWindow (name, Colour(25,25,25), DocumentWindow::allButtons)
     {
         Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
         int screenWidth = r.getWidth();
