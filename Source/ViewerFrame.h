@@ -216,19 +216,21 @@ private:
         
         void getDefaultItemSet (Array<int>& ids) override
         {
-            ids.add (spacerId);
+            for (int n=0;n<12;n++)
+                ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (edit_undo);
             ids.add (edit_redo);
-            ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (_toggleActivity);
-            ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (_chain);
             ids.add (chainAmountBox);
-            ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (_showVelocities);
             ids.add (_adjustVelocities);
             ids.add (_drawVelocities);
-            ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (_chordEditToggle);
             ids.add (create_chord);
             ids.add (delete_chord);
@@ -237,12 +239,12 @@ private:
             ids.add (separatorBarId);
             ids.add (_humanizeVelocity);
             ids.add (_humanizeVelocityBox);
-            ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (_addSustain);
             ids.add (_deleteSustain);
             ids.add (_addSoft);
             ids.add (_deleteSoft);
-            ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
         }
         
@@ -541,8 +543,9 @@ private:
             // This returns an ordered list of the set of items that make up a
             // toolbar's default set. Not all items need to be on this list, and
             // items can appear multiple times (e.g. the separators used here).
-            ids.add (spacerId);
-            ids.add (spacerId);
+            for (int n=0;n<12;n++)
+                ids.add (spacerId);
+            ids.add (separatorBarId);
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
@@ -555,22 +558,20 @@ private:
             ids.add (addBookmark);
             ids.add (removeBookmarkOrTempoChange);
             ids.add (separatorBarId);
-            ids.add (_help);
-            ids.add (separatorBarId);
-            for (int n=0;n<3;n++)
-                ids.add (spacerId);
-            ids.add (adjustedTempo);
-            for (int n=0;n<4;n++)
-                ids.add (spacerId);
+            ids.add (_listen);
             ids.add (separatorBarId);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_playPause);
             ids.add (_rewind);
+//            ids.add (separatorBarId);
+            ids.add (adjustedTempo);
+            for (int n=0;n<3;n++)
+                ids.add (spacerId);
             ids.add (separatorBarId);
-            ids.add (_listen);
-  
+            ids.add (_help);
             ids.add (separatorBarId);
+            ids.add (flexibleSpacerId);
         }
         
         ToolbarItemComponent* createItem (int itemId) override

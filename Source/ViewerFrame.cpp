@@ -98,11 +98,11 @@ altToolbarFactory(this)
     scoreTempoLabel.setColour (Label::textColourId, Colours::grey);
     addAndMakeVisible (scoreTempoLabel);
     
-    adjustedTempoLabel.setText("BPM",NotificationType::dontSendNotification);
-    adjustedTempoLabel.setFont (Font (18.00f, Font::plain));
-    adjustedTempoLabel.setJustificationType (Justification::right);
-    adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
-    addAndMakeVisible (adjustedTempoLabel);
+//    adjustedTempoLabel.setText("BPM",NotificationType::dontSendNotification);
+//    adjustedTempoLabel.setFont (Font (18.00f, Font::plain));
+//    adjustedTempoLabel.setJustificationType (Justification::right);
+//    adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
+//    addAndMakeVisible (adjustedTempoLabel);
     
     playableKeys = "qwertyuiopasdfghjklzxcvbnm;',./[]";
 
@@ -427,9 +427,9 @@ void ViewerFrame::resized()
 
     noteViewer.setBounds(noteViewer.getKeysWidth(), 0, getWidth()-noteViewer.getKeysWidth(), getHeight()-tbH*2);
 
-    mainToolbar.setBounds(noteViewer.getKeysWidth(), noteViewer.getHeight(), getWidth()-noteViewer.getKeysWidth(), tbH);
+    mainToolbar.setBounds(0, noteViewer.getHeight(), getWidth(), tbH);
 
-    altToolbar.setBounds(noteViewer.getKeysWidth(), noteViewer.getHeight()+tbH, getWidth()-noteViewer.getKeysWidth(), tbH);
+    altToolbar.setBounds(0, noteViewer.getHeight()+tbH, getWidth(), tbH);
 
 //    altToolbarVisible = true;
 //    if (altToolbarVisible)
@@ -440,7 +440,9 @@ void ViewerFrame::resized()
 //        mainToolbar.setBounds (shifted);
 //    }
 
-    scoreTempoLabel.setBounds(205+278+60+33-130+21+24, noteViewer.getHeight()+tbH+2, 70, noteViewer.getToolbarHeight()-1);
-    adjustedTempoLabel.setBounds(484-132+21+22, noteViewer.getHeight()+tbH+2, 45, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(710, noteViewer.getHeight()+tbH, 545, noteViewer.getToolbarHeight()-1);
+//    scoreTempoLabel.setBounds(205+278+60+33-130-14, noteViewer.getHeight()+tbH+2, 70, noteViewer.getToolbarHeight()-1);
+    const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + 4;
+    scoreTempoLabel.setBounds(adjTempoLeft-8, noteViewer.getHeight()+noteViewer.getToolbarHeight()+2,
+                              70, noteViewer.getToolbarHeight()-1);
+    hoverStepInfo.setBounds(adjTempoLeft+80, noteViewer.getHeight()+tbH+2, 545, noteViewer.getToolbarHeight()-1);
 }
