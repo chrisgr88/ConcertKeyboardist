@@ -122,6 +122,7 @@ ApplicationProperties& getAppProperties();
         mainComponent = new MainComponent(&midiProcessor);
         pViewerFrame = mainComponent->getViewerFrame();
         pViewerFrame->addActionListener(this);
+        midiProcessor.sequenceObject.addActionListener(this);
         setContentOwned (mainComponent, true);
 #ifdef _WIN32
         //define something for Windows (32-bit and 64-bit, this part is common)
@@ -252,6 +253,16 @@ ApplicationProperties& getAppProperties();
             perform (CommandIDs::rewind);
         else if (message == "listenToSelection")
             perform (CommandIDs::listenToSelection);
+        else if (message.upToFirstOccurrenceOf(":",false,true) == "loadPlugin")
+        {
+            String pluginId = String(message.fromFirstOccurrenceOf(":", false, true));
+            //TODO  Define  a new version of loadPlugin( ) in MainComponent ...
+            //...that takes an identString as an argument and loads that plugin
+            //... and call loadPlugin  from here.
+            // Before calling loadPlugin call 
+            PluginWindow::closeAllCurrentlyOpenWindows();
+            mainComponent->loadPlugin(pluginId);
+        }
         else if (message == "loadPluginMenu")
         {
             Point<int> pos = getMouseXYRelative();
@@ -716,6 +727,7 @@ const PluginDescription* MainWindow::pluginContextMenu (Rectangle<int> menuAt) c
         const PluginDescription* desc = getChosenType (index);
         if (desc != NULL)
         {
+            PluginWindow::closeAllCurrentlyOpenWindows();
             mainComponent->loadPlugin(desc);
         }
     }
@@ -798,6 +810,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 const PluginDescription* desc = getChosenType (menuItemID);
                 if (desc != NULL)
                 {
+                    PluginWindow::closeAllCurrentlyOpenWindows();
                     mainComponent->loadPlugin(desc);
                 }
             }

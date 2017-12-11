@@ -31,6 +31,12 @@
 #include "MIDIProcessor.h"
 //[/Headers]
 
+struct Vertex  // class storing the information about a single vertex
+{
+    float position[2];
+    float colour[3];
+};
+
 struct ViewStateInfo
 {
     //public:
@@ -43,6 +49,8 @@ struct ViewStateInfo
     static float verticalScale;
     static float horizontalScale;
     static float trackVerticalSize;
+    static Array<Vertex> vertices;
+    static Array<int> indices;
 };
 //These are in the cpp file
 //int ViewStateInfo::initialWidth = 0;
@@ -50,12 +58,6 @@ struct ViewStateInfo
 //int initialPPT = 0; //Initial pixels per tick
 //int viewWidth = 0;
 //int viewHeight = 0;
-
-struct Vertex  // class storing the information about a single vertex
-{
-    float position[2];
-    float colour[3];
-};
 
 class NoteTimeComparator
 {
@@ -503,8 +505,8 @@ private:
     int firstNoteBarRect;
     int nextNoteRect;  //Index of green rectangle that shows time of next note due
     
-    Array<Vertex> vertices;
-    Array<int> indices;
+//    Array<Vertex> vertices;
+//    Array<int> indices;
     const char* vertexShader;
     const char* fragmentShader;
     
@@ -512,7 +514,7 @@ private:
     ScopedPointer<OpenGLShaderProgram::Attribute> position, sourceColour;
     ScopedPointer<Uniforms> uniforms;
     
-    String newVertexShader, newFragmentShader;
+//    String newVertexShader, newFragmentShader;
     
     Colour colourActiveNoteHead;
     Colour colourPrimaryNoteBar;

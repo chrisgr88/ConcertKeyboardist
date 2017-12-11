@@ -32,6 +32,8 @@ int ViewStateInfo::viewHeight = 0;
 float ViewStateInfo::verticalScale = 1;
 float ViewStateInfo::horizontalScale = 1;
 float ViewStateInfo::trackVerticalSize = 0;
+Array<Vertex> ViewStateInfo::vertices;
+Array<int> ViewStateInfo::indices;
 
 GLint ScrollingNoteViewer::Uniforms::viewMatrixHandle;
 GLint ScrollingNoteViewer::Uniforms::projectionMatrixHandle;
@@ -61,6 +63,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     OpenGLPixelFormat format;
     format.multisamplingLevel = 4;
     openGLContext.setPixelFormat(format);
+    animationStep = 0;
     hoverStep = -1;
     hoverChord = -1;
     draggingTime = false;
@@ -571,7 +574,7 @@ int ScrollingNoteViewer::addNote(/*bool playable, */float x, float y,  float w, 
 
 int ScrollingNoteViewer::addRectangle(float x, float yy, float w, float hh, Colour col)
 {
-    const int firstVertex = vertices.size(); //There are four vertices per rectangle
+    const int firstVertex = ViewStateInfo::vertices.size(); //There are four vertices per rectangle
     float y = ViewStateInfo::initialHeight-yy;
     float h = -hh;
     float r = col.getFloatRed();
@@ -583,38 +586,38 @@ int ScrollingNoteViewer::addRectangle(float x, float yy, float w, float hh, Colo
         { x, y},
         { r, g, b}
     };
-    vertices.add(v0);
+    ViewStateInfo::vertices.add(v0);
     Vertex v1 =
     {
         { x, y+h},
         { r, g, b}
     };
-    vertices.add(v1);
+    ViewStateInfo::vertices.add(v1);
     Vertex v2 =
     {
         { x+w, y+h},
         { r, g, b}
     };
-    vertices.add (v2);
+    ViewStateInfo::vertices.add (v2);
     Vertex v3 =
     {
         { x+w, y},
         { r, g, b}
     };
-    vertices.add (v3);
+    ViewStateInfo::vertices.add (v3);
     //Define the order in which the vertices of the rectangle are used
-    indices.add(0+firstVertex);
-    indices.add(1+firstVertex);
-    indices.add(2+firstVertex);
-    indices.add(0+firstVertex);
-    indices.add(2+firstVertex);
-    indices.add(3+firstVertex);
+    ViewStateInfo::indices.add(0+firstVertex);
+    ViewStateInfo::indices.add(1+firstVertex);
+    ViewStateInfo::indices.add(2+firstVertex);
+    ViewStateInfo::indices.add(0+firstVertex);
+    ViewStateInfo::indices.add(2+firstVertex);
+    ViewStateInfo::indices.add(3+firstVertex);
     return firstVertex/4;
 }
 
 int ScrollingNoteViewer::addQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, Colour col)
 {
-    const int firstVertex = vertices.size(); //There are four vertices per quad
+    const int firstVertex = ViewStateInfo::vertices.size(); //There are four vertices per quad
     float r = col.getFloatRed();
     float g = col.getFloatGreen();
     float b = col.getFloatBlue();
@@ -624,32 +627,32 @@ int ScrollingNoteViewer::addQuad(float x1, float y1, float x2, float y2, float x
         { x1, y1},
         { r, g, b}
     };
-    vertices.add(v0);
+    ViewStateInfo::vertices.add(v0);
     Vertex v1 =
     {
         { x2, y2},
         { r, g, b}
     };
-    vertices.add(v1);
+    ViewStateInfo::vertices.add(v1);
     Vertex v2 =
     {
         { x3, y3},
         { r, g, b}
     };
-    vertices.add (v2);
+    ViewStateInfo::vertices.add (v2);
     Vertex v3 =
     {
         { x4, y4},
         { r, g, b}
     };
-    vertices.add (v3);
+    ViewStateInfo::vertices.add (v3);
     //Define the order in which the vertices of the rectangle are used
-    indices.add(0+firstVertex);
-    indices.add(1+firstVertex);
-    indices.add(2+firstVertex);
-    indices.add(0+firstVertex);
-    indices.add(2+firstVertex);
-    indices.add(3+firstVertex);
+    ViewStateInfo::indices.add(0+firstVertex);
+    ViewStateInfo::indices.add(1+firstVertex);
+    ViewStateInfo::indices.add(2+firstVertex);
+    ViewStateInfo::indices.add(0+firstVertex);
+    ViewStateInfo::indices.add(2+firstVertex);
+    ViewStateInfo::indices.add(3+firstVertex);
     return firstVertex/4;
 }
 
@@ -804,22 +807,22 @@ void ScrollingNoteViewer::renderOpenGL()
     
     if (glBufferUpdateCountdown > 0)
         glBufferUpdateCountdown--;
-    if (vertices.size()==0)
+    if (ViewStateInfo::vertices.size()==0)
         std::cout << "No vertices" << "\n";
-    if  (sequenceChanged && glBufferUpdateCountdown == 0 && vertices.size()>0)
+    if  (sequenceChanged && glBufferUpdateCountdown == 0)// && ViewStateInfo::vertices.size()>0)
     {
         glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
         resized();
-        int size = vertices.size();
+        int size = ViewStateInfo::vertices.size();
 //        std::cout << "vertices.size "<<size<<"\n";
         openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
         openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,
-                                               static_cast<GLsizeiptr> (static_cast<size_t> (vertices.size()) * sizeof (Vertex)),
-                                               vertices.getRawDataPointer(),
+                                               static_cast<GLsizeiptr> (static_cast<size_t> (ViewStateInfo::vertices.size()) * sizeof (Vertex)),
+                                               ViewStateInfo::vertices.getRawDataPointer(),
                                                GL_DYNAMIC_DRAW);
         
-        numIndices = 6*(vertices.size()/4);
+        numIndices = 6*(ViewStateInfo::vertices.size()/4);
         //generate buffer object name(s) (names are ints) (indexBuffer is an GLuint)
         openGLContext.extensions.glGenBuffers (1, &indexBuffer); //Gets id of indexBuffer
         
@@ -827,14 +830,14 @@ void ScrollingNoteViewer::renderOpenGL()
         openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
         openGLContext.extensions.glBufferData (GL_ELEMENT_ARRAY_BUFFER,
                                                static_cast<GLsizeiptr> (static_cast<size_t> (numIndices) * sizeof (juce::uint32)),
-                                               indices.getRawDataPointer(), GL_STATIC_DRAW);
+                                               ViewStateInfo::indices.getRawDataPointer(), GL_STATIC_DRAW);
         sequenceChanged = false;
     }
     if (processor->resetViewer)
     {
         processor->resetViewer = false;
         setHorizontalShift(0);
-        repaint();
+//        repaint();
     }
     if (numIndices==0)
     {
@@ -1096,19 +1099,20 @@ void ScrollingNoteViewer::makeKeyboard()
 void ScrollingNoteViewer::makeNoteBars()
 {
   try {
-    std::cout << "trying to enter makeNoteBars " << "\n";
+    std::cout << "entering makeNoteBars " << "\n";
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     rebuidingGLBuffer = true;
     if (processor->initialWindowHeight<topMargin || ViewStateInfo::viewHeight<0.0000001f)
     {
-        std::cout << "failed enter makeNoteBars " << "\n";
+        std::cout << "... but failed to enter makeNoteBars " << "\n";
         return;
     }
     horizontalScale = processor->sequenceObject.sequenceProps.getDoubleValue("horizontalScale", var(1.0));
     const float rescaleHeight = ((float)ViewStateInfo::initialHeight)/ViewStateInfo::viewHeight;
     const float unscaledTVS = ViewStateInfo::trackVerticalSize/ViewStateInfo::verticalScale;
-    vertices.clear();
-    indices.clear();
+    ViewStateInfo::vertices.clear();
+      std::cout << "Cleared vertices " << ViewStateInfo::vertices.size()<<"\n";
+    ViewStateInfo::indices.clear();
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
     nKeys = maxNote-minNote+1;
     const float h = unscaledTVS*noteBarWidthRatio; //Note bar height
@@ -1503,6 +1507,7 @@ void ScrollingNoteViewer::makeNoteBars()
   } catch (...) {
         std::cout << "Error in make note bars"<<"\n";
   }
+    std::cout << "Leaving  makeNoteBars: Indices, Vertices " <<  ViewStateInfo::indices.size()<<" "<<ViewStateInfo::vertices.size() << "\n";
 //    std::cout << "Exit MNB: theSequence.size " << "\n";
 }
 
@@ -1765,6 +1770,10 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
                         makeNoteBars();
                         sequenceChanged = true;
                     }
+            }
+            else
+            {
+                std::cout << "animationStep "<<animationStep<<"\n";
             }
             setHorizontalShift(0);
             prevFileLoaded = processor->sequenceObject.fileToLoad;

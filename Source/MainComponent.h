@@ -33,7 +33,8 @@ class MainComponent :
 //    private AudioIODeviceCallback,
 //    private MidiInputCallback,
     public ChangeListener,
-    public ActionListener
+    public ActionListener,
+    public ActionBroadcaster
 {
 public:
     //==============================================================================
@@ -63,6 +64,7 @@ public:
     
     void setMidiInput (int index);
     
+    void loadPlugin (String  pluginId);
     void loadPlugin (const PluginDescription* pluginDescription);
 
     AudioPluginFormatManager formatManager;

@@ -26,12 +26,12 @@ altToolbarFactory(this)
     
     addAndMakeVisible(mainToolbar);
     mainToolbar.addDefaultItems (mainFactory);
-    mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(25,25,25));
+    mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(48,48,48));
     mainFactory.addChangeListener(this);
 
     addAndMakeVisible(altToolbar);
     altToolbar.addDefaultItems (altToolbarFactory);
-    altToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(25,25,25));
+    altToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(48,48,48));
     altToolbarFactory.addChangeListener(this);
     
     for (int i=0; i<mainToolbar.getNumItems(); i++)
@@ -416,25 +416,41 @@ void ViewerFrame::browserRootChanged (const File& newRoot) {}; /** Callback when
 //==============================================================================
 void ViewerFrame::paint (Graphics& g)
 {
-    g.setColour(Colour(127,127,127));
+    g.setColour(Colour(48,48,48));
+    //Block above keys
     g.fillRect(noteViewer.getKeysWidth()-2,
                noteViewer.getHeight(),
                2,
                2*(separatorLineWidth+noteViewer.getToolbarHeight()));
-    g.fillRect(0,
-               noteViewer.getHeight(),
-               noteViewer.getKeysWidth()-2,
-               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    //Block below keys
     g.setColour(Colour(64,64,64));
     g.fillRect(0,
                noteViewer.getHeight(),
                noteViewer.getKeysWidth()-2,
                2*(separatorLineWidth+noteViewer.getToolbarHeight()));
-    
+    //Vertical separator
+    g.setColour(Colour(127,127,127));
+    g.fillRect(noteViewer.getKeysWidth()-2,
+               noteViewer.getHeight(),
+               2,
+               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    //Block for hover info
+    g.setColour(Colour(64,64,64));
+    g.fillRect(noteViewer.getKeysWidth(),
+               noteViewer.getHeight(),
+               248,
+               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.setColour(Colour(127,127,127));
+    g.fillRect(248,
+               noteViewer.getHeight(),
+               2,
+               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    //Keyboard
     g.drawImageAt(noteViewer.getKeysImage(), 0, 0); //Keyboard
-    
-    g.fillRect(300, noteViewer.getHeight(), getWidth(), separatorLineWidth);
-    g.fillRect(300, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth, getWidth(), separatorLineWidth);
+    //Lines between toolbars
+    g.setColour(Colour(127,127,127));
+    g.fillRect(noteViewer.getKeysWidth(), noteViewer.getHeight(), getWidth(), separatorLineWidth);
+    g.fillRect(250, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth, getWidth(), separatorLineWidth);
 }
 
 void ViewerFrame::resized()
@@ -457,8 +473,8 @@ void ViewerFrame::resized()
 //    }
 
 //    scoreTempoLabel.setBounds(205+278+60+33-130-14, noteViewer.getHeight()+tbH+2, 70, noteViewer.getToolbarHeight()-1);
-    const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + separatorLineWidth*2;
-    scoreTempoLabel.setBounds(adjTempoLeft-8, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth,
+    const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + 250 - 4;
+    scoreTempoLabel.setBounds(adjTempoLeft, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth+2,
                               70, noteViewer.getToolbarHeight()-1);
     hoverStepInfo.setBounds(noteViewer.getKeysWidth(), noteViewer.getHeight(), 250, (tbH+separatorLineWidth)*2);
 }

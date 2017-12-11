@@ -73,17 +73,19 @@ void MainComponent::paint(Graphics& g)
 void MainComponent::actionListenerCallback (const String& message)
 {
     //        std::cout <<"actionListenerCallback"<< message << "\n";
-    if (message.upToFirstOccurrenceOf(":",false,true) == "loadPlugin")
-    {
-        String pluginId = String(message.fromFirstOccurrenceOf(":", false, true)); 
-        const PluginDescription* desc = knownPluginList.getTypeForIdentifierString(pluginId);
-        if (desc != NULL)
-        {
-            loadPlugin(desc);
-            std::cout << "loadedPlugin in MainComponent: id is  " << pluginId << "\n";
-        }
-    }
-    else if (message.upToFirstOccurrenceOf(":",false,true) == "pluginStateChange")
+//    if (message.upToFirstOccurrenceOf(":",false,true) == "loadPlugin")
+//    {
+////        String pluginId = String(message.fromFirstOccurrenceOf(":", false, true));
+////        const PluginDescription* desc = knownPluginList.getTypeForIdentifierString(pluginId);
+////        if (desc != NULL)
+////        {
+////            loadPlugin(desc);
+////            std::cout << "loadedPlugin in MainComponent: id is  " << pluginId << "\n";
+//        std::cout << "here \n";
+////        }
+//    }
+//    else
+        if (message.upToFirstOccurrenceOf(":",false,true) == "pluginStateChange")
     {
         String pluginStateB64 = String(message.fromFirstOccurrenceOf(":", false, true));
         MemoryBlock m;
@@ -95,11 +97,20 @@ void MainComponent::actionListenerCallback (const String& message)
 //        if (processor->sequenceObject.pluginState.getSize()>0)
 //#include "TargetConditionals.h"
 #if !(TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE)
-        thePlugin->setStateInformation(m.getData(), (int)m.getSize());
+        if (thePlugin!=nullptr)
+            thePlugin->setStateInformation(m.getData(), (int)m.getSize());
 #endif
     }
 };
 
+ void MainComponent::loadPlugin (String  pluginId)
+{
+    const PluginDescription* desc = knownPluginList.getTypeForIdentifierString(pluginId);
+    if (desc != NULL)
+    {
+        loadPlugin(desc);
+    }
+}
 void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
 {
     processor->sequenceObject.thePlugin = nullptr;
@@ -114,6 +125,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
 //        thePlayer.setProcessor(nullptr);
 //        thePlugin = nullptr;
     }
+    
     AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
     thePlugin = pPlugin;
     processor->sequenceObject.thePlugin = pPlugin;

@@ -1613,7 +1613,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 
     setLoadingFile(false);
 
-    std::cout << "End of loadSequence \n";
+    std::cout << "End of loadSequence: seq size: "<<theSequence.size()<<"\n";
     return true;
 } //End of loadSequence
 
