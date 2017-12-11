@@ -585,7 +585,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             short fileType;
             FileInputStream inputStream(fileToLoad);
             if(!midiFile.readFrom(inputStream))
-                jassert(false);
+                return false;
             //    std::cout << "numTracks " << midiFile.getNumTracks() << "\n";
             //    std::cout << "timeFormat " << midiFile.getTimeFormat() << "\n";
 
