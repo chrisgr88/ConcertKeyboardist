@@ -28,6 +28,7 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         audioDeviceManager.initialise (0, 2, savedAudioState, true);
         AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
         AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
+        std::cout << "Audio Device Initialized " << audioDeviceManager.getCurrentAudioDevice()->getName() << "\n";
 //        graph.addNode(&midiInNode,0);
 //        graph.addNode(&audioOutNode,4);
 //        graph.call
@@ -43,7 +44,6 @@ MainComponent::MainComponent(MIDIProcessor *p) :
                 break;
             }
         }
-//        const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
         audioDeviceManager.addMidiInputCallback (String(), processor);
         //processor->synthMessageCollectorReset(sampRate);
         addAndMakeVisible(viewerFrame);
@@ -103,21 +103,26 @@ void MainComponent::actionListenerCallback (const String& message)
     }
 };
 
- void MainComponent::loadPlugin (String  pluginId)
+ void MainComponent::loadPlugin (String  pluginId )
 {
-    const PluginDescription* desc = knownPluginList.getTypeForIdentifierString(pluginId);
-    if (desc != NULL)
+    if (pluginId.length() > 0)
     {
-        loadPlugin(desc);
+        const PluginDescription* desc = knownPluginList.getTypeForIdentifierString(pluginId);
+        if (desc != NULL)
+            loadPlugin(desc);
     }
 }
 void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
 {
-    processor->sequenceObject.thePlugin = nullptr;
     std::cout << "Loading plugin "<<pluginDescription->descriptiveName <<"\n";
-    const double sampRate = audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+    juce::AudioIODevice *curDevice =  audioDeviceManager.getCurrentAudioDevice();
+    if (curDevice==nullptr)
+        std::cout <<"No audio device \n";
+        
+    const double sampRate = curDevice->getCurrentSampleRate();
     const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
     String errorMsg;
+    processor->sequenceObject.thePlugin = nullptr;
     if (thePlugin)
     {
         thePlugin->suspendProcessing(true);
