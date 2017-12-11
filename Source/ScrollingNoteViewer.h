@@ -51,6 +51,7 @@ struct ViewStateInfo
     static float trackVerticalSize;
     static Array<Vertex> vertices;
     static Array<int> indices;
+    static bool openGLStarted;
 };
 //These are in the cpp file
 //int ViewStateInfo::initialWidth = 0;

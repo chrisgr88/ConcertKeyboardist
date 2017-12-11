@@ -34,6 +34,7 @@ float ViewStateInfo::horizontalScale = 1;
 float ViewStateInfo::trackVerticalSize = 0;
 Array<Vertex> ViewStateInfo::vertices;
 Array<int> ViewStateInfo::indices;
+bool ViewStateInfo::openGLStarted = false;
 
 GLint ScrollingNoteViewer::Uniforms::viewMatrixHandle;
 GLint ScrollingNoteViewer::Uniforms::projectionMatrixHandle;
@@ -785,6 +786,11 @@ void ScrollingNoteViewer::resetHorizontalShift() {
 //<#render#>
 void ScrollingNoteViewer::renderOpenGL()
 {
+    if (!ViewStateInfo::openGLStarted)
+    {
+        std::cout << "OpenGL Started after rewind\n";
+    }
+    
   try {
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
 //    if (renderingStartCounter>0)
@@ -953,6 +959,11 @@ void ScrollingNoteViewer::renderOpenGL()
       std::cout << " error noteviewer: render openGl" << e.what()<< "\n";
   }
     rendering = false;
+    if (!ViewStateInfo::openGLStarted)
+    {
+        std::cout << "OpenGL Completed after rewind\n";
+        ViewStateInfo::openGLStarted = true;
+    }
 }
 
 //shutdown openGL
@@ -1777,6 +1788,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             }
             setHorizontalShift(0);
             prevFileLoaded = processor->sequenceObject.fileToLoad;
+            ViewStateInfo::openGLStarted = false;
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_TWEEN)
         {
