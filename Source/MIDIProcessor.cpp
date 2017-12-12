@@ -1486,7 +1486,7 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
             }
             if (foundTargetNote) //There was a target note in this chord so chaining needs to be adjusted
             {
-                const double chordWidth = latestNoteTime - chordNotes.at(0)->getTimeStamp();
+//                const double chordWidth = latestNoteTime - chordNotes.at(0)->getTimeStamp();
 //                sequenceObject.chain(chordSteps, chordWidth);
             }
         }

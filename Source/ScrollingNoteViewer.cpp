@@ -35,6 +35,7 @@ float ViewStateInfo::trackVerticalSize = 0;
 Array<Vertex> ViewStateInfo::vertices;
 Array<int> ViewStateInfo::indices;
 bool ViewStateInfo::openGLStarted = false;
+bool ViewStateInfo::finishedPaintAfterRewind = false;
 
 GLint ScrollingNoteViewer::Uniforms::viewMatrixHandle;
 GLint ScrollingNoteViewer::Uniforms::projectionMatrixHandle;
@@ -787,18 +788,10 @@ void ScrollingNoteViewer::resetHorizontalShift() {
 void ScrollingNoteViewer::renderOpenGL()
 {
     if (!ViewStateInfo::openGLStarted)
-    {
         std::cout << "OpenGL Started after rewind\n";
-    }
     
   try {
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
-//    if (renderingStartCounter>0)
-//    {
-//        renderingStartCounter--;
-//        return;
-//    }
-//    std::cout << "render" << "\n";
     if (rebuidingGLBuffer)
         return;
     const ScopedLock myScopedLock (glRenderLock);
@@ -810,17 +803,16 @@ void ScrollingNoteViewer::renderOpenGL()
     
     desktopScale = (float) openGLContext.getRenderingScale();
     OpenGLHelpers::clear (Colour::greyLevel (0.1f));
-    
     if (glBufferUpdateCountdown > 0)
         glBufferUpdateCountdown--;
     if (ViewStateInfo::vertices.size()==0)
         std::cout << "No vertices" << "\n";
+      if (!ViewStateInfo::openGLStarted)
+          std::cout << "OpenGL at 'A' after rewind\n";
     if  (sequenceChanged && glBufferUpdateCountdown == 0)// && ViewStateInfo::vertices.size()>0)
     {
         glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
         resized();
-        int size = ViewStateInfo::vertices.size();
-//        std::cout << "vertices.size "<<size<<"\n";
         openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
         openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,
@@ -839,6 +831,8 @@ void ScrollingNoteViewer::renderOpenGL()
                                                ViewStateInfo::indices.getRawDataPointer(), GL_STATIC_DRAW);
         sequenceChanged = false;
     }
+    if (!ViewStateInfo::openGLStarted)
+      std::cout << "OpenGL at 'B' after rewind\n";
     if (processor->resetViewer)
     {
         processor->resetViewer = false;
@@ -872,6 +866,8 @@ void ScrollingNoteViewer::renderOpenGL()
     glUniformMatrix4fv(Uniforms::projectionMatrixHandle, 1, false, getProjectionMatrix(horizontalScale, ViewStateInfo::
                                                                                        verticalScale).mat);
     
+      if (!ViewStateInfo::openGLStarted)
+          std::cout << "OpenGL at 'C' after rewind\n";
     openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
     openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     
@@ -908,8 +904,8 @@ void ScrollingNoteViewer::renderOpenGL()
     //Get steps (that turned off or on) out of queue
     Array<int> stepsThatChanged;
     int num = processor->noteOnOffFifo.getNumReady();
-//    if (processor->noteOnOffFifo.getNumReady()>0)
-//        std::cout <<"fifo size " << processor->noteOnOffFifo.getNumReady() << "\n";
+      if (!ViewStateInfo::openGLStarted)
+          std::cout << "OpenGL at 'D' after rewind\n";
     if (num>0)
     {
         int start1, size1, start2, size2;
@@ -941,6 +937,8 @@ void ScrollingNoteViewer::renderOpenGL()
             }
         }
     }
+      if (!ViewStateInfo::openGLStarted)
+          std::cout << "OpenGL at 'E' after rewind\n";
     if (!processor->playing() || processor->waitingForFirstNote)
     {
         int step = processor->lastPlayedSeqStep+1;
@@ -1531,29 +1529,40 @@ void ScrollingNoteViewer::updatePlayedNotes()
 //###
 void ScrollingNoteViewer::paint (Graphics& g)
 {
-//    std::cout << "Entering paint \n";
+    if (!ViewStateInfo::finishedPaintAfterRewind)
+        std::cout << "Entering paint \n";
     if (rendering)
         return;
+    if (!ViewStateInfo::finishedPaintAfterRewind)
+        std::cout << "Entering paint - after rendering test \n";
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
     {
+        if (!ViewStateInfo::finishedPaintAfterRewind)
+            std::cout << "In paint - at 'A1' \n";
         const double hLinePos = 2.8 * horizontalScale + sequenceStartPixel + processor->leadLag * pixelsPerTick * horizontalScale;
-//        double tempoTime = sequenceStartPixel/(pixelsPerTick * horizontalScale) + processor->leadLag;
-//        std::cout << "processor->leadLag "<<processor->leadLag<<"\n";
         g.setColour (colourNoteOn);
         g.fillRect(Rectangle<float>(hLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
     }
     else
     {
+        if (!ViewStateInfo::finishedPaintAfterRewind)
+            std::cout << "In paint - at 'A2' \n";
         if (processor->getLastUserPlayedStepTime()>=0.0)
         {
             const double lastTime = processor->getLastUserPlayedStepTime() - processor->getTimeInTicks();
+            if (!ViewStateInfo::finishedPaintAfterRewind)
+                std::cout << "In paint - at 'A3' \n";
             const double hLinePos = 2.8 * horizontalScale + sequenceStartPixel + lastTime * pixelsPerTick * horizontalScale + horizontalShift;
             g.setColour (colourNoteOn);
+            if (!ViewStateInfo::finishedPaintAfterRewind)
+                std::cout << "In paint - at 'A4' \n";
             g.fillRect(Rectangle<float>(hLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
         }
     }
+    if (!ViewStateInfo::finishedPaintAfterRewind)
+        std::cout << "In paint - at 'A5' \n";
     if (processor->isPlaying)
     {
         //ZTL
@@ -1565,9 +1574,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
     else
         g.setColour (Colour(30,30,255).brighter()); //Blue
     g.fillRect(Rectangle<float>(sequenceStartPixel-1.f,0.0, 2.0, ViewStateInfo::viewHeight));
-//    //Handle at top of line
-//    g.setColour (Colour((uint8)190,(uint8)220,(uint8)0xff,(uint8)127));
-//    g.fillRect(Rectangle<float>(sequenceStartPixel-3.f,0.0, 6.0, (topMargin)*verticalScale));
     
     const int meas = processor->getMeasure(horizontalShift);
     const int totalMeas = (int) processor->sequenceObject.measureTimes.size();
@@ -1580,18 +1586,17 @@ void ScrollingNoteViewer::paint (Graphics& g)
         if (processor->sequenceObject.measureTimes.size()>0)
             g.drawText(measTxt, sequenceStartPixel+6, 3.0*ViewStateInfo::verticalScale, 150,
                        9*ViewStateInfo::verticalScale, juce::Justification::centredLeft);
-    
+    if (!ViewStateInfo::finishedPaintAfterRewind)
+        std::cout << "In paint - at 'B' \n";
     if (!processor->isPlaying)
     {
         if (processor->undoMgr->inRedo || processor->undoMgr->inUndo)
         {
-//            std::cout << "paint inUndo   " << "\n";
             displayedSelection.clear();
             for (int i=0;i<processor->sequenceObject.selectionToRestoreForUndoRedo.size();i++)
             {
                 displayedSelection.add(processor->sequenceObject.selectionToRestoreForUndoRedo.at(i)->currentStep);
             }
-//            displayedSelection = processor->sequenceObject.selectionToRestoreForUndoRedo;
             setSelectedNotes(displayedSelection);
             processor->undoMgr->inUndo = false;
             processor->undoMgr->inRedo = false;
@@ -1608,7 +1613,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
                                                      velY,
                                                      velX+6.0f*horizontalScale,
                                                      velY);
-//            const float trackVerticalSize = ((float)ViewStateInfo::viewHeight-ViewStateInfo::verticalScale*topMargin)/nKeys;
             const float fontHeight = jmin (14.0f, ViewStateInfo::trackVerticalSize * 8.0f);
             Font f = Font (fontHeight).withHorizontalScale (0.95f);
             f.setStyleFlags(Font::FontStyleFlags::bold);
@@ -1626,8 +1630,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
             for (int ch=0;ch<processor->sequenceObject.chords.size();ch++)
             {
                 const Rectangle<float> rct = processor->sequenceObject.chords.at(ch).chordRect.expanded(0.15, 0.0);
-//                if(processor->sequenceObject.chords.at(ch).timeStamp<100)
-//                    std::cout << "rct xLeft, xRight " << rct.getX() << " " << rct.getRight()<<"\n";
                 float widthFactor;
                 if (hoverChord==ch || processor->sequenceObject.chords.at(ch).chordSelected)
                 {
@@ -1647,8 +1649,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
                                rct.getY()*ViewStateInfo::verticalScale,
                                rct.getWidth()*horizontalScale * widthFactor,
                                rct.getHeight()*ViewStateInfo::verticalScale);
-//                if(processor->sequenceObject.chords.at(ch).timeStamp<100)
-//                    std::cout << "chordRect xLeft, xRight " << chordRect.getX() << " " << chordRect.getRight()<<"\n";
                 g.fillRect(chordRect);
                 
                 for (int np=0;np<processor->sequenceObject.chords.at(ch).notePointers.size();np++)
@@ -1662,26 +1662,15 @@ void ScrollingNoteViewer::paint (Graphics& g)
                     Rectangle<float> connectorRect = Rectangle<float>(chordRect.getX(), headRct.getBottom()-1.0*ViewStateInfo::verticalScale,
                                                         headRct.getRight()-chordRect.getX(),1.0*ViewStateInfo::verticalScale);
                     connectorRect.setLeft(chordRect.getTopLeft().getX());
-//                    if(processor->sequenceObject.chords.at(ch).timeStamp<100)
-//                        std::cout << "connectorRect xLeft, xRight " << connectorRect.getX() << " " << connectorRect.getRight()<<"\n";
                     g.fillRect(connectorRect);
                 }
             }
         }
-        
-//        std::cout << "Paint "<< "\n"
-        //Paint the selection rectangles and green velocity graph
+        if (!ViewStateInfo::finishedPaintAfterRewind)
+            std::cout << "In paint - at 'C' \n";
         Point<float> prevVelPoint;
-//        std::cout << "in Paint: verticalScale "<< ViewStateInfo::verticalScale<<"\n";
         for (int i=0;i<displayedSelection.size();i++)
         {
-//            std::cout << "Paint DisplayedSelection "
-//            <<" "<<(processor->undoMgr->inRedo || processor->undoMgr->inUndo)
-//            <<" "<<pSequence->at(displayedSelection[i])
-//            <<" isSelected-> "<<pSequence->at(displayedSelection[i])->isSelected
-//            <<" "<<displayedSelection[i]
-//            <<" "<<pSequence->at(displayedSelection[i])->currentStep
-//            <<"\n";
             const Rectangle<float> scaledHead = pSequence->at(displayedSelection[i])->head;
             const Rectangle<float> head = Rectangle<float>(
                  scaledHead.getX()*horizontalScale+sequenceStartPixel+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
@@ -1707,7 +1696,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 prevVelPoint = velPoint;
             }
         }
-        
+        if (!ViewStateInfo::finishedPaintAfterRewind)
+            std::cout << "In paint - at 'D' \n";
         g.setColour (Colours::yellow);
         if (selecting)
             g.drawRect(selectionRect,2);
@@ -1716,7 +1706,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
         {
             if (draggingTime && hoverStep>=0)
             {
-    //            std::cout << "draggingTime" << "\n";
                 g.setColour (Colour(0xFFF0F0FF));
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
                 Rectangle<float> guideLine = Rectangle<float>(
@@ -1735,7 +1724,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
             }
             else if (draggingOffTime && hoverStep>=0)
             {
-                //std::cout << "draggingOffTime" << "\n";
                 g.setColour (Colour(0xFFF0F0FF));
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
                 Rectangle<float> guideLine = Rectangle<float>(
@@ -1752,7 +1740,11 @@ void ScrollingNoteViewer::paint (Graphics& g)
             }
         }
     }
-//    std::cout << "Leaving paint \n";
+    if (!ViewStateInfo::finishedPaintAfterRewind)
+    {
+        std::cout << "finishedPaintAfterRewind \n";
+        ViewStateInfo::finishedPaintAfterRewind = true;
+    }
 }
 
 void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
@@ -1789,6 +1781,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             setHorizontalShift(0);
             prevFileLoaded = processor->sequenceObject.fileToLoad;
             ViewStateInfo::openGLStarted = false;
+            ViewStateInfo::finishedPaintAfterRewind = false;
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_TWEEN)
         {
@@ -2119,31 +2112,33 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 int xInTicksRight = -1;
                 Rectangle<float> selRect = Rectangle<float>();
                 if (!ModifierKeys::getCurrentModifiers().isCommandDown())
-                //Use latest point to extend the selection region (region may be a Rectangle or Path)
-                if (selectionAnchor.getX() > curDragPosition.getX())
                 {
-                    if (selectionAnchor.getY() > curDragPosition.getY())
+                    //Use latest point to extend the selection region (region may be a Rectangle or Path)
+                    if (selectionAnchor.getX() > curDragPosition.getX())
                     {
-                        selectionRect = Rectangle<int>::leftTopRightBottom(curDragPosition.getX(), curDragPosition.getY(),
-                                                                           selectionAnchor.getX(), selectionAnchor.getY());
+                        if (selectionAnchor.getY() > curDragPosition.getY())
+                        {
+                            selectionRect = Rectangle<int>::leftTopRightBottom(curDragPosition.getX(), curDragPosition.getY(),
+                                                                               selectionAnchor.getX(), selectionAnchor.getY());
+                        }
+                        else
+                        {
+                            selectionRect = Rectangle<int>::leftTopRightBottom(curDragPosition.getX(), selectionAnchor.getY(),
+                                                                               selectionAnchor.getX(), curDragPosition.getY());
+                        }
                     }
                     else
                     {
-                        selectionRect = Rectangle<int>::leftTopRightBottom(curDragPosition.getX(), selectionAnchor.getY(),
-                                                                           selectionAnchor.getX(), curDragPosition.getY());
-                    }
-                }
-                else
-                {
-                    if (selectionAnchor.getY() > curDragPosition.getY())
-                    {
-                        selectionRect = Rectangle<int>::leftTopRightBottom(selectionAnchor.getX(), curDragPosition.getY(),
-                                                                           curDragPosition.getX(), selectionAnchor.getY());
-                    }
-                    else
-                    {
-                        selectionRect = Rectangle<int>::leftTopRightBottom(selectionAnchor.getX(), selectionAnchor.getY(),
-                                                                           curDragPosition.getX(),curDragPosition.getY());
+                        if (selectionAnchor.getY() > curDragPosition.getY())
+                        {
+                            selectionRect = Rectangle<int>::leftTopRightBottom(selectionAnchor.getX(), curDragPosition.getY(),
+                                                                               curDragPosition.getX(), selectionAnchor.getY());
+                        }
+                        else
+                        {
+                            selectionRect = Rectangle<int>::leftTopRightBottom(selectionAnchor.getX(), selectionAnchor.getY(),
+                                                                               curDragPosition.getX(),curDragPosition.getY());
+                        }
                     }
                 }
                 

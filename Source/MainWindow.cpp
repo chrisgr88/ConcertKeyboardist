@@ -109,8 +109,8 @@ ApplicationProperties& getAppProperties();
     MainWindow::MainWindow (String name) : DocumentWindow (name, Colour(25,25,25), DocumentWindow::allButtons)
     {
         Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
-        int screenWidth = r.getWidth();
-        int screenHeight = r.getHeight();
+//        int screenWidth = r.getWidth();
+//        int screenHeight = r.getHeight();
         midiProcessor.midiOutEnabled = false;
         midiProcessor.pluginEnabled = false;
         ckBlockClosing = false;
