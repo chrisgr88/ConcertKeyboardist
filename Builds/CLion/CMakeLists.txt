@@ -13,7 +13,7 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 if (APPLE)
 
-project ("ConcertKeyboardist" C CXX)
+project (ConcertKeyboardist C CXX)
 
 add_executable (APP
     "../../Source/TracksComponent.h"
@@ -405,6 +405,7 @@ add_executable (APP
     "../../JuceLibraryCode/modules/juce_core/containers/juce_HashMap.h"
     "../../JuceLibraryCode/modules/juce_core/containers/juce_HashMap_test.cpp"
     "../../JuceLibraryCode/modules/juce_core/containers/juce_LinkedListPointer.h"
+    "../../JuceLibraryCode/modules/juce_core/containers/juce_ListenerList.cpp"
     "../../JuceLibraryCode/modules/juce_core/containers/juce_ListenerList.h"
     "../../JuceLibraryCode/modules/juce_core/containers/juce_NamedValueSet.cpp"
     "../../JuceLibraryCode/modules/juce_core/containers/juce_NamedValueSet.h"
@@ -925,6 +926,8 @@ add_executable (APP
     "../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableText.cpp"
     "../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableText.h"
     "../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_SVGParser.cpp"
+    "../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_ContentSharer.cpp"
+    "../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_ContentSharer.h"
     "../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsDisplayComponent.cpp"
     "../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsDisplayComponent.h"
     "../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsList.cpp"
@@ -1050,9 +1053,11 @@ add_executable (APP
     "../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_SelectedItemSet.h"
     "../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_TextDragAndDropTarget.h"
     "../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_TooltipClient.h"
+    "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_ContentSharer.cpp"
     "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_FileChooser.cpp"
     "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_Windowing.cpp"
     "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_common_MimeTypes.cpp"
+    "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_ContentSharer.cpp"
     "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_FileChooser.mm"
     "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_UIViewComponentPeer.mm"
     "../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_Windowing.mm"
@@ -1660,6 +1665,7 @@ set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers/juce_HashMap.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers/juce_HashMap_test.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers/juce_LinkedListPointer.h" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers/juce_ListenerList.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers/juce_ListenerList.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers/juce_NamedValueSet.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_core/containers/juce_NamedValueSet.h" PROPERTIES HEADER_FILE_ONLY TRUE)
@@ -2180,6 +2186,8 @@ set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/draw
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableText.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableText.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_SVGParser.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_ContentSharer.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_ContentSharer.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsDisplayComponent.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsDisplayComponent.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsList.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
@@ -2305,9 +2313,11 @@ set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/mous
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_SelectedItemSet.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_TextDragAndDropTarget.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_TooltipClient.h" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_ContentSharer.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_FileChooser.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_Windowing.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_common_MimeTypes.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_ContentSharer.cpp" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_FileChooser.mm" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_UIViewComponentPeer.mm" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties ("../../JuceLibraryCode/modules/juce_gui_basics/native/juce_ios_Windowing.mm" PROPERTIES HEADER_FILE_ONLY TRUE)
@@ -2522,8 +2532,6 @@ set_source_files_properties ("../../JuceLibraryCode/JuceHeader.h" PROPERTIES HEA
 
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
 
-execute_process (COMMAND uname -m OUTPUT_VARIABLE JUCE_ARCH_LABEL OUTPUT_STRIP_TRAILING_WHITESPACE)
-
 target_include_directories (APP PRIVATE
     "/Users/chrisgr/SDKs/VST3 SDK"
     "../../JuceLibraryCode"
@@ -2548,29 +2556,26 @@ target_compile_definitions (APP PRIVATE
 target_compile_options (APP PRIVATE
     -mmacosx-version-min=10.10
     -O0
+    -std=c++11
 )
 
 set_target_properties (APP PROPERTIES
     OUTPUT_NAME "ConcertKeyboardist"
-    CXX_STANDARD 11
-    CXX_EXTENSIONS OFF
     XCODE_ATTRIBUTE_CLANG_LINK_OBJC_RUNTIME NO
     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Mac Developer"
     XCODE_ATTRIBUTE_COMBINE_HIDPI_IMAGES YES
     XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "$(PROJECT_DIR)/build/$(CONFIGURATION)"
     XCODE_ATTRIBUTE_COPY_PHASE_STRIP NO
-    XCODE_ATTRIBUTE_DEVELOPMENT_TEAM Y6ELW6M79S
     XCODE_ATTRIBUTE_GCC_DYNAMIC_NO_PIC NO
     XCODE_ATTRIBUTE_GCC_VERSION com.apple.compilers.llvm.clang.1_0
-    XCODE_ATTRIBUTE_INFOPLIST_FILE "/Users/chrisgr/CK/Builds/CLion/Debug-Info-App.plist"
+    XCODE_ATTRIBUTE_INFOPLIST_FILE "/Users/chrisgr/ConcertKeyboardist/Builds/CLion/Debug-Info-App.plist"
     XCODE_ATTRIBUTE_INFOPLIST_PREPROCESS NO
     XCODE_ATTRIBUTE_INSTALL_PATH "$(HOME)/Applications"
     XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET_ppc 10.4
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER com.concertkeyboardist
-    XCODE_ATTRIBUTE_PROVISIONING_PROFILE_SPECIFIER ""
     XCODE_ATTRIBUTE_SDKROOT_ppc macosx10.5
     XCODE_ATTRIBUTE_USE_HEADERMAP NO
-    MACOSX_BUNDLE_INFO_PLIST "/Users/chrisgr/CK/Builds/CLion/Debug-Info-App.plist"
+    MACOSX_BUNDLE_INFO_PLIST "/Users/chrisgr/ConcertKeyboardist/Builds/CLion/Debug-Info-App.plist"
     XCODE_ATTRIBUTE_PRODUCT_NAME "ConcertKeyboardist"
     MACOSX_BUNDLE TRUE
 )
@@ -2605,8 +2610,6 @@ endif (CMAKE_BUILD_TYPE STREQUAL Debug)
 
 if (CMAKE_BUILD_TYPE STREQUAL Release)
 
-execute_process (COMMAND uname -m OUTPUT_VARIABLE JUCE_ARCH_LABEL OUTPUT_STRIP_TRAILING_WHITESPACE)
-
 target_include_directories (APP PRIVATE
     "/Users/chrisgr/SDKs/VST3 SDK"
     "../../JuceLibraryCode"
@@ -2631,30 +2634,26 @@ target_compile_definitions (APP PRIVATE
 target_compile_options (APP PRIVATE
     -mmacosx-version-min=10.10
     -O3
+    -std=c++11
 )
 
 set_target_properties (APP PROPERTIES
     OUTPUT_NAME "ConcertKeyboardist"
-    CXX_STANDARD 11
-    CXX_EXTENSIONS OFF
     XCODE_ATTRIBUTE_CLANG_LINK_OBJC_RUNTIME NO
-    XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Mac Developer"
     XCODE_ATTRIBUTE_COMBINE_HIDPI_IMAGES YES
     XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "$(PROJECT_DIR)/build/$(CONFIGURATION)"
     XCODE_ATTRIBUTE_DEAD_CODE_STRIPPING YES
-    XCODE_ATTRIBUTE_DEVELOPMENT_TEAM Y6ELW6M79S
     XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS NO
     XCODE_ATTRIBUTE_GCC_SYMBOLS_PRIVATE_EXTERN YES
     XCODE_ATTRIBUTE_GCC_VERSION com.apple.compilers.llvm.clang.1_0
-    XCODE_ATTRIBUTE_INFOPLIST_FILE "/Users/chrisgr/CK/Builds/CLion/Release-Info-App.plist"
+    XCODE_ATTRIBUTE_INFOPLIST_FILE "/Users/chrisgr/ConcertKeyboardist/Builds/CLion/Release-Info-App.plist"
     XCODE_ATTRIBUTE_INFOPLIST_PREPROCESS NO
     XCODE_ATTRIBUTE_INSTALL_PATH "$(HOME)/Applications"
     XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET_ppc 10.4
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER com.concertkeyboardist
-    XCODE_ATTRIBUTE_PROVISIONING_PROFILE_SPECIFIER ""
     XCODE_ATTRIBUTE_SDKROOT_ppc macosx10.5
     XCODE_ATTRIBUTE_USE_HEADERMAP NO
-    MACOSX_BUNDLE_INFO_PLIST "/Users/chrisgr/CK/Builds/CLion/Release-Info-App.plist"
+    MACOSX_BUNDLE_INFO_PLIST "/Users/chrisgr/ConcertKeyboardist/Builds/CLion/Release-Info-App.plist"
     XCODE_ATTRIBUTE_PRODUCT_NAME "ConcertKeyboardist"
     MACOSX_BUNDLE TRUE
 )
