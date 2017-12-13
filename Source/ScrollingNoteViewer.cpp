@@ -1026,8 +1026,9 @@ void ScrollingNoteViewer::createShaders()
 //==============================================================================
 void ScrollingNoteViewer::makeKeyboard()
 {
-    if (rendering)
-        return;
+    std::cout << "Entering makeKeyboard \n";
+//    if (rendering)
+//        return;
     ticksPerQuarter = processor->sequenceObject.getPPQ();
     timeSigChanges = processor->sequenceObject.getTimeSigInfo();
     timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);

@@ -131,24 +131,25 @@ void focusLost (ScrollingNoteViewer::FocusChangeType cause)
 
 void ViewerFrame::timerCallback()
 {
-//    if(processor->sequenceObject.propertiesChanged)
-//    {
-        String plugin;
-        if (processor->sequenceObject.thePlugin)
-        {
-            plugin = " playing "+processor->sequenceObject.thePlugin->getName();
-            int progNum = processor->sequenceObject.thePlugin->getCurrentProgram();
-            if (progNum>=0)
-                plugin = plugin + " (" +processor->sequenceObject.thePlugin->getProgramName(progNum)+")";
-        }
-        String txt = processor->sequenceObject.getScoreFileName();
-        getTopLevelComponent()->setName ("Concert Keyboardist - " + processor->sequenceObject.getScoreFileName() + plugin);
-//        repaint();
-        processor->sequenceObject.propertiesChanged = false;
-//    }
+    static String prevName = "";
+    String plugin;
+    if (processor->sequenceObject.thePlugin)
+    {
+        plugin = " playing "+processor->sequenceObject.thePlugin->getName();
+        int progNum = processor->sequenceObject.thePlugin->getCurrentProgram();
+        if (progNum>=0)
+            plugin = plugin + " (" +processor->sequenceObject.thePlugin->getProgramName(progNum)+")";
+    }
+    String txt = processor->sequenceObject.getScoreFileName();
+    const String newName = "Concert Keyboardist - " + processor->sequenceObject.getScoreFileName() + plugin;
+    if (prevName != newName)
+    {
+        getTopLevelComponent()->setName (newName);
+        repaint();
+    }
+    processor->sequenceObject.propertiesChanged = false;
     if (pChainAmountBox->returnPressed)
     {
-        std::cout << "Return pressed - chainAmount" <<pChainAmountBox->textBox.getText().getDoubleValue()<<"\n";
         chainAmount = pChainAmountBox->textBox.getText().getDoubleValue()*60.0;
         sendActionMessage("chain:"+String(chainAmount));
         grabKeyboardFocus();
@@ -156,8 +157,6 @@ void ViewerFrame::timerCallback()
     }
     if (pHumanizeStartTime->returnPressed)
     {
-        //        std::cout << "HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
-        //        humanizeTimeAmount = pHumanizeStartTime->textBox.getText();
         sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
         grabKeyboardFocus();
         pHumanizeStartTime->returnPressed = false;
@@ -170,22 +169,22 @@ void ViewerFrame::timerCallback()
         for (int i=0;i<temp.length();i++)
             if (temp.substring(i,i+1).containsAnyOf  (".0123456789,"))
                 humanizeVelocityAmount.append(temp.substring(i,i+1), 1);
-                
+    
         sendActionMessage("humanizeVelocity:"+String(humanizeVelocityAmount));
         grabKeyboardFocus();
         pHumanizeVelocity->returnPressed = false;
     }
     if (pAdjustedTempo->changed)
-    {//!
+    {
         if (processor->sequenceObject.tempoChanges.size()>0)
         {
-            std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getValue() << "\n";
-            const int ztlTime = processor->getZTLTime(noteViewer.horizontalShift);
-            const double tempoMult =    pAdjustedTempo->numberBox.getValue()/
-                                        processor->sequenceObject.getTempo(ztlTime,processor->sequenceObject.tempoChanges);
-            processor->setTempoMultiplier(tempoMult, ztlTime, true);
-            pAdjustedTempo->changed = false;
-            grabKeyboardFocus();
+                std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getValue() << "\n";
+                const int ztlTime = processor->getZTLTime(noteViewer.horizontalShift);
+                const double tempoMult =    pAdjustedTempo->numberBox.getValue()/
+                                            processor->sequenceObject.getTempo(ztlTime,processor->sequenceObject.tempoChanges);
+                processor->setTempoMultiplier(tempoMult, ztlTime, true);
+                pAdjustedTempo->changed = false;
+                grabKeyboardFocus();
         }
     }
     else

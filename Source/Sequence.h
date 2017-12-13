@@ -48,6 +48,8 @@ public:
     bool loadedCkfFile;
     bool alreadyChained; //Either loaded from ckf file or first chaining of midi file has been completed
     bool propertiesChanged = false;
+    int minNote = 127;
+    int maxNote = 0;
     
     String getDocumentTitle() override
     {
@@ -211,7 +213,7 @@ public:
     }
 //    std::vector<NoteWithOffTime*> getNotesInTimeRange(double minTimeStamp, double maxTimeStamp);
     Array<MidiMessage> getCurrentTimeSig(double timeStamp);
-    SortedSet<int> getNotesUsed(int &minNote, int &maxNote);
+    void getNotesUsed(int &minNote, int &maxNote);
     
     bool loadingFile;
     void setLoadingFile(bool loading)

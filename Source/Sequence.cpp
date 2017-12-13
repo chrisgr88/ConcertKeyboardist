@@ -1278,6 +1278,8 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             std::sort(theControllers.begin(), theControllers.end());
             //Remove exact duplicate notes
             std::shared_ptr<NoteWithOffTime> pPrevMsg = NULL;
+            minNote = 127;
+            maxNote = 0;
             for (int step=0; step<theSequence.size();step++)
             {
                 if (pPrevMsg!=NULL && pPrevMsg->channel==theSequence.at(step)->channel &&
@@ -1286,6 +1288,12 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                     theSequence.erase(theSequence.begin()+step);
                 else
                     pPrevMsg = theSequence[step];
+
+                const int note = theSequence.at(step)->noteNumber;
+                if (note<minNote)
+                    minNote = note;
+                if (note>maxNote)
+                    maxNote = note;
             }
             seqDurationInTicks = 0.0;
             for (int step=0;step<theSequence.size();step++)
@@ -1617,21 +1625,11 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
     return true;
 } //End of loadSequence
 
-SortedSet<int> Sequence::getNotesUsed(int &minNote, int &maxNote)
+void Sequence::getNotesUsed(int &minNt, int &maxNt)
 {
-    SortedSet<int> used;
-    minNote = 127;
-    maxNote = 0;
-    for (int noteIndex=0;noteIndex<theSequence.size();noteIndex++)
-    {
-        const int note = theSequence.at(noteIndex)->noteNumber;
-        used.add(note);
-        if (note<minNote)
-            minNote = note;
-        if (note>maxNote)
-            maxNote = note;
-    }
-    return used;
+    minNt = minNote;
+    maxNt = maxNote;
+    return;
 }
 
 uint Sequence::varintLength(char* input, uint inputSize) {
