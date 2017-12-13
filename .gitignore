@@ -27,6 +27,7 @@ contents.xcworkspacedata
 .deps
 .dirstamp
 profile
+**/.pbxproj
 **/JuceLibraryCode
 **/MacOSX/build
 **/iOS/build
@@ -60,6 +61,7 @@ profile
 **/Builds/Android/lib/.externalNativeBuild
 **/Builds/CLion/cmake-build-*
 **/Builds/CLion/.idea
+**/Builds/CLion/CMakeLists.txt
 **/doxygen/doc
 **/doxygen/build
 extras/Projucer/JUCECompileEngine.dylib
