@@ -190,7 +190,7 @@
 					AE713E02211D4AF9C4DC73A5,
 					F4F1E789793E28D38095C1BD,
 					79153CFD4898987E0EF1BEB6,
-					0CF94304A5E447EC9F2F8CE4, ); name = "JUCE Modules"; sourceTree = "<group>"; };
+					0CF94304A5E447EC9F2F8CE4, ); name = "Juce Modules"; sourceTree = "<group>"; };
 		8FD50932910B01056900DB55 = {isa = PBXGroup; children = (
 					0364DE831A6E6B4B0A83D3D1,
 					F770F05453C3C80A3CA80752,
@@ -210,7 +210,7 @@
 					7145572555EFA675AA824857,
 					949572AC6185AEDD8DA7AC70,
 					5CD5151791301437FBA3AD15,
-					FE31FF67DA4B994486AF30B5, ); name = "JUCE Library Code"; sourceTree = "<group>"; };
+					FE31FF67DA4B994486AF30B5, ); name = "Juce Library Code"; sourceTree = "<group>"; };
 		43FDB2C2DEB73A9729490F71 = {isa = PBXGroup; children = (
 					A7A229511154A5A91A29958D,
 					E5C4971A074E256933C65C7A,
@@ -242,7 +242,6 @@
 					27CABD79CAE4AAD868B6F6AE,
 					D2EAA17C8503A297B197A159, ); name = Source; sourceTree = "<group>"; };
 		2FFE5285CB0A07579D491975 = {isa = XCBuildConfiguration; buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
@@ -250,7 +249,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = Y6ELW6M79S;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -272,10 +270,8 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_BUNDLE_IDENTIFIER = com.concertkeyboardist;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				USE_HEADERMAP = NO; }; name = Debug; };
 		74219C60B6FB3AD61BD5CD12 = {isa = XCBuildConfiguration; buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
@@ -283,7 +279,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = Y6ELW6M79S;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -306,7 +301,6 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_BUNDLE_IDENTIFIER = com.concertkeyboardist;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				USE_HEADERMAP = NO; }; name = Release; };
 		FEF5C4C4E770A72077867343 = {isa = XCBuildConfiguration; buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -445,7 +439,7 @@
 					518008B4BCAC2EDE2921458A,
 					EF758DF42F97B8D22FD35F80,
 					AF94D754542EEF998EE0EF72, ); buildRules = ( ); dependencies = (  ); name = "ConcertKeyboardist - App"; productName = ConcertKeyboardist; productReference = BCC50B48B1A4B967949B2DB2; productType = "com.apple.product-type.application"; };
-		9606743A47FFF871B775B1AB = {isa = PBXProject; buildConfigurationList = CC7502C8943D2FC599DFC557; attributes = { LastUpgradeCheck = 0830; ORGANIZATIONNAME = ""; TargetAttributes = { 0DF05A38ED8E8BF6EB7D9C5C = { DevelopmentTeam = Y6ELW6M79S; ProvisioningStyle = Automatic; SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 9F958921F12E7C784E909D34; projectDirPath = ""; projectRoot = ""; targets = (0DF05A38ED8E8BF6EB7D9C5C); };
+		9606743A47FFF871B775B1AB = {isa = PBXProject; buildConfigurationList = CC7502C8943D2FC599DFC557; attributes = { LastUpgradeCheck = 0830; TargetAttributes = { 0DF05A38ED8E8BF6EB7D9C5C = { DevelopmentTeam = Y6ELW6M79S; SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 9F958921F12E7C784E909D34; projectDirPath = ""; projectRoot = ""; targets = (0DF05A38ED8E8BF6EB7D9C5C); };
 	};
 	rootObject = 9606743A47FFF871B775B1AB;
 }

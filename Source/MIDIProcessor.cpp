@@ -223,6 +223,9 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
     try {
         pauseProcessing = true;
         listenStep = 0;
+        lastPlayedSeqStep = -1;
+        lastUserPlayedSeqStep = -1;
+        lastPlayedNoteStep = -1;
         if (listenSequence.size()>0)
         {
             while (time > listenSequence.at(listenStep).timeStamp)
@@ -1486,7 +1489,7 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
             }
             if (foundTargetNote) //There was a target note in this chord so chaining needs to be adjusted
             {
-                const double chordWidth = latestNoteTime - chordNotes.at(0)->getTimeStamp();
+//                const double chordWidth = latestNoteTime - chordNotes.at(0)->getTimeStamp();
 //                sequenceObject.chain(chordSteps, chordWidth);
             }
         }

@@ -93,9 +93,9 @@ altToolbarFactory(this)
     hoverStepInfo.setColour (Label::textColourId, Colours::lightgrey);
     
 //    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
-    scoreTempoLabel.setFont (Font (18.00f, Font::plain ));
+    scoreTempoLabel.setFont (Font (19.00f, Font::plain ));
     scoreTempoLabel.setJustificationType (Justification::left);
-    scoreTempoLabel.setColour (Label::textColourId, Colours::grey);
+    scoreTempoLabel.setColour (Label::textColourId, Colour(206,206,206));
     addAndMakeVisible (scoreTempoLabel);
     
 //    adjustedTempoLabel.setText("BPM",NotificationType::dontSendNotification);
@@ -471,7 +471,6 @@ void ViewerFrame::resized()
 //        mainToolbar.setBounds (shifted);
 //    }
 
-//    scoreTempoLabel.setBounds(205+278+60+33-130-14, noteViewer.getHeight()+tbH+2, 70, noteViewer.getToolbarHeight()-1);
     const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + 250 - 4;
     scoreTempoLabel.setBounds(adjTempoLeft, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth+2,
                               70, noteViewer.getToolbarHeight()-1);

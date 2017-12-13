@@ -117,7 +117,16 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     std::cout << "Loading plugin "<<pluginDescription->descriptiveName <<"\n";
     juce::AudioIODevice *curDevice =  audioDeviceManager.getCurrentAudioDevice();
     if (curDevice==nullptr)
-        std::cout <<"No audio device \n";
+    {
+        std::cout <<"No audio device so restart audioDeviceManager\n";
+        audioDeviceManager.restartLastAudioDevice();
+    }
+    curDevice =  audioDeviceManager.getCurrentAudioDevice();
+    if (curDevice==nullptr)
+    {
+        std::cout <<"Still No audio device \n";
+        return;
+    }
         
     const double sampRate = curDevice->getCurrentSampleRate();
     const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();

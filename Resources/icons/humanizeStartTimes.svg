@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
     <g id="background" transform="matrix(0.484619,0,0,0.536785,6.5,6.4)">
         <rect x="0" y="0" width="32" height="32" style="fill:none;"/>
     </g>
@@ -8,24 +8,24 @@
         <rect x="4" y="4" width="24" height="24" style="fill:rgb(251,0,251);"/>
     </g>
     <g id="stop1" transform="matrix(0.495314,0,0,0.178928,9.90009,6.09145)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(164,122,160);"/>
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(163,122,159);"/>
     </g>
-    <g id="stop2" transform="matrix(0.205792,0,0,0.178928,10.6464,10.9314)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(161,148,161);"/>
+    <g id="stop2" serif:id="stop" transform="matrix(0.205792,0,0,0.178928,10.6464,10.9314)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(206,206,206);"/>
     </g>
-    <g id="stop11" transform="matrix(0.279989,0,0,0.178928,15.2484,10.9542)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(162,121,158);"/>
+    <g id="stop11" serif:id="stop1" transform="matrix(0.279989,0,0,0.178928,15.2484,10.9542)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(163,122,159);"/>
     </g>
-    <g id="stop3" transform="matrix(0.205792,0,0,0.178928,6.76967,15.7073)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(161,148,161);"/>
+    <g id="stop3" serif:id="stop" transform="matrix(0.205792,0,0,0.178928,6.76967,15.7073)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(206,206,206);"/>
     </g>
-    <g id="stop12" transform="matrix(0.497555,0,0,0.178928,10.5015,15.7433)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(162,121,158);"/>
+    <g id="stop12" serif:id="stop1" transform="matrix(0.497555,0,0,0.178928,10.5015,15.7433)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(163,122,159);"/>
     </g>
-    <g id="stop4" transform="matrix(0.205792,0,0,0.178928,9.60718,20.5289)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(161,148,161);"/>
+    <g id="stop4" serif:id="stop" transform="matrix(0.205792,0,0,0.178928,9.60718,20.5289)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(206,206,206);"/>
     </g>
-    <g id="stop13" transform="matrix(0.359987,0,0,0.178928,13.8893,20.5649)">
-        <rect x="4" y="4" width="24" height="24" style="fill:rgb(162,121,158);"/>
+    <g id="stop13" serif:id="stop1" transform="matrix(0.359987,0,0,0.178928,13.8893,20.5649)">
+        <rect x="4" y="4" width="24" height="24" style="fill:rgb(163,122,159);"/>
     </g>
 </svg>
