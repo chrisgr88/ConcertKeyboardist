@@ -675,7 +675,7 @@ private:
                 textBox.setMouseClickGrabsKeyboardFocus(false);
                 textBox.setPopupMenuEnabled (false);
                 textBox.setFont (Font (Font::getDefaultSerifFontName(), 19.00f, Font::plain));
-                textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(64,64,64));
+                textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(32,64,200));
                 textBox.setColour (TextEditor::ColourIds::textColourId, Colour(206,206,206));
                 textBox.setBounds (180, 30, 80, 10);
                 textBox.setTooltip("Tempo From Midi File");

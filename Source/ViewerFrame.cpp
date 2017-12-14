@@ -40,7 +40,9 @@ altToolbarFactory(this)
         if (id == MainToolbarItemFactory::ToolbarItemIds::chainAmountBox)
         {
             pChainAmountBox = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
-            pChainAmountBox->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
+            pChainAmountBox->textBox.setColour(TextEditor::ColourIds::backgroundColourId, Colour(64,64,64));
+            pChainAmountBox->textBox.setColour (TextEditor::ColourIds::textColourId, Colour(206,206,206));
+            pChainAmountBox->textBox.setColour (TextEditor::ColourIds::highlightedTextColourId, Colours::white);
             pChainAmountBox->setWidth(35);
             pChainAmountBox->textBox.setText("2.0");
             chainAmount = 120.0;
@@ -440,7 +442,7 @@ void ViewerFrame::paint (Graphics& g)
                248,
                2*(separatorLineWidth+noteViewer.getToolbarHeight()));
     g.setColour(Colour(127,127,127));
-    g.fillRect(248,
+    g.fillRect(248+noteViewer.getKeysWidth(),
                noteViewer.getHeight(),
                2,
                2*(separatorLineWidth+noteViewer.getToolbarHeight()));
@@ -448,8 +450,8 @@ void ViewerFrame::paint (Graphics& g)
     g.drawImageAt(noteViewer.getKeysImage(), 0, 0); //Keyboard
     //Lines between toolbars
     g.setColour(Colour(127,127,127));
-    g.fillRect(noteViewer.getKeysWidth(), noteViewer.getHeight(), getWidth(), separatorLineWidth);
-    g.fillRect(250, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth, getWidth(), separatorLineWidth);
+    g.fillRect(noteViewer.getKeysWidth(), noteViewer.getHeight(),     getWidth(), separatorLineWidth);
+    g.fillRect(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth,     getWidth(), separatorLineWidth);
 }
 
 void ViewerFrame::resized()
@@ -458,9 +460,9 @@ void ViewerFrame::resized()
 
     noteViewer.setBounds(noteViewer.getKeysWidth(), 0, getWidth()-noteViewer.getKeysWidth(), getHeight()-tbH*2-separatorLineWidth*2);
 
-    mainToolbar.setBounds(250, noteViewer.getHeight()+separatorLineWidth, getWidth(), tbH);
+    mainToolbar.setBounds(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+separatorLineWidth, getWidth(), tbH);
 
-    altToolbar.setBounds(250, noteViewer.getHeight()+tbH+separatorLineWidth*2, getWidth(), tbH);
+    altToolbar.setBounds(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+tbH+separatorLineWidth*2, getWidth(), tbH);
 
 //    altToolbarVisible = true;
 //    if (altToolbarVisible)
