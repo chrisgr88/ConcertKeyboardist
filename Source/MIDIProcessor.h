@@ -66,14 +66,13 @@ public:
     
     void loadFromUserSpecifiedFile ()//const bool showMessageOnFailure)
     {
-        //    WildcardFileFilter filt = WildcardFileFilter("*.mid;*.ckf;*.ppf", "*", "Midi or ConcertKeyboardist files");
-        
+#if JUCE_IOS
         auto ckDocs = File::getSpecialLocation(File::currentApplicationFile);
-        Array<juce::File> results;
-        ckDocs.findChildFiles(results, juce::File::TypesOfFileToFind::findFilesAndDirectories , true,"*.mid");
-        std::cout << "files in Docments directory "<< results.size() <<"\n";
-        
         FileChooser chooser ("Open Sequence", ckDocs, "*.mid",  true);
+#else
+        FileChooser chooser ("Open Sequence",File(),"*.ckf;*.mid;*.ppf", true);
+#endif
+        
         //                    getLastDocumentOpened(),
         //                    "*.mid;*.ckf;*.ppf");
         //

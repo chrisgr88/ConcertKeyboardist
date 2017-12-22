@@ -18,7 +18,7 @@
 #include <random>
 
 const char* const filenameSuffix = ".ckf";
-const char* const filenameWildcard = "*.mid;*.ckf;*.ppf";
+const char* const filenameWildcard = "*.mid";
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 

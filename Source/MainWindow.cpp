@@ -123,22 +123,9 @@ ApplicationProperties& getAppProperties();
         pViewerFrame = mainComponent->getViewerFrame();
         pViewerFrame->addActionListener(this);
         midiProcessor.sequenceObject.addActionListener(this);
-        
         setContentOwned (mainComponent, true);
-#ifdef _WIN32
-        //define something for Windows (32-bit and 64-bit, this part is common)
-#ifdef _WIN64
-        //define something for Windows (64-bit only)
-#else
-        //define something for Windows (32-bit only)
-#endif
-#elif __APPLE__
-#include "TargetConditionals.h"
-        std::cout << "Apple \n";
-#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
-        // iOS Simulator
-        std::cout << "iOS Simulator \n";
-        std::cout << "iOS device \n";
+#if JUCE_IOS
+        std::cout << "iOS Simulator  or iOS device \n";
         setResizable(false, false);
         setTitleBarHeight(0);
         menuBarActivated(false);
@@ -146,41 +133,13 @@ ApplicationProperties& getAppProperties();
         setResizable(false, false);
         
         auto ckApp = File::getSpecialLocation(File::currentApplicationFile);
-        
         auto ckDocs = File::getSpecialLocation(File::userDocumentsDirectory);
-        std::cout << "iOS: is  directory "<<  ckApp.isDirectory()<<" "<< ckDocs.isDirectory() <<"\n";
-        Array<juce::File> results;
-        ckApp.findChildFiles(results, juce::File::TypesOfFileToFind::findFilesAndDirectories , true,"*.mid");
         ckApp.copyDirectoryTo(ckDocs);
-        Array<juce::File> results2;
-        ckDocs.findChildFiles(results2, juce::File::TypesOfFileToFind::findFilesAndDirectories , true,"*.mid");
-//#elif TARGET_OS_IPHONE
-        // iOS device
-//        std::cout << "iOS device \n";
-//        setResizable(false, false);
-//        setTitleBarHeight(0);
-//        menuBarActivated(false);
-//        setFullScreen(true);
-//        setResizable(false, false);
-        std::cout << "iOS: copied files to Docments directory \n";
-
-        
-#elif TARGET_OS_MAC
-        // Other kinds of Mac OS
-        std::cout << "Mac OS device \n";
+        std::cout << "iOS: copied files from recources to Docments directory \n";
+#else
+        std::cout << "Not iOS so  normal startup \n";
         restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
         setResizable(true, false);
-#else
-#   error "Unknown Apple platform"
-#endif
-#elif __linux__
-        // linux
-#elif __unix__ // all unices not caught above
-        // Unix
-#elif defined(_POSIX_VERSION)
-        // POSIX
-#else
-#   error "Unknown compiler"
 #endif
 
 //        centreWithSize (getWidth(), getHeight());
