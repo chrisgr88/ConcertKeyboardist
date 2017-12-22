@@ -788,8 +788,8 @@ void ScrollingNoteViewer::resetHorizontalShift() {
 void ScrollingNoteViewer::renderOpenGL()
 {
     CFAbsoluteTime renderStart = CFAbsoluteTimeGetCurrent();
-    if (!ViewStateInfo::openGLStarted)
-        std::cout << "OpenGL Started after rewind\n";
+//    if (!ViewStateInfo::openGLStarted)
+//        std::cout << "OpenGL Started after rewind\n";
     
   try {
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
@@ -806,14 +806,14 @@ void ScrollingNoteViewer::renderOpenGL()
         OpenGLHelpers::clear (Colour::greyLevel (0.1f));
         if (glBufferUpdateCountdown > 0)
             glBufferUpdateCountdown--;
-        if (ViewStateInfo::vertices.size()==0)
-            std::cout << "No vertices" << "\n";
+//        if (ViewStateInfo::vertices.size()==0)
+//            std::cout << "No vertices" << "\n";
           if (!ViewStateInfo::openGLStarted)
-              std::cout << "OpenGL at 'A' after rewind\n";
+//              std::cout << "OpenGL at 'A' after rewind\n";
         if  (sequenceChanged && glBufferUpdateCountdown == 0)// && ViewStateInfo::vertices.size()>0)
         {
             glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
-            resized();
+//            resized();
             openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
             openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
             openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,
@@ -833,7 +833,7 @@ void ScrollingNoteViewer::renderOpenGL()
             sequenceChanged = false;
         }
         if (!ViewStateInfo::openGLStarted)
-          std::cout << "OpenGL at 'B' after rewind\n";
+//          std::cout << "OpenGL at 'B' after rewind\n";
         if (processor->resetViewer)
         {
             processor->resetViewer = false;
@@ -964,8 +964,8 @@ void ScrollingNoteViewer::renderOpenGL()
         ViewStateInfo::openGLStarted = true;
     }
     CFAbsoluteTime renderDuration = CFAbsoluteTimeGetCurrent()-renderStart;
-    if (renderDuration > 0.003)
-        std::cout << "renderDuration " <<renderDuration<<"\n";
+//    if (renderDuration > 0.003)
+//        std::cout << "renderDuration " <<renderDuration<<"\n";
 }
 
 //shutdown openGL

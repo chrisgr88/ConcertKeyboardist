@@ -37,15 +37,9 @@ altToolbarFactory(this)
     for (int i=0; i<mainToolbar.getNumItems(); i++)
     {
         int id = mainToolbar.getItemId(i);
-        if (id == MainToolbarItemFactory::ToolbarItemIds::chainAmountBox)
+        if (id == MainToolbarItemFactory::ToolbarItemIds::customComboBox)
         {
-            pChainAmountBox = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
-            pChainAmountBox->textBox.setColour(TextEditor::ColourIds::backgroundColourId, Colour(64,64,64));
-            pChainAmountBox->textBox.setColour (TextEditor::ColourIds::textColourId, Colour(206,206,206));
-            pChainAmountBox->textBox.setColour (TextEditor::ColourIds::highlightedTextColourId, Colours::white);
-            pChainAmountBox->setWidth(35);
-            pChainAmountBox->textBox.setText("2.0");
-            chainAmount = 120.0;
+            pChainAmountComboBox = (MainToolbarItemFactory::NumberComboBox *) mainToolbar.getItemComponent(i);
         }
         else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeTimeBox)
         {
@@ -150,18 +144,12 @@ void ViewerFrame::timerCallback()
         repaint();
     }
     processor->sequenceObject.propertiesChanged = false;
-    if (pChainAmountBox->returnPressed)
+    if (pChainAmountComboBox->newValue())
     {
-        chainAmount = pChainAmountBox->textBox.getText().getDoubleValue()*60.0;
+        chainAmount = pChainAmountComboBox->getValue()*60.0;
         sendActionMessage("chain:"+String(chainAmount));
         grabKeyboardFocus();
-        pChainAmountBox->returnPressed = false;
-    }
-    if (pHumanizeStartTime->returnPressed)
-    {
-        sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
-        grabKeyboardFocus();
-        pHumanizeStartTime->returnPressed = false;
+        pChainAmountComboBox->clearChangeFlag();
     }
     if (pHumanizeVelocity->returnPressed)
     {
@@ -249,19 +237,9 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("editRedo");
         else if(MainToolbarItemFactory::ToolbarItemIds::_toggleActivity == id)
             sendActionMessage("toggleActivity");
-//        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionAdd == id)
-//            sendActionMessage("marqueeSelectionAdd");
-//        else if(MainToolbarItemFactory::ToolbarItemIds::_marqueeSelectionRemove == id)
-//            sendActionMessage("marqueeSelectionRemove");
-//        else if(MainToolbarItemFactory::ToolbarItemIds::_markSelectedNotes == id)
-//            sendActionMessage("markSelectedNote");
-//        else if(MainToolbarItemFactory::ToolbarItemIds::_clearSelectedNotes == id)
-//            sendActionMessage("clearSelectedNotes");
-//        else if(MainToolbarItemFactory::ToolbarItemIds::_clearAllSelection == id)
-//            sendActionMessage("clearAllSelection");
         else if(MainToolbarItemFactory::ToolbarItemIds::_chain == id)
         {
-            chainAmount = pChainAmountBox->textBox.getText().getDoubleValue()*60.0;
+            chainAmount = pChainAmountComboBox->getValue()*60.0;
             sendActionMessage("chain:"+String(chainAmount));
         }
         else if(MainToolbarItemFactory::ToolbarItemIds::_humanizeTime == id)
@@ -359,22 +337,28 @@ void ViewerFrame::buttonClicked (Button* button)
         else if(AltToolbarItemFactory::ToolbarItemIds::saveTempoChange == id)
         {
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
-            processor->catchUp(false);
-            const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
-                                                                         processor->sequenceObject.tempoChanges);
-            processor->addRemoveBookmark(BOOKMARK_ADD,true,pAdjustedTempo->numberBox.getText().getDoubleValue()/scoreTempo);
+            if (processor->sequenceObject.theSequence.size()>0)
+            {
+                processor->catchUp(false);
+                const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
+                                                                             processor->sequenceObject.tempoChanges);
+                processor->addRemoveBookmark(BOOKMARK_ADD,true,pAdjustedTempo->numberBox.getText().getDoubleValue()/scoreTempo);
+            }
         }
         else if(AltToolbarItemFactory::ToolbarItemIds::addBookmark == id)
         {
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
-            processor->catchUp(false);
-            processor->addRemoveBookmark(BOOKMARK_ADD);
+            if (processor->sequenceObject.theSequence.size()>0)
+            {
+                processor->catchUp(false);
+                processor->addRemoveBookmark(BOOKMARK_ADD);
+            }
         }
         else if(AltToolbarItemFactory::ToolbarItemIds::removeBookmarkOrTempoChange == id)
         {
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
-//            processor->catchUp(false);
-            processor->addRemoveBookmark(BOOKMARK_REMOVE);
+            if (processor->sequenceObject.theSequence.size()>0)
+                processor->addRemoveBookmark(BOOKMARK_REMOVE);
         }
         else if(AltToolbarItemFactory::ToolbarItemIds::_help == id)
         {
@@ -419,39 +403,24 @@ void ViewerFrame::paint (Graphics& g)
 {
     g.setColour(Colour(48,48,48));
     //Block above keys
-    g.fillRect(noteViewer.getKeysWidth()-2,
-               noteViewer.getHeight(),
-               2,
-               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.fillRect(noteViewer.getKeysWidth()-2, noteViewer.getHeight(),      2, 2*(separatorLineWidth+noteViewer.getToolbarHeight()));
     //Block below keys
     g.setColour(Colour(64,64,64));
-    g.fillRect(0,
-               noteViewer.getHeight(),
-               noteViewer.getKeysWidth()-2,
-               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.fillRect(0, noteViewer.getHeight(),         noteViewer.getKeysWidth()-2, 2*(separatorLineWidth+noteViewer.getToolbarHeight()));
     //Vertical separator
     g.setColour(Colour(127,127,127));
-    g.fillRect(noteViewer.getKeysWidth()-2,
-               noteViewer.getHeight(),
-               2,
-               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.fillRect(noteViewer.getKeysWidth()-2, noteViewer.getHeight(),        2, 2*(separatorLineWidth+noteViewer.getToolbarHeight()));
     //Block for hover info
     g.setColour(Colour(64,64,64));
-    g.fillRect(noteViewer.getKeysWidth(),
-               noteViewer.getHeight(),
-               248,
-               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.fillRect(noteViewer.getKeysWidth(),  noteViewer.getHeight(),        248, 2*(separatorLineWidth+noteViewer.getToolbarHeight()));
     g.setColour(Colour(127,127,127));
-    g.fillRect(248+noteViewer.getKeysWidth(),
-               noteViewer.getHeight(),
-               2,
-               2*(separatorLineWidth+noteViewer.getToolbarHeight()));
+    g.fillRect(248+noteViewer.getKeysWidth(),  noteViewer.getHeight(),      2, 2*(separatorLineWidth+noteViewer.getToolbarHeight()));
     //Keyboard
     g.drawImageAt(noteViewer.getKeysImage(), 0, 0); //Keyboard
     //Lines between toolbars
     g.setColour(Colour(127,127,127));
     g.fillRect(noteViewer.getKeysWidth(), noteViewer.getHeight(),     getWidth(), separatorLineWidth);
-    g.fillRect(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth,     getWidth(), separatorLineWidth);
+    g.fillRect(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth,       getWidth(), separatorLineWidth);
 }
 
 void ViewerFrame::resized()
@@ -474,7 +443,10 @@ void ViewerFrame::resized()
 //    }
 
     const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + 250 - 4;
-    scoreTempoLabel.setBounds(adjTempoLeft, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth+2,
+    scoreTempoLabel.setBounds(
+                              adjTempoLeft + noteViewer.getKeysWidth() , noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth+2,
                               70, noteViewer.getToolbarHeight()-1);
-    hoverStepInfo.setBounds(noteViewer.getKeysWidth(), noteViewer.getHeight(), 250, (tbH+separatorLineWidth)*2);
+    hoverStepInfo.setBounds(
+                            noteViewer.getKeysWidth(), noteViewer.getHeight(),
+                            250, (tbH+separatorLineWidth)*2);
 }

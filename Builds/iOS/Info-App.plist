@@ -10,7 +10,7 @@
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIdentifier</key>
-    <string>com.concertkeyboardist</string>
+    <string>com.newCK</string>
     <key>CFBundleName</key>
     <string>ConcertKeyboardist</string>
     <key>CFBundleDisplayName</key>
@@ -29,6 +29,8 @@
     <true/>
     <key>UIFileSharingEnabled</key>
     <true/>
+    <key>UISupportsDocumentBrowser</key>
+    <true/>
     <key>UIRequiresFullScreen</key>
     <true/>
     <key>UIStatusBarHidden</key>
@@ -39,6 +41,9 @@
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>UIBackgroundModes</key>
-    <array/>
+    <array>
+      <string>audio</string>
+      <string>bluetooth-central</string>
+    </array>
   </dict>
 </plist>

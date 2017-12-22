@@ -48,7 +48,11 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         //processor->synthMessageCollectorReset(sampRate);
         addAndMakeVisible(viewerFrame);
         setSize (1100, 300);
+#if JUCE_IOS
+        formatManager.addFormat(new AudioUnitPluginFormat());
+#else
         formatManager.addDefaultFormats();
+#endif
         ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
         
         if (savedPluginList != nullptr)

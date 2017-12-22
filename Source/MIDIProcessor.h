@@ -67,13 +67,19 @@ public:
     void loadFromUserSpecifiedFile ()//const bool showMessageOnFailure)
     {
         //    WildcardFileFilter filt = WildcardFileFilter("*.mid;*.ckf;*.ppf", "*", "Midi or ConcertKeyboardist files");
-        FileChooser fc ("Open Sequence",File(),"*.ckf;*.mid;*.ppf", true);
+        
+        auto ckDocs = File::getSpecialLocation(File::currentApplicationFile);
+        Array<juce::File> results;
+        ckDocs.findChildFiles(results, juce::File::TypesOfFileToFind::findFilesAndDirectories , true,"*.mid");
+        std::cout << "files in Docments directory "<< results.size() <<"\n";
+        
+        FileChooser chooser ("Open Sequence", ckDocs, "*.mid",  true);
         //                    getLastDocumentOpened(),
         //                    "*.mid;*.ckf;*.ppf");
         //
-        if (fc.browseForFileToOpen())
+        if (chooser.browseForFileToOpen())
         {
-            File file = fc.getResult();
+            File file = chooser.getResult();
             if (!file.isDirectory())
             {
                 String fn = file.getFullPathName();
@@ -100,7 +106,9 @@ public:
             rewind(time);
         } else {
             //Report error
-            AlertWindow::showMessageBox(AlertWindow::AlertIconType::WarningIcon, "Warning", "Failed to Load File");
+//            AlertWindow::showMessageBox(AlertWindow::AlertIconType::WarningIcon, "Warning", "Failed to Load File");
+            AlertWindow::showNativeDialogBox("Warning", "Failed to Load File", false);
+//            std::cout << "Failed to Load File" <<"\n";
         }
         HighResolutionTimer::startTimer(timerIntervalInMS);
     }
@@ -294,8 +302,8 @@ private:
         double t = Time::getMillisecondCounterHiRes()*0.001;
         msg.setTimeStamp(t);
 //            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
-        if (midiOutEnabled)
-            midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
+//        if (midiOutEnabled)
+        midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
         if (pluginMessageCollectorIsReset)
         {
             if (pluginMessageCollector)

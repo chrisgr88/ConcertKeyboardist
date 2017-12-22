@@ -145,7 +145,7 @@ private:
     
     Toolbar altToolbar;
     bool altToolbarVisible = false;
-    
+    //<#foo#>
 //==============================================================================
     class MainToolbarItemFactory   : public ToolbarItemFactory, public ComboBoxListener, public ChangeBroadcaster
     {
@@ -170,7 +170,7 @@ private:
             _showVelocities  = 10,
             _drawVelocities  = 30,
             _adjustVelocities  = 31,
-            chainAmountBox  = 11,
+            customComboBox  = 11,
             _addSustain     = 12,
             _addSoft        = 13,
             _deleteSustain  = 14,
@@ -206,7 +206,7 @@ private:
             ids.add (_drawVelocities);
             ids.add (_adjustVelocities);
             ids.add (_humanizeTime);
-            ids.add (chainAmountBox);
+            ids.add(customComboBox);
             ids.add (_humanizeVelocity);
             ids.add (_humanizeTimeBox);
             ids.add (_humanizeVelocityBox);
@@ -226,7 +226,7 @@ private:
             ids.add (_toggleActivity);
             ids.add (separatorBarId);
             ids.add (_chain);
-            ids.add (chainAmountBox);
+            ids.add(customComboBox);
             ids.add (separatorBarId);
             ids.add (_showVelocities);
             ids.add (_adjustVelocities);
@@ -288,7 +288,6 @@ private:
                     adjVelButton->setClickingTogglesState(true);
                     return adjVelButton;
                 }
-     
                 case _drawVelocities:
                 {
                     ToolbarButton *drawVelButton = createButtonFromZipFileSVG (itemId, "Draw Velocity Graph For Selected Notes",
@@ -297,12 +296,8 @@ private:
                     drawVelButton->setClickingTogglesState(true);
                     return drawVelButton;
                 }
-                case chainAmountBox:
-                {
-                    ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Break Size to Auto Create a Target Note (In Sixteenths)");
-                    return txtBox;
-                }
+                case customComboBox:
+                    return new NumberComboBox (itemId);
                     
                 case _humanizeVelocityBox:
                 {
@@ -327,8 +322,7 @@ private:
         StringArray iconNames;
         OwnedArray<Drawable> iconsFromZipFile;
         
-        // This is a little utility to create a button with one of the SVG images in
-        // our embedded ZIP file "icons.zip"
+        // This function creates a button with a given SVG image from the embedded ZIP file "icons.zip"
         ToolbarButton* createButtonFromZipFileSVG (const int itemId, const String& text,
                                                    const String& filename, const String& filenamePressed = "")
         {
@@ -424,6 +418,75 @@ private:
             TextEditor textBox;
             int width;
             bool returnPressed = false;
+        };
+        
+    public:
+        class NumberComboBox : public ToolbarItemComponent, private ComboBox::Listener
+        {
+        private:
+            bool valChanged;
+            ComboBox comboBox;
+        public:
+
+            NumberComboBox (const int toolbarItemId) : ToolbarItemComponent (toolbarItemId, "Custom Toolbar Item", false),
+                comboBox ("demo toolbar combo box")
+            {
+                addAndMakeVisible (comboBox);
+                comboBox.addListener(this);
+                
+//                for (int i = 1; i < 100; ++i)
+//                    comboBox.addItem (String (i/10.0,1), i);
+                setValues(0.1, 9.9, 0.1, 1);
+                
+                comboBox.setSelectedId (10);
+                comboBox.setEditableText (true);
+                clearChangeFlag();
+            }
+            void setValues (double min, double max, double step, int decimalPlaces=0)
+            {
+                int position = 1;
+                for (auto val=min; val<=max; val+=step, position++)
+                    comboBox.addItem (String (val,1), position);
+            }
+            bool newValue()
+            {
+                return valChanged;
+            }
+            void clearChangeFlag()
+            {
+                valChanged = false;
+            }
+            double getValue()
+            {
+                return comboBox.getText().getDoubleValue();
+            }
+            bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical, int& preferredSize, int& minSize, int& maxSize) override
+            {
+                if (isVertical)
+                    return false;
+                preferredSize = 50;
+                minSize =50;
+                maxSize = 50;
+                return true;
+            }
+            void paintButtonArea (Graphics&, int, int, bool, bool) override
+            {
+            }
+            virtual void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
+            {
+//                returnPressed = true;
+                valChanged = true;
+                std::cout <<  "combo box value "<<comboBoxThatHasChanged->getText()<<"\n";
+            }
+            void contentAreaChanged (const Rectangle<int>& newArea) override
+            {
+//                returnPressed = true;
+                valChanged = true;
+                comboBox.setSize (newArea.getWidth() - 2,  jmin (newArea.getHeight() - 2, 22));
+                comboBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
+                comboBox.setColour(ComboBox::ColourIds::backgroundColourId , Colours::darkgrey);
+                comboBox.setColour(ComboBox::ColourIds::textColourId , Colours::white);
+            }
         };
         
         //=================================================
@@ -583,7 +646,7 @@ private:
                 case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
                 case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
                 case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
-                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Edit Plugin", "EditPluginButton.svg");
+                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Show Plugin", "EditPluginButton.svg");
                 case audioSettings:        return createButtonFromZipFileSVG (itemId, "Audio Settings", "AudioSettingsTool.svg");
                 case scoreInfo:        return createButtonFromZipFileSVG (itemId, "Score Info", "ScoreInfoTool.svg");
                 case _help: return createButtonFromZipFileSVG (itemId, "Open Help in Browser", "help.svg");
@@ -905,7 +968,7 @@ private:
 
     MainToolbarItemFactory mainFactory;
     AltToolbarItemFactory altToolbarFactory;
-    MainToolbarItemFactory::ChainAmountBox *pChainAmountBox;
+    MainToolbarItemFactory::NumberComboBox *pChainAmountComboBox;
     AltToolbarItemFactory::ScoreTempo *pScoreTempo;
     AltToolbarItemFactory::ScaledTempo *pScaledTempo;
     AltToolbarItemFactory::AdjustedTempo *pAdjustedTempo;

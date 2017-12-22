@@ -464,7 +464,11 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
 //This is for when a plain midi file is loaded or when called from chain command
 Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double interval)
 {
+    Array<Sequence::StepActivity> stepActivityList;
+    stepActivityList.clear();
     //If there was no selection, construct a selection array with all steps
+    if (theSequence.size()==0)
+        return stepActivityList;
     double startTime;
     double endTime;
     if (selection.size()>0)
@@ -483,7 +487,6 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
     
     //For steps in selection, construct stepActivityList
     //Entries in stepActivityList are {int step; bool active}
-    Array<Sequence::StepActivity> stepActivityList;
     if (!getLoadingFile())
     {
         for (int step=0;step<theSequence.size();step++)
@@ -559,6 +562,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
         if (fileToLoad.getFileName().length() > 0 && loadFile == Sequence::loadFile)
         {
         //        std::cout << "entering loadSequence: load file \n";
+            causeLoadFailure = false;
             if (causeLoadFailure)
                 return false;
             if (!fileToLoad.exists()) {

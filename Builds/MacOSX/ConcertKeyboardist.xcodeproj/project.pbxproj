@@ -25,6 +25,13 @@
 		8489C516E3B50AC1AF94A2B7 = {isa = PBXBuildFile; fileRef = A373D65BDAB25C19EC6A05AE; };
 		B911480598E3B26D6C5CD121 = {isa = PBXBuildFile; fileRef = 563C94CB5AD0F745076DF69B; };
 		697119281554CA908765F245 = {isa = PBXBuildFile; fileRef = CFDC99F6260CAC539C216A38; };
+		DD905EA3895D9B82D4947D81 = {isa = PBXBuildFile; fileRef = 55E7F27DEA6BCCE63E60884C; };
+		754D02847D3F7382EAB9084A = {isa = PBXBuildFile; fileRef = F1E20624DBBF22FE033EDB6A; };
+		E5E60CB10830244672AD0CB4 = {isa = PBXBuildFile; fileRef = 9ABBB43AA7165518594AAEB8; };
+		FEB3032F8B393D0ADF7FBA7C = {isa = PBXBuildFile; fileRef = 34CF024A727764E894CD1853; };
+		76BC3590642F1A9BE900D014 = {isa = PBXBuildFile; fileRef = 821C8ADE6B981C4F35517647; };
+		67129C753D0AF71CF2430288 = {isa = PBXBuildFile; fileRef = 2E7E49E2260F925B7442CB32; };
+		40A6950E5EAB6F8EBCE43962 = {isa = PBXBuildFile; fileRef = 97879511301E36B5E48A59DB; };
 		F5B25E78C9499C4E7977679B = {isa = PBXBuildFile; fileRef = B89E59A854B53379E30E6389; };
 		F0EE417F82BAA4663BF967B7 = {isa = PBXBuildFile; fileRef = CD86DDDE6954574DEF5AE2BB; };
 		9624DEADA1180DF1694DC960 = {isa = PBXBuildFile; fileRef = 24A91402E8066EE92308ED53; };
@@ -57,8 +64,10 @@
 		24FC960FC0B022A411F58155 = {isa = PBXFileReference; lastKnownFileType = text.html; name = ckdoc.htm; path = ../../Documentation/EN/ckdoc.htm; sourceTree = "SOURCE_ROOT"; };
 		2709534624D225C32C3C5693 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_formats"; path = "../../JuceLibraryCode/modules/juce_audio_formats"; sourceTree = "SOURCE_ROOT"; };
 		2BF13347BEBD87D44C845AB9 = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ConcertKeyboardistWindowOverview.jpg; path = ../../Documentation/Common/img/ConcertKeyboardistWindowOverview.jpg; sourceTree = "SOURCE_ROOT"; };
+		2E7E49E2260F925B7442CB32 = {isa = PBXFileReference; lastKnownFileType = file.mid; name = "215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"; path = "../../../Dropbox/midi/Final Examples/215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"; sourceTree = "SOURCE_ROOT"; };
 		32C1BC49BCC54FEED453CFD0 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		33093ECB9CAB58F36C4F1B00 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TracksComponent.h; path = ../../Source/TracksComponent.h; sourceTree = "SOURCE_ROOT"; };
+		34CF024A727764E894CD1853 = {isa = PBXFileReference; lastKnownFileType = file.mid; name = "193-Schumann - Whims Op-12 No-4[ck].mid"; path = "../../../Dropbox/midi/Final Examples/193-Schumann - Whims Op-12 No-4[ck].mid"; sourceTree = "SOURCE_ROOT"; };
 		41061565518DE1C8C11E47F9 = {isa = PBXFileReference; lastKnownFileType = file.snagproj; name = CKEditingTools.snagproj; path = ../../Documentation/Common/img/CKEditingTools.snagproj; sourceTree = "SOURCE_ROOT"; };
 		4191320CDF69F890856F4ABD = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_core"; path = "../../JuceLibraryCode/modules/juce_core"; sourceTree = "SOURCE_ROOT"; };
 		42448B5E8920AAFA3AFA69D4 = {isa = PBXFileReference; lastKnownFileType = text.html; name = ckdoc.html; path = ../../Documentation/EN/ckdoc.html; sourceTree = "SOURCE_ROOT"; };
@@ -66,6 +75,7 @@
 		4B6B33166C513BE01A2D211F = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_processors"; path = "../../JuceLibraryCode/modules/juce_audio_processors"; sourceTree = "SOURCE_ROOT"; };
 		4C0823D1DE9750CEA1AF6680 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_gui_basics.mm"; path = "../../JuceLibraryCode/include_juce_gui_basics.mm"; sourceTree = "SOURCE_ROOT"; };
 		4C71FFFA3EA09F61B4462908 = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = CKTransportToolbar.jpg; path = ../../Documentation/Common/img/CKTransportToolbar.jpg; sourceTree = "SOURCE_ROOT"; };
+		55E7F27DEA6BCCE63E60884C = {isa = PBXFileReference; lastKnownFileType = file.mid; name = "078-Debussy - Arabesque No-2 in G[ck].mid"; path = "../../../Dropbox/midi/Final Examples/078-Debussy - Arabesque No-2 in G[ck].mid"; sourceTree = "SOURCE_ROOT"; };
 		563C94CB5AD0F745076DF69B = {isa = PBXFileReference; lastKnownFileType = file.nib; name = RecentFilesMenuTemplate.nib; path = RecentFilesMenuTemplate.nib; sourceTree = "SOURCE_ROOT"; };
 		591C7D6CB8F1DBACC87D5F06 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_events.mm"; path = "../../JuceLibraryCode/include_juce_events.mm"; sourceTree = "SOURCE_ROOT"; };
 		5CD5151791301437FBA3AD15 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_video.mm"; path = "../../JuceLibraryCode/include_juce_video.mm"; sourceTree = "SOURCE_ROOT"; };
@@ -75,6 +85,7 @@
 		712B8EEA0CE55F70BC3901B7 = {isa = PBXFileReference; lastKnownFileType = file.md; name = ckdoc.md; path = ../../Documentation/EN/ckdoc.md; sourceTree = "SOURCE_ROOT"; };
 		7145572555EFA675AA824857 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_gui_extra.mm"; path = "../../JuceLibraryCode/include_juce_gui_extra.mm"; sourceTree = "SOURCE_ROOT"; };
 		79153CFD4898987E0EF1BEB6 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_opengl"; path = "../../JuceLibraryCode/modules/juce_opengl"; sourceTree = "SOURCE_ROOT"; };
+		821C8ADE6B981C4F35517647 = {isa = PBXFileReference; lastKnownFileType = file.mid; name = "197-Sibelius - Valse Triste[ck].mid"; path = "../../../Dropbox/midi/Final Examples/197-Sibelius - Valse Triste[ck].mid"; sourceTree = "SOURCE_ROOT"; };
 		826B9F352129947DAD439F60 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIProcessor.cpp; path = ../../Source/MIDIProcessor.cpp; sourceTree = "SOURCE_ROOT"; };
 		833A268F4247AC3EB46CD398 = {isa = PBXFileReference; lastKnownFileType = file.snagproj; name = ConcertKeyboardistWindowOverview.snagproj; path = ../../Documentation/Common/img/ConcertKeyboardistWindowOverview.snagproj; sourceTree = "SOURCE_ROOT"; };
 		83FB7643B71E4AA4F8E6228F = {isa = PBXFileReference; lastKnownFileType = file.sh; name = builddoc.sh; path = ../../Documentation/EN/builddoc.sh; sourceTree = "SOURCE_ROOT"; };
@@ -88,6 +99,8 @@
 		93EB964E952AD2FFD553EB68 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_data_structures.mm"; path = "../../JuceLibraryCode/include_juce_data_structures.mm"; sourceTree = "SOURCE_ROOT"; };
 		949572AC6185AEDD8DA7AC70 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_opengl.mm"; path = "../../JuceLibraryCode/include_juce_opengl.mm"; sourceTree = "SOURCE_ROOT"; };
 		96D2678E05E84ABAD2A8A608 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		97879511301E36B5E48A59DB = {isa = PBXFileReference; lastKnownFileType = file.mid; name = "Alexander Scriabin - Etude In C Sharp Opus 8 Nr 1[ck].mid"; path = "../../../Dropbox/midi/Final Examples/Alexander Scriabin - Etude In C Sharp Opus 8 Nr 1[ck].mid"; sourceTree = "SOURCE_ROOT"; };
+		9ABBB43AA7165518594AAEB8 = {isa = PBXFileReference; lastKnownFileType = file.mid; name = "189-Schumann - Soaring Op-12 No-2[ck].mid"; path = "../../../Dropbox/midi/Final Examples/189-Schumann - Soaring Op-12 No-2[ck].mid"; sourceTree = "SOURCE_ROOT"; };
 		9C9897300A293F6B57F9CDD8 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_data_structures"; path = "../../JuceLibraryCode/modules/juce_data_structures"; sourceTree = "SOURCE_ROOT"; };
 		A0B64A9770F5998A16C831E7 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = System/Library/Frameworks/CoreAudioKit.framework; sourceTree = SDKROOT; };
 		A373D65BDAB25C19EC6A05AE = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -124,6 +137,7 @@
 		E941FB40405867C9771E296B = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_cryptography.mm"; path = "../../JuceLibraryCode/include_juce_cryptography.mm"; sourceTree = "SOURCE_ROOT"; };
 		E96B30780710D2F35A1C8C4E = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BinaryData2.cpp; path = ../../JuceLibraryCode/BinaryData2.cpp; sourceTree = "SOURCE_ROOT"; };
 		F1C88B94F7896926F927116E = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_basics"; path = "../../JuceLibraryCode/modules/juce_audio_basics"; sourceTree = "SOURCE_ROOT"; };
+		F1E20624DBBF22FE033EDB6A = {isa = PBXFileReference; lastKnownFileType = file.mid; name = "178-Schumann - Curious Story Op-15 No-2[ck].mid"; path = "../../../Dropbox/midi/Final Examples/178-Schumann - Curious Story Op-15 No-2[ck].mid"; sourceTree = "SOURCE_ROOT"; };
 		F4F1E789793E28D38095C1BD = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_gui_extra"; path = "../../JuceLibraryCode/modules/juce_gui_extra"; sourceTree = "SOURCE_ROOT"; };
 		F7064566D13EBF9A6548E52E = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_graphics"; path = "../../JuceLibraryCode/modules/juce_graphics"; sourceTree = "SOURCE_ROOT"; };
 		F770F05453C3C80A3CA80752 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BinaryData.cpp; path = ../../JuceLibraryCode/BinaryData.cpp; sourceTree = "SOURCE_ROOT"; };
@@ -132,6 +146,14 @@
 		FE31FF67DA4B994486AF30B5 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JuceHeader.h; path = ../../JuceLibraryCode/JuceHeader.h; sourceTree = "SOURCE_ROOT"; };
 		FE8B63C04EA57A714028E7E0 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BinaryData.h; path = ../../JuceLibraryCode/BinaryData.h; sourceTree = "SOURCE_ROOT"; };
 		FFC74D4BE2D4245CB5C42588 = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = CKEditingTools.jpg; path = ../../Documentation/Common/img/CKEditingTools.jpg; sourceTree = "SOURCE_ROOT"; };
+		A040C70AE0F359E47879550B = {isa = PBXGroup; children = (
+					55E7F27DEA6BCCE63E60884C,
+					F1E20624DBBF22FE033EDB6A,
+					9ABBB43AA7165518594AAEB8,
+					34CF024A727764E894CD1853,
+					821C8ADE6B981C4F35517647,
+					2E7E49E2260F925B7442CB32,
+					97879511301E36B5E48A59DB, ); name = "MIDI Files"; sourceTree = "<group>"; };
 		5A05A650ABA85A736AC1B501 = {isa = PBXGroup; children = (
 					FFC74D4BE2D4245CB5C42588,
 					41061565518DE1C8C11E47F9,
@@ -153,6 +175,7 @@
 					5E9A6BA9AAD6BEA8F16E606F,
 					2DD3DA8A2EAC26BE6C2898D6, ); name = Documentation; sourceTree = "<group>"; };
 		A3E1A92AE51E34A2D0C4883E = {isa = PBXGroup; children = (
+					A040C70AE0F359E47879550B,
 					C35FE1BFBF76F3DA6E0FC54E,
 					CC93CA80D99B2A5C6FEAD518,
 					8E64D1672CE0CFA47A51E358,
@@ -190,7 +213,7 @@
 					AE713E02211D4AF9C4DC73A5,
 					F4F1E789793E28D38095C1BD,
 					79153CFD4898987E0EF1BEB6,
-					0CF94304A5E447EC9F2F8CE4, ); name = "Juce Modules"; sourceTree = "<group>"; };
+					0CF94304A5E447EC9F2F8CE4, ); name = "JUCE Modules"; sourceTree = "<group>"; };
 		8FD50932910B01056900DB55 = {isa = PBXGroup; children = (
 					0364DE831A6E6B4B0A83D3D1,
 					F770F05453C3C80A3CA80752,
@@ -210,11 +233,18 @@
 					7145572555EFA675AA824857,
 					949572AC6185AEDD8DA7AC70,
 					5CD5151791301437FBA3AD15,
-					FE31FF67DA4B994486AF30B5, ); name = "Juce Library Code"; sourceTree = "<group>"; };
+					FE31FF67DA4B994486AF30B5, ); name = "JUCE Library Code"; sourceTree = "<group>"; };
 		43FDB2C2DEB73A9729490F71 = {isa = PBXGroup; children = (
 					A7A229511154A5A91A29958D,
 					563C94CB5AD0F745076DF69B,
-					CFDC99F6260CAC539C216A38, ); name = Resources; sourceTree = "<group>"; };
+					CFDC99F6260CAC539C216A38,
+					55E7F27DEA6BCCE63E60884C,
+					F1E20624DBBF22FE033EDB6A,
+					9ABBB43AA7165518594AAEB8,
+					34CF024A727764E894CD1853,
+					821C8ADE6B981C4F35517647,
+					2E7E49E2260F925B7442CB32,
+					97879511301E36B5E48A59DB, ); name = Resources; sourceTree = "<group>"; };
 		27CABD79CAE4AAD868B6F6AE = {isa = PBXGroup; children = (
 					D8FF2E14B072C8B9544C95BF,
 					C64527E74752ECF0B056A9F5,
@@ -248,6 +278,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = Y6ELW6M79S;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -270,15 +301,18 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.concertkeyboardist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newCK;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT_ppc = macosx10.5;
 				USE_HEADERMAP = NO; }; name = Debug; };
 		74219C60B6FB3AD61BD5CD12 = {isa = XCBuildConfiguration; buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = Y6ELW6M79S;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -302,7 +336,8 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.concertkeyboardist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newCK;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT_ppc = macosx10.5;
 				USE_HEADERMAP = NO; }; name = Release; };
 		FEF5C4C4E770A72077867343 = {isa = XCBuildConfiguration; buildSettings = {
@@ -390,7 +425,14 @@
 					74219C60B6FB3AD61BD5CD12, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
 		518008B4BCAC2EDE2921458A = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
 					B911480598E3B26D6C5CD121,
-					697119281554CA908765F245, ); runOnlyForDeploymentPostprocessing = 0; };
+					697119281554CA908765F245,
+					DD905EA3895D9B82D4947D81,
+					754D02847D3F7382EAB9084A,
+					E5E60CB10830244672AD0CB4,
+					FEB3032F8B393D0ADF7FBA7C,
+					76BC3590642F1A9BE900D014,
+					67129C753D0AF71CF2430288,
+					40A6950E5EAB6F8EBCE43962, ); runOnlyForDeploymentPostprocessing = 0; };
 		EF758DF42F97B8D22FD35F80 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
 					F5B25E78C9499C4E7977679B,
 					F0EE417F82BAA4663BF967B7,
@@ -436,7 +478,7 @@
 					518008B4BCAC2EDE2921458A,
 					EF758DF42F97B8D22FD35F80,
 					AF94D754542EEF998EE0EF72, ); buildRules = ( ); dependencies = (  ); name = "ConcertKeyboardist - App"; productName = ConcertKeyboardist; productReference = BCC50B48B1A4B967949B2DB2; productType = "com.apple.product-type.application"; };
-		9606743A47FFF871B775B1AB = {isa = PBXProject; buildConfigurationList = CC7502C8943D2FC599DFC557; attributes = { LastUpgradeCheck = 0830; TargetAttributes = { 0DF05A38ED8E8BF6EB7D9C5C = { DevelopmentTeam = Y6ELW6M79S; SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 9F958921F12E7C784E909D34; projectDirPath = ""; projectRoot = ""; targets = (0DF05A38ED8E8BF6EB7D9C5C); };
+		9606743A47FFF871B775B1AB = {isa = PBXProject; buildConfigurationList = CC7502C8943D2FC599DFC557; attributes = { LastUpgradeCheck = 0830; ORGANIZATIONNAME = ""; TargetAttributes = { 0DF05A38ED8E8BF6EB7D9C5C = { DevelopmentTeam = Y6ELW6M79S; ProvisioningStyle = Automatic; SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 9F958921F12E7C784E909D34; projectDirPath = ""; projectRoot = ""; targets = (0DF05A38ED8E8BF6EB7D9C5C); };
 	};
 	rootObject = 9606743A47FFF871B775B1AB;
 }

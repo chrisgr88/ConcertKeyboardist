@@ -123,6 +123,7 @@ ApplicationProperties& getAppProperties();
         pViewerFrame = mainComponent->getViewerFrame();
         pViewerFrame->addActionListener(this);
         midiProcessor.sequenceObject.addActionListener(this);
+        
         setContentOwned (mainComponent, true);
 #ifdef _WIN32
         //define something for Windows (32-bit and 64-bit, this part is common)
@@ -143,14 +144,27 @@ ApplicationProperties& getAppProperties();
         menuBarActivated(false);
         setFullScreen(true);
         setResizable(false, false);
+        
+        auto ckApp = File::getSpecialLocation(File::currentApplicationFile);
+        
+        auto ckDocs = File::getSpecialLocation(File::userDocumentsDirectory);
+        std::cout << "iOS: is  directory "<<  ckApp.isDirectory()<<" "<< ckDocs.isDirectory() <<"\n";
+        Array<juce::File> results;
+        ckApp.findChildFiles(results, juce::File::TypesOfFileToFind::findFilesAndDirectories , true,"*.mid");
+        ckApp.copyDirectoryTo(ckDocs);
+        Array<juce::File> results2;
+        ckDocs.findChildFiles(results2, juce::File::TypesOfFileToFind::findFilesAndDirectories , true,"*.mid");
 //#elif TARGET_OS_IPHONE
-//        // iOS device
+        // iOS device
 //        std::cout << "iOS device \n";
 //        setResizable(false, false);
 //        setTitleBarHeight(0);
 //        menuBarActivated(false);
 //        setFullScreen(true);
 //        setResizable(false, false);
+        std::cout << "iOS: copied files to Docments directory \n";
+
+        
 #elif TARGET_OS_MAC
         // Other kinds of Mac OS
         std::cout << "Mac OS device \n";
@@ -236,23 +250,41 @@ ApplicationProperties& getAppProperties();
     {
 //        std::cout <<"actionListenerCallback"<< message << "\n";
         if (message == "fileSave")
-            perform (CommandIDs::fileSave);
+        {
+            if (midiProcessor.sequenceObject.theSequence.size()>0)
+                perform (CommandIDs::fileSave);
+        }
         else if (message == "fileOpen")
             perform (CommandIDs::fileOpen);
         else if (message == "fileSaveAs")
-            perform (CommandIDs::fileSaveAs);
+        {
+            if (midiProcessor.sequenceObject.theSequence.size()>0)
+                perform (CommandIDs::fileSaveAs);
+        }
         else if (message == "editUndo")
-            perform (CommandIDs::editUndo);
+        {
+            if (midiProcessor.sequenceObject.theSequence.size()>0)
+                perform (CommandIDs::editUndo);
+        }
         else if (message == "editRedo")
-            perform (CommandIDs::editRedo);
+        {
+            if (midiProcessor.sequenceObject.theSequence.size()>0)
+                perform (CommandIDs::editRedo);
+        }
         else if (message == "play")
             perform (CommandIDs::playPause);
         else if (message == "pause")
             perform (CommandIDs::playPause);
         else if (message == "rewind")
-            perform (CommandIDs::rewind);
+        {
+            if (midiProcessor.sequenceObject.theSequence.size()>0)
+                perform (CommandIDs::rewind);
+        }
         else if (message == "listenToSelection")
-            perform (CommandIDs::listenToSelection);
+        {
+            if (midiProcessor.sequenceObject.theSequence.size()>0)
+                perform (CommandIDs::listenToSelection);
+        }
         else if (message.upToFirstOccurrenceOf(":",false,true) == "loadPlugin")
         {
             String pluginId = String(message.fromFirstOccurrenceOf(":", false, true));
@@ -265,15 +297,18 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "loadPluginMenu")
         {
-            Point<int> pos = getMouseXYRelative();
-            pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
-            if (mainComponent->thePlugin)
-            {
-                PluginWindow::WindowFormatType type;
-                type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
-                if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
-                    w->toFront (true);
-            }
+//            Point<int> pos = getMouseXYRelative();
+//            pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
+//            if (mainComponent->thePlugin)
+//            {
+//                PluginWindow::WindowFormatType type;
+//                type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
+//                if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
+//                    w->toFront (true);
+//            }
+            if (pluginListWindow == nullptr)
+                pluginListWindow = new PluginListWindow (*this, mainComponent->formatManager);
+            pluginListWindow->toFront (true);
         }
         else if (message == "editPlugin")
         {
@@ -291,6 +326,7 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "scoreInfo")
         {
+            
             perform (CommandIDs::scoreSettings);
         }
         else if (message == "toggleActivity")
@@ -994,20 +1030,25 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 break;
             case CommandIDs::rewind:
 //                std::cout <<"Rewind\n";
-                if (midiProcessor.isListening)
+            {
+                if (midiProcessor.sequenceObject.theSequence.size()>0)
                 {
-                    midiProcessor.play(false,"ZTL");
-                }
-                else
-                {
-                    if (midiProcessor.isPlaying)
-                        midiProcessor.play(false,"currentPlayhead");
-                    if (midiProcessor.getTimeInTicks()==midiProcessor.lastStartTime)
-                        midiProcessor.tweenMove(0, 200);
+                    if (midiProcessor.isListening)
+                    {
+                        midiProcessor.play(false,"ZTL");
+                    }
                     else
-                        midiProcessor.tweenMove(midiProcessor.lastStartTime, 200);
+                    {
+                        if (midiProcessor.isPlaying)
+                            midiProcessor.play(false,"currentPlayhead");
+                        if (midiProcessor.getTimeInTicks()==midiProcessor.lastStartTime)
+                            midiProcessor.tweenMove(0, 200);
+                        else
+                            midiProcessor.tweenMove(midiProcessor.lastStartTime, 200);
+                    }
                 }
                 break;
+            }
             case CommandIDs::increaseTempo:
                 midiProcessor.sequenceObject.increaseTempo(1.03);
                 std::cout <<"increaseTempo\n";
@@ -1116,16 +1157,19 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 break;
             case CommandIDs::chainSelectedNotes:
                 std::cout <<"chainSelectedNotes\n";
-                if (!midiProcessor.isPlaying)
+                if (midiProcessor.sequenceObject.theSequence.size()>0)
                 {
+                    if (!midiProcessor.isPlaying)
                     {
-                        midiProcessor.undoMgr->beginNewTransaction();
-                        MIDIProcessor::ActionChain* action;
-                        // Passing -1 causes the chain command to use the interval from the toolbar
-                        action = new MIDIProcessor::ActionChain(midiProcessor, -1, midiProcessor.copyOfSelectedNotes);
-                        midiProcessor.undoMgr->perform(action);
-                        midiProcessor.sequenceObject.setChangedFlag(true);
-                        midiProcessor.catchUp();
+                        {
+                            midiProcessor.undoMgr->beginNewTransaction();
+                            MIDIProcessor::ActionChain* action;
+                            // Passing -1 causes the chain command to use the interval from the toolbar
+                            action = new MIDIProcessor::ActionChain(midiProcessor, -1, midiProcessor.copyOfSelectedNotes);
+                            midiProcessor.undoMgr->perform(action);
+                            midiProcessor.sequenceObject.setChangedFlag(true);
+                            midiProcessor.catchUp();
+                        }
                     }
                 }
                 break;

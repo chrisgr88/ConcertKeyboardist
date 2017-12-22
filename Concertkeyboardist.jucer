@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="IilE7R" name="ConcertKeyboardist" projectType="guiapp" version="1.0.0"
-              bundleIdentifier="com.concertkeyboardist" includeBinaryInAppConfig="1"
-              jucerVersion="5.2.0" displaySplashScreen="1" reportAppUsage="1"
-              splashScreenColour="Dark" cppLanguageStandard="11" companyCopyright="">
+              bundleIdentifier="com.newCK" includeBinaryInAppConfig="1" jucerVersion="5.2.0"
+              displaySplashScreen="1" reportAppUsage="1" splashScreenColour="Dark"
+              cppLanguageStandard="11" companyCopyright="">
   <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">
     <GROUP id="{D43238F0-992F-BC5A-F1AA-31BBBD3D17B0}" name="Source">
       <FILE id="GcQUY3" name="TracksComponent.h" compile="0" resource="0"
             file="Source/TracksComponent.h"/>
       <GROUP id="{EC8297D7-1F95-3949-37E8-625A410B096D}" name="Resources">
+        <GROUP id="{4EB3D697-61BF-7574-A0A8-BF6C14BAC4E5}" name="MIDI Files">
+          <FILE id="luY15o" name="078-Debussy - Arabesque No-2 in G[ck].mid"
+                compile="0" resource="1" file="../Dropbox/midi/Final Examples/078-Debussy - Arabesque No-2 in G[ck].mid"
+                xcodeResource="1"/>
+          <FILE id="gmkII4" name="178-Schumann - Curious Story Op-15 No-2[ck].mid"
+                compile="0" resource="1" file="../Dropbox/midi/Final Examples/178-Schumann - Curious Story Op-15 No-2[ck].mid"
+                xcodeResource="1"/>
+          <FILE id="MFZadS" name="189-Schumann - Soaring Op-12 No-2[ck].mid"
+                compile="0" resource="1" file="../Dropbox/midi/Final Examples/189-Schumann - Soaring Op-12 No-2[ck].mid"
+                xcodeResource="1"/>
+          <FILE id="UFpA62" name="193-Schumann - Whims Op-12 No-4[ck].mid" compile="0"
+                resource="1" file="../Dropbox/midi/Final Examples/193-Schumann - Whims Op-12 No-4[ck].mid"
+                xcodeResource="1"/>
+          <FILE id="c4SoxE" name="197-Sibelius - Valse Triste[ck].mid" compile="0"
+                resource="1" file="../Dropbox/midi/Final Examples/197-Sibelius - Valse Triste[ck].mid"
+                xcodeResource="1"/>
+          <FILE id="eKyljQ" name="215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"
+                compile="0" resource="1" file="../Dropbox/midi/Final Examples/215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"
+                xcodeResource="1"/>
+          <FILE id="oTEYo7" name="Alexander Scriabin - Etude In C Sharp Opus 8 Nr 1[ck].mid"
+                compile="0" resource="1" file="../Dropbox/midi/Final Examples/Alexander Scriabin - Etude In C Sharp Opus 8 Nr 1[ck].mid"
+                xcodeResource="1"/>
+        </GROUP>
         <GROUP id="{8FA504BC-BA8F-8715-7065-A0DF9FEFF275}" name="Documentation">
           <GROUP id="{C140BE19-1147-3889-6F02-250BA393F7FD}" name="Common">
             <GROUP id="{2DCFBA73-639B-6CF5-26D3-269FDD4A45F0}" name="img">
@@ -94,7 +117,9 @@
     <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="landscape" vst3Folder=""
                   bigIcon="iIotgF" smallIcon="iIotgF" UIFileSharingEnabled="1"
                   iosDevelopmentTeamID="Y6ELW6M79S" keepCustomXcodeSchemes="1"
-                  customPList="" iPadScreenOrientation="landscape" iosDeviceFamily="1,2">
+                  customPList="" iPadScreenOrientation="landscape" iosDeviceFamily="2"
+                  iCloudPermissions="1" UISupportsDocumentBrowser="1" iosAppGroups="1"
+                  iosBackgroundBle="1" iosBackgroundAudio="1">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"
                        enablePluginBinaryCopyStep="1"/>
@@ -136,6 +161,32 @@
         <MODULEPATH id="juce_audio_basics" path="JUCE.git/modules"/>
       </MODULEPATHS>
     </CLION>
+    <VS2017 targetFolder="Builds/VisualStudio2017">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
+                       linkTimeOptimisation="0" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
+                       linkTimeOptimisation="1" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2017>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
