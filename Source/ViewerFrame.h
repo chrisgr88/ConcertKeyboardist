@@ -424,6 +424,7 @@ private:
         class NumberComboBox : public ToolbarItemComponent, private ComboBox::Listener
         {
         private:
+            int startupCount = 1;
             bool valChanged;
             ComboBox comboBox;
         public:
@@ -438,7 +439,7 @@ private:
 //                    comboBox.addItem (String (i/10.0,1), i);
                 setValues(0.1, 9.9, 0.1, 1);
                 
-                comboBox.setSelectedId (10);
+                comboBox.setSelectedId(10,NotificationType::dontSendNotification);
                 comboBox.setEditableText (true);
                 clearChangeFlag();
             }
@@ -474,14 +475,11 @@ private:
             }
             virtual void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
             {
-//                returnPressed = true;
                 valChanged = true;
                 std::cout <<  "combo box value "<<comboBoxThatHasChanged->getText()<<"\n";
             }
             void contentAreaChanged (const Rectangle<int>& newArea) override
             {
-//                returnPressed = true;
-                valChanged = true;
                 comboBox.setSize (newArea.getWidth() - 2,  jmin (newArea.getHeight() - 2, 22));
                 comboBox.setCentrePosition (newArea.getCentreX(), newArea.getCentreY());
                 comboBox.setColour(ComboBox::ColourIds::backgroundColourId , Colours::darkgrey);
