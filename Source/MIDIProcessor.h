@@ -305,15 +305,17 @@ private:
         double t = Time::getMillisecondCounterHiRes()*0.001;
         msg.setTimeStamp(t);
 
-#if JUCE_MAC || JUCE_IOS
-        ckMidiOutput->sendMessageNow(msg);
-#endif
-        
-        if (defaultMidiOutput!=nullptr)
+        if (midiOutEnabled)
         {
-            defaultMidiOutput->sendMessageNow(msg);
+#if JUCE_MAC || JUCE_IOS
+            ckMidiOutput->sendMessageNow(msg);
+#endif
+            if (defaultMidiOutput!=nullptr)
+            {
+                defaultMidiOutput->sendMessageNow(msg);
+            }
         }
-        if (pluginMessageCollectorIsReset)
+        if (pluginEnabled && pluginMessageCollectorIsReset)
         {
             if (pluginMessageCollector)
                 pluginMessageCollector->addMessageToQueue (msg);

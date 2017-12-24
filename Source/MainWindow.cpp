@@ -256,18 +256,18 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "loadPluginMenu")
         {
-//            Point<int> pos = getMouseXYRelative();
-//            pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
-//            if (mainComponent->thePlugin)
-//            {
-//                PluginWindow::WindowFormatType type;
-//                type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
-//                if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
-//                    w->toFront (true);
-//            }
-            if (pluginListWindow == nullptr)
-                pluginListWindow = new PluginListWindow (*this, mainComponent->formatManager);
-            pluginListWindow->toFront (true);
+            Point<int> pos = getMouseXYRelative();
+            pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
+            if (mainComponent->thePlugin)
+            {
+                PluginWindow::WindowFormatType type;
+                type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
+                if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
+                    w->toFront (true);
+            }
+//            if (pluginListWindow == nullptr)
+//                pluginListWindow = new PluginListWindow (*this, mainComponent->formatManager);
+//            pluginListWindow->toFront (true);
         }
         else if (message == "editPlugin")
         {
@@ -464,15 +464,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::enablePlugin:
                 result.setInfo ("Enable plugin", String(), category, 0);
-                if (midiProcessor.pluginEnabled)
-                {
-                    result.setTicked(midiProcessor.pluginEnabled);
-                }
-                else
-                {
-                    result.setActive(false);
-                    result.setTicked(false);
-                }
+                result.setTicked(midiProcessor.pluginEnabled);
                 break;
             case CommandIDs::enableMidiOut:
                 result.setInfo ("Enable midi out", String(), category, 0);
@@ -907,12 +899,14 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             {
                 std::cout << "Enable plugin" <<"\n";
                 midiProcessor.pluginEnabled = !midiProcessor.pluginEnabled;
+                menuItemsChanged();
                 break;
             }
             case CommandIDs::enableMidiOut:
             {
                 std::cout << "Enable midi out" <<"\n";
                 midiProcessor.midiOutEnabled = !midiProcessor.midiOutEnabled;
+                menuItemsChanged();
                 break;
             }
             case CommandIDs::fileOpen:
