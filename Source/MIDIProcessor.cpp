@@ -74,6 +74,8 @@ void MIDIProcessor::changeListenerCallback (ChangeBroadcaster* broadcaster)
 //        std::cout << "MidiProcessor received change message from Sequence" << "\n";
         if (sequenceObject.loadDoc)
         {
+            pluginEnabled = false;
+            midiOutEnabled = true;
             buildSequenceAsOf(Sequence::loadFile, Sequence::doNotRetainEdits, 0.0);
             sequenceObject.loadDoc = false;
         }

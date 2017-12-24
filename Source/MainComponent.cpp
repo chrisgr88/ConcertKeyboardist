@@ -158,6 +158,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     {
         std::cout << "Loaded plugin \n";
         processor->pluginEnabled = true;
+        processor->midiOutEnabled = false;
     }
     else
         std::cout << "Plugin error "<<errorMsg<<"\n";
