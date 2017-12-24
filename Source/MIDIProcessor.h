@@ -217,6 +217,7 @@ public:
     AbstractFifo noteOnOffFifo;
     bool pluginMessageCollectorIsReset;
     MidiMessageCollector *pluginMessageCollector;
+    MidiOutput *defaultMidiOutput;   //The midi output  chosen, if any,  in the midi setup dialog
     
     void prepareToSave()
     {
@@ -294,15 +295,24 @@ private:
 
     std::vector<NoteWithOffTime> listenSequence;
     double listenStep;
-    MidiOutput *midiOutput;
+#if JUCE_MAC || JUCE_IOS
+    MidiOutput *ckMidiOutput;
+#endif
     bool notesEditable; //Whether notes can be edited in the viewer
+    
     void sendMidiMessage(MidiMessage msg)
     {
         double t = Time::getMillisecondCounterHiRes()*0.001;
         msg.setTimeStamp(t);
-//            std::cout <<"send midi "<<msg.getNoteNumber()<<" "<<(int)msg.getVelocity()<<" "<<msg.getTimeStamp()<<"\n";
-//        if (midiOutEnabled)
-        midiOutput->sendMessageNow(msg); //<<<<<< Use this to directly send midi
+
+#if JUCE_MAC || JUCE_IOS
+        ckMidiOutput->sendMessageNow(msg);
+#endif
+        
+        if (defaultMidiOutput!=nullptr)
+        {
+            defaultMidiOutput->sendMessageNow(msg);
+        }
         if (pluginMessageCollectorIsReset)
         {
             if (pluginMessageCollector)

@@ -25,7 +25,9 @@ MIDIProcessor::MIDIProcessor() :
     resetViewer = true; //Cleared by NoteViewer after reset
     timerIntervalInMS = 1;
     panic = false;
-    midiOutput = MidiOutput::createNewDevice("ConcertKeyboardist");
+#if JUCE_MAC || JUCE_IOS
+    ckMidiOutput = MidiOutput::createNewDevice("ConcertKeyboardist");
+#endif
     notesEditable=true;
     MultiTimer::startTimer(TIMER_APP_ACTIVE, 1000);
 }
@@ -33,7 +35,9 @@ MIDIProcessor::MIDIProcessor() :
 MIDIProcessor::~MIDIProcessor()
 {
     HighResolutionTimer::stopTimer();
-    delete(midiOutput);
+#if JUCE_MAC || JUCE_IOS
+    delete(ckMidiOutput);
+#endif
     undoMgr->clearUndoHistory();
     delete undoMgr;
 }

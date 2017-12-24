@@ -402,7 +402,7 @@ ApplicationProperties& getAppProperties();
         o.componentToCentreAround       = this;
         o.dialogBackgroundColour        = Colours::azure;
         o.escapeKeyTriggersCloseButton  = true;
-        o.useNativeTitleBar             = false;
+        o.useNativeTitleBar             = true;
         o.resizable                     = true;
         
         ckBlockClosing = true;
@@ -427,6 +427,7 @@ ApplicationProperties& getAppProperties();
                 break;
             }
         }
+        midiProcessor.defaultMidiOutput = mainComponent->audioDeviceManager.getDefaultMidiOutput();
     }
     
     void MainWindow::menuBarActivated (bool isActive)

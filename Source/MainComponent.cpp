@@ -61,6 +61,13 @@ MainComponent::MainComponent(MIDIProcessor *p) :
         pluginSortMethod = (KnownPluginList::SortMethod) getAppProperties().getUserSettings()
         ->getIntValue ("pluginSortMethod", KnownPluginList::sortByManufacturer);
         knownPluginList.addChangeListener (this);
+        
+        processor->defaultMidiOutput  = nullptr;
+        if (audioDeviceManager.getDefaultMidiOutput() != nullptr)
+        {
+            std::cout << "midi out " <<audioDeviceManager.getDefaultMidiOutput()-> getName() << "\n";
+            processor->defaultMidiOutput = audioDeviceManager.getDefaultMidiOutput();
+        }
     }
     
 MainComponent::~MainComponent()
