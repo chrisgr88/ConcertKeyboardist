@@ -83,6 +83,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     openGLContext.setRenderer (this);
     openGLContext.attachTo (*this);
     openGLContext.setContinuousRepainting (true);
+	openGLContext.setSwapInterval(2);
     horizontalScale = 1.0f;
     ViewStateInfo::verticalScale = 1.0f;
     initialMeasuresAcrossWindow = 5;
@@ -717,19 +718,19 @@ void ScrollingNoteViewer::setRectangleColour (int rect, Colour col)
     float b = col.getFloatBlue();
     float colour[3] = {r, g, b};
     openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect) + 8,
                     sizeof(colour),
                     colour);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect+1) + 8,
                     sizeof(colour),
                     colour);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect+2) + 8,
                     sizeof(colour),
                     colour);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect+3) + 8,
                     sizeof(colour),
                     colour);
@@ -746,19 +747,19 @@ void ScrollingNoteViewer::setRectanglePos(int rect, float x, float yy, float w, 
     float v2[2] = { x+w, y+h};
     float v3[2] = { x+w, y};
     openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect),
                     sizeof(v0),
                     v0);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect+1),
                     sizeof(v1),
                     v1);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect+2),
                     sizeof(v2),
                     v2);
-    glBufferSubData(GL_ARRAY_BUFFER,
+	openGLContext.extensions.glBufferSubData(GL_ARRAY_BUFFER,
                     sizeof(Vertex)*(4*rect+3),
                     sizeof(v3),
                     v3);
@@ -784,20 +785,18 @@ void ScrollingNoteViewer::resetHorizontalShift() {
 //    foo = true;
 }
 
-//<#render#>
 void ScrollingNoteViewer::renderOpenGL()
 {
-    CFAbsoluteTime renderStart = CFAbsoluteTimeGetCurrent();
-//    if (!ViewStateInfo::openGLStarted)
-//        std::cout << "OpenGL Started after rewind\n";
-    
+	String refreshTime = String(Time::getHighResolutionTicks() - renderStart);
+  renderStart = Time::getHighResolutionTicks();
+  double timeShiftInPixels;
   try {
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
         if (rebuidingGLBuffer)
-            return;
+	            return;
         const ScopedLock myScopedLock (glRenderLock);
-        if (!processor->appIsActive)
-            return;
+        //if (!processor->appIsActive)
+        //    return;
         rendering = true;
         ++frameCounter;
         jassert (OpenGLHelpers::isContextActive());
@@ -806,10 +805,6 @@ void ScrollingNoteViewer::renderOpenGL()
         OpenGLHelpers::clear (Colour::greyLevel (0.1f));
         if (glBufferUpdateCountdown > 0)
             glBufferUpdateCountdown--;
-//        if (ViewStateInfo::vertices.size()==0)
-//            std::cout << "No vertices" << "\n";
-          if (!ViewStateInfo::openGLStarted)
-//              std::cout << "OpenGL at 'A' after rewind\n";
         if  (sequenceChanged && glBufferUpdateCountdown == 0)// && ViewStateInfo::vertices.size()>0)
         {
             glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
@@ -832,8 +827,6 @@ void ScrollingNoteViewer::renderOpenGL()
                                                    ViewStateInfo::indices.getRawDataPointer(), GL_STATIC_DRAW);
             sequenceChanged = false;
         }
-        if (!ViewStateInfo::openGLStarted)
-//          std::cout << "OpenGL at 'B' after rewind\n";
         if (processor->resetViewer)
         {
             processor->resetViewer = false;
@@ -845,30 +838,18 @@ void ScrollingNoteViewer::renderOpenGL()
             rendering = false;
             return;
         }
-      
         glEnable (GL_BLEND);
         glEnable(GL_MULTISAMPLE);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glViewport (0, 0, roundToInt (desktopScale * getWidth()), roundToInt (desktopScale * ViewStateInfo::viewHeight));
         shader->use();
         static double prevTime;
-        double timeShiftInPixels = -processor->getTimeInTicks()*pixelsPerTick;
-    //    if (prevTime != time)
-    //    {
-    //        std::cout
-    //        << " time " << time
-    //        << " horizontalShift " << horizontalShift
-    //        << " timeShiftInPixels " << timeShiftInPixels
-    //        << " toViewmatrix " << timeShiftInPixels+(sequenceStartPixel+horizontalShift)/horizontalScale
-    //        <<"\n";
-    //    }
+        timeShiftInPixels = -processor->getTimeInTicks()*pixelsPerTick;
+
         prevTime = processor->getTimeInTicks();
-        glUniformMatrix4fv(Uniforms::viewMatrixHandle, 1, false, getViewMatrix(timeShiftInPixels+(sequenceStartPixel+horizontalShift)/horizontalScale).mat);
-        glUniformMatrix4fv(Uniforms::projectionMatrixHandle, 1, false, getProjectionMatrix(horizontalScale, ViewStateInfo::
+		openGLContext.extensions.glUniformMatrix4fv(Uniforms::viewMatrixHandle, 1, false, getViewMatrix(timeShiftInPixels+(sequenceStartPixel+horizontalShift)/horizontalScale).mat);
+		openGLContext.extensions.glUniformMatrix4fv(Uniforms::projectionMatrixHandle, 1, false, getProjectionMatrix(horizontalScale, ViewStateInfo::
                                                                                            verticalScale).mat);
-      
-          if (!ViewStateInfo::openGLStarted)
-              std::cout << "OpenGL at 'C' after rewind\n";
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
         openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
       
@@ -899,14 +880,10 @@ void ScrollingNoteViewer::renderOpenGL()
         // Reset the element buffers so child Components draw correctly
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
         openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
-      
-    //    std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
 
         //Get steps (that turned off or on) out of queue
         Array<int> stepsThatChanged;
         int num = processor->noteOnOffFifo.getNumReady();
-          if (!ViewStateInfo::openGLStarted)
-              std::cout << "OpenGL at 'D' after rewind\n";
         if (num>0)
         {
             int start1, size1, start2, size2;
@@ -920,26 +897,17 @@ void ScrollingNoteViewer::renderOpenGL()
             for (int j=0;j<stepsThatChanged.size();j++) //Turn off or on notes
             {
                 String note = MidiMessage::getMidiNoteName (stepsThatChanged[j], true, true, 3);
-    //            std::cout <<"step " << stepsThatChanged[j] << " " << note << "\n";
                 if (stepsThatChanged[j]<0) //If was an off
                 {
                     const int step = -(stepsThatChanged[j]+1);
-    //                std::cout << "DeHighlight step " << step << "\n";
-    //                if (processor->sequenceObject.isPrimaryTrack(sequence->at(step)->track))
-    //                {
-                        setRectangleColour(pSequence->at(step)->rectHead, colourInactiveNoteHead);//Head
-    //                    setRectangleColour(sequence->at(step).rectBar,  colourPrimaryNoteBar);//Bar
-    //                }
+                    setRectangleColour(pSequence->at(step)->rectHead, colourInactiveNoteHead);//Head
                 }
                 else if (stepsThatChanged[j]>0) //It was an on
                 {
-    //                std::cout << "Highlight step " << (stepsThatChanged[j]-1) << "\n";
                     setRectangleColour(pSequence->at(stepsThatChanged[j]-1)->rectHead,   colourNoteOn); //Head
                 }
             }
         }
-          if (!ViewStateInfo::openGLStarted)
-              std::cout << "OpenGL at 'E' after rewind\n";
         if (!processor->playing() || processor->waitingForFirstNote)
         {
             int step = processor->lastPlayedSeqStep+1;
@@ -947,8 +915,6 @@ void ScrollingNoteViewer::renderOpenGL()
             {
                 const float timeStamp = pSequence->at(step)->getTimeStamp();
                 const float width = 4.0f;// (sequence->at(step+1).timeStamp-timeStamp)*pixelsPerTick;
-        //      const float height = 13.0f * sequence->at(step).getFloatVelocity();
-        //      setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 2.0f+(13.0-height), width, height);
                 setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 0.0f, width, 15.f);
             }
         }
@@ -960,12 +926,14 @@ void ScrollingNoteViewer::renderOpenGL()
     rendering = false;
     if (!ViewStateInfo::openGLStarted)
     {
-        std::cout << "OpenGL Completed after rewind\n";
         ViewStateInfo::openGLStarted = true;
     }
-    CFAbsoluteTime renderDuration = CFAbsoluteTimeGetCurrent()-renderStart;
+    int64 renderDuration = Time::getHighResolutionTicks()-renderStart;
 //    if (renderDuration > 0.003)
-//        std::cout << "renderDuration " <<renderDuration<<"\n";
+	String rd = String(renderDuration);
+	double renderStartMS = ((double)renderStart)/Time::getHighResolutionTicksPerSecond();
+	renderDuration++;
+    std::cout << "renderDuration " <<renderDuration<<"\n";
 }
 
 //shutdown openGL
@@ -1404,9 +1372,12 @@ void ScrollingNoteViewer::makeNoteBars()
                 {
                     const double barLeft = sustainBars[sustainBarNum].getX();
                     const double barRight = sustainBars[sustainBarNum].getRight();
-                    const float y = noteYs[highestNote]*rescaleHeight + topMargin - 0.*unscaledTVS;
-                    addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,1.5, Colour(Colours::orange).brighter());
-                    sustainBarNum++;
+					if (highestNote != -1)
+					{
+						const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0.*unscaledTVS;
+						addRectangle(barLeft*pixelsPerTick, y, (barRight - barLeft)*pixelsPerTick, 1.5, Colour(Colours::orange).brighter());
+						sustainBarNum++;
+					}
                 }
                 else if (msgTimeStamp>=barLeft)
                 {
@@ -1534,6 +1505,7 @@ void ScrollingNoteViewer::updatePlayedNotes()
 //###
 void ScrollingNoteViewer::paint (Graphics& g)
 {
+
     if (!ViewStateInfo::finishedPaintAfterRewind)
         std::cout << "Entering paint \n";
     if (rendering)
@@ -1899,10 +1871,13 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
 
 void ScrollingNoteViewer::timerCallback (int timerID)
 {
+	//return;
   try {
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
     {
+		if (processor->isPlaying || processor->isListening)
+			return;
         if (prevShowingVelocities != (bool)showingVelocities.getValue() && !showingVelocities.getValue())
         {
             drawingVelocities.setValue(false);

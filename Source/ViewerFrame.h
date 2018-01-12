@@ -117,7 +117,7 @@ public:
     
     bool is_number(const std::string& s)
     {
-        return !s.empty() && std::find_if(s.begin(), s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+        return !s.empty() && std::find_if(s.begin(), s.end(), [](char c) { return !isdigit(c); }) == s.end();
     }
     ScrollingNoteViewer noteViewer;
     
@@ -147,7 +147,7 @@ private:
     bool altToolbarVisible = false;
     //<#foo#>
 //==============================================================================
-    class MainToolbarItemFactory   : public ToolbarItemFactory, public ComboBoxListener, public ChangeBroadcaster
+    class MainToolbarItemFactory   : public ToolbarItemFactory, public ComboBox::Listener, public ChangeBroadcaster
     {
     public:
         MainToolbarItemFactory(ViewerFrame *pVF) :
@@ -183,7 +183,7 @@ private:
             _humanizeVelocityBox = 21
         };
         
-        void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
+        void comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         {
             std::cout << "in MainToolbarItemFactory comboBoxChanged " << comboBoxThatHasChanged << "\n";
             sendChangeMessage();
@@ -362,7 +362,7 @@ private:
         }
     public:
         //=================================================
-        class ChainAmountBox : public ToolbarItemComponent, private TextEditorListener
+        class ChainAmountBox : public ToolbarItemComponent, private TextEditor::Listener
         {
         public:
             ChainAmountBox (const int toolbarItemId)
@@ -400,12 +400,12 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&) override
+            void textEditorTextChanged(TextEditor&) 
             {
 //                std::cout << "Entering text\n";
                 returnPressed = false;
             }
-            void textEditorReturnKeyPressed (TextEditor&) override
+            void textEditorReturnKeyPressed (TextEditor&)
             {
 //                std::cout << "Return pressed\n";
                 returnPressed = true;
@@ -529,7 +529,7 @@ private:
     
     //==============================================================================
     //### Ends after line 1200
-    class AltToolbarItemFactory   : public ToolbarItemFactory, public ComboBoxListener, public ChangeBroadcaster
+    class AltToolbarItemFactory   : public ToolbarItemFactory, public ComboBox::Listener, public ChangeBroadcaster
     {
     public:
         AltToolbarItemFactory(ViewerFrame *pVF) :
@@ -564,7 +564,7 @@ private:
             _help                = 22
         };
         
-        void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
+        void comboBoxChanged (ComboBox* comboBoxThatHasChanged) 
         {
             std::cout << "in MainToolbarItemFactory comboBoxChanged " << comboBoxThatHasChanged << "\n";
             sendChangeMessage();
@@ -721,7 +721,7 @@ private:
         }
     public:
         //=================================================
-        class ScoreTempo : public ToolbarItemComponent, private TextEditorListener
+        class ScoreTempo : public ToolbarItemComponent, private TextEditor::Listener
         {
         public:
             ScoreTempo (const int toolbarItemId)
@@ -755,12 +755,12 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&) override
+            void textEditorTextChanged(TextEditor&)
             {
                 //                std::cout << "Entering text\n";
                 returnPressed = false;
             }
-            void textEditorReturnKeyPressed (TextEditor&) override
+            void textEditorReturnKeyPressed (TextEditor&)
             {
                 //                std::cout << "Return pressed\n";
                 returnPressed = true;
@@ -775,7 +775,7 @@ private:
         };
         
         //=================================================
-        class ScaledTempo : public ToolbarItemComponent, private TextEditorListener
+        class ScaledTempo : public ToolbarItemComponent, private TextEditor::Listener
         {
         public:
             ScaledTempo (const int toolbarItemId)
@@ -809,12 +809,12 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&) override
+            void textEditorTextChanged(TextEditor&) 
             {
                 //                std::cout << "Entering text\n";
                 returnPressed = false;
             }
-            void textEditorReturnKeyPressed (TextEditor&) override
+            void textEditorReturnKeyPressed (TextEditor&) 
             {
                 //                std::cout << "Return pressed\n";
                 returnPressed = true;
@@ -878,7 +878,7 @@ private:
         };
         
         //=================================================
-        class AdjustedTempo : public ToolbarItemComponent, private TextEditorListener, public ChangeListener
+        class AdjustedTempo : public ToolbarItemComponent, private TextEditor::Listener, public ChangeListener
         {
         public:
             AdjustedTempo (const int toolbarItemId)
@@ -922,7 +922,7 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&) override
+            void textEditorTextChanged(TextEditor&) 
             {
                 //                std::cout << "Entering text\n";
                 changed = false;
@@ -936,7 +936,7 @@ private:
             {
                 numberBox.setValueWhenMouseNotDown(val);
             }
-            void textEditorReturnKeyPressed (TextEditor&) override
+            void textEditorReturnKeyPressed (TextEditor&) 
             {
                 double newVal = numberBox.getText().getDoubleValue();
                 if (newVal<numberBox.min) newVal=newVal<numberBox.min;

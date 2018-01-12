@@ -204,10 +204,10 @@ public:
     {
         return (int) theSequence.size();
     }
-    uint encodeVarint(uint8* output, uint value);
-    uint decodeVarint(uint8* input, uint inputSize);
+	unsigned int encodeVarint(uint8* output, unsigned int value);
+	unsigned int decodeVarint(uint8* input, unsigned int inputSize);
     int myConvertFromBase64 (OutputStream& binaryOutput, StringRef base64TextInput);
-    uint varintLength(char* input, uint inputSize);
+	unsigned int varintLength(char* input, unsigned int inputSize);
     int getSeqDurationInTicks() {
         return seqDurationInTicks;
     }

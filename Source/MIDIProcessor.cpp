@@ -638,8 +638,6 @@ void MIDIProcessor::processBlock ()
 {
 //    std::vector<NoteWithOffTime*> * theSequence;
     try {
-        
-
     if (pauseProcessing || sequenceObject.loadingFile || sequenceObject.theSequence.size()==0)
         return;
     if (panic)
@@ -1194,8 +1192,8 @@ void MIDIProcessor::processBlock ()
                     velocity = exprEvents[exprEventIndex].getVelocity(); //All velocities equal expr velocity
                     velocity = velocity/127.0;
                 }
-                else
-                    assert(false);
+                //else
+                //    assert(false);
                 
                 double scheduledOnTime;
                 if (lastScheduledNoteTime>0)

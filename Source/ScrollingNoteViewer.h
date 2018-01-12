@@ -86,7 +86,7 @@ public:
  Describe your class and how it works here!
  //[/Comments]
  */
-class ScrollingNoteViewer  :
+class ScrollingNoteViewer  : 
     public Component,
     private MultiTimer,
     private OpenGLContext,
@@ -486,6 +486,7 @@ private:
     Array<MidiMessage> timeSigChanges;
     double pixelsPerTick;
     bool grabbedInitialWindowSize;
+	int64 renderStart;
 
     //For OpenGL
 //    int renderingStartCounter = 3;

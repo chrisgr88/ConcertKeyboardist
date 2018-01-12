@@ -2,9 +2,6 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ConcertKeyboardist\Source\Resources\MIDI Files">
-      <UniqueIdentifier>{9867FBFE-4DC5-8397-3F48-FA2FB4294087}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ConcertKeyboardist\Source\Resources\Documentation\Common\img">
       <UniqueIdentifier>{BBAF0BF2-5A73-7BAA-49BA-E245B190F869}</UniqueIdentifier>
     </Filter>
@@ -3264,6 +3261,9 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_data_structures\values\juce_ValueTreeSynchroniser.h">
       <Filter>JUCE Modules\juce_data_structures\values</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_data_structures\values\juce_ValueWithDefault.h">
+      <Filter>JUCE Modules\juce_data_structures\values</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_data_structures\juce_data_structures.h">
       <Filter>JUCE Modules\juce_data_structures</Filter>
     </ClInclude>
@@ -4130,27 +4130,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Dropbox\midi\Final Examples\078-Debussy - Arabesque No-2 in G[ck].mid">
-      <Filter>ConcertKeyboardist\Source\Resources\MIDI Files</Filter>
-    </None>
-    <None Include="..\..\..\Dropbox\midi\Final Examples\178-Schumann - Curious Story Op-15 No-2[ck].mid">
-      <Filter>ConcertKeyboardist\Source\Resources\MIDI Files</Filter>
-    </None>
-    <None Include="..\..\..\Dropbox\midi\Final Examples\189-Schumann - Soaring Op-12 No-2[ck].mid">
-      <Filter>ConcertKeyboardist\Source\Resources\MIDI Files</Filter>
-    </None>
-    <None Include="..\..\..\Dropbox\midi\Final Examples\193-Schumann - Whims Op-12 No-4[ck].mid">
-      <Filter>ConcertKeyboardist\Source\Resources\MIDI Files</Filter>
-    </None>
-    <None Include="..\..\..\Dropbox\midi\Final Examples\197-Sibelius - Valse Triste[ck].mid">
-      <Filter>ConcertKeyboardist\Source\Resources\MIDI Files</Filter>
-    </None>
-    <None Include="..\..\..\Dropbox\midi\Final Examples\215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid">
-      <Filter>ConcertKeyboardist\Source\Resources\MIDI Files</Filter>
-    </None>
-    <None Include="..\..\..\Dropbox\midi\Final Examples\Alexander Scriabin - Etude In C Sharp Opus 8 Nr 1[ck].mid">
-      <Filter>ConcertKeyboardist\Source\Resources\MIDI Files</Filter>
-    </None>
     <None Include="..\..\Documentation\Common\img\CKEditingTools.jpg">
       <Filter>ConcertKeyboardist\Source\Resources\Documentation\Common\img</Filter>
     </None>

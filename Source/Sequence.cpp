@@ -1518,7 +1518,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 
             //Find chainTriggers and set this property for all steps in a given chain
             //        std::cout <<"Find chainTriggers \n";
-            assert (theSequence.size()>0);
+            //assert (theSequence.size()>0);
             int step = 0;
             int chainTrigger = 0;
             while (step < theSequence.size())
@@ -1540,7 +1540,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                     }
                     chainTrigger = stepOfhighestNote;
                 }
-                assert(0<=chainTrigger && chainTrigger<theSequence.size());
+                //assert(0<=chainTrigger && chainTrigger<theSequence.size());
                 theSequence.at(step)->chainTrigger = chainTrigger;
                 step++;
             }
@@ -1636,9 +1636,9 @@ void Sequence::getNotesUsed(int &minNt, int &maxNt)
     return;
 }
 
-uint Sequence::varintLength(char* input, uint inputSize) {
-    uint ret = 0;
-    uint i;
+unsigned int Sequence::varintLength(char* input, unsigned int inputSize) {
+	unsigned int ret = 0;
+	unsigned int i;
     for (i = 0; i < inputSize; i++) {
         ret |= (input[i] & 127) << (7 * i);
         //If the next-byte flag is set
