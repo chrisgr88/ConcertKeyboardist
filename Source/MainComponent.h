@@ -66,6 +66,7 @@ public:
     
     void loadPlugin (String  pluginId);
     void loadPlugin (const PluginDescription* pluginDescription);
+    void unLoadPlugin ();
 
     AudioPluginFormatManager formatManager;
     KnownPluginList knownPluginList;

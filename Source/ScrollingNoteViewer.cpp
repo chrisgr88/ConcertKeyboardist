@@ -787,8 +787,8 @@ void ScrollingNoteViewer::resetHorizontalShift() {
 
 void ScrollingNoteViewer::renderOpenGL()
 {
-	String refreshTime = String(Time::getHighResolutionTicks() - renderStart);
-  renderStart = Time::getHighResolutionTicks();
+//    String refreshTime = String(Time::getHighResolutionTicks() - renderStart);
+//  renderStart = Time::getHighResolutionTicks();
   double timeShiftInPixels;
   try {
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
@@ -928,12 +928,12 @@ void ScrollingNoteViewer::renderOpenGL()
     {
         ViewStateInfo::openGLStarted = true;
     }
-    int64 renderDuration = Time::getHighResolutionTicks()-renderStart;
+//    int64 renderDuration = Time::getHighResolutionTicks()-renderStart;
 //    if (renderDuration > 0.003)
-	String rd = String(renderDuration);
-	double renderStartMS = ((double)renderStart)/Time::getHighResolutionTicksPerSecond();
-	renderDuration++;
-    std::cout << "renderDuration " <<renderDuration<<"\n";
+//    String rd = String(renderDuration);
+//    double renderStartMS = ((double)renderStart)/Time::getHighResolutionTicksPerSecond();
+//    renderDuration++;
+//    std::cout << "renderDuration " <<renderDuration<<"\n";
 }
 
 //shutdown openGL

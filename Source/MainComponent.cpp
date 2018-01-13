@@ -44,6 +44,9 @@ MainComponent::MainComponent(MIDIProcessor *p) :
                 break;
             }
         }
+#if JUCE_MAC || JUCE_IOS
+        processor->midiOutEnabled = true; //For virtual midi port
+#endif
         audioDeviceManager.addMidiInputCallback (String(), processor);
         //processor->synthMessageCollectorReset(sampRate);
         addAndMakeVisible(viewerFrame);
@@ -142,7 +145,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     const double sampRate = curDevice->getCurrentSampleRate();
     const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
     String errorMsg;
-    processor->sequenceObject.thePlugin = nullptr;
+    processor->sequenceObject.pThePlugin = nullptr;
     if (thePlugin)
     {
         thePlugin->suspendProcessing(true);
@@ -153,12 +156,12 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     
     AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
     thePlugin = pPlugin;
-    processor->sequenceObject.thePlugin = pPlugin;
+    processor->sequenceObject.pThePlugin = pPlugin;
     if (thePlugin)
     {
         std::cout << "Loaded plugin \n";
         processor->pluginEnabled = true;
-        processor->midiOutEnabled = false;
+//        processor->midiOutEnabled = false;
     }
     else
         std::cout << "Plugin error "<<errorMsg<<"\n";
@@ -179,6 +182,57 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     thePlugin->setPlayHead(processor);
     processor->pluginMessageCollectorReset(sampRate);
     thePlayer.getMidiMessageCollector().reset(sampRate);
+}
+
+void MainComponent::unLoadPlugin ()
+{
+    std::cout << "unLoading plugin " <<"\n";
+    juce::AudioIODevice *curDevice =  audioDeviceManager.getCurrentAudioDevice();
+    if (curDevice==nullptr)
+    {
+        std::cout <<"No audio device so restart audioDeviceManager\n";
+        audioDeviceManager.restartLastAudioDevice();
+    }
+    curDevice =  audioDeviceManager.getCurrentAudioDevice();
+    if (curDevice==nullptr)
+    {
+        std::cout <<"Still No audio device \n";
+        return;
+    }
+    
+//    const double sampRate = curDevice->getCurrentSampleRate();
+//    const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
+//    String errorMsg;
+
+    if (processor->sequenceObject.pThePlugin)
+    {
+        processor->sequenceObject.pThePlugin->suspendProcessing(true);
+        audioDeviceManager.removeAudioCallback(&thePlayer);
+    }
+    processor->sequenceObject.pThePlugin = nullptr;
+    processor->pluginEnabled = false;
+    processor->midiOutEnabled = true;
+    
+//    thePlugin = processor->sequenceObject.pThePlugin;
+//    if (thePlugin)
+//    {
+//        std::cout << "Loaded plugin \n";
+//        processor->pluginEnabled = true;
+//        //        processor->midiOutEnabled = false;
+//    }
+//    else
+//        std::cout << "Plugin error "<<errorMsg<<"\n";
+    
+
+//    thePlayer.setProcessor(&graph);
+//    thePlayer.setProcessor(thePlugin);
+//    audioDeviceManager.addAudioCallback (&thePlayer);
+//    thePlugin->suspendProcessing(false);
+//    MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
+//    processor->pluginMessageCollector = &mmc;
+//    thePlugin->setPlayHead(processor);
+//    processor->pluginMessageCollectorReset(sampRate);
+//    thePlayer.getMidiMessageCollector().reset(sampRate);
 }
 
 //==============================================================================

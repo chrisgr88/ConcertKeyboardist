@@ -111,8 +111,8 @@ ApplicationProperties& getAppProperties();
         Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
 //        int screenWidth = r.getWidth();
 //        int screenHeight = r.getHeight();
-        midiProcessor.midiOutEnabled = false;
-        midiProcessor.pluginEnabled = false;
+//        midiProcessor.midiOutEnabled = false;
+//        midiProcessor.pluginEnabled = false;
         ckBlockClosing = false;
         chordVelocityHumanizeSpec = ".6,.8";
         chordTimeHumanizeSpec = "40";
@@ -257,8 +257,8 @@ ApplicationProperties& getAppProperties();
         else if (message == "loadPluginMenu")
         {
             Point<int> pos = getMouseXYRelative();
-            pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
-            if (mainComponent->thePlugin)
+            auto desc = pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
+            if (desc!=nullptr && mainComponent->thePlugin)
             {
                 PluginWindow::WindowFormatType type;
                 type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
@@ -417,7 +417,7 @@ ApplicationProperties& getAppProperties();
         if (midiProcessor.pluginMessageCollector)
             midiProcessor.pluginMessageCollector->reset(sampRate);
         const StringArray midiInputs (MidiInput::getDevices());
-        midiProcessor.midiOutEnabled = false;
+//        midiProcessor.midiOutEnabled = false;
         for (int i = 0; i < midiInputs.size(); ++i)
         {
             if (mainComponent->audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
@@ -462,10 +462,10 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("Show plugin window...", String(), category, 0);
                 result.addDefaultKeypress ('p', ModifierKeys::commandModifier);
                 break;
-            case CommandIDs::enablePlugin:
-                result.setInfo ("Enable plugin", String(), category, 0);
-                result.setTicked(midiProcessor.pluginEnabled);
-                break;
+//            case CommandIDs::enablePlugin:
+//                result.setInfo ("Enable plugin", String(), category, 0);
+//                result.setTicked(midiProcessor.pluginEnabled);
+//                break;
             case CommandIDs::enableMidiOut:
                 result.setInfo ("Enable midi out", String(), category, 0);
                 result.setTicked(midiProcessor.midiOutEnabled);
@@ -680,11 +680,11 @@ ApplicationProperties& getAppProperties();
             PopupMenu pluginsMenu;
             addPluginsToMenu (pluginsMenu);
             menu.addSubMenu ("Load plugin", pluginsMenu);
-//            menu.addItem (250, "Unload plugin");
+            menu.addItem (250, "No Plugin");
             menu.addSeparator();
 //            menu.addItem (251, "Show plugin window");
             menu.addCommandItem (&getCommandManager(), CommandIDs::enableMidiOut);
-            menu.addCommandItem (&getCommandManager(), CommandIDs::enablePlugin);
+//            menu.addCommandItem (&getCommandManager(), CommandIDs::enablePlugin);
 //            menu.addItem (252, "Show all programs");
 //            menu.addItem (253, "Show all parameters");
 //            menu.addItem (254, "Configure audio I/O");
@@ -709,14 +709,21 @@ const PluginDescription* MainWindow::pluginContextMenu (Rectangle<int> menuAt) c
 {
     PopupMenu m;
     addPluginsToMenu(m);
+    m.addItem(99999, "No Plugin");
     int index = m.showAt(menuAt);
-    if (index>0)
+    if (index==99999)
+    {
+        std::cout <<"Unload Plugin\n";
+        mainComponent->unLoadPlugin();
+    }
+    else if (index>0)
     {
         const PluginDescription* desc = getChosenType (index);
         if (desc != NULL)
         {
             PluginWindow::closeAllCurrentlyOpenWindows();
             mainComponent->loadPlugin(desc);
+            return desc;
         }
     }
     return nullptr;
@@ -750,22 +757,12 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             }
         }
         else if (topLevelMenuIndex==2)
-//            
-//        {
-//        case 4: type = PluginWindow::Programs; break;
-//        case 5: type = PluginWindow::Parameters; break;
-//        case 6: type = PluginWindow::AudioIO; break;
-//            
-//        default: break;
-//        };
-//        
-//        if (auto* w = PluginWindow::getWindowFor (f, type))
-//            w->toFront (true);
         {
             PluginWindow::WindowFormatType type;
             if (menuItemID == 250)
             {
-                std::cout << "Unload plugin" <<"\n";
+                std::cout << "Unload Plugin" <<"\n";
+                mainComponent->unLoadPlugin();
             }
             else if (menuItemID == 251)
             {
@@ -817,7 +814,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::audioMidiSettings,
             CommandIDs::showPluginListEditor,
             CommandIDs::showPlugWindow,
-            CommandIDs::enablePlugin,
+//            CommandIDs::enablePlugin,
             CommandIDs::enableMidiOut,
             CommandIDs::fileOpen,
             CommandIDs::fileRecent,
@@ -895,13 +892,13 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 }
                 break;
             }
-            case CommandIDs::enablePlugin:
-            {
-                std::cout << "Enable plugin" <<"\n";
-                midiProcessor.pluginEnabled = !midiProcessor.pluginEnabled;
-                menuItemsChanged();
-                break;
-            }
+//            case CommandIDs::enablePlugin:
+//            {
+//                std::cout << "Enable plugin" <<"\n";
+//                midiProcessor.pluginEnabled = !midiProcessor.pluginEnabled;
+//                menuItemsChanged();
+//                break;
+//            }
             case CommandIDs::enableMidiOut:
             {
                 std::cout << "Enable midi out" <<"\n";

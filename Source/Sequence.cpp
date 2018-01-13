@@ -34,7 +34,7 @@ Sequence::Sequence()
     buildNumberSavingFile = 9999;
     setSoundfontFile("//root/soundfront.sfz");
     setPluginFile("Massive");
-    thePlugin = nullptr;
+    pThePlugin = nullptr;
 }
 Sequence::~Sequence()
 {
@@ -297,10 +297,10 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             sysexSeq.addEvent(sysex);
         }
     }
-    if (thePlugin)
+    if (pThePlugin)
     {
 //        String name = thePlugin->getPluginDescription().descriptiveName;
-        String pluginIdentString  = thePlugin->getPluginDescription().createIdentifierString();
+        String pluginIdentString  = pThePlugin->getPluginDescription().createIdentifierString();
         String propertyStr = String("pluginIdentString:")+pluginIdentString;
         int len = propertyStr.length();
         char buffer[128];
@@ -312,7 +312,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         //Property "pluginPData"
         MemoryBlock m;
         const int blockLen = 100;
-        thePlugin->getStateInformation (m);
+        pThePlugin->getStateInformation (m);
         MD5 md = MD5(m);
         String checksum = md.toHexString();
         

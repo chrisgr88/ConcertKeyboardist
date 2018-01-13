@@ -605,7 +605,7 @@ public:
     
     Array<TrackDetail> trackDetails;
     
-    AudioPluginInstance *thePlugin;
+    AudioPluginInstance *pThePlugin;
 //    MemoryBlock pluginState; //Used to hold latest loaded plugin's state so it can be accessed by ContentComponent.
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sequence)

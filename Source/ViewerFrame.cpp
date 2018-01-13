@@ -129,12 +129,12 @@ void ViewerFrame::timerCallback()
 {
     static String prevName = "";
     String plugin;
-    if (processor->sequenceObject.thePlugin)
+    if (processor->sequenceObject.pThePlugin)
     {
-        plugin = " playing "+processor->sequenceObject.thePlugin->getName();
-        int progNum = processor->sequenceObject.thePlugin->getCurrentProgram();
+        plugin = " playing "+processor->sequenceObject.pThePlugin->getName();
+        int progNum = processor->sequenceObject.pThePlugin->getCurrentProgram();
         if (progNum>=0)
-            plugin = plugin + " (" +processor->sequenceObject.thePlugin->getProgramName(progNum)+")";
+            plugin = plugin + " (" +processor->sequenceObject.pThePlugin->getProgramName(progNum)+")";
     }
     String txt = processor->sequenceObject.getScoreFileName();
     const String newName = "Concert Keyboardist - " + processor->sequenceObject.getScoreFileName() + plugin;

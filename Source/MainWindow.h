@@ -59,7 +59,7 @@ namespace CommandIDs
     static const int audioMidiSettings          = 0x20050;
     static const int showPluginListEditor       = 0x20051;
     static const int showPlugWindow             = 0x20052;
-    static const int enablePlugin               = 0x20053;
+//    static const int enablePlugin               = 0x20053;
     static const int enableMidiOut               = 0x20054;
     static const int fileOpen                   = 0x30000;
     static const int fileRecent                 = 0x30010; //To submenu
