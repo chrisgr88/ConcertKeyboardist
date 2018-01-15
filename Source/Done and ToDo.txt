@@ -1,43 +1,68 @@
 Updated ToDo as of December 22, 2017
 --------------------------------
-- Documents are marked as changed on first loading
+- FIXED Documents are marked as changed on first loading
+
 - Audio/MIDI Setup does not contain the CK virtual port.
 - The CK virtual midi port is always the output used by MidiProcessor
 - Does setting the output with Audio/MIDI Setup have an effect if the hardwiring of CK as midi output is fixed?
-- Can we send midi to the network port on the hardware iPad?
-- Look into making the secondary toolbar buttons change based on the choice in main toolbar.
-- Change main toolbar to have one plugin button which changes the secondary toolbar to display three plugin setup buttons: Plugin Scanning button, choose plugin button and show plugin window button.
+
+- Loading a sequence when a plugin is already loaded - plugin is used for new sequence unless manually unloaded
+- Command to unload plugin 
+
+- Command to enable/disable midi port
+    - Always enabled for a new sequence unless it was disabled
+- Loading a sequence with no plugin assigned caused midi out to be enabled.
 
 
 
 
 
-ToDo
-----
+
+ToDo - For First Release
+------------------------
+Alpha:
+- File management
+    - save as .ckf extension
+    - file open shows just .ckf files
+    - add file import command to load .mid files
+    - add file export command to produce .mid files (maybe add later)
+    - Make .ckf files not loadable as midi?
+- Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
+- Add "scan plugins" to plugin toolbar menu. (Also enable/disable midi?)    
+- Save build date/time in files as version info   
+- Bug - Added temopo change marker picks up tempo from next real tempo change
+- Ability to display help in lower left - Show for items hovered over
+- Make window title bar dark with white text?
+- Update help
+- Ensure help is accessible from help toolbar button
+- Demo Video
+
+Final:
+- Ability to edit meta data
+- Review tempo change UI
+- Hide/show groups of toolbar buttons?
+
+
+
+ToDo - Old
+----------
 - Ability to play a track or tracks as accompaniment
-- Ability to easily listen to a section 
+- DONE VAbility to easily listen to a section 
 - Ability to set some notes as muted
 - Metronome, Option for number of measures to count metronome in.  When playing blink ztl line handle in sync with beats.
-
-- Properties not saved during simple app quit?
 - By default bookmarks are unnamed but they can be named by clicking on them
 - Better keyboard shortcuts & Ability to map them to be executed by midi messages
-- Shortcuts for more actions
 - User editable keyboard shortcuts & make assignable to MIDI messages mappable to MIDI notes for external control
-- Undo/Redo of user's edit actions
-- Other commands?
 - Toolbar
-    - Access to properties dialogs 
-    - Tempo control/display
+    - DONE VAccess to properties dialogs 
+    - DONE VTempo control/display
     - More editing tools 
-        - set groups of notes as target/nontarget notes
-        - multiple chaining interval segments in file
-        - adjust note velocities/timing?
+        - DONE Vset groups of notes as target/nontarget notes
+        - DONE Vadjust note velocities/timing?
         - adjust note pitches?
         - mute/add/remove notes?       
 App Properties Dialog
 Score Properties Dialog
-    - Master chaining interval
     - Selection of which tracks to play, to mute or to play as accompaniment
     - Setting of method of note velocity control
     - Channel remappings
@@ -45,20 +70,17 @@ Score Properties Dialog
     - Tempo options: fixed, as in original file, fully dynamic (edit parameters on degree of control)
     - Position of zero-time line in window
 Better direct editing
-    - Easier to click short note bars
+    DONE - Easier to click short note bars
     - Pinch to zoom
 More external controller features
     - Input of controllers
     - Others?
-Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
-VST/AU host
-Windows version
-iOS version
-    - Design the iOS UI. See nanoStudio.
-Android version
+DONE VST/AU host
+DONE Windows version
+iOS version - Design the iOS UI. See nanoStudio.
 Bugs:
-- Problem with openGL on Hayden variations for four hands? Goes blank? Intermittent.
-- Occasional hang on startup in audio init - timing related
+- DONE VProblem with openGL on Hayden variations for four hands? Goes blank? Intermittent.
+- DONE VOccasional hang on startup in audio init - timing related
 
 Ability to loop.  Partly working.
     - Loop point specified in ticks is varying in position in score.  Need to specity it in terms of seq step.
@@ -67,8 +89,6 @@ Ability to loop.  Partly working.
     - Create UI to specify loop points.
     - Cause rewind to go to start of loop point?
     - Save loop point in file.
-
-- Move notePlayWindow ... leadLagAdjustmentFactor to be properties of Sequence object
 
 Done
 ----

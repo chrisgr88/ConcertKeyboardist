@@ -18,7 +18,7 @@
 #include <random>
 
 const char* const filenameSuffix = ".ckf";
-const char* const filenameWildcard = "*.mid";
+const char* const filenameWildcard = "*.ckf";
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
@@ -94,11 +94,10 @@ public:
     File getSuggestedSaveAsFile	(	const File & 	defaultFile	) override
     {
         File newFile;
-        String foo = defaultFile.getFullPathName();
-        if (defaultFile.getFullPathName().endsWith("[ck]"))
+        if (defaultFile.getFullPathName().endsWith(".ckf"))
             newFile = defaultFile;
         else
-            newFile = File(defaultFile.getFullPathName()+"[ck].mid");
+            newFile = defaultFile.withFileExtension(".ckf");
         return newFile;
     }
     
@@ -106,7 +105,7 @@ public:
      were using.
      
      getLastDocumentOpened() and setLastDocumentOpened() are used to store
-     the last document that was used - you might want to store this value
+     the last document that was used - you might want to store this val ue
      in a static variable, or even in your application's properties. It should
      be a global setting rather than a property of this object.
      

@@ -68,14 +68,10 @@ public:
     {
 #if JUCE_IOS
         auto ckDocs = File::getSpecialLocation(File::currentApplicationFile);
-        FileChooser chooser ("Open Sequence", ckDocs, "*.mid",  true);
+        FileChooser chooser ("Open Sequence", ckDocs, "*.ckf;*.mid", true);
 #else
-        FileChooser chooser ("Open Sequence",File(),"*.ckf;*.mid;*.ppf", true);
+        FileChooser chooser ("Open Sequence",File(), "*.ckf;*.mid", true);
 #endif
-        
-        //                    getLastDocumentOpened(),
-        //                    "*.mid;*.ckf;*.ppf");
-        //
         if (chooser.browseForFileToOpen())
         {
             File file = chooser.getResult();
