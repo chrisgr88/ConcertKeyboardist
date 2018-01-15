@@ -74,7 +74,7 @@ void MIDIProcessor::changeListenerCallback (ChangeBroadcaster* broadcaster)
 //        std::cout << "MidiProcessor received change message from Sequence" << "\n";
         if (sequenceObject.loadDoc)
         {
-            pluginEnabled = false;
+//            pluginEnabled = false;
             midiOutEnabled = true;
             buildSequenceAsOf(Sequence::loadFile, Sequence::doNotRetainEdits, 0.0);
             sequenceObject.loadDoc = false;
@@ -1128,7 +1128,7 @@ void MIDIProcessor::processBlock ()
 
             double lastScheduledNoteTime = -1;
             int lastScheduledNote = 0;
-            if (autoPlaying)//scheduledNotes.size()>0)
+            if (autoPlaying && scheduledNotes.size()>0)
             {
                 lastScheduledNote = scheduledNotes.back();
                 lastScheduledNoteTime = sequenceObject.theSequence.at(scheduledNotes.back())->scheduledOnTime;
