@@ -65,7 +65,8 @@
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="iIotgF" documentExtensions=".mid"
-               vst3Folder="/Users/chrisgr/SDKs/VST3 SDK" iosDevelopmentTeamID="Y6ELW6M79S">
+               vst3Folder="/Users/chrisgr/SDKs/VST3 SDK" iosDevelopmentTeamID="Y6ELW6M79S"
+               prebuildCommand="$PROJECT_DIR/../../MakeDateHeader.sh">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxCompatibility="10.10 SDK" isDebug="1" optimisation="1"
                        targetName="ConcertKeyboardist" enablePluginBinaryCopyStep="1"
@@ -90,53 +91,6 @@
         <MODULEPATH id="juce_cryptography" path="../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="landscape" vst3Folder=""
-                  bigIcon="iIotgF" smallIcon="iIotgF" UIFileSharingEnabled="1"
-                  iosDevelopmentTeamID="Y6ELW6M79S" keepCustomXcodeSchemes="1"
-                  customPList="" iPadScreenOrientation="landscape" iosDeviceFamily="2"
-                  iCloudPermissions="1" UISupportsDocumentBrowser="1" iosAppGroups="1"
-                  iosBackgroundBle="1" iosBackgroundAudio="1">
-      <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"
-                       enablePluginBinaryCopyStep="1"/>
-        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"
-                       enablePluginBinaryCopyStep="1"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_video" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
-      </MODULEPATHS>
-    </XCODE_IPHONE>
-    <CLION targetFolder="Builds/CLion" clionXcodeEnabled="1">
-      <MODULEPATHS>
-        <MODULEPATH id="juce_video" path="JUCE.git/modules/juce_video"/>
-        <MODULEPATH id="juce_opengl" path="JUCE.git/modules/juce_opengl"/>
-        <MODULEPATH id="juce_gui_extra" path="JUCE.git/modules/juce_gui_extra"/>
-        <MODULEPATH id="juce_gui_basics" path="JUCE.git/modules/juce_gui_basics"/>
-        <MODULEPATH id="juce_graphics" path="JUCE.git/modules/juce_graphics"/>
-        <MODULEPATH id="juce_events" path="JUCE.git/modules/juce_events"/>
-        <MODULEPATH id="juce_data_structures" path="JUCE.git/modules/juce_data_structures"/>
-        <MODULEPATH id="juce_cryptography" path="JUCE.git/modules"/>
-        <MODULEPATH id="juce_core" path="JUCE.git/modules/juce_core"/>
-        <MODULEPATH id="juce_audio_utils" path="JUCE.git/modules/juce_audio_utils"/>
-        <MODULEPATH id="juce_audio_processors" path="JUCE.git/modules/juce_audio_processors"/>
-        <MODULEPATH id="juce_audio_formats" path="JUCE.git/modules/juce_audio_formats"/>
-        <MODULEPATH id="juce_audio_devices" path="JUCE.git/modules/juce_audio_devices"/>
-        <MODULEPATH id="juce_audio_basics" path="JUCE.git/modules"/>
-      </MODULEPATHS>
-    </CLION>
     <VS2017 targetFolder="Builds/VisualStudio2017" vst3Folder="C:\Users\Chris\VST_SDK\VST3_SDK">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"

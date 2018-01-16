@@ -24,6 +24,7 @@
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "../DateHeader.h"
 #include <array>
 
 #include "MainComponent.h"
@@ -81,12 +82,12 @@ public:
 //            std::cout << kc.getKeyCode() << "\n";
         
         //App properties - saved in app settings file
-        getAppProperties().getUserSettings()->setValue ("majorVersion", 0);
-        getAppProperties().getUserSettings()->setValue ("minorVersion", 2);
-        getAppProperties().getUserSettings()->setValue ("buildNumber", 9999);
-        getAppProperties().getUserSettings()->setValue ("defaultSoundGenerator", 2); //midi, internal, plugIn
-        getAppProperties().getUserSettings()->setValue ("defaultSoundFont", "/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
-        getAppProperties().getUserSettings()->setValue ("defaultlugIn", "Massive"); //Plugin name
+        getAppProperties().getUserSettings()->setValue ("buildDate", __CK_BUILD_DATE);
+        getAppProperties().getUserSettings()->setValue ("buildNumber", __CK_COMMIT_ID);
+        
+        String buildNumber = getAppProperties().getUserSettings()->getValue ("buildNumber");
+        String buildDate = getAppProperties().getUserSettings()->getValue("buildDate");
+        std::cout << "IDs "<<buildNumber<<" "<<buildDate<<"\n";
     }
     
     void anotherInstanceStarted (const String& commandLine) override

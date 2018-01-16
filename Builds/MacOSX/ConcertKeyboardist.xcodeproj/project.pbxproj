@@ -393,6 +393,7 @@
 		20A88B838659B5B766A08F56 = {isa = XCConfigurationList; buildConfigurations = (
 					2FFE5285CB0A07579D491975,
 					74219C60B6FB3AD61BD5CD12, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		3EECBAB9F8C2BF9781959FE1 = {isa = PBXShellScriptBuildPhase; buildActionMask = 2147483647; files = (  ); runOnlyForDeploymentPostprocessing = 0; name = "Pre-build script"; shellPath = /bin/sh; shellScript = "$PROJECT_DIR/../../MakeDateHeader.sh"; };
 		518008B4BCAC2EDE2921458A = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
 					B911480598E3B26D6C5CD121,
 					697119281554CA908765F245, ); runOnlyForDeploymentPostprocessing = 0; };
@@ -438,6 +439,7 @@
 					9A24423E8EB4E7B5AA0FD499,
 					8489C516E3B50AC1AF94A2B7, ); runOnlyForDeploymentPostprocessing = 0; };
 		0DF05A38ED8E8BF6EB7D9C5C = {isa = PBXNativeTarget; buildConfigurationList = 20A88B838659B5B766A08F56; buildPhases = (
+					3EECBAB9F8C2BF9781959FE1,
 					518008B4BCAC2EDE2921458A,
 					EF758DF42F97B8D22FD35F80,
 					AF94D754542EEF998EE0EF72, ); buildRules = ( ); dependencies = (  ); name = "ConcertKeyboardist - App"; productName = ConcertKeyboardist; productReference = BCC50B48B1A4B967949B2DB2; productType = "com.apple.product-type.application"; };
