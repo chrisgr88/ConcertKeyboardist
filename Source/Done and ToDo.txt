@@ -1,35 +1,16 @@
-Updated ToDo as of December 22, 2017
---------------------------------
-- FIXED Documents are marked as changed on first loading
-
-- Audio/MIDI Setup does not contain the CK virtual port.
-- The CK virtual midi port is always the output used by MidiProcessor
-- Does setting the output with Audio/MIDI Setup have an effect if the hardwiring of CK as midi output is fixed?
-
-- Loading a sequence when a plugin is already loaded - plugin is used for new sequence unless manually unloaded
-- Command to unload plugin 
-
-- Command to enable/disable midi port
-    - Always enabled for a new sequence unless it was disabled
-- Loading a sequence with no plugin assigned caused midi out to be enabled.
-
-
-
-
-
-
 ToDo - For First Release
 ------------------------
 Alpha:
-- DONE File management
-    - save as .ckf extension
+- File management
+    - DONE save as .ckf extension
     - file open shows just .ckf files
     - add file import command to load .mid files
     - add file export command to produce .mid files (maybe add later)
     - Make .ckf files not loadable as midi?
+- Create an app versioning system    
+- Save build date/time in files as version info 
 - Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
-- Add "scan plugins" to plugin toolbar menu. (Also enable/disable midi?)    
-- Save build date/time in files as version info   
+- Add "scan plugins" to plugin toolbar menu. (Also enable/disable midi?)      
 - Bug - Added temopo change marker picks up tempo from next real tempo change
 - Ability to display help in lower left - Show for items hovered over
 - Make window title bar dark with white text?
@@ -42,6 +23,18 @@ Final:
 - Review tempo change UI
 - Hide/show groups of toolbar buttons?
 
+Updated ToDo as of December 22, 2017
+--------------------------------
+- FIXED Documents are marked as changed on first loading
+
+- HANDLED Audio/MIDI Setup does not contain the CK virtual port.
+- FIXED The CK virtual midi port is always the output used by MidiProcessor
+
+- FIXED Loading a sequence when a plugin is already loaded - plugin is used for new sequence unless manually unloaded
+- FIXED Command to unload plugin 
+
+- HANDLED Command to enable/disable midi port -> Always enabled for a new sequence unless it was disabled
+- FIXED Loading a sequence with no plugin assigned caused midi out to be enabled.
 
 
 ToDo - Old

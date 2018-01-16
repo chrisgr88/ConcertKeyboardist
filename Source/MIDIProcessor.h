@@ -215,12 +215,7 @@ public:
     MidiMessageCollector *pluginMessageCollector;
     MidiOutput *defaultMidiOutput;   //The midi output  chosen, if any,  in the midi setup dialog
     
-    void prepareToSave()
-    {
-        sequenceObject.sequenceProps.setValue("majorVersion",  var(99)); //That created this file
-        sequenceObject.sequenceProps.setValue("minorVersion", var(99)); //That created this file
-        sequenceObject.sequenceProps.setValue("buildNumber", var(99)); //That created this file
-    }
+    void prepareToSave() { }
     
     bool resetViewer; //Used as flag to tell viewer in a change notification to reset itself
     

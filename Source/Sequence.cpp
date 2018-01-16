@@ -29,9 +29,6 @@ Sequence::Sequence()
     setKV(0.00010);
     setLowerTempoLimit(0.6);
     setUpperTempoLimit(1.4);
-    majorVersionSavingFile = 0;
-    minorVersionSavingFile = 2;
-    buildNumberSavingFile = 9999;
     setSoundfontFile("//root/soundfront.sfz");
     setPluginFile("Massive");
     pThePlugin = nullptr;
@@ -180,24 +177,12 @@ double Sequence::getTempoMultipier (double currentTime)
  */
 void Sequence::saveSequence(File fileToSave)// String  name = "")
 {
-    //TODO Save these:
-    //- leadTimeProportionOfWidth
     setScoreFile(fileToSave); //Used for file name display it must be changed on save (updated in by ViewerFrame change notifier)
-//Score properties - saved in each score file - Those with defaults can be omitted
-    //Other properties:
-    // - "timeInTicks" updated by MidiProcessor::prepareToSave()
-    // - "majorVersion" updated by MidiProcessor::prepareToSave()
-    // - "minorVersion" updated by MidiProcessor::prepareToSave()
-    // - "buildNumber" updated by MidiProcessor::prepareToSave()
-    // - "horizontalScale" is kept updated by the ScrollingNoteViewer
-
-    //Not currently implemented:
-    //    props.setValue("notePlayWindow", 100); //float How far early a note can be played in ticks
-    //    props.setValue("notePlayWindowAutoplaying", 10); //float How far early a note can be played in ticks while autoplaying
-    //    props.setValue("latePlayAdjustmentWindow", 100);
-    //    props.setValue("leadLagAdjustmentFactor", 0.67);
-    //    props.setValue("soundfontFile", "//root/soundfront.sfz");
-    //    props.setValue("pluginFile", "Massive");
+    
+    const String shortHash = getAppProperties().getUserSettings()->getValue ("shortHash");
+    const String buildDate = getAppProperties().getUserSettings()->getValue("buildDate");
+    sequenceProps.setValue("shortHash", var(shortHash));
+    sequenceProps.setValue("buildDate", var(buildDate));
     
     StringPairArray props = sequenceProps.getAllProperties();
     StringArray keys = props.getAllKeys();
@@ -217,7 +202,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        std::cout << " Write sysex property - "<< propertyStr <<" "<<propertyStr.length() << "\n";
         sysexSeq.addEvent(sysex);
     }
     

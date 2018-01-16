@@ -156,11 +156,6 @@ public:
         ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
     }
     File lastDocOpened;
-    
-    int majorVersionSavingFile;
-    int minorVersionSavingFile;
-    int buildNumberSavingFile;
-    
     PropertySet sequenceProps;
     
     void setNoteActive(int nt, int channel, bool setting)

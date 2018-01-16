@@ -83,11 +83,11 @@ public:
         
         //App properties - saved in app settings file
         getAppProperties().getUserSettings()->setValue ("buildDate", __CK_BUILD_DATE);
-        getAppProperties().getUserSettings()->setValue ("buildNumber", __CK_COMMIT_ID);
+        getAppProperties().getUserSettings()->setValue ("shortHash", __CK_SHORT_HASH);
         
-        String buildNumber = getAppProperties().getUserSettings()->getValue ("buildNumber");
+        String shortHash = getAppProperties().getUserSettings()->getValue ("shortHash");
         String buildDate = getAppProperties().getUserSettings()->getValue("buildDate");
-        std::cout << "IDs "<<buildNumber<<" "<<buildDate<<"\n";
+        std::cout << "IDs "<<shortHash<<" "<<buildDate<<"\n";
     }
     
     void anotherInstanceStarted (const String& commandLine) override

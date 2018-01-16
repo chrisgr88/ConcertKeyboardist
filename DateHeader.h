@@ -1,2 +1,2 @@
-#define __CK_BUILD_DATE "2018-01-15-16:24:25"
-#define __CK_COMMIT_ID  "ed96736"
+#define __CK_BUILD_DATE "2018-01-16-06:34:18"
+#define __CK_SHORT_HASH  "d99871d"
