@@ -1516,30 +1516,20 @@ void ScrollingNoteViewer::paint (Graphics& g)
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
     {
-        if (!ViewStateInfo::finishedPaintAfterRewind)
-            std::cout << "In paint - at 'A1' \n";
         const double hLinePos = 2.8 * horizontalScale + sequenceStartPixel + processor->leadLag * pixelsPerTick * horizontalScale;
         g.setColour (colourNoteOn);
         g.fillRect(Rectangle<float>(hLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
     }
     else
     {
-        if (!ViewStateInfo::finishedPaintAfterRewind)
-            std::cout << "In paint - at 'A2' \n";
         if (processor->getLastUserPlayedStepTime()>=0.0)
         {
             const double lastTime = processor->getLastUserPlayedStepTime() - processor->getTimeInTicks();
-            if (!ViewStateInfo::finishedPaintAfterRewind)
-                std::cout << "In paint - at 'A3' \n";
             const double hLinePos = 2.8 * horizontalScale + sequenceStartPixel + lastTime * pixelsPerTick * horizontalScale + horizontalShift;
             g.setColour (colourNoteOn);
-            if (!ViewStateInfo::finishedPaintAfterRewind)
-                std::cout << "In paint - at 'A4' \n";
             g.fillRect(Rectangle<float>(hLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
         }
     }
-    if (!ViewStateInfo::finishedPaintAfterRewind)
-        std::cout << "In paint - at 'A5' \n";
     if (processor->isPlaying)
     {
         //ZTL
@@ -1563,8 +1553,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
         if (processor->sequenceObject.measureTimes.size()>0)
             g.drawText(measTxt, sequenceStartPixel+6, 3.0*ViewStateInfo::verticalScale, 150,
                        9*ViewStateInfo::verticalScale, juce::Justification::centredLeft);
-    if (!ViewStateInfo::finishedPaintAfterRewind)
-        std::cout << "In paint - at 'B' \n";
     if (!processor->isPlaying)
     {
         if (processor->undoMgr->inRedo || processor->undoMgr->inUndo)
@@ -1643,8 +1631,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 }
             }
         }
-        if (!ViewStateInfo::finishedPaintAfterRewind)
-            std::cout << "In paint - at 'C' \n";
         Point<float> prevVelPoint;
         for (int i=0;i<displayedSelection.size();i++)
         {
@@ -1673,8 +1659,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 prevVelPoint = velPoint;
             }
         }
-        if (!ViewStateInfo::finishedPaintAfterRewind)
-            std::cout << "In paint - at 'D' \n";
         g.setColour (Colours::yellow);
         if (selecting)
             g.drawRect(selectionRect,2);

@@ -153,9 +153,13 @@ ApplicationProperties& getAppProperties();
         File fileToOpen;
         if (recentFiles.getNumFiles() > 0)
             fileToOpen = recentFiles.getFile (0);
-        
-        if (fileToOpen.existsAsFile())
+
+        String deadMansPedal = getAppProperties().getUserSettings()->getValue ("deadMansPedal","");
+        if (fileToOpen.existsAsFile() && deadMansPedal!= "hungLoadingPreviousFile")
+        {
+            getAppProperties().getUserSettings()->setValue ("deadMansPedal", "hungLoadingPreviousFile");
             midiProcessor.loadSpecifiedFile(fileToOpen);
+        }
 #if TARGET_OS_IPHONE
         
 #else

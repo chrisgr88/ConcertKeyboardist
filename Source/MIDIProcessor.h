@@ -87,24 +87,26 @@ public:
     }
     void loadSpecifiedFile (File file)//const bool showMessageOnFailure)
     {
-//        sequenceObject.setScoreFile(file); //Sets the name of the file to display in the main window
         if (sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
             sequenceObject.loadDocument(file);
-        //return Result::fail (TRANS("User cancelled"));
     }
     
     void buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time)
     {
 //        std::cout << "entering buildSequenceAsOf \n";
         HighResolutionTimer::stopTimer();
-        if (sequenceObject.loadSequence(type, retainEdits)) {
+        
+        if (sequenceObject.loadSequence(type, retainEdits))
+        {
+            //Clear the  "hungLoadingPreviousFile" flag.
+            getAppProperties().getUserSettings()->setValue ("deadMansPedal", "");
             rewind(time);
-        } else {
-            //Report error
-//            AlertWindow::showMessageBox(AlertWindow::AlertIconType::WarningIcon, "Warning", "Failed to Load File");
-            AlertWindow::showNativeDialogBox("Warning", "Failed to Load File", false);
-//            std::cout << "Failed to Load File" <<"\n";
         }
+        else
+        {
+            AlertWindow::showNativeDialogBox("Warning", "Failed to Load File", false);
+        }
+        
         HighResolutionTimer::startTimer(timerIntervalInMS);
     }
 

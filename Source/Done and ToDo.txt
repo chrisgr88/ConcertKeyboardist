@@ -3,24 +3,25 @@ ToDo - For First Release
 Alpha:
 - File management
     - DONE save as .ckf extension
-    - file open shows just .ckf files
-    - add file import command to load .mid files
-    - add file export command to produce .mid files (maybe add later)
-    - Make .ckf files not loadable as midi?
-- Create an app versioning system    
-- Save build date/time in files as version info 
+    - DONE file open shows just .ckf and .mid files
+    - DEFER add file export command to produce .mid files (maybe add later)
+    - DEFER Make .ckf files not loadable as midi?
+- DONE Create an app versioning system    
+- DONE Save build date/time in files as version info 
 - Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
-- Add "scan plugins" to plugin toolbar menu. (Also enable/disable midi?)      
+- Better tempo change & bookmark ui
+- Add "scan plugins" to plugin toolbar menu. (Also add enable/disable midi?)      
 - Bug - Added temopo change marker picks up tempo from next real tempo change
-- Ability to display help in lower left - Show for items hovered over
+- Ability to display help in lower left 
+    - Show for items hovered over
+    - System to author help
 - Make window title bar dark with white text?
 - Update help
-- Ensure help is accessible from help toolbar button
+- Make help is accessible from help toolbar button
 - Demo Video
 
 Final:
 - Ability to edit meta data
-- Review tempo change UI
 - Hide/show groups of toolbar buttons?
 
 Updated ToDo as of December 22, 2017
