@@ -265,7 +265,7 @@ private:
 
         void buttonClicked (Button*) override
         {
-            if (nActive>1 || activeButton.getToggleState()==true)
+            if (nActive>0 || activeButton.getToggleState()==true)
                 owner.setPlayability (row, activeButton.getToggleState());
             else
                 activeButton.setToggleState(true, NotificationType::dontSendNotification);
