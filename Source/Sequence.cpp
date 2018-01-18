@@ -540,7 +540,6 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 //Loads the file in fileToLoad which must be set before calling if LoadType is load
 bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 {
-    std::cout << "entering loadSequence "<< fileToLoad.getFileName()<<"\n";
     targetNoteTimes.clear();
     try
     {
@@ -1609,8 +1608,6 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
     }
 
     setLoadingFile(false);
-
-    std::cout << "End of loadSequence: seq size: "<<theSequence.size()<<"\n";
     return true;
 } //End of loadSequence
 

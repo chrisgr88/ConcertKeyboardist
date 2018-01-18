@@ -1007,7 +1007,7 @@ void ScrollingNoteViewer::createShaders()
 //==============================================================================
 void ScrollingNoteViewer::makeKeyboard()
 {
-    std::cout << "Entering makeKeyboard \n";
+//    std::cout << "Entering makeKeyboard \n";
 //    if (rendering)
 //        return;
     ticksPerQuarter = processor->sequenceObject.getPPQ();
@@ -1081,7 +1081,6 @@ void ScrollingNoteViewer::makeKeyboard()
 void ScrollingNoteViewer::makeNoteBars()
 {
   try {
-    std::cout << "entering makeNoteBars " << "\n";
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     rebuidingGLBuffer = true;
     if (processor->initialWindowHeight<topMargin || ViewStateInfo::viewHeight<0.0000001f)
@@ -1093,7 +1092,6 @@ void ScrollingNoteViewer::makeNoteBars()
     const float rescaleHeight = ((float)ViewStateInfo::initialHeight)/ViewStateInfo::viewHeight;
     const float unscaledTVS = ViewStateInfo::trackVerticalSize/ViewStateInfo::verticalScale;
     ViewStateInfo::vertices.clear();
-      std::cout << "Cleared vertices " << ViewStateInfo::vertices.size()<<"\n";
     ViewStateInfo::indices.clear();
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
     nKeys = maxNote-minNote+1;
@@ -1492,7 +1490,7 @@ void ScrollingNoteViewer::makeNoteBars()
   } catch (...) {
         std::cout << "Error in make note bars"<<"\n";
   }
-    std::cout << "Leaving  makeNoteBars: Indices, Vertices " <<  ViewStateInfo::indices.size()<<" "<<ViewStateInfo::vertices.size() << "\n";
+//    std::cout << "Leaving  makeNoteBars: Indices, Vertices " <<  ViewStateInfo::indices.size()<<" "<<ViewStateInfo::vertices.size() << "\n";
 //    std::cout << "Exit MNB: theSequence.size " << "\n";
 }
 
@@ -1505,13 +1503,8 @@ void ScrollingNoteViewer::updatePlayedNotes()
 //###
 void ScrollingNoteViewer::paint (Graphics& g)
 {
-
-    if (!ViewStateInfo::finishedPaintAfterRewind)
-        std::cout << "Entering paint \n";
     if (rendering)
         return;
-    if (!ViewStateInfo::finishedPaintAfterRewind)
-        std::cout << "Entering paint - after rendering test \n";
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
@@ -1703,7 +1696,6 @@ void ScrollingNoteViewer::paint (Graphics& g)
     }
     if (!ViewStateInfo::finishedPaintAfterRewind)
     {
-        std::cout << "finishedPaintAfterRewind \n";
         ViewStateInfo::finishedPaintAfterRewind = true;
     }
 }

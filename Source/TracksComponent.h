@@ -23,13 +23,11 @@
 #include "MIDIProcessor.h"
 #include "MainWindow.h"
 
-static int nActive;
 class TracksComponent    : public Component, public TableListBoxModel
 {
 public:
     TracksComponent( MIDIProcessor *proc)   : font (12.0f)
     {
-        nActive = 0;
         processor = proc;
         sequence = &proc->sequenceObject;
         addAndMakeVisible (table);
@@ -114,9 +112,6 @@ public:
                                         Component* existingComponentToUpdate) override
     {
 //        std::cout << rowNum<< "refreshComponentForCell Track row: nEvents " << sequence->trackDetails[rowNum].nNotes <<"\n";
-
-        if (rowNum==0)
-            nActive = 0;
         if (columnId != 10)
         {
             jassert (existingComponentToUpdate == nullptr);
@@ -137,8 +132,7 @@ public:
         if (sequence->trackDetails[rowNum].nNotes>0)
         {
             playabilityBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].playability);
-            if (sequence->trackDetails[rowNum].playability==1)
-                nActive++;
+            setbuf(stdout, 0);
         }
         else
             playabilityBox->setEnabled(false);
@@ -178,15 +172,13 @@ public:
                 sequence->trackDetails.set(rowNum, trkDetail);
                 processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
             }
-            nActive = 0;
-            for (int t=1;t<3;t++)
-            {
-                if ( sequence->trackDetails[t].playability==1)
-                    nActive++;
-            }
          } catch (const std::out_of_range& ex) {
              std::cout << " error in setPlayability " << "\n";
          }
+    }
+    int getNPlayableTracks()
+    {
+        return sequence->nPlayableTracks();
     }
     
     //==============================================================================
@@ -265,7 +257,7 @@ private:
 
         void buttonClicked (Button*) override
         {
-            if (nActive>0 || activeButton.getToggleState()==true)
+            if (owner.getNPlayableTracks()>1 || activeButton.getToggleState()==true)
                 owner.setPlayability (row, activeButton.getToggleState());
             else
                 activeButton.setToggleState(true, NotificationType::dontSendNotification);

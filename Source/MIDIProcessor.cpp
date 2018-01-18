@@ -220,7 +220,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
 //    std::cout << "Rewind: time " << time
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
 //    << "\n";
-    std::cout << "Rewind " << "\n";
+//    std::cout << "Rewind " << "\n";
     if (sequenceObject.theSequence.size()==0)
     {
         std::cout << "Failed rewind " << "\n";
@@ -403,7 +403,6 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
     } catch (const std::out_of_range& ex) {
         std::cout << " error 3 in rewind " << "\n";
     }
-    std::cout << "Exit Rewind " << "\n";
 //    std::cout << " leaving rewind " << "\n";
 }
 

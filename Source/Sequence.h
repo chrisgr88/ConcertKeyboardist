@@ -596,6 +596,16 @@ public:
         int originalChannel;
         int assignedChannel;
     } trackDetail;
+
+    int nPlayableTracks()
+    {
+        auto nActive = 0;
+        for (auto i = 0; i < trackDetails.size(); ++i) {
+            if (trackDetails[i].playability == Track_Play)
+                nActive++;
+        }
+        return nActive;
+    }
     
     Array<TrackDetail> trackDetails;
     

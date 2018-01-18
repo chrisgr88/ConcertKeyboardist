@@ -8,7 +8,8 @@ Alpha:
     - DEFER Make .ckf files not loadable as midi?
 - DONE Create an app versioning system    
 - DONE Save build date/time in files as version info 
-- Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
+- DONE Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
+- DONE Fix bug where tracks only one track in tracks list could be disabled.
 - Better tempo change & bookmark ui
 - Add "scan plugins" to plugin toolbar menu. (Also add enable/disable midi?)      
 - Bug - Added temopo change marker picks up tempo from next real tempo change
