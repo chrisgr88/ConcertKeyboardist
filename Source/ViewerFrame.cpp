@@ -469,7 +469,7 @@ void ViewerFrame::resized()
     const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + 250 - 4;
     scoreTempoLabel.setBounds(
                               adjTempoLeft + noteViewer.getKeysWidth() , noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth+2,
-                              70, noteViewer.getToolbarHeight()-1);
+                              46, noteViewer.getToolbarHeight()-1);
     hoverStepInfo.setBounds(
                             noteViewer.getKeysWidth(), noteViewer.getHeight(),
                             250, (tbH+separatorLineWidth)*2);

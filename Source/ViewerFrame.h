@@ -344,24 +344,19 @@ private:
     private:
         StringArray iconNames;
         OwnedArray<Drawable> iconsFromZipFile;
-        
-        // This function creates a button with a given SVG image from the embedded ZIP file "icons.zip"
         ToolbarButton* createButtonFromZipFileSVG (const int itemId, const String& text,
                                                    const String& filename, const String& filenamePressed = "")
         {
             if (iconsFromZipFile.size() == 0)
             {
-                // If we've not already done so, load all the images from the zip file..
                 MemoryInputStream iconsFileStream (BinaryData::icons_zip, BinaryData::icons_zipSize, false);
                 ZipFile icons (&iconsFileStream, false);
                 
                 for (int i = 0; i < icons.getNumEntries(); ++i)
                 {
                     ScopedPointer<InputStream> svgFileStream (icons.createStreamForEntry (i));
-                    
                     if (svgFileStream != nullptr)
                     {
-//                        std::cout << "file " << icons.getEntry(i)->filename<<"\n";
                         iconNames.add (icons.getEntry(i)->filename);
                         iconsFromZipFile.add (Drawable::createFromImageDataStream (*svgFileStream));
                         
@@ -373,15 +368,13 @@ private:
                     }
                 }
             }
-            
             Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
             Drawable* imagePressed = NULL;
             if (filenamePressed.length()>0)
                 imagePressed = iconsFromZipFile [iconNames.indexOf (filenamePressed)]->createCopy();
-
             ToolbarButton * tb = new ToolbarButton (itemId, text, image, imagePressed);
             tb->setTooltip(text);
-            return tb;//new ToolbarButton (itemId, text, image, 0);
+            return tb;
         }
     public:
         //=================================================
@@ -457,11 +450,7 @@ private:
             {
                 addAndMakeVisible (comboBox);
                 comboBox.addListener(this);
-                
-//                for (int i = 1; i < 100; ++i)
-//                    comboBox.addItem (String (i/10.0,1), i);
                 setValues(0.1, 9.9, 0.1, 1);
-                
                 comboBox.setSelectedId(10,NotificationType::dontSendNotification);
                 comboBox.setEditableText (true);
                 clearChangeFlag();
@@ -551,7 +540,6 @@ private:
     };
     
     //==============================================================================
-    //### Ends after line 1200
     class AltToolbarItemFactory   : public ToolbarItemFactory, public ComboBox::Listener, public ChangeBroadcaster
     {
     public:
@@ -572,7 +560,6 @@ private:
             editPlugin      = 24,
             audioSettings    = 25,
             scoreInfo      = 26,
-            
             _play           = 5,
             _stop           = 6,
             _playPause      = 7,
@@ -585,7 +572,6 @@ private:
             removeTempoChange = 14,
             addBookmark = 15,
             removeBookmark = 16,
-//            removeBookmarkOrTempoChange = 11,
             _help                = 22
         };
         
@@ -597,10 +583,6 @@ private:
         
         void getAllToolbarItemIds (Array<int>& ids) override
         {
-            // This returns the complete list of all item IDs that are allowed to
-            // go in our toolbar. Any items you might want to add must be listed here. The
-            // order in which they are listed will be used by the toolbar customisation panel.
-            
             ids.add (doc_open);
             ids.add (doc_save);
             ids.add (doc_saveAs);
@@ -621,7 +603,6 @@ private:
             ids.add (removeTempoChange);
             ids.add (addBookmark);
             ids.add (removeBookmark);
-//            ids.add (removeBookmarkOrTempoChange);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -629,11 +610,6 @@ private:
         
         void getDefaultItemSet (Array<int>& ids) override
         {
-            // This returns an ordered list of the set of items that make up a
-            // toolbar's default set. Not all items need to be on this list, and
-            // items can appear multiple times (e.g. the separators used here).
-//            for (int n=0;n<12;n++)
-//                ids.add (spacerId);
             ids.add (separatorBarId);
             ids.add (doc_open);
             ids.add (doc_save);
@@ -643,21 +619,21 @@ private:
             ids.add (separatorBarId);
             ids.add (audioSettings);
             ids.add (scoreInfo);
-            ids.add (addTempoChange);
             ids.add (addBookmark);
 //            ids.add(removeBookmark); //temp
 //            ids.add (removeBookmarkOrTempoChange);
 //            ids.add (separatorBarId);
             ids.add (_listen);
             ids.add (separatorBarId);
+            ids.add (_rewind);
             ids.add (_play);
             ids.add (_stop);
             ids.add (_playPause);
-            ids.add (_rewind);
 //            ids.add (separatorBarId);
             ids.add (adjustedTempo);
             for (int n=0;n<3;n++)
                 ids.add (spacerId);
+            ids.add (addTempoChange);
             ids.add (separatorBarId);
             ids.add (_help);
             ids.add (separatorBarId);
@@ -668,45 +644,28 @@ private:
         {
             switch (itemId)
             {
-                case doc_open:      return  createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
-                case doc_save:      return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
-                case doc_saveAs:    return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
+                case doc_open:          return createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
+                case doc_save:          return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
+                case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
                 case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
                 case editPlugin:        return createButtonFromZipFileSVG (itemId, "Show Plugin", "EditPluginButton.svg");
-                case audioSettings:        return createButtonFromZipFileSVG (itemId, "Audio Settings", "AudioSettingsTool.svg");
-                case scoreInfo:        return createButtonFromZipFileSVG (itemId, "Score Info", "ScoreInfoTool.svg");
-                case _help: return createButtonFromZipFileSVG (itemId, "Open Help in Browser", "help.svg");
-                case _play:        return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
-                case _stop:        return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
-                    
-                case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
-                case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
-                case addTempoChange:        return createButtonFromZipFileSVG (itemId, "Add Tempo Change Marker",
-                                                                                "AddTempoAdjustment.svg");
-                case removeTempoChange:        return createButtonFromZipFileSVG (itemId, "Remove Tempo Change Marker",
-                                                                                "RemoveTempoAdjustment.svg");
-                    
-                case addBookmark:        return createButtonFromZipFileSVG (itemId, "Add Bookmark",
-                                                                                "AddBookmark.svg");
-                case removeBookmark:        return createButtonFromZipFileSVG (itemId, "Remove Bookmark",
-                                                                                "RemoveBookmark.svg");
-                    
-//                case removeBookmarkOrTempoChange:        return createButtonFromZipFileSVG (itemId,
-//                                                                                "Remove Bookmark or Tempo Change Marker",
-//                                                                                "RemoveBookmarkOrTempoMark.svg");
-                    
+                case audioSettings:     return createButtonFromZipFileSVG (itemId, "Audio Settings", "AudioSettingsTool.svg");
+                case scoreInfo:         return createButtonFromZipFileSVG (itemId, "Score Info", "ScoreInfoTool.svg");
+                case _help:             return createButtonFromZipFileSVG (itemId, "Open Help in Browser", "help.svg");
+                case _play:             return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
+                case _stop:             return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
+                case _rewind:           return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
+                case _listen:           return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
+                case addTempoChange:    return createButtonFromZipFileSVG (itemId, "Add Tempo Change Marker","AddTempoAdjustment.svg");
+                case removeTempoChange: return createButtonFromZipFileSVG (itemId, "Remove Tempo Change Marker","RemoveTempoAdjustment.svg");
+                case addBookmark:       return createButtonFromZipFileSVG (itemId, "Add Bookmark","AddBookmark.svg");
+                case removeBookmark:    return createButtonFromZipFileSVG (itemId, "Remove Bookmark","RemoveBookmark.svg");
                 case scoreTempo:
                 {
                     ScoreTempo *scoreTempo = new ScoreTempo(itemId);
                     scoreTempo->setTooltip("Suggested Tempo");
                     return scoreTempo;
                 }
-//                case scaledTempo:
-//                {
-//                    ScaledTempo *scaledTempo = new ScaledTempo(itemId);
-//                    scaledTempo->setTooltip("Tempo");
-//                    return scaledTempo;
-//                }
                 case adjustedTempo:
                 {
                     AdjustedTempo *tempoMultiplier = new AdjustedTempo (itemId);
