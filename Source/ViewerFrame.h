@@ -123,6 +123,30 @@ public:
     
     int toolbarHeight = 60;
     Toolbar mainToolbar;
+    Toolbar altToolbar;
+
+    void removeItem(int itemId)
+    {
+        int position=-1;
+        for (int i=0; i < altToolbar.getNumItems(); i++)
+            if (altToolbar.getItemId(i) == itemId)
+                position=i;
+        altToolbar.removeToolbarItem(position);
+    }
+    void replaceItem(int itemId, int newItemId)
+    {
+        int position=-1;
+        for (int i=0; i < altToolbar.getNumItems(); i++)
+            if (altToolbar.getItemId(i) == itemId)
+                position=i;
+        if (position!=-1)
+        {
+            altToolbar.removeToolbarItem(position);
+            altToolbar.addItem(altToolbarFactory, newItemId, position);
+            altToolbar.getItemComponent(position)->addListener(this);
+        }
+    }
+
 private:
     MIDIProcessor *processor;
     
@@ -142,8 +166,7 @@ private:
     Label scoreTempoLabel;
     Label adjustedTempoLabel;
     ComponentBoundsConstrainer resizeLimits;
-    
-    Toolbar altToolbar;
+
     bool altToolbarVisible = false;
     //<#foo#>
 //==============================================================================
@@ -558,9 +581,11 @@ private:
             scoreTempo      = 10,
             scaledTempo      = 11,
             adjustedTempo   = 12,
-            saveTempoChange = 13,
-            addBookmark = 14,
-            removeBookmarkOrTempoChange = 11,
+            addTempoChange = 13,
+            removeTempoChange = 14,
+            addBookmark = 15,
+            removeBookmark = 16,
+//            removeBookmarkOrTempoChange = 11,
             _help                = 22
         };
         
@@ -592,9 +617,11 @@ private:
             ids.add (scoreTempo);
             ids.add (scaledTempo);
             ids.add (adjustedTempo);
-            ids.add (saveTempoChange);
+            ids.add (addTempoChange);
+            ids.add (removeTempoChange);
             ids.add (addBookmark);
-            ids.add (removeBookmarkOrTempoChange);
+            ids.add (removeBookmark);
+//            ids.add (removeBookmarkOrTempoChange);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -616,10 +643,11 @@ private:
             ids.add (separatorBarId);
             ids.add (audioSettings);
             ids.add (scoreInfo);
-            ids.add (saveTempoChange);
+            ids.add (addTempoChange);
             ids.add (addBookmark);
-            ids.add (removeBookmarkOrTempoChange);
-            ids.add (separatorBarId);
+//            ids.add(removeBookmark); //temp
+//            ids.add (removeBookmarkOrTempoChange);
+//            ids.add (separatorBarId);
             ids.add (_listen);
             ids.add (separatorBarId);
             ids.add (_play);
@@ -653,15 +681,19 @@ private:
                     
                 case _rewind:        return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
                 case _listen:        return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
-                case saveTempoChange:        return createButtonFromZipFileSVG (itemId, "Add Tempo Change Marker",
+                case addTempoChange:        return createButtonFromZipFileSVG (itemId, "Add Tempo Change Marker",
                                                                                 "AddTempoAdjustment.svg");
+                case removeTempoChange:        return createButtonFromZipFileSVG (itemId, "Remove Tempo Change Marker",
+                                                                                "RemoveTempoAdjustment.svg");
                     
                 case addBookmark:        return createButtonFromZipFileSVG (itemId, "Add Bookmark",
                                                                                 "AddBookmark.svg");
+                case removeBookmark:        return createButtonFromZipFileSVG (itemId, "Remove Bookmark",
+                                                                                "RemoveBookmark.svg");
                     
-                case removeBookmarkOrTempoChange:        return createButtonFromZipFileSVG (itemId,
-                                                                                "Remove Bookmark or Tempo Change Marker",
-                                                                                "RemoveBookmarkOrTempoMark.svg");
+//                case removeBookmarkOrTempoChange:        return createButtonFromZipFileSVG (itemId,
+//                                                                                "Remove Bookmark or Tempo Change Marker",
+//                                                                                "RemoveBookmarkOrTempoMark.svg");
                     
                 case scoreTempo:
                 {
@@ -716,6 +748,7 @@ private:
             
             Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
             ToolbarButton * tb = new ToolbarButton (itemId, text, image, 0);
+
             tb->setTooltip(text);
             return tb;//new ToolbarButton (itemId, text, image, 0);
         }
@@ -977,6 +1010,7 @@ private:
     String humanizeVelocityAmount = String();
     String humanizeTimeAmount = String();
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ViewerFrame)
+    void replaceToolbatItem(int replaceThis, int withThis) const;
 };
 
 #endif  // ViewerFrame_H_INCLUDED

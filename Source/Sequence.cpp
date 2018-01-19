@@ -41,7 +41,6 @@ Sequence::~Sequence()
 
 void Sequence::setTempoMultiplier(double value, double currentTime, bool documentReallyChanged)
 {
-    std::cout << "setTempoMultiplier "<<value<<"\r";
     if (value<0.1)
         tempoMultiplier = 0.1;
     else

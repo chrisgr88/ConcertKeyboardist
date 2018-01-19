@@ -127,6 +127,18 @@ void focusLost (ScrollingNoteViewer::FocusChangeType cause)
 
 void ViewerFrame::timerCallback()
 {
+    Sequence::Bookmark b = processor->atBookmark();
+    if (b.time!=-1 && b.time!=0)
+    {
+        if (b.tempoChange)
+            replaceItem(AltToolbarItemFactory::addTempoChange, AltToolbarItemFactory::removeTempoChange);
+        else
+            replaceItem(AltToolbarItemFactory::addBookmark, AltToolbarItemFactory::removeBookmark);
+    } else
+    {
+        replaceItem(AltToolbarItemFactory::removeTempoChange, AltToolbarItemFactory::addTempoChange);
+        replaceItem(AltToolbarItemFactory::removeBookmark, AltToolbarItemFactory::addBookmark);
+    }
     static String prevName = "";
     String plugin;
     if (processor->sequenceObject.pThePlugin)
@@ -334,7 +346,7 @@ void ViewerFrame::buttonClicked (Button* button)
             sendActionMessage("rewind");
         else if(AltToolbarItemFactory::ToolbarItemIds::_listen == id)
             sendActionMessage("listenToSelection");
-        else if(AltToolbarItemFactory::ToolbarItemIds::saveTempoChange == id)
+        else if(AltToolbarItemFactory::ToolbarItemIds::addTempoChange == id)
         {
             std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
             if (processor->sequenceObject.theSequence.size()>0)
@@ -345,21 +357,33 @@ void ViewerFrame::buttonClicked (Button* button)
                 processor->addRemoveBookmark(BOOKMARK_ADD,true,pAdjustedTempo->numberBox.getText().getDoubleValue()/scoreTempo);
             }
         }
+        else if(AltToolbarItemFactory::ToolbarItemIds::removeTempoChange == id)
+        {
+            std::cout << "Remove tempo change\n";
+            if (processor->sequenceObject.theSequence.size()>0)
+                processor->addRemoveBookmark(BOOKMARK_REMOVE);
+        }
         else if(AltToolbarItemFactory::ToolbarItemIds::addBookmark == id)
         {
-            std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
+            std::cout << "Add bookmark\n";
             if (processor->sequenceObject.theSequence.size()>0)
             {
                 processor->catchUp(false);
                 processor->addRemoveBookmark(BOOKMARK_ADD);
             }
         }
-        else if(AltToolbarItemFactory::ToolbarItemIds::removeBookmarkOrTempoChange == id)
+        else if(AltToolbarItemFactory::ToolbarItemIds::removeBookmark == id)
         {
-            std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
+            std::cout << "Remove bookmark\n";//sendActionMessage("listenToSelection");
             if (processor->sequenceObject.theSequence.size()>0)
                 processor->addRemoveBookmark(BOOKMARK_REMOVE);
         }
+//        else if(AltToolbarItemFactory::ToolbarItemIds::removeBookmarkOrTempoChange == id)
+//        {
+//            std::cout << "Save tempo change\n";//sendActionMessage("listenToSelection");
+//            if (processor->sequenceObject.theSequence.size()>0)
+//                processor->addRemoveBookmark(BOOKMARK_REMOVE);
+//        }
         else if(AltToolbarItemFactory::ToolbarItemIds::_help == id)
         {
             sendActionMessage("help");

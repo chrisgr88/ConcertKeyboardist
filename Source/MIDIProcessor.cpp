@@ -587,19 +587,19 @@ bool MIDIProcessor::atZTL()
     return (fabs(xInTicksFromViewer)<4.0);
 }
 
-double MIDIProcessor::atBookmark()
+Sequence::Bookmark MIDIProcessor::atBookmark()
 {
-    int bookmark = -1;
+//    int bookmark = -1;
     for (int i=0;i<sequenceObject.bookmarkTimes.size();i++)
     {
         //                std::cout << "Bookmark at " << processor->sequenceObject.bookmarkTimes[i] << "\n";
-        if (fabs(sequenceObject.bookmarkTimes[i].time+xInTicksFromViewer-getTimeInTicks())<4.0)
+        if (fabs(sequenceObject.bookmarkTimes[i].time+xInTicksFromViewer-getTimeInTicks())<40)
         {
-            bookmark = i;
-            return sequenceObject.bookmarkTimes[i].time;
+//            bookmark = i;
+            return sequenceObject.bookmarkTimes[i];
         }
     }
-    return -1;
+    return Sequence::Bookmark();
 }
 
 void MIDIProcessor::addRemoveBookmark (int action, bool tempoChange, double tempoScale)

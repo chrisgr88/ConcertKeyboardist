@@ -1727,10 +1727,10 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
                         sequenceChanged = true;
                     }
             }
-            else
-            {
-                std::cout << "animationStep "<<animationStep<<"\n";
-            }
+//            else
+//            {
+//                std::cout << "animationStep "<<animationStep<<"\n";
+//            }
             setHorizontalShift(0);
             prevFileLoaded = processor->sequenceObject.fileToLoad;
             ViewStateInfo::openGLStarted = false;

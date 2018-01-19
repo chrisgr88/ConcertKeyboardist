@@ -382,6 +382,10 @@ public:
     class Bookmark
     {
     public:
+        Bookmark()
+        {
+            time = -1;
+        }
         double time;
         bool tempoChange;
         double tempoScaleFactor;

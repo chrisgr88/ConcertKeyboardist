@@ -149,7 +149,7 @@ public:
 #define BOOKMARK_ADD 0
 #define BOOKMARK_REMOVE 1
 #define BOOKMARK_TOGGLE 2
-    double atBookmark (); //Returns exact bookmark time ZTL is close to bookmark, else -1
+    Sequence::Bookmark atBookmark (); //Returns exact bookmark time ZTL is close to bookmark, else -1
     void addRemoveBookmark (int action, bool tempoChange=false, double tempoScale = 0); //At current ZTL position
     double xInTicksFromViewer;
     void setXInTicks(double x)

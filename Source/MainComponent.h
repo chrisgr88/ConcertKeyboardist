@@ -52,15 +52,6 @@ public:
 
     //==============================================================================
     void resized() override;
-
-    //==============================================================================
-//    void audioDeviceIOCallback (const float** /*inputChannelData*/, int /*numInputChannels*/,
-//                                float** outputChannelData, int numOutputChannels,
-//                                int numSamples) override;
-//
-//    void audioDeviceAboutToStart (AudioIODevice* device) override;
-//
-//    void audioDeviceStopped() override;
     
     void setMidiInput (int index);
     
