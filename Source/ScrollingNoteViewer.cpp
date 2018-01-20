@@ -1027,11 +1027,6 @@ void ScrollingNoteViewer::makeKeyboard()
     
     const Colour textColour (findColour (textLabelColourId));
     ViewStateInfo::trackVerticalSize = ((float)ViewStateInfo::viewHeight-ViewStateInfo::verticalScale*topMargin)/nKeys;
-//    std::cout
-//    << "makeKeyboard: viewHeight "<<ViewStateInfo::viewHeight
-//    << " trackVerticalSize "<<ViewStateInfo::trackVerticalSize
-//    << " verticalScale "<<ViewStateInfo::verticalScale
-//    << "\n";
     if (ViewStateInfo::trackVerticalSize<1)
         ViewStateInfo::trackVerticalSize = 1;
     
@@ -1040,8 +1035,8 @@ void ScrollingNoteViewer::makeKeyboard()
     keysGr.fillRect(0,0,roundToInt(leftMargin),roundToInt(ViewStateInfo::viewHeight));
     keysGr.setColour(Colour(64,64,64));
     //topMargin
-    int topMarg = ViewStateInfo::verticalScale*topMargin;
-    keysGr.fillRect(0, 0, roundToInt(wKbd+leftMargin), topMarg);
+    int topMargHeight = ViewStateInfo::verticalScale*(topMargin+1.0f);
+    keysGr.fillRect(0, 0, roundToInt(wKbd+leftMargin), topMargHeight);
     
     const float fontHeight = jmin (12.0f, ViewStateInfo::trackVerticalSize * 0.9f);
     for (int note = maxNote; note >= minNote; note--) //Draw keys
@@ -1052,15 +1047,15 @@ void ScrollingNoteViewer::makeKeyboard()
         if (processor->sequenceObject.isBlackNote(note))
         {
             keysGr.setColour (Colour(Colours::black));
-            keysGr.fillRect((float)leftMargin, noteY+topMarg, wKbd, ViewStateInfo::trackVerticalSize);
+            keysGr.fillRect((float)leftMargin, noteY+topMargHeight, wKbd, ViewStateInfo::trackVerticalSize);
         }
         else
         {
             keysGr.setColour (Colour(Colours::white));
-            keysGr.fillRect((float)leftMargin, noteY+topMarg, wKbd, ViewStateInfo::trackVerticalSize);
+            keysGr.fillRect((float)leftMargin, noteY+topMargHeight, wKbd, ViewStateInfo::trackVerticalSize);
             keysGr.setColour (Colour(Colours::black));
-            keysGr.drawLine((float)leftMargin, ViewStateInfo::trackVerticalSize+noteY+topMarg,
-                                    leftMargin+wKbd, ViewStateInfo::trackVerticalSize+noteY+topMarg,1.5f);
+            keysGr.drawLine((float)leftMargin, ViewStateInfo::trackVerticalSize+noteY+topMargHeight,
+                                    leftMargin+wKbd, ViewStateInfo::trackVerticalSize+noteY+topMargHeight,1.5f);
         }
         if (ViewStateInfo::trackVerticalSize>6)
         {
@@ -1069,7 +1064,7 @@ void ScrollingNoteViewer::makeKeyboard()
                 keysGr.setColour(Colours::white);
             else
                 keysGr.setColour(Colours::black);
-            keysGr.drawText (text,3, roundToInt(noteY+2.f+topMarg), (int)wKbd-4,(int)ViewStateInfo::trackVerticalSize-4,
+            keysGr.drawText (text,3, roundToInt(noteY+2.f+topMargHeight), (int)wKbd-4,(int)ViewStateInfo::trackVerticalSize-4,
                              Justification::centredLeft, false);
         }
     }
@@ -1080,416 +1075,431 @@ void ScrollingNoteViewer::makeKeyboard()
 //###
 void ScrollingNoteViewer::makeNoteBars()
 {
-  try {
-    std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
-    rebuidingGLBuffer = true;
-    if (processor->initialWindowHeight<topMargin || ViewStateInfo::viewHeight<0.0000001f)
+    try
     {
-        std::cout << "... but failed to enter makeNoteBars " << "\n";
-        return;
-    }
-    horizontalScale = processor->sequenceObject.sequenceProps.getDoubleValue("horizontalScale", var(1.0));
-    const float rescaleHeight = ((float)ViewStateInfo::initialHeight)/ViewStateInfo::viewHeight;
-    const float unscaledTVS = ViewStateInfo::trackVerticalSize/ViewStateInfo::verticalScale;
-    ViewStateInfo::vertices.clear();
-    ViewStateInfo::indices.clear();
-    processor->sequenceObject.getNotesUsed(minNote,maxNote);
-    nKeys = maxNote-minNote+1;
-    const float h = unscaledTVS*noteBarWidthRatio; //Note bar height
-      if (seqSize != static_cast<int>(pSequence->size()))
-          clearSelectedNotes();
-    seqSize = static_cast<int>(pSequence->size());
-    int seqDurationInTicks =  processor->sequenceObject.getSeqDurationInTicks();
-    const int sequenceWidthPixels = seqDurationInTicks+sequenceStartPixel;
-    
-    const float noteBarVerticalSize = unscaledTVS*noteBarWidthRatio;
-    
-    //Top margin
-    addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels*30, topMargin, Colour(0xFF404040));
-    addRectangle(-sequenceWidthPixels, topMargin-1.0f, sequenceWidthPixels*30, 1.0f, Colour(0xFFB0B0B0).darker());
-      
-      if (seqSize==0)
-      {
-          rebuidingGLBuffer = false;
-          return;
-      }
-    
-    //Black & white note track highlighting
-    for (int note = minNote;note<=maxNote;note++)
-    {
-        if (processor->sequenceObject.isBlackNote(note))
-            addRectangle(-sequenceWidthPixels, noteYs[note]*rescaleHeight+topMargin, sequenceWidthPixels*30,
-                         unscaledTVS, Colours::black);
-        else
-            addRectangle(-sequenceWidthPixels, noteYs[note]*rescaleHeight+topMargin, sequenceWidthPixels*30,
-                         unscaledTVS, Colour(0xFF404040));
-    }
-
-    //Beat & measure lines
-    for (int beat=0; beat<processor->sequenceObject.beatTimes.size(); beat++)
-        addRectangle(processor->sequenceObject.beatTimes[beat]*pixelsPerTick-1.6,topMargin,0.8/
-                     sqrt(horizontalScale),ViewStateInfo::initialHeight-topMargin, Colour(0xFFB0B0B0).darker());
-    
-    for (int measure=0; measure<processor->sequenceObject.measureTimes.size(); measure++)
-        addRectangle(processor->sequenceObject.measureTimes[measure]*pixelsPerTick-2.2,topMargin,1.0/
-                     sqrt(horizontalScale),ViewStateInfo::initialHeight-topMargin, Colour(0xFFE0E0E0));
-    
-    //Last line
-    addRectangle(seqDurationInTicks*pixelsPerTick-1.0f,0.f,2.0f,ViewStateInfo::initialHeight, Colour(0xFFC0C0C0));
-    
-//    if (seqSize==0)
-//        return;
-    //Velocity graph
-      
-    const double graphHeight = (300.0-15.0)-2*toolbarHeight; //(300.0-15.0) the original viewer height set in MainComponent.cpp
-
-    double prevY = graphHeight * pSequence->at(0)->highestVelocityInChain;
-    double prevX = -1;
-    for (int index = 0;index<static_cast<int>(pSequence->size());index++)
-    {
-        const double startPixel = pSequence->at(index)->getTimeStamp()*pixelsPerTick;
-        double x = startPixel;
-        if (pSequence->at(index)->targetNote)
+        std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
+        rebuidingGLBuffer = true;
+        if (processor->initialWindowHeight < topMargin || ViewStateInfo::viewHeight < 0.0000001f)
         {
-            const float velocityOfTargetNote = pSequence->at(index)->velocity;
-            const double scaledVelocity = graphHeight * velocityOfTargetNote;
-            const double thisY = scaledVelocity;
-            if (prevX != -1)
+            std::cout << "... but failed to enter makeNoteBars " << "\n";
+            return;
+        }
+        horizontalScale = processor->sequenceObject.sequenceProps.getDoubleValue("horizontalScale", var(1.0));
+        const float rescaleHeight = ((float) ViewStateInfo::initialHeight) / ViewStateInfo::viewHeight;
+        const float unscaledTVS = ViewStateInfo::trackVerticalSize / ViewStateInfo::verticalScale;
+        ViewStateInfo::vertices.clear();
+        ViewStateInfo::indices.clear();
+        processor->sequenceObject.getNotesUsed(minNote, maxNote);
+        nKeys = maxNote - minNote + 1;
+        const float h = unscaledTVS * noteBarWidthRatio; //Note bar height
+        if (seqSize != static_cast<int>(pSequence->size()))
+            clearSelectedNotes();
+        seqSize = static_cast<int>(pSequence->size());
+        int seqDurationInTicks = processor->sequenceObject.getSeqDurationInTicks();
+        const int sequenceWidthPixels = seqDurationInTicks + sequenceStartPixel;
+
+        const float noteBarVerticalSize = unscaledTVS * noteBarWidthRatio;
+
+        //Top margin
+        addRectangle(-sequenceWidthPixels, 0.f, sequenceWidthPixels * 30, topMargin, Colour(44, 44, 44));
+        addRectangle(-sequenceWidthPixels, topMargin - 1.0f, sequenceWidthPixels * 30, 1.0f,
+                     Colour(0xFFB0B0B0).darker());
+        addRectangle(-sequenceWidthPixels, topMargin + 2.f, sequenceWidthPixels * 30, 2.f, Colour(127, 127, 127));
+
+        if (seqSize == 0)
+        {
+            rebuidingGLBuffer = false;
+            return;
+        }
+
+        //Black & white note track highlighting
+        for (int note = minNote; note <= maxNote; note++)
+        {
+            if (processor->sequenceObject.isBlackNote(note))
+                addRectangle(-sequenceWidthPixels, noteYs[note] * rescaleHeight + topMargin, sequenceWidthPixels * 30,
+                             unscaledTVS, Colours::black);
+            else
+                addRectangle(-sequenceWidthPixels, noteYs[note] * rescaleHeight + topMargin, sequenceWidthPixels * 30,
+                             unscaledTVS, Colour(0xFF404040));
+        }
+
+        //Beat & measure lines
+        for (int beat = 0; beat < processor->sequenceObject.beatTimes.size(); beat++)
+            addRectangle(processor->sequenceObject.beatTimes[beat] * pixelsPerTick - 1.6, topMargin, 0.8 /
+                                                                                                     sqrt(horizontalScale),
+                         ViewStateInfo::initialHeight - topMargin, Colour(0xFFB0B0B0).darker());
+
+        for (int measure = 0; measure < processor->sequenceObject.measureTimes.size(); measure++)
+            addRectangle(processor->sequenceObject.measureTimes[measure] * pixelsPerTick - 2.2, topMargin, 1.0 /
+                                                                                                           sqrt(horizontalScale),
+                         ViewStateInfo::initialHeight - topMargin, Colour(0xFFE0E0E0));
+
+        //Last line
+        addRectangle(seqDurationInTicks * pixelsPerTick - 1.0f, 0.f, 2.0f, ViewStateInfo::initialHeight,
+                     Colour(0xFFC0C0C0));
+
+        //    if (seqSize==0)
+        //        return;
+        //Velocity graph
+
+        const double graphHeight =
+                (300.0 - 15.0) - 2 * toolbarHeight; //(300.0-15.0) the original viewer height set in MainComponent.cpp
+
+        double prevY = graphHeight * pSequence->at(0)->highestVelocityInChain;
+        double prevX = -1;
+        for (int index = 0; index < static_cast<int>(pSequence->size()); index++)
+        {
+            const double startPixel = pSequence->at(index)->getTimeStamp() * pixelsPerTick;
+            double x = startPixel;
+            if (pSequence->at(index)->targetNote)
             {
-                addLine (prevX, prevY, x, scaledVelocity, 1.0f, Colour(0xFFF0F0FF));
+                const float velocityOfTargetNote = pSequence->at(index)->velocity;
+                const double scaledVelocity = graphHeight * velocityOfTargetNote;
+                const double thisY = scaledVelocity;
+                if (prevX != -1)
+                {
+                    addLine(prevX, prevY, x, scaledVelocity, 1.0f, Colour(0xFFF0F0FF));
+                    prevY = thisY;
+                }
+                prevX = x;
+            }
+        }
+
+        //Tempo
+        if (processor->sequenceObject.scaledTempoChanges.size() > 1)
+        {
+            double startTempo =
+                    60.0 / processor->sequenceObject.scaledTempoChanges.at(0).getTempoSecondsPerQuarterNote();
+            double prevY = graphHeight * (startTempo / 300.0);
+            double prevX = 0;
+            for (int i = 1; i < processor->sequenceObject.scaledTempoChanges.size(); i++)
+            {
+                const double timeStamp = processor->sequenceObject.scaledTempoChanges.at(i).getTimeStamp();
+
+                const double thisX = timeStamp * pixelsPerTick;
+                const double tempo =
+                        60.0 / processor->sequenceObject.scaledTempoChanges.at(i).getTempoSecondsPerQuarterNote();
+                const double thisY = graphHeight * (tempo / 300.0);
+                addLine(prevX, prevY, thisX, prevY, 1.0f, Colour(Colours::red));
+                //              std::cout << "addLine " << timeStamp <<" "<<tempo<< " "<<prevX<<" "<< prevY<<"\n";
                 prevY = thisY;
+                prevX = thisX;
             }
-            prevX = x;
         }
-    }
-      
-      //Tempo
-      if (processor->sequenceObject.scaledTempoChanges.size()>1)
-      {
-          double startTempo = 60.0/processor->sequenceObject.scaledTempoChanges.at(0).getTempoSecondsPerQuarterNote();
-          double prevY = graphHeight * (startTempo/300.0);
-          double prevX = 0;
-          for (int i=1;i<processor->sequenceObject.scaledTempoChanges.size();i++)
-          {
-              const double timeStamp = processor->sequenceObject.scaledTempoChanges.at(i).getTimeStamp();
-              
-              const double thisX = timeStamp * pixelsPerTick;
-              const double tempo = 60.0/processor->sequenceObject.scaledTempoChanges.at(i).getTempoSecondsPerQuarterNote();
-              const double thisY = graphHeight * (tempo/300.0);
-              addLine (prevX, prevY, thisX, prevY, 1.0f, Colour(Colours::red));
-//              std::cout << "addLine " << timeStamp <<" "<<tempo<< " "<<prevX<<" "<< prevY<<"\n";
-              prevY = thisY;
-              prevX = thisX;
-          }
-      }
 
-    //Note Bars ###
-    const double readHead = processor->getSequenceReadHead();
-    const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys-10.0,0.0))/88.0;
-    const float headHeight =  h * headToBarHeightRatio;
-    Array<NoteBarDescription> deferredNoteBars; //Info to defer making active note bars until inactive ones are made
-    int prevChordIndex = 0;
-    RectangleList<float> chordRects;
-    bool prevInChord = false;
-    int size = (int)pSequence->size();
-    for (int index = 0;index<size;index++)
-    {
-//        if (index>=21 && index<=31)
-//            std::cout<< "noteBar: step, ts "<< index<<" "<<pSequence->at(index)->getTimeStamp()<< "\n";
-        const double startPixel = pSequence->at(index)->getTimeStamp()*pixelsPerTick;
-        double endPixel = pSequence->at(index)->getOffTime()*pixelsPerTick;
-        const int noteNumber = pSequence->at(index)->noteNumber;
-        const double thisEndTime = pSequence->at(index)->getOffTime();
-        const float barY = noteYs[noteNumber]*rescaleHeight + topMargin;
-//        if (index<2)
-//            std::cout
-//            << " i "<<index
-//            << " noteYs[noteNumber] " << noteYs[noteNumber]
-//            << " barY "<<barY
-//            << " rescaleHeight "<<rescaleHeight
-//            << " topMargin "<<topMargin
-//            << "\n";
-        int indexOfNextSameNote = -1;
-        const double minSpacing = 1.0;
-        float headWidth = 6.0f;
-        
-        //Adjust the head width if other note of same note number follows closely
-        for (int nxtNoteIndex=index+1;nxtNoteIndex<size-2;nxtNoteIndex++)
+        //Note Bars ###
+        const double readHead = processor->getSequenceReadHead();
+        const float headToBarHeightRatio = 1.0 + 0.4 * (std::max(nKeys - 10.0, 0.0)) / 88.0;
+        const float headHeight = h * headToBarHeightRatio;
+        Array<NoteBarDescription> deferredNoteBars; //Info to defer making active note bars until inactive ones are made
+        int prevChordIndex = 0;
+        RectangleList<float> chordRects;
+        bool prevInChord = false;
+        int size = (int) pSequence->size();
+        for (int index = 0; index < size; index++)
         {
-            const double spacing = (pSequence->at(nxtNoteIndex)->getTimeStamp() - thisEndTime)*pixelsPerTick;
-            if (spacing > headWidth)
-                break;
-            if (pSequence->at(nxtNoteIndex)->noteNumber==noteNumber)
-            {
-                indexOfNextSameNote = nxtNoteIndex;
-//                std::cout<< "index,  indexOfNextSameNote "<< index<<" "<<indexOfNextSameNote<< "\n";
-                break;
-            }
-        }
-        const float barX = startPixel;
-        const float w = endPixel - startPixel;
-        double startPixelOfNextSameNote;
-        
-        if (indexOfNextSameNote == -1)
-            startPixelOfNextSameNote = DBL_MAX;
-        else
-            startPixelOfNextSameNote = pSequence->at(indexOfNextSameNote)->getTimeStamp()*pixelsPerTick;
-        
-        if (headWidth > startPixelOfNextSameNote-barX)
-            headWidth = std::max(minSpacing,startPixelOfNextSameNote-barX-minSpacing);
-        if (headWidth<3.0f)
-            headWidth=3.0f;
+            //        if (index>=21 && index<=31)
+            //            std::cout<< "noteBar: step, ts "<< index<<" "<<pSequence->at(index)->getTimeStamp()<< "\n";
+            const double startPixel = pSequence->at(index)->getTimeStamp() * pixelsPerTick;
+            double endPixel = pSequence->at(index)->getOffTime() * pixelsPerTick;
+            const int noteNumber = pSequence->at(index)->noteNumber;
+            const double thisEndTime = pSequence->at(index)->getOffTime();
+            const float barY = noteYs[noteNumber] * rescaleHeight + topMargin;
+            //        if (index<2)
+            //            std::cout
+            //            << " i "<<index
+            //            << " noteYs[noteNumber] " << noteYs[noteNumber]
+            //            << " barY "<<barY
+            //            << " rescaleHeight "<<rescaleHeight
+            //            << " topMargin "<<topMargin
+            //            << "\n";
+            int indexOfNextSameNote = -1;
+            const double minSpacing = 1.0;
+            float headWidth = 6.0f;
 
-        const float vel = pSequence->at(index)->velocity;
-        const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f*vel, 0.2f + 0.6f*vel, 0.3f + 0.7f*vel, 1.0f);
-        pSequence->at(index)->head = Rectangle<float>(barX, barY-(headHeight-h)/2.0,headWidth,headHeight);
-        pSequence->at(index)->bar = Rectangle<float>(barX, barY-(headHeight-h)/2.0,w,headHeight);
-//        if (index<25)
-//            std::cout << "Step " << index << " head X " <<pSequence->at(index)->head.getX()<<"\n";
-        //Determine the cord rectangle, if part of a chord
-        if (processor->sequenceObject.chords.size()>0)
-        {
-            const int thisChordIndex = pSequence->at(index)->chordIndex;
-//            if (index>25)
-//                std::cout << "Step " << index << " chordIndex " <<thisChordIndex<<"\n";
-            if (index==size-1 || (!(pSequence->at(index)->inChord) && prevInChord) || thisChordIndex!=prevChordIndex)
-            { //Ended a chord so save its rectangle in ChordDetail
-    //            std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
-                RectangleList<float> rList;
-                for (int i=0;i<processor->sequenceObject.chords.at(prevChordIndex).notePointers.size();i++)
+            //Adjust the head width if other note of same note number follows closely
+            for (int nxtNoteIndex = index + 1; nxtNoteIndex < size - 2; nxtNoteIndex++)
+            {
+                const double spacing = (pSequence->at(nxtNoteIndex)->getTimeStamp() - thisEndTime) * pixelsPerTick;
+                if (spacing > headWidth)
+                    break;
+                if (pSequence->at(nxtNoteIndex)->noteNumber == noteNumber)
                 {
-                    Rectangle<float> head = processor->sequenceObject.chords.at(prevChordIndex).notePointers.at(i)->head;
-    //                head.setWidth(0.5);
-                    rList.add(head);
+                    indexOfNextSameNote = nxtNoteIndex;
+                    //                std::cout<< "index,  indexOfNextSameNote "<< index<<" "<<indexOfNextSameNote<< "\n";
+                    break;
                 }
-                Rectangle<float> chordRect = rList.getBounds();
-                chordRect.translate(-1.0, 0.0);
-                processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect.withWidth(1.5);
-//                if (index>25)
-//                {
-//                    std::cout << "chordIndex " << prevChordIndex << " Chord rect "
-//                    << chordRect.getTopLeft().getX()
-//                    <<" "<<chordRect.getTopLeft().getY()
-//                    <<" "<<chordRect.getBottomRight().getX()
-//                    <<" "<<chordRect.getBottomRight().getY()
-//                    <<"\n";
-//                }
             }
-            if (pSequence->at(index)->inChord)
-            {
-                prevChordIndex = pSequence->at(index)->chordIndex;
-            }
-        }
-        
-//        std::cout << "makeNoteBars at step "<<index;
-        if (pSequence->at(index)->targetNote) //If it's a target note
-        {
-            if (processor->getNotesEditable() || pSequence->at(index)->getTimeStamp()>=readHead)
-            {
-                NoteBarDescription nbd;
-                nbd.seqIndex = index;
-                nbd.x = barX;
-                nbd.y = barY-0.5;
-                nbd.w = w;
-                nbd.headWidth = headWidth;
-                nbd.headHeight = headHeight+1.0;
-                if (index>0 && (pSequence->at(index)->getTimeStamp()==pSequence->at(index-1)->getTimeStamp()))
-                    nbd.colHead = colourActiveNoteHead.darker().darker();
-                else
-                    nbd.colHead = colourActiveNoteHead;
-                nbd.colBar = vBasedNoteBar;
-                deferredNoteBars.add(nbd);
-            }
+            const float barX = startPixel;
+            const float w = endPixel - startPixel;
+            double startPixelOfNextSameNote;
+
+            if (indexOfNextSameNote == -1)
+                startPixelOfNextSameNote = DBL_MAX;
             else
+                startPixelOfNextSameNote = pSequence->at(indexOfNextSameNote)->getTimeStamp() * pixelsPerTick;
+
+            if (headWidth > startPixelOfNextSameNote - barX)
+                headWidth = std::max(minSpacing, startPixelOfNextSameNote - barX - minSpacing);
+            if (headWidth < 3.0f)
+                headWidth = 3.0f;
+
+            const float vel = pSequence->at(index)->velocity;
+            const Colour vBasedNoteBar = Colour::fromFloatRGBA(0.3f + 0.7f * vel, 0.2f + 0.6f * vel, 0.3f + 0.7f * vel,
+                                                               1.0f);
+            pSequence->at(index)->head = Rectangle<float>(barX, barY - (headHeight - h) / 2.0, headWidth, headHeight);
+            pSequence->at(index)->bar = Rectangle<float>(barX, barY - (headHeight - h) / 2.0, w, headHeight);
+            //        if (index<25)
+            //            std::cout << "Step " << index << " head X " <<pSequence->at(index)->head.getX()<<"\n";
+            //Determine the cord rectangle, if part of a chord
+            if (processor->sequenceObject.chords.size() > 0)
             {
-                pSequence->at(index)->rectBar = addNote(barX, barY, w, noteBarVerticalSize, headWidth, headHeight,
-                                                      colourInactiveNoteHead, vBasedNoteBar);
-            }
-        }
-        else
-        {
-            if (index>0 && (pSequence->at(index)->getTimeStamp()==pSequence->at(index-1)->getTimeStamp()) && (processor->getNotesEditable()
-                    || pSequence->at(index)->getTimeStamp()>=readHead))
-            {
-                pSequence->at(index)->rectBar =
-                    addNote(barX, barY, w, noteBarVerticalSize, headWidth, headHeight,colourInactiveNoteHead.darker(), vBasedNoteBar);
-            }
-            else
-            {
-                pSequence->at(index)->rectBar =
-                addNote(barX, barY, w, noteBarVerticalSize, headWidth, headHeight,colourInactiveNoteHead.brighter(), vBasedNoteBar);
-            }
-        }
-//        std::cout << " rectHead index "<<sequence->at(index)->rectHead<<"\n";
-        pSequence->at(index)->rectHead = pSequence->at(index)->rectBar + 1;
-        prevInChord = pSequence->at(index)->inChord;
-    }
-    for (int i=0;i<deferredNoteBars.size();i++)
-    {
-        pSequence->at(deferredNoteBars[i].seqIndex)->rectBar =
-            addNote(deferredNoteBars[i].x, deferredNoteBars[i].y,
-               deferredNoteBars[i].w, noteBarVerticalSize+1.0,
-               deferredNoteBars[i].headWidth, deferredNoteBars[i].headHeight,
-               deferredNoteBars[i].colHead, deferredNoteBars[i].colBar);
-    }
-    //Sustain bars
-    if (processor->sequenceObject.sustainPedalChanges.size()>0)
-    {
-//        std::cout << "In make note bars, sustainPedalChanges "<<processor->sequenceObject.sustainPedalChanges.size()<<"\n";
-        Array<Rectangle<double>> sustainBars;
-        double sustainStartTick = 0;
-        //First make an array of Rectangles each with just a bar's start tick and width in ticks
-        for (int i=0;i<processor->sequenceObject.sustainPedalChanges.size();i++)
-        {
-//            std::cout << "In make note bars " << i << " " << processor->sequenceObject.sustainPedalChanges.at(i).getTimeStamp()
-//            << " value " << processor->sequenceObject.sustainPedalChanges.at(i).getControllerValue()
-//            << " value " << processor->sequenceObject.sustainPedalChanges.at(i).getControllerValue()
-//            <<"\n";
-            if (processor->sequenceObject.sustainPedalChanges.at(i).pedalOn)
-            {
-                sustainStartTick = processor->sequenceObject.sustainPedalChanges.at(i).timeStamp;
-            }
-            else if (sustainStartTick!=-1 && !processor->sequenceObject.sustainPedalChanges.at(i).pedalOn)
-            {
-                sustainBars.add(Rectangle<double>(sustainStartTick,0,processor->sequenceObject.sustainPedalChanges.at(i).timeStamp-sustainStartTick,0));
-            }
-        }
-        //Then scan the sequence looking for the highest note in the range of each bar and draw the bar just higher than hignest note
-        bool inSustainBar = false;
-        int highestNote = -1;
-        int sustainBarNum = 0;
-        for (int step=0; step<static_cast<int>(pSequence->size()); step++)
-        {
-//            const NoteWithOffTime msg = sequence->at(step);
-            const double barLeft = sustainBars[sustainBarNum].getX();
-            const double barRight = sustainBars[sustainBarNum].getRight();
-            const double msgTimeStamp = pSequence->at(step)->getTimeStamp();
-            if (!inSustainBar) //Msg is after the start of this bar
-            {
-                if (msgTimeStamp > barRight)
-                {
-                    const double barLeft = sustainBars[sustainBarNum].getX();
-                    const double barRight = sustainBars[sustainBarNum].getRight();
-					if (highestNote != -1)
-					{
-						const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0.*unscaledTVS;
-						addRectangle(barLeft*pixelsPerTick, y, (barRight - barLeft)*pixelsPerTick, 1.5, Colour(Colours::orange).brighter());
-						sustainBarNum++;
-					}
+                const int thisChordIndex = pSequence->at(index)->chordIndex;
+                //            if (index>25)
+                //                std::cout << "Step " << index << " chordIndex " <<thisChordIndex<<"\n";
+                if (index == size - 1 || (!(pSequence->at(index)->inChord) && prevInChord) ||
+                    thisChordIndex != prevChordIndex)
+                { //Ended a chord so save its rectangle in ChordDetail
+                    //            std::cout << "At " << index-1 << " End chord "<< prevChordIndex <<"\n";
+                    RectangleList<float> rList;
+                    for (int i = 0; i < processor->sequenceObject.chords.at(prevChordIndex).notePointers.size(); i++)
+                    {
+                        Rectangle<float> head = processor->sequenceObject.chords.at(prevChordIndex).notePointers.at(
+                                i)->head;
+                        //                head.setWidth(0.5);
+                        rList.add(head);
+                    }
+                    Rectangle<float> chordRect = rList.getBounds();
+                    chordRect.translate(-1.0, 0.0);
+                    processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect.withWidth(1.5);
+                    //                if (index>25)
+                    //                {
+                    //                    std::cout << "chordIndex " << prevChordIndex << " Chord rect "
+                    //                    << chordRect.getTopLeft().getX()
+                    //                    <<" "<<chordRect.getTopLeft().getY()
+                    //                    <<" "<<chordRect.getBottomRight().getX()
+                    //                    <<" "<<chordRect.getBottomRight().getY()
+                    //                    <<"\n";
+                    //                }
                 }
-                else if (msgTimeStamp>=barLeft)
+                if (pSequence->at(index)->inChord)
                 {
-                    inSustainBar = true;
+                    prevChordIndex = pSequence->at(index)->chordIndex;
                 }
             }
-            else if (inSustainBar && msgTimeStamp >= barRight)
+
+            //        std::cout << "makeNoteBars at step "<<index;
+            if (pSequence->at(index)->targetNote) //If it's a target note
             {
-                inSustainBar = false;
-                const float y = noteYs[highestNote]*rescaleHeight + topMargin - 0.5*unscaledTVS;
-                addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,1.5, Colour(Colours::orange).brighter());
-                sustainBarNum++;
-                if (msgTimeStamp > barRight)
-                    highestNote = pSequence->at(step)->noteNumber;
-                else
-                    highestNote = -1;
-            }
-            if (inSustainBar)
-            {
-                if (pSequence->at(step)->noteNumber>highestNote)
-                    highestNote = pSequence->at(step)->noteNumber;
-            }
-        }
-    } //End sustain bars
-    
-    //soft bars
-    if (processor->sequenceObject.softPedalChanges.size()>0)
-    {
-        Array<Rectangle<double>> softBars;
-        double softStartTick = 0;
-        //First make an array of Rectangles each with just a bar's start tick and width in ticks
-        for (int i=0;i<processor->sequenceObject.softPedalChanges.size();i++)
-        {
-            if (processor->sequenceObject.softPedalChanges.at(i).pedalOn)
-            {
-                softStartTick = processor->sequenceObject.softPedalChanges.at(i).timeStamp;
-            }
-            else if (softStartTick!=-1 && !processor->sequenceObject.softPedalChanges.at(i).pedalOn)
-            {
-                softBars.add(Rectangle<double>(softStartTick,0,processor->sequenceObject.softPedalChanges.at(i).timeStamp-softStartTick,0));
-            }
-        }
-        //Then scan the sequence looking for the highest note in the range of each bar and draw the bar just higher than hignest note
-        int countSofts = 0;
-        bool insoftBar = false;
-        int highestNote = -1;
-        int softBarNum = 0;
-        for (int step=0; step<static_cast<int>(pSequence->size()); step++)
-        {
-//            const NoteWithOffTime msg = sequence->at(step);
-            const double barLeft = softBars[softBarNum].getX();
-            const double barRight = softBars[softBarNum].getRight();
-            const double msgTimeStamp = pSequence->at(step)->getTimeStamp();
-            if (!insoftBar) //Msg is after the start of this bar
-            {
-                if (msgTimeStamp > barRight)
+                if (processor->getNotesEditable() || pSequence->at(index)->getTimeStamp() >= readHead)
                 {
-                    const double barLeft = softBars[softBarNum].getX();
-                    const double barRight = softBars[softBarNum].getRight();
-                    const float y = noteYs[highestNote]*rescaleHeight + topMargin - 2.3*unscaledTVS;
+                    NoteBarDescription nbd;
+                    nbd.seqIndex = index;
+                    nbd.x = barX;
+                    nbd.y = barY - 0.5;
+                    nbd.w = w;
+                    nbd.headWidth = headWidth;
+                    nbd.headHeight = headHeight + 1.0;
+                    if (index > 0 && (pSequence->at(index)->getTimeStamp() == pSequence->at(index - 1)->getTimeStamp()))
+                        nbd.colHead = colourActiveNoteHead.darker().darker();
+                    else
+                        nbd.colHead = colourActiveNoteHead;
+                    nbd.colBar = vBasedNoteBar;
+                    deferredNoteBars.add(nbd);
+                } else
+                {
+                    pSequence->at(index)->rectBar = addNote(barX, barY, w, noteBarVerticalSize, headWidth, headHeight,
+                                                            colourInactiveNoteHead, vBasedNoteBar);
+                }
+            } else
+            {
+                if (index > 0 && (pSequence->at(index)->getTimeStamp() == pSequence->at(index - 1)->getTimeStamp()) &&
+                    (processor->getNotesEditable()
+                     || pSequence->at(index)->getTimeStamp() >= readHead))
+                {
+                    pSequence->at(index)->rectBar =
+                            addNote(barX, barY, w, noteBarVerticalSize, headWidth, headHeight,
+                                    colourInactiveNoteHead.darker(), vBasedNoteBar);
+                } else
+                {
+                    pSequence->at(index)->rectBar =
+                            addNote(barX, barY, w, noteBarVerticalSize, headWidth, headHeight,
+                                    colourInactiveNoteHead.brighter(), vBasedNoteBar);
+                }
+            }
+            //        std::cout << " rectHead index "<<sequence->at(index)->rectHead<<"\n";
+            pSequence->at(index)->rectHead = pSequence->at(index)->rectBar + 1;
+            prevInChord = pSequence->at(index)->inChord;
+        }
+        for (int i = 0; i < deferredNoteBars.size(); i++)
+        {
+            pSequence->at(deferredNoteBars[i].seqIndex)->rectBar =
+                    addNote(deferredNoteBars[i].x, deferredNoteBars[i].y,
+                            deferredNoteBars[i].w, noteBarVerticalSize + 1.0,
+                            deferredNoteBars[i].headWidth, deferredNoteBars[i].headHeight,
+                            deferredNoteBars[i].colHead, deferredNoteBars[i].colBar);
+        }
+        //Sustain bars
+        if (processor->sequenceObject.sustainPedalChanges.size() > 0)
+        {
+            //        std::cout << "In make note bars, sustainPedalChanges "<<processor->sequenceObject.sustainPedalChanges.size()<<"\n";
+            Array<Rectangle<double>> sustainBars;
+            double sustainStartTick = 0;
+            //First make an array of Rectangles each with just a bar's start tick and width in ticks
+            for (int i = 0; i < processor->sequenceObject.sustainPedalChanges.size(); i++)
+            {
+                //            std::cout << "In make note bars " << i << " " << processor->sequenceObject.sustainPedalChanges.at(i).getTimeStamp()
+                //            << " value " << processor->sequenceObject.sustainPedalChanges.at(i).getControllerValue()
+                //            << " value " << processor->sequenceObject.sustainPedalChanges.at(i).getControllerValue()
+                //            <<"\n";
+                if (processor->sequenceObject.sustainPedalChanges.at(i).pedalOn)
+                {
+                    sustainStartTick = processor->sequenceObject.sustainPedalChanges.at(i).timeStamp;
+                } else if (sustainStartTick != -1 && !processor->sequenceObject.sustainPedalChanges.at(i).pedalOn)
+                {
+                    sustainBars.add(Rectangle<double>(sustainStartTick, 0,
+                                                      processor->sequenceObject.sustainPedalChanges.at(i).timeStamp -
+                                                      sustainStartTick, 0));
+                }
+            }
+            //Then scan the sequence looking for the highest note in the range of each bar and draw the bar just higher than hignest note
+            bool inSustainBar = false;
+            int highestNote = -1;
+            int sustainBarNum = 0;
+            for (int step = 0; step < static_cast<int>(pSequence->size()); step++)
+            {
+                //            const NoteWithOffTime msg = sequence->at(step);
+                const double barLeft = sustainBars[sustainBarNum].getX();
+                const double barRight = sustainBars[sustainBarNum].getRight();
+                const double msgTimeStamp = pSequence->at(step)->getTimeStamp();
+                if (!inSustainBar) //Msg is after the start of this bar
+                {
+                    if (msgTimeStamp > barRight)
+                    {
+                        const double barLeft = sustainBars[sustainBarNum].getX();
+                        const double barRight = sustainBars[sustainBarNum].getRight();
+                        if (highestNote != -1)
+                        {
+                            const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0. * unscaledTVS;
+                            addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 1.5,
+                                         Colour(Colours::orange).brighter());
+                            sustainBarNum++;
+                        }
+                    } else if (msgTimeStamp >= barLeft)
+                    {
+                        inSustainBar = true;
+                    }
+                } else if (inSustainBar && msgTimeStamp >= barRight)
+                {
+                    inSustainBar = false;
+                    const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0.5 * unscaledTVS;
+                    addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 1.5,
+                                 Colour(Colours::orange).brighter());
+                    sustainBarNum++;
+                    if (msgTimeStamp > barRight)
+                        highestNote = pSequence->at(step)->noteNumber;
+                    else
+                        highestNote = -1;
+                }
+                if (inSustainBar)
+                {
+                    if (pSequence->at(step)->noteNumber > highestNote)
+                        highestNote = pSequence->at(step)->noteNumber;
+                }
+            }
+        } //End sustain bars
+
+        //soft bars
+        if (processor->sequenceObject.softPedalChanges.size() > 0)
+        {
+            Array<Rectangle<double>> softBars;
+            double softStartTick = 0;
+            //First make an array of Rectangles each with just a bar's start tick and width in ticks
+            for (int i = 0; i < processor->sequenceObject.softPedalChanges.size(); i++)
+            {
+                if (processor->sequenceObject.softPedalChanges.at(i).pedalOn)
+                {
+                    softStartTick = processor->sequenceObject.softPedalChanges.at(i).timeStamp;
+                } else if (softStartTick != -1 && !processor->sequenceObject.softPedalChanges.at(i).pedalOn)
+                {
+                    softBars.add(Rectangle<double>(softStartTick, 0,
+                                                   processor->sequenceObject.softPedalChanges.at(i).timeStamp -
+                                                   softStartTick, 0));
+                }
+            }
+            //Then scan the sequence looking for the highest note in the range of each bar and draw the bar just higher than hignest note
+            int countSofts = 0;
+            bool insoftBar = false;
+            int highestNote = -1;
+            int softBarNum = 0;
+            for (int step = 0; step < static_cast<int>(pSequence->size()); step++)
+            {
+                //            const NoteWithOffTime msg = sequence->at(step);
+                const double barLeft = softBars[softBarNum].getX();
+                const double barRight = softBars[softBarNum].getRight();
+                const double msgTimeStamp = pSequence->at(step)->getTimeStamp();
+                if (!insoftBar) //Msg is after the start of this bar
+                {
+                    if (msgTimeStamp > barRight)
+                    {
+                        const double barLeft = softBars[softBarNum].getX();
+                        const double barRight = softBars[softBarNum].getRight();
+                        const float y = noteYs[highestNote] * rescaleHeight + topMargin - 2.3 * unscaledTVS;
+                        countSofts++;
+                        addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 1.5,
+                                     Colour(Colours::lightblue).brighter());
+                        softBarNum++;
+                    } else if (msgTimeStamp >= barLeft)
+                    {
+                        insoftBar = true;
+                    }
+                } else if (insoftBar && msgTimeStamp >= barRight)
+                {
+                    insoftBar = false;
+                    //                const float y = noteYs[highestNote]*rescaleHeight + topMargin - 2.3*unscaledTVS;
+                    const float y = 3.0;
                     countSofts++;
-                    addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,1.5, Colour(Colours::lightblue).brighter());
+                    addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 2.0,
+                                 Colour(Colours::lightblue).brighter());
+
                     softBarNum++;
+                    if (msgTimeStamp > barRight)
+                        highestNote = pSequence->at(step)->noteNumber;
+                    else
+                        highestNote = -1;
                 }
-                else if (msgTimeStamp>=barLeft)
+                if (insoftBar)
                 {
-                    insoftBar = true;
+                    if (pSequence->at(step)->noteNumber > highestNote)
+                        highestNote = pSequence->at(step)->noteNumber;
                 }
             }
-            else if (insoftBar && msgTimeStamp >= barRight)
-            {
-                insoftBar = false;
-//                const float y = noteYs[highestNote]*rescaleHeight + topMargin - 2.3*unscaledTVS;
-                const float y = 3.0;
-                countSofts++;
-                addRectangle(barLeft*pixelsPerTick,y,(barRight-barLeft)*pixelsPerTick,2.0, Colour(Colours::lightblue).brighter());
-                
-                softBarNum++;
-                if (msgTimeStamp > barRight)
-                    highestNote = pSequence->at(step)->noteNumber;
-                else
-                    highestNote = -1;
-            }
-            if (insoftBar)
-            {
-                if (pSequence->at(step)->noteNumber>highestNote)
-                    highestNote = pSequence->at(step)->noteNumber;
-            }
+        } //End soft bars
+        //Bookmarks
+        //        std::cout << processor->sequenceObject.bookmarkTimes.size() << "\n";
+        for (int i = 0; i < processor->sequenceObject.bookmarkTimes.size(); i++)
+        {
+            const double x = processor->sequenceObject.bookmarkTimes[i].time * pixelsPerTick;
+            Colour col;
+            if (processor->sequenceObject.bookmarkTimes[i].tempoChange)
+                col = Colour(Colours::red);
+            else
+                col = juce::Colour(Colours::whitesmoke);
+            addRectangle(x - 1.95, 0.0f, 5 / sqrt(horizontalScale), topMargin, col);
         }
-    } //End soft bars
-    //Bookmarks
-    //        std::cout << processor->sequenceObject.bookmarkTimes.size() << "\n";
-    for (int i=0;i<processor->sequenceObject.bookmarkTimes.size();i++)
+
+        //    //Position of next note to play
+        //    if (processor->lastPlayedSeqStep+1 < processor->sequenceObject.theSequence.size())
+        //    {
+        //        const double x = processor->sequenceObject.theSequence.at(processor->lastPlayedSeqStep+1)->getTimeStamp()*pixelsPerTick;
+        //        nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
+        //    }
+        rebuidingGLBuffer = false;
+
+    } catch (...)
     {
-        const double x = processor->sequenceObject.bookmarkTimes[i].time*pixelsPerTick;
-        Colour col;
-        if (processor->sequenceObject.bookmarkTimes[i].tempoChange)
-            col = Colour(Colours::red);
-        else
-            col = juce::Colour(Colours::whitesmoke);
-        addRectangle(x-1.95, 0.0f, 5/sqrt(horizontalScale), topMargin , col);
+        std::cout << "Error in make note bars" << "\n";
     }
-    
-//    //Position of next note to play
-//    if (processor->lastPlayedSeqStep+1 < processor->sequenceObject.theSequence.size())
-//    {
-//        const double x = processor->sequenceObject.theSequence.at(processor->lastPlayedSeqStep+1)->getTimeStamp()*pixelsPerTick;
-//        nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
-//    }
-    rebuidingGLBuffer = false;
-        
-  } catch (...) {
-        std::cout << "Error in make note bars"<<"\n";
-  }
 //    std::cout << "Leaving  makeNoteBars: Indices, Vertices " <<  ViewStateInfo::indices.size()<<" "<<ViewStateInfo::vertices.size() << "\n";
 //    std::cout << "Exit MNB: theSequence.size " << "\n";
 }

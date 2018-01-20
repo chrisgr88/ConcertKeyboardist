@@ -10,7 +10,7 @@ Alpha:
 - DONE Save build date/time in files as version info 
 - DONE Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
 - DONE Fix bug where tracks only one track in tracks list could be disabled.
-- Better tempo change & bookmark ui
+- DONE Better tempo change & bookmark ui
 - Add "scan plugins" to plugin toolbar menu. (Also add enable/disable midi?)      
 - Bug - Added temopo change marker picks up tempo from next real tempo change
 - Ability to display help in lower left 

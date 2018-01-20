@@ -443,19 +443,24 @@ void ViewerFrame::paint (Graphics& g)
     g.drawImageAt(noteViewer.getKeysImage(), 0, 0); //Keyboard
     //Lines between toolbars
     g.setColour(Colour(127,127,127));
-    g.fillRect(noteViewer.getKeysWidth(), noteViewer.getHeight(),     getWidth(), separatorLineWidth);
-    g.fillRect(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth,       getWidth(), separatorLineWidth);
+//    g.setColour(Colours::purple);
+    g.fillRect(noteViewer.getKeysWidth(), noteViewer.getHeight()+separatorLineWidth,     getWidth(), separatorLineWidth*2);
+//    g.setColour(Colours::green);
+    g.fillRect(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth*3.5,
+               getWidth(), separatorLineWidth);
+//    g.setColour(Colours::red);
+    g.fillRect(0, 0,       getWidth(), 1.0);
 }
 
 void ViewerFrame::resized()
 {
     float tbH = noteViewer.getToolbarHeight();
 
-    noteViewer.setBounds(noteViewer.getKeysWidth(), 0, getWidth()-noteViewer.getKeysWidth(), getHeight()-tbH*2-separatorLineWidth*2);
+    noteViewer.setBounds(noteViewer.getKeysWidth(), 1.0, getWidth()-noteViewer.getKeysWidth(), getHeight()-tbH*2-separatorLineWidth*2);
 
-    mainToolbar.setBounds(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+separatorLineWidth, getWidth(), tbH);
-
-    altToolbar.setBounds(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+tbH+separatorLineWidth*2, getWidth(), tbH);
+    //Toolbars
+    mainToolbar.setBounds(noteViewer.getKeysWidth()+250, noteViewer.getHeight()+separatorLineWidth+2.5,     getWidth(), tbH);
+    altToolbar.setBounds (noteViewer.getKeysWidth()+250, noteViewer.getHeight()+tbH+separatorLineWidth*5, getWidth(), tbH);
 
 //    altToolbarVisible = true;
 //    if (altToolbarVisible)
@@ -468,9 +473,11 @@ void ViewerFrame::resized()
 
     const auto adjTempoLeft = pAdjustedTempo->getBounds().getRight() + 250 - 4;
     scoreTempoLabel.setBounds(
-                              adjTempoLeft + noteViewer.getKeysWidth() , noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth+2,
+                              adjTempoLeft + noteViewer.getKeysWidth(),
+                              noteViewer.getHeight()+noteViewer.getToolbarHeight()+separatorLineWidth+2,
                               46, noteViewer.getToolbarHeight()-1);
     hoverStepInfo.setBounds(
-                            noteViewer.getKeysWidth(), noteViewer.getHeight(),
+                            noteViewer.getKeysWidth(),
+                            noteViewer.getHeight(),
                             250, (tbH+separatorLineWidth)*2);
 }

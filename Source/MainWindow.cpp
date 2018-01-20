@@ -106,19 +106,15 @@ void PluginWindow::closeAllCurrentlyOpenWindows()
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
-    MainWindow::MainWindow (String name) : DocumentWindow (name, Colour(25,25,25), DocumentWindow::allButtons)
+    MainWindow::MainWindow (String name) : DocumentWindow (name, Colour(00,0,0), DocumentWindow::allButtons)
     {
         Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
-//        int screenWidth = r.getWidth();
-//        int screenHeight = r.getHeight();
-//        midiProcessor.midiOutEnabled = false;
-//        midiProcessor.pluginEnabled = false;
         ckBlockClosing = false;
         chordVelocityHumanizeSpec = ".6,.8";
         chordTimeHumanizeSpec = "40";
         startTimer(100);
         //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", 99);
-        setUsingNativeTitleBar (true);
+        setUsingNativeTitleBar (false);
         mainComponent = new MainComponent(&midiProcessor);
         pViewerFrame = mainComponent->getViewerFrame();
         pViewerFrame->addActionListener(this);
@@ -141,12 +137,7 @@ ApplicationProperties& getAppProperties();
         restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
         setResizable(true, false);
 #endif
-
-//        centreWithSize (getWidth(), getHeight());
-//        restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
-//        setUsingNativeTitleBar(false);
         setVisible (true);
-        
         RecentlyOpenedFilesList recentFiles;
         recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
         //        std::cout << "Startup " << recentFiles.getNumFiles() << " " << recentFiles.toString() << "\n";
