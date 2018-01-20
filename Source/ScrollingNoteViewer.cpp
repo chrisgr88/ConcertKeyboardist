@@ -452,9 +452,6 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
         const double x = event.position.getX();
         const double y = event.position.getY();
-        std::cout << "mouseMove x, y " <<x<<" "<<y  << std::endl;
-
-//    int trackVerticalSize = ((float)ViewStateInfo::viewHeight-verticalScale*topMargin)/nKeys;
         const double vert = (y - ViewStateInfo::verticalScale * topMargin) / ViewStateInfo::trackVerticalSize;
         mouseXinTicks = ((x - (horizontalShift + sequenceStartPixel)) / pixelsPerTick) / horizontalScale +
                         processor->getTimeInTicks();
@@ -466,8 +463,6 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
         {
             if (vert > 0.0 && mouseXinTicks > 0.0) //Test if we are on a chord
             {
-                //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
-                //        const int nn = maxNote - vert + 1;
                 int i;
                 int ch = -1;
                 if (showingChords)
@@ -557,10 +552,6 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
             sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
         } else if (!selecting && fabs(sequenceStartPixel - x) <= 4)
         {
-            //        double xInTicks = processor->getTimeInTicks()+((event.position.getX() -
-            //                                                        (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale;
-            //        processor->setXInTicks(xInTicks);
-
             if (0 < y && y && event.position.getY() < ViewStateInfo::verticalScale * topMargin)
                 hoveringOver = HOVER_ZEROTIMEHANDLE;
             else
@@ -585,10 +576,7 @@ int ScrollingNoteViewer::addNote(/*bool playable, */float x, float y,  float w, 
 {
     const float headY = y-(headHeight-h)/2.0;
     int id = addRectangle(x, y, w, h, colBar); //Bar
-//    if (playable)
-//        addRectangle(x, headY, headWidth, headHeight, colHead); //Header
-//    else
-        addRectangle(x, headY, headWidth, headHeight, colHead);
+    addRectangle(x, headY, headWidth, headHeight, colHead);
     return id;
 }
 
@@ -799,7 +787,6 @@ void ScrollingNoteViewer::newOpenGLContextCreated()
 void ScrollingNoteViewer::resetHorizontalShift() {
 //    std::cout << "horizontalShift " <<horizontalShift<<"\n";
     setHorizontalShift(0.f);
-//    foo = true;
 }
 
 void ScrollingNoteViewer::renderOpenGL()
@@ -848,7 +835,6 @@ void ScrollingNoteViewer::renderOpenGL()
         {
             processor->resetViewer = false;
             setHorizontalShift(0);
-    //        repaint();
         }
         if (numIndices==0)
         {
@@ -1013,7 +999,6 @@ void ScrollingNoteViewer::createShaders()
             sourceColour  = new OpenGLShaderProgram::Attribute (*shader,    "sourceColour");
         
         uniforms   = new Uniforms (openGLContext, *shader);
-//        std::cout << "GLSL: v" + String (OpenGLShaderProgram::getLanguageVersion(), 2) + " Shaders created" << "\n";
     }
     else
     {
@@ -1025,8 +1010,6 @@ void ScrollingNoteViewer::createShaders()
 void ScrollingNoteViewer::makeKeyboard()
 {
 //    std::cout << "Entering makeKeyboard \n";
-//    if (rendering)
-//        return;
     ticksPerQuarter = processor->sequenceObject.getPPQ();
     timeSigChanges = processor->sequenceObject.getTimeSigInfo();
     timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
@@ -1089,7 +1072,6 @@ void ScrollingNoteViewer::makeKeyboard()
     keysGr.fillRect(roundToInt(wKbd+leftMargin-2), 0, 2, roundToInt(ViewStateInfo::viewHeight));
 }
 
-//###
 void ScrollingNoteViewer::makeNoteBars()
 {
     try
@@ -1155,10 +1137,7 @@ void ScrollingNoteViewer::makeNoteBars()
         addRectangle(seqDurationInTicks * pixelsPerTick - 1.0f, 0.f, 2.0f, ViewStateInfo::initialHeight,
                      Colour(0xFFC0C0C0));
 
-        //    if (seqSize==0)
-        //        return;
         //Velocity graph
-
         const double graphHeight =
                 (300.0 - 15.0) - 2 * toolbarHeight; //(300.0-15.0) the original viewer height set in MainComponent.cpp
 
@@ -1283,21 +1262,11 @@ void ScrollingNoteViewer::makeNoteBars()
                     {
                         Rectangle<float> head = processor->sequenceObject.chords.at(prevChordIndex).notePointers.at(
                                 i)->head;
-                        //                head.setWidth(0.5);
                         rList.add(head);
                     }
                     Rectangle<float> chordRect = rList.getBounds();
                     chordRect.translate(-1.0, 0.0);
                     processor->sequenceObject.chords.at(prevChordIndex).chordRect = chordRect.withWidth(1.5);
-                    //                if (index>25)
-                    //                {
-                    //                    std::cout << "chordIndex " << prevChordIndex << " Chord rect "
-                    //                    << chordRect.getTopLeft().getX()
-                    //                    <<" "<<chordRect.getTopLeft().getY()
-                    //                    <<" "<<chordRect.getBottomRight().getX()
-                    //                    <<" "<<chordRect.getBottomRight().getY()
-                    //                    <<"\n";
-                    //                }
                 }
                 if (pSequence->at(index)->inChord)
                 {
@@ -1451,7 +1420,6 @@ void ScrollingNoteViewer::makeNoteBars()
             int softBarNum = 0;
             for (int step = 0; step < static_cast<int>(pSequence->size()); step++)
             {
-                //            const NoteWithOffTime msg = sequence->at(step);
                 const double barLeft = softBars[softBarNum].getX();
                 const double barRight = softBars[softBarNum].getRight();
                 const double msgTimeStamp = pSequence->at(step)->getTimeStamp();
@@ -1473,7 +1441,6 @@ void ScrollingNoteViewer::makeNoteBars()
                 } else if (insoftBar && msgTimeStamp >= barRight)
                 {
                     insoftBar = false;
-                    //                const float y = noteYs[highestNote]*rescaleHeight + topMargin - 2.3*unscaledTVS;
                     const float y = 3.0;
                     countSofts++;
                     addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 2.0,

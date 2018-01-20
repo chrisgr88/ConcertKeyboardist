@@ -114,7 +114,6 @@ ApplicationProperties& getAppProperties();
         chordVelocityHumanizeSpec = ".6,.8";
         chordTimeHumanizeSpec = "40";
         startTimer(100);
-        //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", 99);
         setUsingNativeTitleBar (false);
         mainComponent = new MainComponent(&midiProcessor);
         pViewerFrame = mainComponent->getViewerFrame();
@@ -128,11 +127,10 @@ ApplicationProperties& getAppProperties();
         menuBarActivated(false);
         setFullScreen(true);
         setResizable(false, false);
-        
         auto ckApp = File::getSpecialLocation(File::currentApplicationFile);
         auto ckDocs = File::getSpecialLocation(File::userDocumentsDirectory);
         ckApp.copyDirectoryTo(ckDocs);
-        std::cout << "iOS: copied files from recources to Docments directory \n";
+        std::cout << "iOS: copied files from resources to Documents directory \n";
 #else
         std::cout << "Not iOS so  normal startup \n";
         restoreWindowStateFromString (getAppProperties().getUserSettings()->getValue ("mainWindowPos"));
@@ -889,13 +887,6 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 }
                 break;
             }
-//            case CommandIDs::enablePlugin:
-//            {
-//                std::cout << "Enable plugin" <<"\n";
-//                midiProcessor.pluginEnabled = !midiProcessor.pluginEnabled;
-//                menuItemsChanged();
-//                break;
-//            }
             case CommandIDs::enableMidiOut:
             {
                 std::cout << "Enable midi out" <<"\n";
@@ -977,7 +968,6 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 }
                 break;
             case CommandIDs::rewind:
-//                std::cout <<"Rewind\n";
             {
                 if (midiProcessor.sequenceObject.theSequence.size()>0)
                 {
@@ -1276,7 +1266,8 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     File::getSpecialLocation(File::currentApplicationFile);
-                    String docPath = File::getSpecialLocation(File::currentApplicationFile).getChildFile("Contents/Resources/Documentation/EN/ckdoc.html").getFullPathName();
+                    String docPath = File::getSpecialLocation(File::currentApplicationFile).
+                            getChildFile("Contents/Resources/Documentation/EN/ckdoc.html").getFullPathName();
                     docPath = "file://" + docPath;
                     std::cout << "doc path " << docPath << "\n";
                     URL docURL = URL(docPath);

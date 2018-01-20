@@ -14,12 +14,10 @@ Alpha:
 - DONE Add "scan plugins" to plugin toolbar menu. Also add enable/disable midi.
 - DONE Make window title bar dark with white text
 - DONE Hide/show editing toolbar
-- Ability to display help in lower left 
-    - Show for items hovered over
-    - System to author help
+- DONE Improved tooltips
+- DONE Create script to copy help to app file (CLion/Mac only for now)
 - Bug - Added tempo change marker picks up tempo from next real tempo change
 - Update help
-- Make help accessible from help toolbar button
 - Demo Video
 
 Final:

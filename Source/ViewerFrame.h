@@ -307,7 +307,7 @@ private:
                 }
                 case _adjustVelocities:
                 {
-                    ToolbarButton *adjVelButton = createButtonFromZipFileSVG (itemId, "Drag velocities of all selected notes up/down",
+                    ToolbarButton *adjVelButton = createButtonFromZipFileSVG (itemId, "Drag up/down the velocities of all selected notes",
                                     "adjustVelocities.svg", "adjustVelocities-pressed.svg");
                     adjVelButton->getToggleStateValue().referTo(pViewer->adjustingVelocities);
                     adjVelButton->setClickingTogglesState(true);

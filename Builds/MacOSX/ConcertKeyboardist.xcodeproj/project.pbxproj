@@ -439,11 +439,13 @@
 					06DE20E82AAD9548CAFD1E56,
 					9A24423E8EB4E7B5AA0FD499,
 					8489C516E3B50AC1AF94A2B7, ); runOnlyForDeploymentPostprocessing = 0; };
+		E0BD744B52BE625E50B9B475 = {isa = PBXShellScriptBuildPhase; buildActionMask = 2147483647; files = (  ); runOnlyForDeploymentPostprocessing = 0; name = "Post-build script"; shellPath = /bin/sh; shellScript = "$PROJECT_DIR/../../CopyDocumentation.sh"; };
 		0DF05A38ED8E8BF6EB7D9C5C = {isa = PBXNativeTarget; buildConfigurationList = 20A88B838659B5B766A08F56; buildPhases = (
 					3EECBAB9F8C2BF9781959FE1,
 					518008B4BCAC2EDE2921458A,
 					EF758DF42F97B8D22FD35F80,
-					AF94D754542EEF998EE0EF72, ); buildRules = ( ); dependencies = (  ); name = "ConcertKeyboardist - App"; productName = ConcertKeyboardist; productReference = BCC50B48B1A4B967949B2DB2; productType = "com.apple.product-type.application"; };
+					AF94D754542EEF998EE0EF72,
+					E0BD744B52BE625E50B9B475, ); buildRules = ( ); dependencies = (  ); name = "ConcertKeyboardist - App"; productName = ConcertKeyboardist; productReference = BCC50B48B1A4B967949B2DB2; productType = "com.apple.product-type.application"; };
 		9606743A47FFF871B775B1AB = {isa = PBXProject; buildConfigurationList = CC7502C8943D2FC599DFC557; attributes = { LastUpgradeCheck = 0830; ORGANIZATIONNAME = ""; TargetAttributes = { 0DF05A38ED8E8BF6EB7D9C5C = { DevelopmentTeam = Y6ELW6M79S; ProvisioningStyle = Automatic; SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; }; }; }; }; compatibilityVersion = "Xcode 3.2"; hasScannedForEncodings = 0; mainGroup = 9F958921F12E7C784E909D34; projectDirPath = ""; projectRoot = ""; targets = (0DF05A38ED8E8BF6EB7D9C5C); };
 	};
 	rootObject = 9606743A47FFF871B775B1AB;
