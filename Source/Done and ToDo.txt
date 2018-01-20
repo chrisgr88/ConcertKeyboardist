@@ -11,12 +11,13 @@ Alpha:
 - DONE Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
 - DONE Fix bug where tracks only one track in tracks list could be disabled.
 - DONE Better tempo change & bookmark ui
-- DONE Add "scan plugins" to plugin toolbar menu. Also add enable/disable midi.
+- DONE Add "scan plugins" to plugin toolbar menu. Also add enable/disable midi
 - DONE Make window title bar dark with white text
 - DONE Hide/show editing toolbar
 - DONE Improved tooltips
 - DONE Create script to copy help to app file (CLion/Mac only for now)
-- Bug - Added tempo change marker picks up tempo from next real tempo change
+- DONE Make the addSoft and addSustain buttons alternate with removeSoft and removeSustain buttons
+- Bug - An added tempo change marker picks up tempo from next real tempo change
 - Update help
 - Demo Video
 

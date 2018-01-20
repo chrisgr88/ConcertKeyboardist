@@ -27,6 +27,7 @@ altToolbarFactory(this)
     addAndMakeVisible(mainToolbar);
     mainToolbar.addDefaultItems (mainFactory);
     mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(48,48,48));
+    mainToolbar.setVisible(false);
     mainFactory.addChangeListener(this);
 
     addAndMakeVisible(altToolbar);
@@ -128,7 +129,7 @@ void focusLost (ScrollingNoteViewer::FocusChangeType cause)
 void ViewerFrame::timerCallback()
 {
     Sequence::Bookmark b = processor->atBookmark();
-    if (b.time!=-1 && b.time!=0)
+    if (b.time!=-1)// && b.time!=0)
     {
         if (b.tempoChange)
             replaceAltToolbarItem(AltToolbarItemFactory::addTempoChange, AltToolbarItemFactory::removeTempoChange);
