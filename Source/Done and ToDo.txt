@@ -11,15 +11,15 @@ Alpha:
 - DONE Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
 - DONE Fix bug where tracks only one track in tracks list could be disabled.
 - DONE Better tempo change & bookmark ui
-- Add "scan plugins" to plugin toolbar menu. (Also add enable/disable midi?)      
-- Bug - Added tempo change marker picks up tempo from next real tempo change
+- DONE Add "scan plugins" to plugin toolbar menu. Also add enable/disable midi.
+- DONE Make window title bar dark with white text
+- DONE Hide/show editing toolbar
 - Ability to display help in lower left 
     - Show for items hovered over
     - System to author help
-- DONE Make window title bar dark with white text
-- DONE Hide/show editing toolbar
+- Bug - Added tempo change marker picks up tempo from next real tempo change
 - Update help
-- Make help is accessible from help toolbar button
+- Make help accessible from help toolbar button
 - Demo Video
 
 Final:

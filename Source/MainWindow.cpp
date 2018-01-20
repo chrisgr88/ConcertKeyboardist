@@ -705,9 +705,10 @@ const PluginDescription* MainWindow::pluginContextMenu (Rectangle<int> menuAt) c
 {
     PopupMenu m;
     addPluginsToMenu(m);
-    m.addItem(99999, "No Plugin");
+    m.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
+    m.addItem(99998, "No Plugin");
     int index = m.showAt(menuAt);
-    if (index==99999)
+    if (index==99998)
     {
         std::cout <<"Unload Plugin\n";
         mainComponent->unLoadPlugin();
