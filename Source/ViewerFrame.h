@@ -155,6 +155,8 @@ private:
     ScopedPointer<TextEditor> textEditor;
     String playableKeys = String();
     Array<bool> keysThatAreDown; //String containing characters of keys that are down (for playing from computer keyboard)
+
+    float noteViewerBottom;
     
     TextButton playStopButton;
     TextButton rewindButton;
@@ -572,6 +574,7 @@ private:
             removeTempoChange = 14,
             addBookmark = 15,
             removeBookmark = 16,
+            showEditToolbar = 17,
             _help                = 22
         };
         
@@ -603,6 +606,7 @@ private:
             ids.add (removeTempoChange);
             ids.add (addBookmark);
             ids.add (removeBookmark);
+            ids.add (showEditToolbar);
             ids.add (separatorBarId);
             ids.add (spacerId);
             ids.add (flexibleSpacerId);
@@ -619,10 +623,8 @@ private:
             ids.add (separatorBarId);
             ids.add (audioSettings);
             ids.add (scoreInfo);
+            ids.add (showEditToolbar);
             ids.add (addBookmark);
-//            ids.add(removeBookmark); //temp
-//            ids.add (removeBookmarkOrTempoChange);
-//            ids.add (separatorBarId);
             ids.add (_listen);
             ids.add (separatorBarId);
             ids.add (_rewind);
@@ -660,6 +662,7 @@ private:
                 case removeTempoChange: return createButtonFromZipFileSVG (itemId, "Remove Tempo Change Marker","RemoveTempoAdjustment.svg");
                 case addBookmark:       return createButtonFromZipFileSVG (itemId, "Add Bookmark","AddBookmark.svg");
                 case removeBookmark:    return createButtonFromZipFileSVG (itemId, "Remove Bookmark","RemoveBookmark.svg");
+                case showEditToolbar:    return createButtonFromZipFileSVG (itemId, "Show/Hide Editing Tools","ShowEditToolbar.svg");
                 case scoreTempo:
                 {
                     ScoreTempo *scoreTempo = new ScoreTempo(itemId);
