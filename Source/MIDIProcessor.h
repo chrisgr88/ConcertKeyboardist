@@ -259,6 +259,7 @@ public:
     enum PedalType {sustPedal, softPedal};
     void addPedalChange(PedalType pType);
     void deletePedalChange(PedalType pType);
+    bool atPedalChange(PedalType pType);
     void createChord();
     void deleteChords(bool rebuild);
     void autoCreateChords(double maxLength); //Based on notes chained to target notes in selection, limited to maxLength

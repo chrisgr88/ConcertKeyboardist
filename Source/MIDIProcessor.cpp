@@ -1731,7 +1731,32 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
     pauseProcessing = false;
 }
 
-void MIDIProcessor::createChord()
+  bool MIDIProcessor::atPedalChange(PedalType pType)
+  {
+      const double currentZtlTime = timeInTicks-xInTicksFromViewer;
+      std::vector<Sequence::PedalMessage> *pedalChanges;
+      if (pType==sustPedal)
+      {
+          for (int i=0;i<sequenceObject.sustainPedalChanges.size();i+=2)
+          {
+              if (sequenceObject.sustainPedalChanges.at(i).timeStamp < currentZtlTime &&
+                      currentZtlTime <= sequenceObject.sustainPedalChanges.at(i+1).timeStamp)
+                  return true;
+          }
+      }
+      else
+      {
+          for (int i=0;i<sequenceObject.softPedalChanges.size();i+=2)
+          {
+              if (sequenceObject.softPedalChanges.at(i).timeStamp < currentZtlTime &&
+                  currentZtlTime <= sequenceObject.softPedalChanges.at(i+1).timeStamp)
+                  return true;
+          }
+      }
+      return false;
+  }
+
+  void MIDIProcessor::createChord()
 {
 //    std::cout << "MidiProcessor create_chord: 1st selected note"<<sequenceObject.theSequence.at(copyOfSelectedNotes[0])->currentStep <<"\n";
     if (copyOfSelectedNotes.size()<=1)

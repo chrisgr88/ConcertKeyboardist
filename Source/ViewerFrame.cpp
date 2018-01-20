@@ -107,7 +107,7 @@ altToolbarFactory(this)
 keysThatAreDown.add(false);
     
 //    std::cout << "ViewerComponent isBroughtToFrontOnMouseClick " << isBroughtToFrontOnMouseClick()  <<"\n";
-    startTimer(200);
+    startTimer(250);
 }
 
 ViewerFrame::~ViewerFrame()
@@ -134,10 +134,19 @@ void ViewerFrame::timerCallback()
             replaceItem(AltToolbarItemFactory::addTempoChange, AltToolbarItemFactory::removeTempoChange);
         else
             replaceItem(AltToolbarItemFactory::addBookmark, AltToolbarItemFactory::removeBookmark);
-    } else
+    }
+    else
     {
         replaceItem(AltToolbarItemFactory::removeTempoChange, AltToolbarItemFactory::addTempoChange);
         replaceItem(AltToolbarItemFactory::removeBookmark, AltToolbarItemFactory::addBookmark);
+    }
+    if (processor->atPedalChange(MIDIProcessor::sustPedal))
+    {
+        std::cout << "At sustPedal change " << std::endl;
+    }
+    if (processor->atPedalChange(MIDIProcessor::softPedal))
+    {
+        std::cout << "At softPedal change " << std::endl;
     }
     static String prevName = "";
     String plugin;
