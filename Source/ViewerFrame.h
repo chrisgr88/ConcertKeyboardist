@@ -133,7 +133,7 @@ public:
                 position=i;
         altToolbar.removeToolbarItem(position);
     }
-    void replaceItem(int itemId, int newItemId)
+    void replaceAltToolbarItem(int itemId, int newItemId)
     {
         int position=-1;
         for (int i=0; i < altToolbar.getNumItems(); i++)
@@ -144,6 +144,19 @@ public:
             altToolbar.removeToolbarItem(position);
             altToolbar.addItem(altToolbarFactory, newItemId, position);
             altToolbar.getItemComponent(position)->addListener(this);
+        }
+    }
+    void replaceMainToolbarItem(int itemId, int newItemId)
+    {
+        int position=-1;
+        for (int i=0; i < mainToolbar.getNumItems(); i++)
+            if (mainToolbar.getItemId(i) == itemId)
+                position=i;
+        if (position!=-1)
+        {
+            mainToolbar.removeToolbarItem(position);
+            mainToolbar.addItem(mainFactory, newItemId, position);
+            mainToolbar.getItemComponent(position)->addListener(this);
         }
     }
 
@@ -267,9 +280,9 @@ private:
             ids.add (_humanizeVelocityBox);
             ids.add (separatorBarId);
             ids.add (_addSustain);
-            ids.add (_deleteSustain);
+//            ids.add (_deleteSustain);
             ids.add (_addSoft);
-            ids.add (_deleteSoft);
+//            ids.add (_deleteSoft);
             ids.add (separatorBarId);
             ids.add (flexibleSpacerId);
         }

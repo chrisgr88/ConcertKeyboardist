@@ -131,22 +131,30 @@ void ViewerFrame::timerCallback()
     if (b.time!=-1 && b.time!=0)
     {
         if (b.tempoChange)
-            replaceItem(AltToolbarItemFactory::addTempoChange, AltToolbarItemFactory::removeTempoChange);
+            replaceAltToolbarItem(AltToolbarItemFactory::addTempoChange, AltToolbarItemFactory::removeTempoChange);
         else
-            replaceItem(AltToolbarItemFactory::addBookmark, AltToolbarItemFactory::removeBookmark);
+            replaceAltToolbarItem(AltToolbarItemFactory::addBookmark, AltToolbarItemFactory::removeBookmark);
     }
     else
     {
-        replaceItem(AltToolbarItemFactory::removeTempoChange, AltToolbarItemFactory::addTempoChange);
-        replaceItem(AltToolbarItemFactory::removeBookmark, AltToolbarItemFactory::addBookmark);
+        replaceAltToolbarItem(AltToolbarItemFactory::removeTempoChange, AltToolbarItemFactory::addTempoChange);
+        replaceAltToolbarItem(AltToolbarItemFactory::removeBookmark, AltToolbarItemFactory::addBookmark);
     }
     if (processor->atPedalChange(MIDIProcessor::sustPedal))
     {
-        std::cout << "At sustPedal change " << std::endl;
+        replaceMainToolbarItem(MainToolbarItemFactory::_addSustain, MainToolbarItemFactory::_deleteSustain);
+    }
+    else
+    {
+        replaceMainToolbarItem(MainToolbarItemFactory::_deleteSustain, MainToolbarItemFactory::_addSustain);
     }
     if (processor->atPedalChange(MIDIProcessor::softPedal))
     {
-        std::cout << "At softPedal change " << std::endl;
+        replaceMainToolbarItem(MainToolbarItemFactory::_addSoft, MainToolbarItemFactory::_deleteSoft);
+    }
+    else
+    {
+        replaceMainToolbarItem(MainToolbarItemFactory::_deleteSoft, MainToolbarItemFactory::_addSoft);
     }
     static String prevName = "";
     String plugin;
