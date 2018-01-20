@@ -106,8 +106,9 @@ void PluginWindow::closeAllCurrentlyOpenWindows()
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
-    MainWindow::MainWindow (String name) : DocumentWindow (name, Colour(00,0,0), DocumentWindow::allButtons)
+    MainWindow::MainWindow (String name) : DocumentWindow (name, Colour(15,15,15), DocumentWindow::allButtons)
     {
+        getLookAndFeel().setColour(DocumentWindow::textColourId, Colour(199,199,199));
         Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
         ckBlockClosing = false;
         chordVelocityHumanizeSpec = ".6,.8";

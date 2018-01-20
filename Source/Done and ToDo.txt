@@ -12,18 +12,19 @@ Alpha:
 - DONE Fix bug where tracks only one track in tracks list could be disabled.
 - DONE Better tempo change & bookmark ui
 - Add "scan plugins" to plugin toolbar menu. (Also add enable/disable midi?)      
-- Bug - Added temopo change marker picks up tempo from next real tempo change
+- Bug - Added tempo change marker picks up tempo from next real tempo change
 - Ability to display help in lower left 
     - Show for items hovered over
     - System to author help
-- Make window title bar dark with white text?
+- DONE Make window title bar dark with white text
+- DONE Hide/show editing toolbar
 - Update help
 - Make help is accessible from help toolbar button
 - Demo Video
 
 Final:
 - Ability to edit meta data
-- Hide/show groups of toolbar buttons?
+
 
 Updated ToDo as of December 22, 2017
 --------------------------------

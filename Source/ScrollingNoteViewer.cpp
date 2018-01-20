@@ -1550,7 +1550,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
     Font f = Font (10.0*ViewStateInfo::verticalScale);
     f.setStyleFlags(Font::FontStyleFlags::bold);
     g.setFont(f);
-    g.setColour (Colours::white);
+    g.setColour (Colour(199,199,199));
     const String measTxt = String(meas)+"/"+String(totalMeas-1)+" ["+String(processor->getZTLTime(horizontalShift)/10.0,1)+"]";
     if (sequenceStartPixel!=-1)
         if (processor->sequenceObject.measureTimes.size()>0)
