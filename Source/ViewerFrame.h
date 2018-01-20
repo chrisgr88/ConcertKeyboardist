@@ -280,26 +280,26 @@ private:
             {
                 case edit_undo:         return createButtonFromZipFileSVG (itemId, "Undo", "edit-undo.svg");
                 case edit_redo:         return createButtonFromZipFileSVG (itemId, "Redo", "edit-redo.svg");
-                case _toggleActivity:        return createButtonFromZipFileSVG (itemId, "Toggle Target Notes", "toggleActivityTool.svg");
-                case _chain:        return createButtonFromZipFileSVG (itemId, "Auto Create Target Notes After Breaks", "chain.svg");
-                case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a Sustain Bar", "addSustain.svg");
-                case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a Sustain Bar", "deleteSustain.svg");
-                case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a Soft Bar", "addSoft.svg");
-                case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a Soft Bar", "deleteSoft.svg");
-                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Randomize Chord Note Times", "humanizeStartTimes.svg");
-                case _humanizeVelocity: return createButtonFromZipFileSVG (itemId, "Adjust Chord Note Velocities", "humanizeVelocities.svg");
+                case _toggleActivity:        return createButtonFromZipFileSVG (itemId, "Toggle selected target notes", "toggleActivityTool.svg");
+                case _chain:        return createButtonFromZipFileSVG (itemId, "Autocreate target notes after note-free time intervals", "chain.svg");
+                case _addSustain: return createButtonFromZipFileSVG (itemId, "Add a sustain bar", "addSustain.svg");
+                case _deleteSustain: return createButtonFromZipFileSVG (itemId, "Delete a sustain bar", "deleteSustain.svg");
+                case _addSoft: return createButtonFromZipFileSVG (itemId, "Add a soft bar", "addSoft.svg");
+                case _deleteSoft: return createButtonFromZipFileSVG (itemId, "Delete a soft bar", "deleteSoft.svg");
+                case _humanizeTime: return createButtonFromZipFileSVG (itemId, "Humanize chord note times", "humanizeStartTimes.svg");
+                case _humanizeVelocity: return createButtonFromZipFileSVG (itemId, "Set chord note velocities as proportion of top note", "humanizeVelocities.svg");
                 case _chordEditToggle:
                 {
-                    ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Show Chords",
+                    ToolbarButton *chordEditButton = createButtonFromZipFileSVG (itemId, "Show chords",
                         "chordEditToggle.svg", "chordEditToggle-pressed.svg");
                     chordEditButton->setClickingTogglesState(true);
                     return chordEditButton;
                 }
-                case create_chord: return  createButtonFromZipFileSVG (itemId, "Create Chord", "createChord.svg");
-                case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete Chord", "deleteChord.svg");
+                case create_chord: return  createButtonFromZipFileSVG (itemId, "Mark selected notes as a single chord", "createChord.svg");
+                case delete_chord: return createButtonFromZipFileSVG (itemId, "Delete selected chords", "deleteChord.svg");
                 case _showVelocities:
                 {
-                    ToolbarButton *showVelButton = createButtonFromZipFileSVG (itemId, "Graph Velocities of Selected Notes",
+                    ToolbarButton *showVelButton = createButtonFromZipFileSVG (itemId, "Show velocity graph of selected notes",
                         "showVelocityGraph.svg", "showVelocityGraph-pressed.svg");
                     showVelButton->getToggleStateValue().referTo(pViewer->showingVelocities);
                     showVelButton->setClickingTogglesState(true);
@@ -307,34 +307,37 @@ private:
                 }
                 case _adjustVelocities:
                 {
-                    ToolbarButton *adjVelButton = createButtonFromZipFileSVG (itemId, "Adjust Velocities of All Selected Notes",
+                    ToolbarButton *adjVelButton = createButtonFromZipFileSVG (itemId, "Drag velocities of all selected notes up/down",
                                     "adjustVelocities.svg", "adjustVelocities-pressed.svg");
-                    adjVelButton->getToggleStateValue().referTo(pViewer->adjustingingVelocities);
+                    adjVelButton->getToggleStateValue().referTo(pViewer->adjustingVelocities);
                     adjVelButton->setClickingTogglesState(true);
                     return adjVelButton;
                 }
                 case _drawVelocities:
                 {
-                    ToolbarButton *drawVelButton = createButtonFromZipFileSVG (itemId, "Draw Velocity Graph For Selected Notes",
+                    ToolbarButton *drawVelButton = createButtonFromZipFileSVG (itemId, "Sketch a velocity graph for selected notes",
                                     "drawVelocities.svg", "drawVelocities-pressed.svg");
                     drawVelButton->getToggleStateValue().referTo(pViewer->drawingVelocities);
                     drawVelButton->setClickingTogglesState(true);
                     return drawVelButton;
                 }
                 case customComboBox:
-                    return new NumberComboBox (itemId);
-                    
+                {
+                    NumberComboBox *numCombo = new NumberComboBox(itemId);
+                    numCombo->setTooltip("Size of break preceding autocreated target notes");
+                    return numCombo;
+                }
                 case _humanizeVelocityBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Note Velocity Pattern as Fractions of Top Note");
+                    txtBox->textBox.setTooltip("Chord note velocities as proportion of top note (comma separated list)");
                     return txtBox;
                 }
                     
                 case _humanizeTimeBox:
                 {
                     ChainAmountBox *txtBox = new ChainAmountBox (itemId);
-                    txtBox->textBox.setTooltip("Maximum Time Randomization in Milliseconds");
+                    txtBox->textBox.setTooltip("Maximum note start time humanization in milliseconds");
                     return txtBox;
                 }
                 default:
@@ -398,7 +401,6 @@ private:
                 textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey));
                 textBox.setColour (TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
                 textBox.setBounds (180, 40, 20, 20);
-//                textBox.setTooltip("Chaining Interval in Ticks");
             }
             void setWidth(int w=35)
             {
@@ -455,6 +457,7 @@ private:
                 setValues(0.1, 9.9, 0.1, 1);
                 comboBox.setSelectedId(10,NotificationType::dontSendNotification);
                 comboBox.setEditableText (true);
+                comboBox.setTooltip("Minimum size note separation preceding autocreated target notes (in sixteenths)");
                 clearChangeFlag();
             }
             void setValues (double min, double max, double step, int decimalPlaces=0)
@@ -648,31 +651,31 @@ private:
             {
                 case doc_open:          return createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
                 case doc_save:          return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
-                case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "Save As", "document-save-as.svg");
-                case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load Plugin", "LoadPluginButton.svg");
-                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Show Plugin", "EditPluginButton.svg");
-                case audioSettings:     return createButtonFromZipFileSVG (itemId, "Audio Settings", "AudioSettingsTool.svg");
-                case scoreInfo:         return createButtonFromZipFileSVG (itemId, "Score Info", "ScoreInfoTool.svg");
-                case _help:             return createButtonFromZipFileSVG (itemId, "Open Help in Browser", "help.svg");
-                case _play:             return createButtonFromZipFileSVG (itemId, "Prepare to Play", "media-playback-start.svg");
-                case _stop:             return createButtonFromZipFileSVG (itemId, "Stop Playing", "media-playback-stop.svg");
+                case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "Save as", "document-save-as.svg");
+                case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load plugin", "LoadPluginButton.svg");
+                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Show plugin window", "EditPluginButton.svg");
+                case audioSettings:     return createButtonFromZipFileSVG (itemId, "Show audio settings", "AudioSettingsTool.svg");
+                case scoreInfo:         return createButtonFromZipFileSVG (itemId, "Show tracks Information", "ScoreInfoTool.svg");
+                case _help:             return createButtonFromZipFileSVG (itemId, "Open help in browser", "help.svg");
+                case _play:             return createButtonFromZipFileSVG (itemId, "Set ready to play", "media-playback-start.svg");
+                case _stop:             return createButtonFromZipFileSVG (itemId, "Stop playing", "media-playback-stop.svg");
                 case _rewind:           return createButtonFromZipFileSVG (itemId, "Rewind", "media-seek-backward.svg");
-                case _listen:           return createButtonFromZipFileSVG (itemId, "Listen", "Music.svg");
-                case addTempoChange:    return createButtonFromZipFileSVG (itemId, "Add Tempo Change Marker","AddTempoAdjustment.svg");
-                case removeTempoChange: return createButtonFromZipFileSVG (itemId, "Remove Tempo Change Marker","RemoveTempoAdjustment.svg");
-                case addBookmark:       return createButtonFromZipFileSVG (itemId, "Add Bookmark","AddBookmark.svg");
-                case removeBookmark:    return createButtonFromZipFileSVG (itemId, "Remove Bookmark","RemoveBookmark.svg");
-                case showEditToolbar:    return createButtonFromZipFileSVG (itemId, "Show/Hide Editing Tools","ShowEditToolbar.svg");
+                case _listen:           return createButtonFromZipFileSVG (itemId, "Listen (auto-play)", "Music.svg");
+                case addTempoChange:    return createButtonFromZipFileSVG (itemId, "Add tempo change marker","AddTempoAdjustment.svg");
+                case removeTempoChange: return createButtonFromZipFileSVG (itemId, "Remove tempo change marker","RemoveTempoAdjustment.svg");
+                case addBookmark:       return createButtonFromZipFileSVG (itemId, "Add bookmark","AddBookmark.svg");
+                case removeBookmark:    return createButtonFromZipFileSVG (itemId, "Remove bookmark","RemoveBookmark.svg");
+                case showEditToolbar:    return createButtonFromZipFileSVG (itemId, "Show or hide editing tools","ShowEditToolbar.svg");
                 case scoreTempo:
                 {
                     ScoreTempo *scoreTempo = new ScoreTempo(itemId);
-                    scoreTempo->setTooltip("Suggested Tempo");
+                    scoreTempo->setTooltip("Suggested tempo");
                     return scoreTempo;
                 }
                 case adjustedTempo:
                 {
                     AdjustedTempo *tempoMultiplier = new AdjustedTempo (itemId);
-                    tempoMultiplier->setTooltip("Tempo");
+                    tempoMultiplier->setTooltip("Tempo (drag up/down to change)");
                     return tempoMultiplier;
                 }
                 default:
@@ -734,7 +737,7 @@ private:
                 textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(32,64,200));
                 textBox.setColour (TextEditor::ColourIds::textColourId, Colour(206,206,206));
                 textBox.setBounds (180, 30, 80, 10);
-                textBox.setTooltip("Tempo From Midi File");
+                textBox.setTooltip("Tempo from midi file");
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
@@ -788,7 +791,7 @@ private:
                 textBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(198,198,198));
                 textBox.setColour (TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
                 textBox.setBounds (180, 30, 80, 10);
-                textBox.setTooltip("Scaled Tempo");
+                textBox.setTooltip("Scaled tempo");
             }
             bool getToolbarItemSizes (int /*toolbarDepth*/, bool isVertical,
                                       int& preferredSize, int& minSize, int& maxSize) override
@@ -895,7 +898,7 @@ private:
                 numberBox.setFont (Font (18.00f, Font::plain));
                 numberBox.setColour (TextEditor::ColourIds::textColourId, Colours::black);
                 numberBox.setColour (TextEditor::ColourIds::backgroundColourId, Colour(Colours::lightgrey).brighter());
-                numberBox.setTooltip("Tempo");
+                numberBox.setTooltip("Tempo (drag up/down to change)");
                 numberBox.decimalPlaces = 1;
             }
             

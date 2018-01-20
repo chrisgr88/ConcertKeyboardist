@@ -386,7 +386,7 @@ public:
     bool prevDrawingVelocities = false;
 //    Array<float> preDragOrDrawVelocities;   //Group velocity drags into an undo transaction - to reset viewer state before perform
     Array<float> velocitiesAfterDragOrDraw; //Used to group velocity drags into an undo transaction - passed to createAction
-    Value adjustingingVelocities; //Adjust velocity mode, toggled by adjustVelocities toolbar button
+    Value adjustingVelocities; //Adjust velocity mode, toggled by adjustVelocities toolbar button
     bool prevAdjustingVelocities = false;
     bool altKeyPressed; //Holding this key enables editingVelocities
     bool marqueeAddingNotes; //True if in marquee add note mode

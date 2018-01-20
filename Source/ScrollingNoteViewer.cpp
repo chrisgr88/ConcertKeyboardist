@@ -40,17 +40,17 @@ bool ViewStateInfo::finishedPaintAfterRewind = false;
 GLint ScrollingNoteViewer::Uniforms::viewMatrixHandle;
 GLint ScrollingNoteViewer::Uniforms::projectionMatrixHandle;
 //==============================================================================
-ScrollingNoteViewer::ScrollingNoteViewer (MIDIProcessor *p) :
-processor(p),
-wKbd(24.f),
-maxNote(84),
-minNote(59),
-compressNotes(false),
-octaveNumForMiddleC (3),
-toolbarHeight(30),
-topMargin(15),
-leftMargin(2),
-noteBarWidthRatio(1.f) //As fraction of note track width
+ScrollingNoteViewer::ScrollingNoteViewer(MIDIProcessor *p) :
+        processor(p),
+        wKbd(24.f),
+        maxNote(84),
+        minNote(59),
+        compressNotes(false),
+        octaveNumForMiddleC(3),
+        toolbarHeight(30),
+        topMargin(15),
+        leftMargin(2),
+        noteBarWidthRatio(1.f) //As fraction of note track width
 {
     processor->initialWindowHeight = 88;
     glBufferUpdateCountdown = 0; //Countdown of number of renders to pass before another buffer update is allowed.
@@ -74,16 +74,16 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     draggingOffTime = false;
     sequenceStartPixel = -1;
 //    showVelocityIndicator = false;
-    
+
     setPaintingIsUnclipped(true);
 //    x = 0;
 //    y = 0;
     position = nullptr;
     sourceColour = nullptr;
-    openGLContext.setRenderer (this);
-    openGLContext.attachTo (*this);
-    openGLContext.setContinuousRepainting (true);
-	openGLContext.setSwapInterval(2);
+    openGLContext.setRenderer(this);
+    openGLContext.attachTo(*this);
+    openGLContext.setContinuousRepainting(true);
+    openGLContext.setSwapInterval(2);
     horizontalScale = 1.0f;
     ViewStateInfo::verticalScale = 1.0f;
     initialMeasuresAcrossWindow = 5;
@@ -97,7 +97,7 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     resetHorizontalShift();
     colourActiveNoteHead = Colour(0xffff00ff);//Cyan
     colourPrimaryNoteBar = Colour(0xffffccff).darker().darker();
-    colourInactiveNoteHead = Colour (0xffbbbbbb);
+    colourInactiveNoteHead = Colour(0xffbbbbbb);
     colourNoteOn = Colour(0xffFFFF55);
     nSteps = -1;
     showingVelocities.setValue(false);
@@ -111,12 +111,12 @@ noteBarWidthRatio(1.f) //As fraction of note track width
     selectionMarkerCursor = getMouseCursorFromZipFile("SelectionMarkerCursor.svg");
     marqueeAddingCursor = getMouseCursorFromZipFile("MarqueeAddCursor.svg");
     marqueeRemovingCursor = getMouseCursorFromZipFile("MarqueeRemoveCursor.svg");
-    startTimer (TIMER_PERIODIC, 200);
+    startTimer(TIMER_PERIODIC, 200);
 }
 
 ScrollingNoteViewer::~ScrollingNoteViewer()
 {
-    openGLContext.setContinuousRepainting (false);
+    openGLContext.setContinuousRepainting(false);
     openGLContext.detach();
     openGLContext.setRenderer(NULL);
     processor->removeChangeListener(this);
@@ -125,306 +125,317 @@ ScrollingNoteViewer::~ScrollingNoteViewer()
 
 void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
 {
-  try {
-    selectionAnchor = Point<int>(e.getPosition().getX(),e.getPosition().getY());
-    draggingVelocity = false;
-    drawingVelocity = false;
-    draggingTime = false;
-    draggingOffTime = false;
-    //We defer pickup of up the mouse position until drag actually starts because the mouseDown position is slightly
-    //different from the first position returned in mouseDrag.
-    newlySelectedNotes.clear();
-      if (hoveringOver==HOVER_NOTETRACK && (!ModifierKeys::getCurrentModifiers().isCommandDown() && !ModifierKeys::getCurrentModifiers().isShiftDown() && !ModifierKeys::getCurrentModifiers().isAltDown() && !drawingVelocities.getValue()))
-          clearSelectedNotes();
-    if (!ModifierKeys::getCurrentModifiers().isCommandDown() && hoveringOver != HOVER_NONE)
+    try
     {
-        if ((hoveringOver == HOVER_NOTEHEAD || hoveringOver == HOVER_NOTEBAR) && !selectedNotes.contains(hoverStep))
+        selectionAnchor = Point < int > (e.getPosition().getX(), e.getPosition().getY());
+        draggingVelocity = false;
+        drawingVelocity = false;
+        draggingTime = false;
+        draggingOffTime = false;
+        //We defer pickup of up the mouse position until drag actually starts because the mouseDown position is slightly
+        //different from the first position returned in mouseDrag.
+        newlySelectedNotes.clear();
+        if (hoveringOver == HOVER_NOTETRACK && (!ModifierKeys::getCurrentModifiers().isCommandDown() &&
+                                                !ModifierKeys::getCurrentModifiers().isShiftDown() &&
+                                                !ModifierKeys::getCurrentModifiers().isAltDown() &&
+                                                !drawingVelocities.getValue()))
+            clearSelectedNotes();
+        if (!ModifierKeys::getCurrentModifiers().isCommandDown() && hoveringOver != HOVER_NONE)
         {
+            if ((hoveringOver == HOVER_NOTEHEAD || hoveringOver == HOVER_NOTEBAR) && !selectedNotes.contains(hoverStep))
+            {
 //            displayedSelection.clear();
-            ;//clearSelectedNotes();
+                ;//clearSelectedNotes();
+            }
         }
-    }
-    selectionRect = Rectangle<int>();
-    repaint();
-    if (processor->isPlaying )
-    {
+        selectionRect = Rectangle<int>();
+        repaint();
+        if (processor->isPlaying)
+        {
 //        setEditable(true);
-        processor->play(false,"current");
-    }
-    if (e.position.getY()<topMargin*ViewStateInfo::verticalScale) { //Test mouse position
-        zoomDragStarting = true;
-    }
-    else if (hoveringOver != HOVER_NOTEHEAD && hoveringOver != HOVER_NOTEBAR && hoveringOver != HOVER_ZEROTIMELINE)
-    {
+            processor->play(false, "current");
+        }
+        if (e.position.getY() < topMargin * ViewStateInfo::verticalScale)
+        { //Test mouse position
+            zoomDragStarting = true;
+        } else if (hoveringOver != HOVER_NOTEHEAD && hoveringOver != HOVER_NOTEBAR &&
+                   hoveringOver != HOVER_ZEROTIMELINE)
+        {
 //        selectionAnchor = Point<int>(e.getPosition().getX(),e.getPosition().getY());
-        startTimer(TIMER_MOUSE_HOLD, 1);
-    }
-    else
-    {
-        editingNote = true;
-        noteEditAnchor = Desktop::getMousePosition();
-    }
+            startTimer(TIMER_MOUSE_HOLD, 1);
+        } else
+        {
+            editingNote = true;
+            noteEditAnchor = Desktop::getMousePosition();
+        }
 //    std::cout << "mouse down " <<e.getPosition().getX()<<" "
 //    << selectionRect.getTopLeft().getX()<<" "<<selectionRect.getTopLeft().getY()<< "\n";
-  } catch (const std::out_of_range& ex) {
-      std::cout << " error noteviewer: mouseDown " << "\n";
-  }
+    } catch (const std::out_of_range &ex)
+    {
+        std::cout << " error noteviewer: mouseDown " << "\n";
+    }
 }
-void ScrollingNoteViewer::mouseUp (const MouseEvent& event)
+
+void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
 {
 //  float trackVerticalSize = ((float)ViewStateInfo::viewHeight-ViewStateInfo::verticalScale*topMargin)/nKeys;
-  try {
-    std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
-    const double vert = (event.getPosition().getY() - ViewStateInfo::verticalScale*topMargin)/ViewStateInfo::trackVerticalSize;
-      
-    const double xInTicks = ((event.getPosition().getX() - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale + processor->getTimeInTicks();
-    const float sequenceScaledX = mouseXinTicks*pixelsPerTick;
-    const float scaledY = event.getPosition().getY()/ViewStateInfo::verticalScale;
-    int i;
-    int ch = -1;
-    if (showingChords)
+    try
     {
-        for (i=0;i<processor->sequenceObject.chords.size();i++)
-        {
-            if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.0, 0.0).contains(sequenceScaledX, scaledY))
-            {
-                ch = i;
-                break;
-            }
-        }
-    }
-    if (selecting)
-    {
-        selecting = false;
-        marqueeRemovingNotes = false;
-        marqueeAddingNotes = false;
-        editingNote = false;
+        std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
+        const double vert = (event.getPosition().getY() - ViewStateInfo::verticalScale * topMargin) /
+                            ViewStateInfo::trackVerticalSize;
 
-        if (!event.source.hasMouseMovedSignificantlySincePressed())
+        const double xInTicks =
+                ((event.getPosition().getX() - (horizontalShift + sequenceStartPixel)) / pixelsPerTick) /
+                horizontalScale + processor->getTimeInTicks();
+        const float sequenceScaledX = mouseXinTicks * pixelsPerTick;
+        const float scaledY = event.getPosition().getY() / ViewStateInfo::verticalScale;
+        int i;
+        int ch = -1;
+        if (showingChords)
         {
-            if (hoveringOver == HOVER_NOTEHEAD)
+            for (i = 0; i < processor->sequenceObject.chords.size(); i++)
             {
-                if (displayedSelection.contains(hoverStep))
+                if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.0, 0.0).contains(sequenceScaledX,
+                                                                                                 scaledY))
                 {
-                    displayedSelection.remove(displayedSelection.indexOf(hoverStep));
-                    selectedNotes.remove(selectedNotes.indexOf(hoverStep));
-                }
-                else
-                    displayedSelection.add(hoverStep);
-            }
-            else
-            {
-                clearSelectedNotes();
-            }
-        }
-        setSelectedNotes(displayedSelection);
-        repaint();
-        return;
-    }
-    else if (hoverChord!=-1)
-    {
-        Array<int> chordNotes;
-        for (int i=0;i<processor->sequenceObject.chords.at(hoverChord).notePointers.size();i++)
-            chordNotes.add(processor->sequenceObject.chords.at(hoverChord).notePointers.at(i)->currentStep);
-        displayedSelection = chordNotes;
-        setSelectedNotes(chordNotes);
-        repaint();
-    }
-    stopTimer(TIMER_MOUSE_HOLD);
-    if (draggingTime)
-    {
-        if (deltaTimeDrag != -1)
-        {
-            Array<int> steps;
-            if (selectedNotes.contains(noteBeingDraggedOn))
-                steps = selectedNotes;
-            else
-                steps.add(noteBeingDraggedOn);
-            std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
-            processor->undoMgr->beginNewTransaction();
-            MIDIProcessor::ActionChangeNoteTimes* action;
-            action = new MIDIProcessor::ActionChangeNoteTimes(*processor, deltaTimeDrag, pointersToSelectedNotes);
-            processor->undoMgr->perform(action);
-            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getZTLTime(horizontalShift));
-            restoreSelectedNotes(pointersToSelectedNotes);
-        }
-        draggingTime = false;
-        hoveringOver = HOVER_NONE;
-    }
-    else if (draggingVelocity)
-    {
-        //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
-        Array<Sequence::NoteVelocities> newVelocities;
-        for (int i=0;i<notesBeingDraggedOn.size();i++)
-        {
-            Sequence::NoteVelocities vel;
-            vel.note = pSequence->at(notesBeingDraggedOn[i]);
-            vel.velocity = pSequence->at(notesBeingDraggedOn[i])->getVelocity();
-            newVelocities.add(vel);
-            pSequence->at(notesBeingDraggedOn[i])->velocity = velsStartDrag[i];
-        }
-        processor->undoMgr->beginNewTransaction();
-        MIDIProcessor::ActionChangeVelocities* action;
-        action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
-        processor->undoMgr->perform(action);
-        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
-                                      processor->getZTLTime(horizontalShift));
-        draggingVelocity = false;
-        hoveringOver = HOVER_NONE;
-    }
-    else if (draggingOffTime)
-    {
-        Array<int> steps;
-        if (offTimeAfterDrag != -1)
-        {
-            if (selectedNotes.contains(noteBeingDraggedOn))
-                steps = selectedNotes;
-            else
-                steps.add(noteBeingDraggedOn);
-        }
-        const double delta = offTimeAfterDrag - processor->sequenceObject.theSequence.at(noteBeingDraggedOn)->offTime;
-        std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
-        processor->undoMgr->beginNewTransaction();
-        MIDIProcessor::ActionChangeNoteOffTimes* action;
-        action = new MIDIProcessor::ActionChangeNoteOffTimes(*processor, delta, pointersToSelectedNotes);
-        processor->undoMgr->perform(action);
-        draggingOffTime = false;
-        hoveringOver = HOVER_NONE;
-    }
-    else if (drawingVelocity)
-    {
-        //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
-        Array<Sequence::NoteVelocities> newVelocities;
-        for (int i=0;i<selectedNotes.size();i++)
-        {
-            Sequence::NoteVelocities vel;
-            vel.note = pSequence->at(selectedNotes[i]);
-            vel.velocity = pSequence->at(selectedNotes[i])->getVelocity();
-            newVelocities.add(vel);
-            pSequence->at(selectedNotes[i])->velocity = velsStartDrag[i];
-        }
-        processor->undoMgr->beginNewTransaction();
-        MIDIProcessor::ActionChangeVelocities* action;
-        action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
-        processor->undoMgr->perform(action);
-        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
-                                     processor->getZTLTime(horizontalShift));
-        drawingVelocity = false;
-        hoveringOver = HOVER_NONE;
-        startTimer(TIMER_MOUSE_UP, 1);
-    }
-    
-    preDragXinTicks = xInTicks;
-    if (vert>0.0 && xInTicks>0.0) //Test if we are on a note bar
-    {
-        bool inHead = false;
-        bool inBar = false;
-        for (int i=0;i<pSequence->size();i++)
-        {
-            if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
-            {
-                inHead = true;
-                hoverStep = i;
-                break;
-            }
-        }
-        if (!inHead)
-        {
-            for (int i=0;i<pSequence->size();i++)
-            {
-                if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
-                {
-                    inBar = true;
-                    hoverStep = i;
+                    ch = i;
                     break;
                 }
             }
         }
-        if (inHead || inBar)
+        if (selecting)
         {
-            if (inHead)
-                hoveringOver = HOVER_NOTEHEAD;
+            selecting = false;
+            marqueeRemovingNotes = false;
+            marqueeAddingNotes = false;
+            editingNote = false;
+
+            if (!event.source.hasMouseMovedSignificantlySincePressed())
+            {
+                if (hoveringOver == HOVER_NOTEHEAD)
+                {
+                    if (displayedSelection.contains(hoverStep))
+                    {
+                        displayedSelection.remove(displayedSelection.indexOf(hoverStep));
+                        selectedNotes.remove(selectedNotes.indexOf(hoverStep));
+                    } else
+                        displayedSelection.add(hoverStep);
+                } else
+                {
+                    clearSelectedNotes();
+                }
+            }
+            setSelectedNotes(displayedSelection);
+            repaint();
+            return;
+        } else if (hoverChord != -1)
+        {
+            Array<int> chordNotes;
+            for (int i = 0; i < processor->sequenceObject.chords.at(hoverChord).notePointers.size(); i++)
+                chordNotes.add(processor->sequenceObject.chords.at(hoverChord).notePointers.at(i)->currentStep);
+            displayedSelection = chordNotes;
+            setSelectedNotes(chordNotes);
+            repaint();
+        }
+        stopTimer(TIMER_MOUSE_HOLD);
+        if (draggingTime)
+        {
+            if (deltaTimeDrag != -1)
+            {
+                Array<int> steps;
+                if (selectedNotes.contains(noteBeingDraggedOn))
+                    steps = selectedNotes;
+                else
+                    steps.add(noteBeingDraggedOn);
+                std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
+                processor->undoMgr->beginNewTransaction();
+                MIDIProcessor::ActionChangeNoteTimes *action;
+                action = new MIDIProcessor::ActionChangeNoteTimes(*processor, deltaTimeDrag, pointersToSelectedNotes);
+                processor->undoMgr->perform(action);
+                processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+                                             processor->getZTLTime(horizontalShift));
+                restoreSelectedNotes(pointersToSelectedNotes);
+            }
+            draggingTime = false;
+            hoveringOver = HOVER_NONE;
+        } else if (draggingVelocity)
+        {
+            //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
+            Array<Sequence::NoteVelocities> newVelocities;
+            for (int i = 0; i < notesBeingDraggedOn.size(); i++)
+            {
+                Sequence::NoteVelocities vel;
+                vel.note = pSequence->at(notesBeingDraggedOn[i]);
+                vel.velocity = pSequence->at(notesBeingDraggedOn[i])->getVelocity();
+                newVelocities.add(vel);
+                pSequence->at(notesBeingDraggedOn[i])->velocity = velsStartDrag[i];
+            }
+            processor->undoMgr->beginNewTransaction();
+            MIDIProcessor::ActionChangeVelocities *action;
+            action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
+            processor->undoMgr->perform(action);
+            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+                                         processor->getZTLTime(horizontalShift));
+            draggingVelocity = false;
+            hoveringOver = HOVER_NONE;
+        } else if (draggingOffTime)
+        {
+            Array<int> steps;
+            if (offTimeAfterDrag != -1)
+            {
+                if (selectedNotes.contains(noteBeingDraggedOn))
+                    steps = selectedNotes;
+                else
+                    steps.add(noteBeingDraggedOn);
+            }
+            const double delta =
+                    offTimeAfterDrag - processor->sequenceObject.theSequence.at(noteBeingDraggedOn)->offTime;
+            std::vector<std::shared_ptr<NoteWithOffTime>> pointersToSelectedNotes = stashSelectedNotes();
+            processor->undoMgr->beginNewTransaction();
+            MIDIProcessor::ActionChangeNoteOffTimes *action;
+            action = new MIDIProcessor::ActionChangeNoteOffTimes(*processor, delta, pointersToSelectedNotes);
+            processor->undoMgr->perform(action);
+            draggingOffTime = false;
+            hoveringOver = HOVER_NONE;
+        } else if (drawingVelocity)
+        {
+            //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
+            Array<Sequence::NoteVelocities> newVelocities;
+            for (int i = 0; i < selectedNotes.size(); i++)
+            {
+                Sequence::NoteVelocities vel;
+                vel.note = pSequence->at(selectedNotes[i]);
+                vel.velocity = pSequence->at(selectedNotes[i])->getVelocity();
+                newVelocities.add(vel);
+                pSequence->at(selectedNotes[i])->velocity = velsStartDrag[i];
+            }
+            processor->undoMgr->beginNewTransaction();
+            MIDIProcessor::ActionChangeVelocities *action;
+            action = new MIDIProcessor::ActionChangeVelocities(*processor, newVelocities);
+            processor->undoMgr->perform(action);
+            processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+                                         processor->getZTLTime(horizontalShift));
+            drawingVelocity = false;
+            hoveringOver = HOVER_NONE;
+            startTimer(TIMER_MOUSE_UP, 1);
+        }
+
+        preDragXinTicks = xInTicks;
+        if (vert > 0.0 && xInTicks > 0.0) //Test if we are on a note bar
+        {
+            bool inHead = false;
+            bool inBar = false;
+            for (int i = 0; i < pSequence->size(); i++)
+            {
+                if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
+                {
+                    inHead = true;
+                    hoverStep = i;
+                    break;
+                }
+            }
+            if (!inHead)
+            {
+                for (int i = 0; i < pSequence->size(); i++)
+                {
+                    if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
+                    {
+                        inBar = true;
+                        hoverStep = i;
+                        break;
+                    }
+                }
+            }
+            if (inHead || inBar)
+            {
+                if (inHead)
+                    hoveringOver = HOVER_NOTEHEAD;
+                else
+                    hoveringOver = HOVER_NOTEBAR;
+            }
+        }
+        editingNote = false;
+
+        zoomDragStarting = false;
+        zoomOrScrollDragging = false;
+        if (hoveringOver == HOVER_ZEROTIMEHANDLE) //Clicked on ZTL handle - add/remove bookmark
+        {
+            if (!processor->atZTL())
+                processor->catchUp();
             else
-                hoveringOver = HOVER_NOTEBAR;
-        }
-    }
-    editingNote = false;
-    
-    zoomDragStarting = false;
-    zoomOrScrollDragging = false;
-    if (hoveringOver==HOVER_ZEROTIMEHANDLE) //Clicked on ZTL handle - add/remove bookmark
+            {
+                processor->catchUp();
+                processor->addRemoveBookmark(BOOKMARK_TOGGLE);
+            }
+        } else if ((hoverChord < 0) && hoveringOver == HOVER_NOTEHEAD)
+        {
+            if (!showingVelocities.getValue())
+            {
+                //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
+                if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() &&
+                    hoverStep >= 0)
+                    startTimer(TIMER_TOGGLE_TARGET_NOTE, 1);
+            } else
+            {
+
+            }
+        } else
+            hoveringOver = HOVER_NONE;
+        processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
+                                     processor->getZTLTime(horizontalShift));
+        drawingVelocity = false;
+        repaint();
+    } catch (const std::out_of_range &ex)
     {
-        if (!processor->atZTL())
-            processor->catchUp();
-        else
-        {
-            processor->catchUp();
-            processor->addRemoveBookmark(BOOKMARK_TOGGLE);
-        }
+        std::cout << " error noteviewer: mouseUp " << "\n";
     }
-    else if ((hoverChord<0) && hoveringOver == HOVER_NOTEHEAD)
-    {
-        if (!showingVelocities.getValue())
-        {
-            //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
-            if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() && hoverStep>=0)
-                startTimer(TIMER_TOGGLE_TARGET_NOTE, 1);
-        }
-        else
-        {
-            
-        }
-    }
-    else
-        hoveringOver = HOVER_NONE;
-    processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getZTLTime(horizontalShift));
-    drawingVelocity = false;
-    repaint();
-  } catch (const std::out_of_range& ex) {
-      std::cout << " error noteviewer: mouseUp " << "\n";
-  }
 }
-void ScrollingNoteViewer::mouseDoubleClick (const MouseEvent& e)
+
+void ScrollingNoteViewer::mouseDoubleClick(const MouseEvent &e)
 {
-    if (e.position.getY()<topMargin*ViewStateInfo::verticalScale) { //Test mouse position
+    if (e.position.getY() < topMargin * ViewStateInfo::verticalScale)
+    { //Test mouse position
         horizontalScale = 1.f;
         setHorizontalShift(0.f);
         repaint();
     }
 }
 
-void ScrollingNoteViewer::mouseDrag (const MouseEvent& event)
+void ScrollingNoteViewer::mouseDrag(const MouseEvent &event)
 {
     if (!event.source.hasMouseMovedSignificantlySincePressed())
         return;
-//    if (hoveringOver!=HOVER_NOTETRACK)
-    if (event.position.getY()<topMargin*ViewStateInfo::verticalScale)
+    if (event.position.getY() < topMargin * ViewStateInfo::verticalScale)
         event.source.enableUnboundedMouseMovement(true, false);
     const double x = event.position.getX();
-    mouseXinTicks = ((x - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale + processor->getTimeInTicks();
+    mouseXinTicks = ((x - (horizontalShift + sequenceStartPixel)) / pixelsPerTick) / horizontalScale +
+                    processor->getTimeInTicks();
     stopTimer(TIMER_MOUSE_HOLD);
     curDragPosition = event.getPosition();
     startTimer(TIMER_MOUSE_DRAG, 1);
 }
-void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel)
+
+void ScrollingNoteViewer::mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &wheel)
 {
     processor->leadLag = 0;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
-    if (processor->isPlaying && processor->getZTLTime(0)>0.1 && wheel.deltaX>0.0f)
+    if (processor->isPlaying && processor->getZTLTime(0) > 0.1 && wheel.deltaX > 0.0f)
     {
-        processor->play(false,"current");
+        processor->play(false, "current");
     }
-    float newShift = horizontalShift-300*wheel.deltaX;
+    float newShift = horizontalShift - 300 * wheel.deltaX;
     const double seqStartRelToLeftEdgeInPixels =
-        (sequenceStartPixel - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
-         newShift)*horizontalScale;
-    double seqDurationInPixels = processor->sequenceObject.seqDurationInTicks*pixelsPerTick;
-    double scaledSeqDurationInPixels = seqDurationInPixels*horizontalScale*horizontalScale;
+            (sequenceStartPixel - processor->getTimeInTicks() * pixelsPerTick * horizontalScale +
+             newShift) * horizontalScale;
+    double seqDurationInPixels = processor->sequenceObject.seqDurationInTicks * pixelsPerTick;
+    double scaledSeqDurationInPixels = seqDurationInPixels * horizontalScale * horizontalScale;
     const double seqEndRelToLeftEdgeInPixels = seqStartRelToLeftEdgeInPixels + scaledSeqDurationInPixels;
-    if (seqStartRelToLeftEdgeInPixels > sequenceStartPixel*horizontalScale)
-        newShift = processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
-    else if (seqEndRelToLeftEdgeInPixels < sequenceStartPixel*horizontalScale)
-        newShift =  processor->getTimeInTicks()*pixelsPerTick*horizontalScale - scaledSeqDurationInPixels/horizontalScale;
+    if (seqStartRelToLeftEdgeInPixels > sequenceStartPixel * horizontalScale)
+        newShift = processor->getTimeInTicks() * pixelsPerTick * horizontalScale;
+    else if (seqEndRelToLeftEdgeInPixels < sequenceStartPixel * horizontalScale)
+        newShift = processor->getTimeInTicks() * pixelsPerTick * horizontalScale -
+                   scaledSeqDurationInPixels / horizontalScale;
     setHorizontalShift(newShift);
     processor->sendChangeMessage();
     repaint();
@@ -433,134 +444,140 @@ void ScrollingNoteViewer::mouseMagnify (const MouseEvent& event, float scaleFact
 {
     
 }
-void ScrollingNoteViewer::mouseMove (const MouseEvent& event)
+
+void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
 {
-  try {
-    std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
-    const double x = event.position.getX();
-    const double y = event.position.getY();
-//    int trackVerticalSize = ((float)ViewStateInfo::viewHeight-verticalScale*topMargin)/nKeys;
-    const double vert = (y - ViewStateInfo::verticalScale*topMargin)/ViewStateInfo::trackVerticalSize;
-    mouseXinTicks = ((x - (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale + processor->getTimeInTicks();
-    const float sequenceScaledX = mouseXinTicks*pixelsPerTick;
-    const float scaledY = y/ViewStateInfo::verticalScale;
-    preDragXinTicks = mouseXinTicks;
-    hoverChord = -1;
-    if (showingChords)
+    try
     {
-        if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a chord
+        std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
+        const double x = event.position.getX();
+        const double y = event.position.getY();
+        std::cout << "mouseMove x, y " <<x<<" "<<y  << std::endl;
+
+//    int trackVerticalSize = ((float)ViewStateInfo::viewHeight-verticalScale*topMargin)/nKeys;
+        const double vert = (y - ViewStateInfo::verticalScale * topMargin) / ViewStateInfo::trackVerticalSize;
+        mouseXinTicks = ((x - (horizontalShift + sequenceStartPixel)) / pixelsPerTick) / horizontalScale +
+                        processor->getTimeInTicks();
+        const float sequenceScaledX = mouseXinTicks * pixelsPerTick;
+        const float scaledY = y / ViewStateInfo::verticalScale;
+        preDragXinTicks = mouseXinTicks;
+        hoverChord = -1;
+        if (showingChords)
         {
-            //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
-    //        const int nn = maxNote - vert + 1;
-            int i;
-            int ch = -1;
-            if (showingChords)
+            if (vert > 0.0 && mouseXinTicks > 0.0) //Test if we are on a chord
             {
-                for (i=0;i<processor->sequenceObject.chords.size();i++)
+                //        std::vector<NoteWithOffTime*> *sequence = processor->sequenceObject.getSequence();
+                //        const int nn = maxNote - vert + 1;
+                int i;
+                int ch = -1;
+                if (showingChords)
                 {
-                    if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.0, 0.0).contains(sequenceScaledX, scaledY))
+                    for (i = 0; i < processor->sequenceObject.chords.size(); i++)
                     {
-                        ch = i;
+                        if (processor->sequenceObject.chords.at(i).chordRect.expanded(2.0, 0.0).contains(
+                                sequenceScaledX, scaledY))
+                        {
+                            ch = i;
+                            break;
+                        }
+                    }
+                    hoverChord = ch;
+                }
+                if (ch == -1)
+                    hoverChord = -1;
+                else
+                {
+                    //            std::cout << "mouseMove found step " << step <<"\n";
+                    hoverChord = ch;
+                }
+//            std::cout << "in mouseMove hoverChord " << hoverChord << "\n";
+                sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
+            }
+        }
+
+
+        if (vert > 0.0 && mouseXinTicks > 0.0) //Test if we are on a note bar
+        {
+            const int nn = maxNote - vert + 1;
+            bool inHead = false;
+            bool inBar = false;
+            for (int i = 0; i < pSequence->size(); i++)
+            {
+                if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
+                {
+                    inHead = true;
+                    hoverStep = i;
+                    break;
+                }
+            }
+            if (!inHead)
+            {
+                for (int i = 0; i < pSequence->size(); i++)
+                {
+                    if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
+                    {
+                        inBar = true;
+                        hoverStep = i;
                         break;
                     }
                 }
-                hoverChord = ch;
             }
-            if (ch==-1)
-                hoverChord = -1;
-            else
-            {
-                //            std::cout << "mouseMove found step " << step <<"\n";
-                hoverChord = ch;
-            }
-//            std::cout << "in mouseMove hoverChord " << hoverChord << "\n";
-            sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
-        }
-    }
-      
-      
-      if (vert>0.0 && mouseXinTicks>0.0) //Test if we are on a note bar
-      {
-          const int nn = maxNote - vert + 1;
-          bool inHead = false;
-          bool inBar = false;
-          for (int i=0;i<pSequence->size();i++)
-          {
-              if (pSequence->at(i)->head.contains(sequenceScaledX, scaledY))
-              {
-                  inHead = true;
-                  hoverStep = i;
-                  break;
-              }
-          }
-          if (!inHead)
-          {
-              for (int i=0;i<pSequence->size();i++)
-              {
-                  if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
-                  {
-                      inBar = true;
-                      hoverStep = i;
-                      break;
-                  }
-              }
-          }
 
 //        std::cout << "set hoverStep " << step <<"\n";
-        if (!(inHead || inBar))
-        {
-            hoveringOver = HOVER_NOTETRACK;
-            String note = MidiMessage::getMidiNoteName (nn, true, true, 3);
-            if (selectedNotes.size()>1)
+            if (!(inHead || inBar))
             {
-                const double time1 = pSequence->at(selectedNotes[0])->getTimeStamp();
-                const double time2 = pSequence->at(selectedNotes.getLast())->getTimeStamp();
-                note = note + " Selection width: " + String (std::abs(time1-time2)/10.0,1);
-            }
-            hoverInfo = note;
-        }
-        else
-        {
-            if (inHead)
-                hoveringOver = HOVER_NOTEHEAD;
-            else
-                hoveringOver = HOVER_NOTEBAR;
-            hoverInfo = MidiMessage::getMidiNoteName (nn, true, true, 3)
-            + " note number: " + String::String(nn) +" "
-            + " track: " +String::String(pSequence->at(hoverStep)->track)
-            + " channel: " + String::String(pSequence->at(hoverStep)->channel)
-            + " velocity: " + String(127.0*pSequence->at(hoverStep)->velocity)
-            + " length: " + String((pSequence->at(hoverStep)->getOffTime()-pSequence->at(hoverStep)->getTimeStamp())/10.0, 1)+
-            + " tick: " + String(pSequence->at(hoverStep)->getTimeStamp()/10.0,1)
-            + " step: "+String::String(hoverStep);
+                hoveringOver = HOVER_NOTETRACK;
+                String note = MidiMessage::getMidiNoteName(nn, true, true, 3);
+                if (selectedNotes.size() > 1)
+                {
+                    const double time1 = pSequence->at(selectedNotes[0])->getTimeStamp();
+                    const double time2 = pSequence->at(selectedNotes.getLast())->getTimeStamp();
+                    note = note + " Selection width: " + String(std::abs(time1 - time2) / 10.0, 1);
+                }
+                hoverInfo = note;
+            } else
+            {
+                if (inHead)
+                    hoveringOver = HOVER_NOTEHEAD;
+                else
+                    hoveringOver = HOVER_NOTEBAR;
+                hoverInfo = MidiMessage::getMidiNoteName(nn, true, true, 3)
+                            + " note number: " + String::String(nn) + " "
+                            + " track: " + String::String(pSequence->at(hoverStep)->track)
+                            + " channel: " + String::String(pSequence->at(hoverStep)->channel)
+                            + " velocity: " + String(127.0 * pSequence->at(hoverStep)->velocity)
+                            + " length: " +
+                            String((pSequence->at(hoverStep)->getOffTime() - pSequence->at(hoverStep)->getTimeStamp()) /
+                                   10.0, 1) +
+                            +" tick: " + String(pSequence->at(hoverStep)->getTimeStamp() / 10.0, 1)
+                            + " step: " + String::String(hoverStep);
 //            repaint();
-        }
+            }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
-        sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
-    }
-    else if (!selecting && fabs(sequenceStartPixel-x)<=4)
-    {
-        //        double xInTicks = processor->getTimeInTicks()+((event.position.getX() -
-        //                                                        (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale;
-        //        processor->setXInTicks(xInTicks);
-        
-        if (0 < y && y && event.position.getY() < ViewStateInfo::verticalScale*topMargin)
-            hoveringOver = HOVER_ZEROTIMEHANDLE;
-        else
+            sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
+        } else if (!selecting && fabs(sequenceStartPixel - x) <= 4)
         {
+            //        double xInTicks = processor->getTimeInTicks()+((event.position.getX() -
+            //                                                        (horizontalShift+sequenceStartPixel))/pixelsPerTick)/horizontalScale;
+            //        processor->setXInTicks(xInTicks);
+
+            if (0 < y && y && event.position.getY() < ViewStateInfo::verticalScale * topMargin)
+                hoveringOver = HOVER_ZEROTIMEHANDLE;
+            else
+            {
 //            std::cout << "HOVER_ZEROTIMELINE" << "\n";
-            hoveringOver = HOVER_ZEROTIMELINE;
-        }
-    }
-    else
-        hoveringOver = HOVER_NONE;
+                hoveringOver = HOVER_ZEROTIMELINE;
+            }
+        } else
+            hoveringOver = HOVER_NONE;
 //    if (hoveringOver!=HOVER_NONE)
 //        std::cout << "Hover " << hoveringOver << "\n";
-    repaint();
+        repaint();
 //    std::cout << "hoveringOver " << hoveringOver <<"\n";
-  } catch (const std::out_of_range& ex) {
-      std::cout << " error noteviewer: mouseMove " << "\n";
-  }
+    } catch (const std::out_of_range &ex)
+    {
+        std::cout << " error noteviewer: mouseMove " << "\n";
+    }
 }
 
 int ScrollingNoteViewer::addNote(/*bool playable, */float x, float y,  float w, float h, float headWidth, float headHeight,
@@ -1867,14 +1884,14 @@ void ScrollingNoteViewer::timerCallback (int timerID)
         if (prevShowingVelocities != (bool)showingVelocities.getValue() && !showingVelocities.getValue())
         {
             drawingVelocities.setValue(false);
-            adjustingingVelocities.setValue(false);
+            adjustingVelocities.setValue(false);
         }
-        else if (drawingVelocities.getValue() || adjustingingVelocities.getValue())
+        else if (drawingVelocities.getValue() || adjustingVelocities.getValue())
         {
             showingVelocities.setValue(true);
         }
         if ((prevDrawingVelocities != (bool)drawingVelocities.getValue())
-            || (prevAdjustingVelocities != (bool)adjustingingVelocities.getValue()))
+            || (prevAdjustingVelocities != (bool)adjustingVelocities.getValue()))
         {
             bool drawingVelocitiesChanged;
             if (prevDrawingVelocities != (bool)drawingVelocities.getValue())
@@ -1887,15 +1904,15 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 prevDrawingVelocities = drawingVelocities.getValue();
                 if (drawingVelocities.getValue())
                 {
-                    adjustingingVelocities.setValue(false);
+                    adjustingVelocities.setValue(false);
                     prevAdjustingVelocities = false;
                 }
             }
             else
             {
-                adjustingingVelocities.setValue(!prevAdjustingVelocities);
-                prevAdjustingVelocities = adjustingingVelocities.getValue();
-                if (adjustingingVelocities.getValue())
+                adjustingVelocities.setValue(!prevAdjustingVelocities);
+                prevAdjustingVelocities = adjustingVelocities.getValue();
+                if (adjustingVelocities.getValue())
                 {
                     drawingVelocities.setValue(false);
                     prevDrawingVelocities = false;
@@ -2332,7 +2349,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                             velStartDrag = pSequence->at(hoverStep)->velocity;
                             noteBeingDraggedOn = hoverStep;
                             notesBeingDraggedOn.clear();
-                            if (adjustingingVelocities.getValue() && selectedNotes.contains(noteBeingDraggedOn))
+                            if (adjustingVelocities.getValue() && selectedNotes.contains(noteBeingDraggedOn))
                             {
                                 notesBeingDraggedOn = selectedNotes;
                                 int highestVelDragStep = INT_MIN;
