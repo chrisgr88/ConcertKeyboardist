@@ -158,19 +158,22 @@ void ScrollingNoteViewer::mouseDown(const MouseEvent &e)
         if (e.position.getY() < topMargin * ViewStateInfo::verticalScale)
         { //Test mouse position
             zoomDragStarting = true;
-        } else if (hoveringOver != HOVER_NOTEHEAD && hoveringOver != HOVER_NOTEBAR &&
+        }
+        else if (hoveringOver != HOVER_NOTEHEAD && hoveringOver != HOVER_NOTEBAR &&
                    hoveringOver != HOVER_ZEROTIMELINE)
         {
 //        selectionAnchor = Point<int>(e.getPosition().getX(),e.getPosition().getY());
             startTimer(TIMER_MOUSE_HOLD, 1);
-        } else
+        }
+        else
         {
             editingNote = true;
             noteEditAnchor = Desktop::getMousePosition();
         }
 //    std::cout << "mouse down " <<e.getPosition().getX()<<" "
 //    << selectionRect.getTopLeft().getX()<<" "<<selectionRect.getTopLeft().getY()<< "\n";
-    } catch (const std::out_of_range &ex)
+    }
+    catch (const std::out_of_range &ex)
     {
         std::cout << " error noteviewer: mouseDown " << "\n";
     }
@@ -259,7 +262,8 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
             }
             draggingTime = false;
             hoveringOver = HOVER_NONE;
-        } else if (draggingVelocity)
+        }
+        else if (draggingVelocity)
         {
             //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
             Array<Sequence::NoteVelocities> newVelocities;
@@ -279,7 +283,8 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
                                          processor->getZTLTime(horizontalShift));
             draggingVelocity = false;
             hoveringOver = HOVER_NONE;
-        } else if (draggingOffTime)
+        }
+        else if (draggingOffTime)
         {
             Array<int> steps;
             if (offTimeAfterDrag != -1)
@@ -298,7 +303,8 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
             processor->undoMgr->perform(action);
             draggingOffTime = false;
             hoveringOver = HOVER_NONE;
-        } else if (drawingVelocity)
+        }
+        else if (drawingVelocity)
         {
             //perform undoablecommand changing velocities to velocitiesAfterDragOrDraw
             Array<Sequence::NoteVelocities> newVelocities;
@@ -355,7 +361,6 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
                     hoveringOver = HOVER_NOTEBAR;
             }
         }
-        editingNote = false;
 
         zoomDragStarting = false;
         zoomOrScrollDragging = false;
@@ -370,7 +375,7 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
             }
         } else if ((hoverChord < 0) && hoveringOver == HOVER_NOTEHEAD)
         {
-            if (!showingVelocities.getValue())
+            if (!editingNote && !showingVelocities.getValue())
             {
                 //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
                 if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() &&
@@ -384,6 +389,7 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
             hoveringOver = HOVER_NONE;
         processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits,
                                      processor->getZTLTime(horizontalShift));
+        editingNote = false;
         drawingVelocity = false;
         repaint();
     } catch (const std::out_of_range &ex)

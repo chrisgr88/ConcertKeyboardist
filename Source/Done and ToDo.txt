@@ -17,15 +17,18 @@ Alpha:
 - DONE Improved tooltips
 - DONE Create script to copy help to app file (CLion/Mac only for now)
 - DONE Make the addSoft and addSustain buttons alternate with removeSoft and removeSustain buttons
-- Return to the [CK] method of tagging ckf files
-- Request VST license from Steinway
-- Switch to paid version of JUCE
+- DONE Return to the [CK] method of tagging ckf files
+- DONE Change the rewind key from 'r' to Return and disable the 's' key doing sustain.  
+
 - Ability to turn off display of measure and beat lines in viewer (and save this choice in the score file)
 - Create an About dialog box
-- Prevent note-head drags that end on a note head from toggling the activity of the ended-on note
-- Choose some demo scores and create a script to copy them to the app bundle
-- Look into how resources are bundled with Windows applications (help & demo scores)
+- DONE Prevent note-head drags that end on a note head from toggling the activity of the ended-on note
 - Why are files that include a VST plugin's state so big?
+
+- Request VST license from Steinway
+- Switch to paid version of JUCE
+- Look into how resources are bundled with Windows applications (help & demo scores)
+- Choose some demo scores and create a script to copy them to the app bundle
 - An added tempo change marker should not pick up the tempo of next real tempo change (should use prevous tempo change)
 - Ensure shortcut key choices make sense on Windows
 - Update help
