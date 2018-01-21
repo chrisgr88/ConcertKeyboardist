@@ -913,7 +913,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     File file = midiProcessor.sequenceObject.getLastDocumentOpened();
-                    if (file.getFullPathName().endsWith(".ckf"))
+                    if (file.getFullPathName().endsWith("[ck].mid"))
                         midiProcessor.sequenceObject.saveDocument(midiProcessor.sequenceObject.getLastDocumentOpened());
                     else
                     {

@@ -17,8 +17,8 @@
 #include <map>
 #include <random>
 
-const char* const filenameSuffix = ".ckf";
-const char* const filenameWildcard = "*.ckf";
+const char* const filenameSuffix = ".mid";
+const char* const filenameWildcard = "*.mid";
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
@@ -94,10 +94,10 @@ public:
     File getSuggestedSaveAsFile	(	const File & 	defaultFile	) override
     {
         File newFile;
-        if (defaultFile.getFullPathName().endsWith(".ckf"))
+        if (defaultFile.getFullPathName().endsWith("[ck]"))
             newFile = defaultFile;
         else
-            newFile = defaultFile.withFileExtension(".ckf");
+            newFile = File(defaultFile.getFullPathName()+"[ck].mid");
         return newFile;
     }
     
