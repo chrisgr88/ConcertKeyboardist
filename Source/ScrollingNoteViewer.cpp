@@ -184,6 +184,7 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
 //  float trackVerticalSize = ((float)ViewStateInfo::viewHeight-ViewStateInfo::verticalScale*topMargin)/nKeys;
     try
     {
+        stopTimer(TIMER_MOUSE_DRAG);
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
         const double vert = (event.getPosition().getY() - ViewStateInfo::verticalScale * topMargin) /
                             ViewStateInfo::trackVerticalSize;
@@ -1138,10 +1139,18 @@ void ScrollingNoteViewer::makeNoteBars()
             addRectangle(processor->sequenceObject.measureTimes[measure] * pixelsPerTick - 2.2, topMargin, 1.0 /
                                                                                                            sqrt(horizontalScale),
                          ViewStateInfo::initialHeight - topMargin, Colour(0xFFE0E0E0));
-
+        //First line
+        addRectangle(processor->sequenceObject.measureTimes[0] * pixelsPerTick - 2.2,
+                     topMargin,
+                     3.0 / sqrt(horizontalScale),
+                     ViewStateInfo::initialHeight,
+                     Colour(0xFFE0E0E0));
         //Last line
-        addRectangle(seqDurationInTicks * pixelsPerTick - 1.0f, 0.f, 2.0f, ViewStateInfo::initialHeight,
-                     Colour(0xFFC0C0C0));
+        addRectangle(processor->sequenceObject.measureTimes[processor->sequenceObject.measureTimes.size()-1] * pixelsPerTick - 2.2,
+                     0.f,
+                     3.0 / sqrt(horizontalScale),
+                     ViewStateInfo::initialHeight,
+                     Colour(0xFFE0E0E0));
 
         //Velocity graph
         const double graphHeight =
@@ -2143,6 +2152,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 }
                 if (autoScrolling && !(horizontalShift==0 && shiftDelta>0))
                 {
+                    startTimer(TIMER_MOUSE_DRAG, 50);
                     float shift = horizontalShift+shiftDelta;
                     selectionAnchor = selectionAnchor.translated(shiftDelta, 0);
                     if (horizontalShift<0)
@@ -2160,7 +2170,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     setHorizontalShift(shift);
                     processor->sendChangeMessage();
                     repaint();
-                }
+                } else
+                    stopTimer(TIMER_MOUSE_DRAG);
                 
                 //Check all sequence steps within time range of region to see if they are in the region
                 newlySelectedNotes.clear();

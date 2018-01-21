@@ -19,12 +19,17 @@ Alpha:
 - DONE Make the addSoft and addSustain buttons alternate with removeSoft and removeSustain buttons
 - DONE Return to the [CK] method of tagging ckf files
 - DONE Change the rewind key from 'r' to Return and disable the 's' key doing sustain.  
-
+- DONE Prevent note-head drags that end on a note head from toggling the activity of the ended-on note
+- DONE Ability to autoscroll to the left
+- DONE Fully automatic ability to scroll to the left
 - Ability to turn off display of measure and beat lines in viewer (and save this choice in the score file)
 - Create an About dialog box
-- DONE Prevent note-head drags that end on a note head from toggling the activity of the ended-on note
 - Why are files that include a VST plugin's state so big?
+- Better autoscroll - Fully automatic, ability to scroll to the left
+- Make "Show Edit Toolbar" be a command with keyboard shortcut
+- Hide Edit Toolbar when playing
 
+- Autoscroll without moving the mouse
 - Request VST license from Steinway
 - Switch to paid version of JUCE
 - Look into how resources are bundled with Windows applications (help & demo scores)
