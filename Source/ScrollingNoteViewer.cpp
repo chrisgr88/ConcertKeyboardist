@@ -1848,6 +1848,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
 void ScrollingNoteViewer::timerCallback (int timerID)
 {
 	//return;
+    int wid = selectionRect.getWidth();
   try {
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
@@ -2108,16 +2109,34 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                                                                                 (float)selectionRect.getRight(),
                                                                                 (float)selectionRect.getBottom()
                                                                                 );
+
+                bool suppressAutoscroll = false;
+                if (xInTicksLeft < 0)
+                {
+                    int xReversed = ((0-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+sequenceStartPixel);
+                    selectionRect.setX(xReversed);
+                    selectionRect.setWidth(wid);
+                    suppressAutoscroll = true;
+//                    std::cout << "set selectionRect " <<selectionRect.getX()<<" "<<selectionRect.getWidth()  << std::endl;
+                }
+
+                if (xInTicksRight > processor->sequenceObject.seqDurationInTicks)
+                {
+                    int xReversed = ((processor->sequenceObject.seqDurationInTicks-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+sequenceStartPixel);
+                    selectionRect.setWidth(wid);
+                    selectionRect.setRight(xReversed);
+                    suppressAutoscroll = true;
+//                    std::cout << "set selectionRect " <<selectionRect.getX()<<" "<<selectionRect.getWidth()  << std::endl;
+                }
                 
                 float shiftDelta = 0;
                 bool autoScrolling = false;
-                if (curDragPosition.getX()<10)
+                if (!suppressAutoscroll && curDragPosition.getX()<10)
                 {
                     shiftDelta = 5;
                     autoScrolling = true;
                 }
-                else
-                    if (curDragPosition.getX()>(ViewStateInfo::viewWidth-10))
+                else if (!suppressAutoscroll && curDragPosition.getX()>(ViewStateInfo::viewWidth-10))
                 {
                     shiftDelta = -5;
                     autoScrolling = true;
