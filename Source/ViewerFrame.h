@@ -62,10 +62,10 @@ public:
             if (kp.isCurrentlyDown() && !keysThatAreDown[i])
             {
                 MidiMessage msg;
-                if (playableKeys[i] == 's')
-                    msg = MidiMessage::controllerEvent(1, 0x40, 127);
-                else
-                    msg = MidiMessage::noteOn(1, 60+i, (uint8)127);
+//                if (playableKeys[i] == 's')
+//                    msg = MidiMessage::controllerEvent(1, 0x40, 127);
+//                else
+                msg = MidiMessage::noteOn(1, 60+i, (uint8)127);
                 msg.setTimeStamp(99); //Value doesn't matter.
 //                if (msg.isNoteOn())
 //                    std::cout << "Kbd NoteOn " << (int)msg.getNoteNumber() << " " << (int)msg.getVelocity() << "\n";
@@ -81,8 +81,8 @@ public:
                 MidiMessage msg;
                 if (playableKeys[i] == 'r')
                     ;
-                else if (playableKeys[i] == 's')
-                    msg = MidiMessage::controllerEvent(1, 64, 0);
+//                else if (playableKeys[i] == 's')
+//                    msg = MidiMessage::controllerEvent(1, 64, 0);
                 else
                     msg = MidiMessage::noteOff(1, 60+i, (uint8)60);
                 msg.setTimeStamp(99);

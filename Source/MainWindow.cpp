@@ -501,7 +501,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::rewind:
                 result.setInfo ("Rewind", "Rewind", category, 0);
-                result.defaultKeypresses.add (KeyPress ('r', ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress (KeyPress::returnKey, ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::increaseTempo:
                 result.setInfo ("IncreaseTempo", "Increase Tempo", category, 0);
@@ -556,11 +556,11 @@ ApplicationProperties& getAppProperties();
                 
             case CommandIDs::addSustain:
                 result.setInfo ("addSustain", "addSustain", category, 0);
-                result.addDefaultKeypress ('s', ModifierKeys::noModifiers);
+                result.addDefaultKeypress ('s', ModifierKeys::shiftModifier);
                 break;
             case CommandIDs::deleteSustain:
                 result.setInfo ("deleteSustain", "deleteSustain", category, 0);
-                result.addDefaultKeypress ('s', ModifierKeys::shiftModifier);
+//                result.addDefaultKeypress ('s', ModifierKeys::shiftModifier);
                 break;
             case CommandIDs::addSoft:
                 result.setInfo ("addSoft", "addSoft", category, 0);
