@@ -1364,10 +1364,10 @@ void ScrollingNoteViewer::makeNoteBars()
             //First make an array of Rectangles each with just a bar's start tick and width in ticks
             for (int i = 0; i < processor->sequenceObject.sustainPedalChanges.size(); i++)
             {
-                //            std::cout << "In make note bars " << i << " " << processor->sequenceObject.sustainPedalChanges.at(i).getTimeStamp()
-                //            << " value " << processor->sequenceObject.sustainPedalChanges.at(i).getControllerValue()
-                //            << " value " << processor->sequenceObject.sustainPedalChanges.at(i).getControllerValue()
-                //            <<"\n";
+                if (i<20)
+                    std::cout << "In make note bars " << i << " " << processor->sequenceObject.sustainPedalChanges.at(i).timeStamp
+                    << " value " << processor->sequenceObject.sustainPedalChanges.at(i).pedalOn
+                    <<"\n";
                 if (processor->sequenceObject.sustainPedalChanges.at(i).pedalOn)
                 {
                     sustainStartTick = processor->sequenceObject.sustainPedalChanges.at(i).timeStamp;
@@ -1382,6 +1382,7 @@ void ScrollingNoteViewer::makeNoteBars()
             bool inSustainBar = false;
             int highestNote = -1;
             int sustainBarNum = 0;
+            std::cout << "pSequence->size() " << pSequence->size() << std::endl;
             for (int step = 0; step < static_cast<int>(pSequence->size()); step++)
             {
                 //            const NoteWithOffTime msg = sequence->at(step);
@@ -1404,13 +1405,15 @@ void ScrollingNoteViewer::makeNoteBars()
                     } else if (msgTimeStamp >= barLeft)
                     {
                         inSustainBar = true;
+                        inSustainBar = true;
                     }
-                } else if (inSustainBar && msgTimeStamp >= barRight)
+                } else if (inSustainBar && msgTimeStamp > barRight)
                 {
                     inSustainBar = false;
                     const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0.5 * unscaledTVS;
                     addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 1.5,
                                  Colour(Colours::orange).brighter());
+                    std::cout << "sustain bar x, y " <<barLeft * pixelsPerTick<<" "<<y  << std::endl;
                     sustainBarNum++;
                     if (msgTimeStamp > barRight)
                         highestNote = pSequence->at(step)->noteNumber;

@@ -94,6 +94,7 @@
 		A72937CA4518472989B5644D = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		A7A229511154A5A91A29958D = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-App.plist"; path = "Info-App.plist"; sourceTree = "SOURCE_ROOT"; };
 		A80152514D2AFA19B0472C6A = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MainWindow.h; path = ../../Source/MainWindow.h; sourceTree = "SOURCE_ROOT"; };
+		A83193AF7828190585F67AFC = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AboutWindow.h; path = ../../Source/AboutWindow.h; sourceTree = "SOURCE_ROOT"; };
 		AB41A851EC8B74D45C770207 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_module_info"; path = "../../Resources/juce_module_info"; sourceTree = "SOURCE_ROOT"; };
 		ACE773402D42701737213F9F = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_graphics.mm"; path = "../../JuceLibraryCode/include_juce_graphics.mm"; sourceTree = "SOURCE_ROOT"; };
 		AE713E02211D4AF9C4DC73A5 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_gui_basics"; path = "../../JuceLibraryCode/modules/juce_gui_basics"; sourceTree = "SOURCE_ROOT"; };
@@ -161,6 +162,7 @@
 					33093ECB9CAB58F36C4F1B00,
 					A3E1A92AE51E34A2D0C4883E,
 					B89E59A854B53379E30E6389,
+					A83193AF7828190585F67AFC,
 					A80152514D2AFA19B0472C6A,
 					CD86DDDE6954574DEF5AE2BB,
 					E24514F4E83A3CCB0DC1759B,

@@ -11,6 +11,7 @@
 #ifndef MAINWINDOW_H_INCLUDED
 #define MAINWINDOW_H_INCLUDED
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "AboutWindow.h"
 #include <array>
 
 #include "MainComponent.h"
@@ -225,6 +226,8 @@ private:
     class PluginListWindow;
     class TracksWindow;
     ScopedPointer<PluginListWindow> pluginListWindow;
+    ScopedPointer<Component> aboutWindow;
+    String windowPosProperty;
     ScopedPointer<TracksWindow> tracksWindow;
     
     String chordTimeHumanizeSpec = String();

@@ -2208,6 +2208,9 @@
     <ClInclude Include="..\..\Source\TracksComponent.h">
       <Filter>ConcertKeyboardist\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\AboutWindow.h">
+      <Filter>ConcertKeyboardist\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\MainWindow.h">
       <Filter>ConcertKeyboardist\Source</Filter>
     </ClInclude>

@@ -43,6 +43,7 @@
               file="Resources/juce_module_info"/>
       </GROUP>
       <FILE id="lDdepD" name="MainWindow.cpp" compile="1" resource="0" file="Source/MainWindow.cpp"/>
+      <FILE id="j5bCHF" name="AboutWindow.h" compile="0" resource="0" file="Source/AboutWindow.h"/>
       <FILE id="agV9kV" name="MainWindow.h" compile="0" resource="0" file="Source/MainWindow.h"/>
       <FILE id="nEvVyc" name="Sequence.cpp" compile="1" resource="0" file="Source/Sequence.cpp"/>
       <FILE id="TkGgv0" name="Sequence.h" compile="0" resource="0" file="Source/Sequence.h"/>

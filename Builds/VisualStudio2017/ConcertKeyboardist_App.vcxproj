@@ -1800,6 +1800,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\TracksComponent.h"/>
+    <ClInclude Include="..\..\Source\AboutWindow.h"/>
     <ClInclude Include="..\..\Source\MainWindow.h"/>
     <ClInclude Include="..\..\Source\Sequence.h"/>
     <ClInclude Include="..\..\Source\MainComponent.h"/>

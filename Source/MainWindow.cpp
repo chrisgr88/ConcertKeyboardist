@@ -878,8 +878,13 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
         switch (info.commandID)
         {
             case CommandIDs::appAboutBox:
-                if (!midiProcessor.isPlaying)
-                    std::cout <<"About\n";
+//                if (!midiProcessor.isPlaying)
+//                    if (aboutWindow != nullptr)
+//                        aboutWindow->toFront (true);
+//                    else
+//                        new FloatingToolWindow ({}, {}, new AboutWindow(),
+//                                                aboutWindow, false,
+//                                                500, 300, 500, 300, 500, 300);
                 break;
             case CommandIDs::audioMidiSettings:
                 if (!midiProcessor.isPlaying)
