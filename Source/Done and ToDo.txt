@@ -24,7 +24,7 @@ Alpha:
 - DONE Autoscroll without moving the mouse
 - DONE Ability to turn off display of measure and beat lines in viewer (and save this choice in the score file)
 
-- Make "Show Edit Toolbar" into a command with keyboard shortcut
+- Make "Show Edit Toolbar" into a command with a keyboard shortcut
 - Hide Edit Toolbar when playing
 - Create an About dialog box
 - Why are files that include a VST plugin's state so big?

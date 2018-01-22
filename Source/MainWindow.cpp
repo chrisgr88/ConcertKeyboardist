@@ -241,19 +241,6 @@ ApplicationProperties& getAppProperties();
             if (midiProcessor.sequenceObject.theSequence.size()>0)
                 perform (CommandIDs::listenToSelection);
         }
-
-        else if (message == "showEditToolbar")
-        {
-//            if (midiProcessor.sequenceObject.theSequence.size()>0)
-//                perform (CommandIDs::listenToSelection);
-        }
-        else if (message == "hide_measure_lines")
-        {
-//            if (midiProcessor.sequenceObject.theSequence.size()>0)
-//                perform (CommandIDs::listenToSelection);
-        }
-
-
         else if (message.upToFirstOccurrenceOf(":",false,true) == "loadPlugin")
         {
             String pluginId = String(message.fromFirstOccurrenceOf(":", false, true));
@@ -654,7 +641,7 @@ ApplicationProperties& getAppProperties();
 
             case CommandIDs::showEditToolbar:
                 result.setInfo ("showEditToolbar", "showEditToolbar", category, 0);
-//                result.addDefaultKeypress ('d', ModifierKeys::commandModifier);
+                result.addDefaultKeypress ('e', ModifierKeys::commandModifier);
                 break;
             default:
                 break;
@@ -927,6 +914,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             }
             case CommandIDs::showEditToolbar:
             {
+                pViewerFrame->mainToolbar.setVisible(!pViewerFrame->mainToolbar.isVisible());
                 std::cout << "showEditToolbar" <<"\n";
                 break;
             }
