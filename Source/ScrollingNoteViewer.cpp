@@ -536,24 +536,38 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
                     const double time2 = pSequence->at(selectedNotes.getLast())->getTimeStamp();
                     note = note + " Selection width: " + String(std::abs(time1 - time2) / 10.0, 1);
                 }
-                hoverInfo = note;
+                if (!processor->playing())
+                {
+                    hoverInfo = note;
+                } else
+                {
+                    hoverInfo = "";
+                }
             } else
             {
                 if (inHead)
                     hoveringOver = HOVER_NOTEHEAD;
                 else
+                {
                     hoveringOver = HOVER_NOTEBAR;
-                hoverInfo = MidiMessage::getMidiNoteName(nn, true, true, 3)
-                            + " note number: " + String::String(nn) + " "
-                            + " track: " + String::String(pSequence->at(hoverStep)->track)
-                            + " channel: " + String::String(pSequence->at(hoverStep)->channel)
-                            + " velocity: " + String(127.0 * pSequence->at(hoverStep)->velocity)
-                            + " length: " +
-                            String((pSequence->at(hoverStep)->getOffTime() - pSequence->at(hoverStep)->getTimeStamp()) /
-                                   10.0, 1) +
-                            +" tick: " + String(pSequence->at(hoverStep)->getTimeStamp() / 10.0, 1)
-                            + " step: " + String::String(hoverStep);
-//            repaint();
+                    if (!processor->playing())
+                    {
+                        hoverInfo = MidiMessage::getMidiNoteName(nn, true, true, 3)
+                                    + " note number: " + String::String(nn) + " "
+                                    + " track: " + String::String(pSequence->at(hoverStep)->track)
+                                    + " channel: " + String::String(pSequence->at(hoverStep)->channel)
+                                    + " velocity: " + String(127.0 * pSequence->at(hoverStep)->velocity)
+                                    + " length: " +
+                                    String((pSequence->at(hoverStep)->getOffTime() -
+                                            pSequence->at(hoverStep)->getTimeStamp()) /
+                                           10.0, 1) +
+                                    +" tick: " + String(pSequence->at(hoverStep)->getTimeStamp() / 10.0, 1)
+                                    + " step: " + String::String(hoverStep);
+                    } else
+                    {
+                        hoverInfo = "";
+                    }
+                }
             }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
             sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
