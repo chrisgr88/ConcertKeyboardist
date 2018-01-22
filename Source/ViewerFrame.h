@@ -43,6 +43,7 @@ public:
     double prevTimeInTicks = -1.0;
     int separatorLineWidth = 1.5;
     ModifierKeys mods;
+    bool editToolbarTempHidden;
     
     void timerCallback() override;
     

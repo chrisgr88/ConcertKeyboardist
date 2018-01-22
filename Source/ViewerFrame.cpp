@@ -129,6 +129,16 @@ void focusLost (ScrollingNoteViewer::FocusChangeType cause)
 void ViewerFrame::timerCallback()
 {
     Sequence::Bookmark b = processor->atBookmark();
+    if (processor->isPlaying)
+    {
+        if (mainToolbar.isVisible())
+            editToolbarTempHidden = true;
+        mainToolbar.setVisible(false);
+    } else if (editToolbarTempHidden)
+    {
+        mainToolbar.setVisible(true);
+        editToolbarTempHidden = false;
+    }
     if (b.time!=-1)// && b.time!=0)
     {
         if (b.tempoChange)

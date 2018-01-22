@@ -23,9 +23,9 @@ Alpha:
 - DONE Ability to autoscroll to the left
 - DONE Autoscroll without moving the mouse
 - DONE Ability to turn off display of measure and beat lines in viewer (and save this choice in the score file)
+- DONE Make "Show Edit Toolbar" into a command with a keyboard shortcut
+- DONE Hide Edit Toolbar when playing
 
-- Make "Show Edit Toolbar" into a command with a keyboard shortcut
-- Hide Edit Toolbar when playing
 - Create an About dialog box
 - Why are files that include a VST plugin's state so big?
 - An added tempo change marker should not pick up the tempo of next real tempo change (should use prevous tempo change)
