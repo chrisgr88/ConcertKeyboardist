@@ -17,6 +17,7 @@ Sequence::Sequence()
 {
     tempoChanges.clear();
     triggeredNoteLimit = 60;
+    hideMeasureLines = false;
     tempoControl = TempoControl::autoTempo;
     waitForFirstNote = true;
     autoPlaySustains = true;
@@ -182,7 +183,8 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     const String buildDate = getAppProperties().getUserSettings()->getValue("buildDate");
     sequenceProps.setValue("shortHash", var(shortHash));
     sequenceProps.setValue("buildDate", var(buildDate));
-    
+    sequenceProps.setValue("hideMeasureLines", var(hideMeasureLines));
+
     StringPairArray props = sequenceProps.getAllProperties();
     StringArray keys = props.getAllKeys();
     
@@ -1007,6 +1009,8 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                 sequenceProps.setValue("autoPlaySofts", var(true));
                 sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
                 sequenceProps.setValue("horizontalScale", var(1.0));
+                sequenceProps.setValue("hideMeasureLines", var(false));
+
                 std::cout <<"D:horizontalScale  "<<1.0<<"\n";
             }
             //Get values from sequenceProps
@@ -1015,6 +1019,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             autoPlaySustains = sequenceProps.getBoolValue("autoPlaySustains", var(true));
             autoPlaySofts = sequenceProps.getBoolValue("autoPlaySofts", var(true));
             exprVelToScoreVelRatio = sequenceProps.getDoubleValue("exprVelToScoreVelRatio", var(1.0));
+            hideMeasureLines = sequenceProps.getBoolValue("hideMeasureLines", var(false));
 
             StringPairArray props = sequenceProps.getAllProperties();
             StringArray keys = props.getAllKeys();

@@ -1130,15 +1130,16 @@ void ScrollingNoteViewer::makeNoteBars()
         }
 
         //Beat & measure lines
-        for (int beat = 0; beat < processor->sequenceObject.beatTimes.size(); beat++)
-            addRectangle(processor->sequenceObject.beatTimes[beat] * pixelsPerTick - 1.6, topMargin, 0.8 /
-                                                                                                     sqrt(horizontalScale),
-                         ViewStateInfo::initialHeight - topMargin, Colour(0xFFB0B0B0).darker());
+        if (!processor->sequenceObject.hideMeasureLines)
+        {
+            for (int beat = 0; beat < processor->sequenceObject.beatTimes.size(); beat++)
+                addRectangle(processor->sequenceObject.beatTimes[beat] * pixelsPerTick - 1.6, topMargin, 0.8 / sqrt(horizontalScale),
+                             ViewStateInfo::initialHeight - topMargin, Colour(0xFFB0B0B0).darker());
+            for (int measure = 0; measure < processor->sequenceObject.measureTimes.size(); measure++)
+                addRectangle(processor->sequenceObject.measureTimes[measure] * pixelsPerTick - 2.2, topMargin, 1.0 / sqrt(horizontalScale),
+                             ViewStateInfo::initialHeight - topMargin, Colour(0xFFE0E0E0));
+        }
 
-        for (int measure = 0; measure < processor->sequenceObject.measureTimes.size(); measure++)
-            addRectangle(processor->sequenceObject.measureTimes[measure] * pixelsPerTick - 2.2, topMargin, 1.0 /
-                                                                                                           sqrt(horizontalScale),
-                         ViewStateInfo::initialHeight - topMargin, Colour(0xFFE0E0E0));
         //First line
         addRectangle(processor->sequenceObject.measureTimes[0] * pixelsPerTick - 2.2,
                      topMargin,

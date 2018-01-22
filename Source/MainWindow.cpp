@@ -227,6 +227,9 @@ ApplicationProperties& getAppProperties();
         else if (message == "play")
             perform (CommandIDs::playPause);
         else if (message == "pause")
+            perform (CommandIDs::playPause);else if (message == "play")
+            perform (CommandIDs::playPause);
+        else if (message == "pause")
             perform (CommandIDs::playPause);
         else if (message == "rewind")
         {
@@ -238,6 +241,19 @@ ApplicationProperties& getAppProperties();
             if (midiProcessor.sequenceObject.theSequence.size()>0)
                 perform (CommandIDs::listenToSelection);
         }
+
+        else if (message == "showEditToolbar")
+        {
+//            if (midiProcessor.sequenceObject.theSequence.size()>0)
+//                perform (CommandIDs::listenToSelection);
+        }
+        else if (message == "hide_measure_lines")
+        {
+//            if (midiProcessor.sequenceObject.theSequence.size()>0)
+//                perform (CommandIDs::listenToSelection);
+        }
+
+
         else if (message.upToFirstOccurrenceOf(":",false,true) == "loadPlugin")
         {
             String pluginId = String(message.fromFirstOccurrenceOf(":", false, true));
@@ -629,6 +645,17 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("dumpData", "dumpData", category, 0);
                 result.addDefaultKeypress ('d', ModifierKeys::commandModifier);
                 break;
+
+            case CommandIDs::hide_measure_lines:
+                result.setInfo ("hide_measure_lines", "hide_measure_lines", category, 0);
+                result.setTicked(midiProcessor.sequenceObject.hideMeasureLines);
+                result.addDefaultKeypress ('m', ModifierKeys::commandModifier);
+                break;
+
+            case CommandIDs::showEditToolbar:
+                result.setInfo ("showEditToolbar", "showEditToolbar", category, 0);
+//                result.addDefaultKeypress ('d', ModifierKeys::commandModifier);
+                break;
             default:
                 break;
         }
@@ -668,6 +695,8 @@ ApplicationProperties& getAppProperties();
             menu.addCommandItem (&getCommandManager(), CommandIDs::editRedo);
             menu.addCommandItem (&getCommandManager(), CommandIDs::playPause);
             menu.addCommandItem (&getCommandManager(), CommandIDs::listenToSelection);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::showEditToolbar);
+            menu.addCommandItem (&getCommandManager(), CommandIDs::hide_measure_lines);
         }
         else if (topLevelMenuIndex == 2) // "Plugins" menu
         {
@@ -850,7 +879,9 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::previousBookmark,
             CommandIDs::nextBookmark,
             CommandIDs::help,
-            CommandIDs::dumpData
+            CommandIDs::dumpData,
+            CommandIDs::showEditToolbar,
+            CommandIDs::hide_measure_lines
         };
         commands.addArray (ids, numElementsInArray (ids));
     }
@@ -892,6 +923,19 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 std::cout << "Enable midi out" <<"\n";
                 midiProcessor.midiOutEnabled = !midiProcessor.midiOutEnabled;
                 menuItemsChanged();
+                break;
+            }
+            case CommandIDs::showEditToolbar:
+            {
+                std::cout << "showEditToolbar" <<"\n";
+                break;
+            }
+            case CommandIDs::hide_measure_lines:
+            {
+                std::cout << "hide_measure_lines" <<"\n";
+                midiProcessor.sequenceObject.hideMeasureLines = !midiProcessor.sequenceObject.hideMeasureLines;
+                menuItemsChanged();
+                midiProcessor.rewind(0,true);
                 break;
             }
             case CommandIDs::fileOpen:
@@ -1026,23 +1070,6 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                     pViewerFrame->noteViewer.selectAll();
                 break;
-                
-//            case CommandIDs::marqueeSelectionAdd:
-//                std::cout <<"marqueeSelectionAdd\n";
-//                pViewerFrame->marqueeAddPressed();
-//                break;
-//            case CommandIDs::marqueeSelectionRemove:
-//                std::cout <<"marqueeSelectionRemove\n";
-//                pViewerFrame->marqueeRemovePressed();
-//                break;
-//            case CommandIDs::markSelectedNotes:
-//                std::cout <<"markSelectedNotes\n";
-//                pViewerFrame->markingAddPressed();
-//                break;
-//            case CommandIDs::clearSelectedNotes:
-//                std::cout <<"clearSelectedNotes\n";
-//                pViewerFrame->markingRemovePressed();
-//                break;
             case CommandIDs::clearAllSelection:
                 std::cout <<"clearAllSelection\n";
                 if (!midiProcessor.isPlaying)
@@ -1052,7 +1079,6 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                     
                 }
                 break;
-                
             case CommandIDs::toggleSelectedNotesActive:
                 if (!midiProcessor.isPlaying)
                 {

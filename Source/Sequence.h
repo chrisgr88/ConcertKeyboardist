@@ -578,6 +578,7 @@ public:
     bool deriveSecVelocityFromPrimary;
     int originalPpq;
     int ppq;
+    bool hideMeasureLines;
     
 //    String headerStringAsB64;
     char sysexTrackMarker[3] = {'p','p','f'};

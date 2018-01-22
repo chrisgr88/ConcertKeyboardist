@@ -61,6 +61,9 @@ namespace CommandIDs
     static const int showPlugWindow             = 0x20052;
 //    static const int enablePlugin               = 0x20053;
     static const int enableMidiOut               = 0x20054;
+
+    static const int showEditToolbar            = 0x21000;
+
     static const int fileOpen                   = 0x30000;
     static const int fileRecent                 = 0x30010; //To submenu
     static const int fileSave                   = 0x30040;
@@ -90,8 +93,10 @@ namespace CommandIDs
     static const int drawVelocities     = 0x42021;
     static const int create_chord       = 0x43010;
     static const int delete_chord       = 0x43012;
+
+    static const int hide_measure_lines  = 0x44000;
     
-        static const int toggleBookmark             = 0x49000;
+    static const int toggleBookmark             = 0x49000;
     static const int playPause                  = 0x50001;
     static const int pause                      = 0x50003;
     static const int listenToSelection          = 0x50006;

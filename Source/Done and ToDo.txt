@@ -21,20 +21,19 @@ Alpha:
 - DONE Change the rewind key from 'r' to Return and disable the 's' key doing sustain.  
 - DONE Prevent note-head drags that end on a note head from toggling the activity of the ended-on note
 - DONE Ability to autoscroll to the left
-- DONE Fully automatic ability to scroll to the left
-- Ability to turn off display of measure and beat lines in viewer (and save this choice in the score file)
+- DONE Autoscroll without moving the mouse
+- DONE Ability to turn off display of measure and beat lines in viewer (and save this choice in the score file)
+
+- Make "Show Edit Toolbar" into a command with keyboard shortcut
+- Hide Edit Toolbar when playing
 - Create an About dialog box
 - Why are files that include a VST plugin's state so big?
-- Better autoscroll - Fully automatic, ability to scroll to the left
-- Make "Show Edit Toolbar" be a command with keyboard shortcut
-- Hide Edit Toolbar when playing
+- An added tempo change marker should not pick up the tempo of next real tempo change (should use prevous tempo change)
 
-- Autoscroll without moving the mouse
+- Choose some demo scores and create a script to copy them to the app bundle
 - Request VST license from Steinway
 - Switch to paid version of JUCE
 - Look into how resources are bundled with Windows applications (help & demo scores)
-- Choose some demo scores and create a script to copy them to the app bundle
-- An added tempo change marker should not pick up the tempo of next real tempo change (should use prevous tempo change)
 - Ensure shortcut key choices make sense on Windows
 - Update help
 - Demo Video
