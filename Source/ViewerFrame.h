@@ -41,7 +41,7 @@ public:
     void resized() override;
     double timeInTicks;
     double prevTimeInTicks = -1.0;
-    int separatorLineWidth = 1.5;
+    int separatorLineWidth = 1;
     ModifierKeys mods;
     bool editToolbarTempHidden;
     

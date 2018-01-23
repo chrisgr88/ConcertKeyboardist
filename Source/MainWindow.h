@@ -226,7 +226,7 @@ private:
     class PluginListWindow;
     class TracksWindow;
     ScopedPointer<PluginListWindow> pluginListWindow;
-    ScopedPointer<Component> aboutWindow;
+    ScopedPointer<Component> pAboutWindow;
     String windowPosProperty;
     ScopedPointer<TracksWindow> tracksWindow;
     

@@ -1,2 +1,2 @@
 #!/bin/bash
-cp -R ./Documentation  ./Builds/CLion/cmake-build-debug/ConcertKeyboardist.app/Contents/Resources/Documentation
+cp -R $PROJECT_DIR/../../Documentation  $TARGET_BUILD_DIR/ConcertKeyboardist.app/Contents/Resources/Documentation

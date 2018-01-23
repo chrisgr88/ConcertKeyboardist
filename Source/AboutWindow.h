@@ -1,37 +1,14 @@
-/*
-  ==============================================================================
-
-   This file is part of the JUCE library.
-   Copyright (c) 2017 - ROLI Ltd.
-
-   JUCE is an open source library subject to commercial or open-source
-   licensing.
-
-   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
-   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
-   27th April 2017).
-
-   End User License Agreement: www.juce.com/juce-5-licence
-   Privacy Policy: www.juce.com/juce-5-privacy-policy
-
-   Or: You may also use this code under the terms of the GPL v3 (see
-   www.gnu.org/licenses).
-
-   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
-   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
-   DISCLAIMED.
-
-  ==============================================================================
-*/
 
 #pragma once
 
+#include "../DateHeader.h"
 
 //==============================================================================
-class AboutWindow    : public Component
+class AboutWindowComponent    : public Component
 {
+
 public:
-    AboutWindow()
+    AboutWindowComponent()
     {
 //        bool showPurchaseButton = false;
 
@@ -41,29 +18,18 @@ public:
 
         auto buildDate = Time::getCompilationDate();
         addAndMakeVisible (versionLabel);
-        versionLabel.setText ("ConcertKeyboardist v" + String("9999")
-                              + "\nBuild date: " + String (buildDate.getDayOfMonth())
-                              + " " + Time::getMonthName (buildDate.getMonth(), true)
-                              + " " + String (buildDate.getYear()),
+        versionLabel.setText ("ConcertKeyboardist build: " + String(__CK_SHORT_HASH)
+                              + "\nDate: " + String (__CK_BUILD_DATE),
                               dontSendNotification);
+
+
 
         versionLabel.setJustificationType (Justification::centred);
         addAndMakeVisible (copyrightLabel);
         copyrightLabel.setJustificationType (Justification::centred);
 
-//        addAndMakeVisible (aboutButton);
-//        aboutButton.setTooltip ( {} );
-
-//        if (showPurchaseButton)
-//        {
-//            addAndMakeVisible (licenseButton);
-//
-//            licenseButton.onClick = []
-//            {
-//                if (auto* controller = ProjucerApplication::getApp().licenseController.get())
-//                    controller->chooseNewLicense();
-//            };
-//        }
+//        aboutButton.setJustificationType (Justification::centred);
+//        addAndMakeVisible(aboutButton);
     }
 
     void resized() override
@@ -71,8 +37,8 @@ public:
         auto bounds = getLocalBounds();
         bounds.removeFromBottom (20);
 
-        auto rightSlice  = bounds.removeFromRight (150);
-        auto leftSlice   = bounds.removeFromLeft (150);
+        auto rightSlice  = bounds.removeFromRight (50);
+        auto leftSlice   = bounds.removeFromLeft (50);
         auto centreSlice = bounds;
 
         //======================================================================
@@ -85,7 +51,7 @@ public:
 //        juceLogoBounds.setWidth (juceLogoBounds.getWidth() + 100);
 //        juceLogoBounds.setHeight (juceLogoBounds.getHeight() + 100);
 
-        copyrightLabel.setBounds (leftSlice.removeFromBottom (20));
+        copyrightLabel.setBounds (centreSlice.removeFromBottom (60));
 
         //======================================================================
         auto titleHeight = 40;
@@ -102,7 +68,7 @@ public:
 //        if (licenseButton.isShowing())
 //            licenseButton.setBounds (centreSlice.removeFromTop (25).reduced (25, 0));
 //
-//        aboutButton.setBounds (centreSlice.removeFromBottom (20));
+//        aboutButton.setBounds (centreSlice.removeFromBottom (40));
     }
 
     void paint (Graphics& g) override
@@ -119,8 +85,10 @@ public:
 private:
     Label titleLabel { "title", "Concert Keyboardist" },
             versionLabel { "version" },
-            copyrightLabel { "copyright", String (CharPointer_UTF8 ("\xc2\xa9")) + String (" 2018 Christopher Graham") };
+            copyrightLabel { "copyright", String (CharPointer_UTF8 ("\xc2\xa9")) + String (" 2018 Christopher Graham")
+                            +String ("\nVST PlugIn Technology by Steinberg Media Technologies")};
 
+//    HyperlinkButton aboutButton { "About Us", URL ("https://github.com/chrisgr88/ConcertKeyboardist/wiki") };
 //    HyperlinkButton aboutButton { "About Us", URL ("https://juce.com") };
 //    TextButton licenseButton { "Purchase License" };
 
@@ -132,5 +100,5 @@ private:
 //    ScopedPointer<Drawable> huckleberryLogo { Drawable::createFromImageData (BinaryData::huckleberry_icon_svg,
 //                                                                             BinaryData::huckleberry_icon_svgSize) };
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AboutWindow)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AboutWindowComponent)
 };

@@ -155,7 +155,7 @@ ApplicationProperties& getAppProperties();
 #else
 #if JUCE_MAC
         PopupMenu extra_menu;
-        extra_menu.addItem (123, "About ConcertKeyboardist");
+        extra_menu.addItem (123, "About ConcertKeyboardist...");
         extra_menu.addSeparator();
         extra_menu.addItem (0x999, "Preferences...");
         MainWindow::setMacMainMenu (this, &extra_menu);
@@ -654,7 +654,7 @@ ApplicationProperties& getAppProperties();
         
         if (topLevelMenuIndex == 0)
         {
-            menu.addCommandItem (&getCommandManager(), CommandIDs::appAboutBox);
+//            menu.addCommandItem (&getCommandManager(), CommandIDs::appAboutBox);
             
             // "File" menu
             menu.addCommandItem (&getCommandManager(), CommandIDs::fileOpen);
@@ -747,7 +747,11 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             if (menuItemID==0x999)
                 showAudioSettings();
             else if (menuItemID==123)
-                std::cout <<"About\n";
+            {
+                InvocationInfo aboutInfo(CommandIDs::appAboutBox);
+                aboutInfo.invocationMethod = InvocationInfo::direct;
+                perform(aboutInfo);
+            }
         }
         else if (topLevelMenuIndex==0)
         {
@@ -872,20 +876,40 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
         };
         commands.addArray (ids, numElementsInArray (ids));
     }
+//
+//    class OtherLookAndFeel : public LookAndFeel_V4
+//    {
+//    public:
+//        OtherLookAndFeel()
+//        {
+//            setColour (Slider::thumbColourId, Colours::red);
+//        }
+//        void playAlertSound() override
+//        {
+//        }
+//    };
     
     bool MainWindow::perform (const InvocationInfo& info)
     {
         switch (info.commandID)
         {
             case CommandIDs::appAboutBox:
-//                if (!midiProcessor.isPlaying)
-//                    if (aboutWindow != nullptr)
-//                        aboutWindow->toFront (true);
-//                    else
-//                        new FloatingToolWindow ({}, {}, new AboutWindow(),
-//                                                aboutWindow, false,
-//                                                500, 300, 500, 300, 500, 300);
+            {
+                DialogWindow::LaunchOptions options;
+                AboutWindowComponent *aboutWindowComponent = new AboutWindowComponent;
+//                OtherLookAndFeel *olf = new OtherLookAndFeel;
+//                aboutWindowComponent->setLookAndFeel(olf);
+                options.content.setOwned(aboutWindowComponent);
+                Rectangle<int> area(0, 0, 650, 400);
+                options.content->setSize(area.getWidth(), area.getHeight());
+                options.dialogTitle = "About This Application";
+                options.dialogBackgroundColour = Colour(0xff0e345a);
+                options.escapeKeyTriggersCloseButton = true;
+                options.useNativeTitleBar = true;
+                options.resizable = true;
+                options.runModal();
                 break;
+            }
             case CommandIDs::audioMidiSettings:
                 if (!midiProcessor.isPlaying)
                 {
