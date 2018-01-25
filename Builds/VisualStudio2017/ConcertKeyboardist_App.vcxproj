@@ -1782,7 +1782,6 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp"/>
-    <ClCompile Include="..\..\JuceLibraryCode\BinaryData2.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_formats.cpp"/>
@@ -2449,8 +2448,6 @@
     <None Include="..\..\Documentation\Common\img\CKTransportToolbar.snagproj"/>
     <None Include="..\..\Documentation\Common\img\ConcertKeyboardistWindowOverview.jpg"/>
     <None Include="..\..\Documentation\Common\img\ConcertKeyboardistWindowOverview.snagproj"/>
-    <None Include="..\..\Documentation\Common\img\GeosonixUI.jpg"/>
-    <None Include="..\..\Documentation\Common\img\GeosonixUI.png"/>
     <None Include="..\..\Documentation\EN\builddoc.sh"/>
     <None Include="..\..\Documentation\EN\BuildHtmlWithPandoc.sh"/>
     <None Include="..\..\Documentation\EN\ckdoc.htm"/>

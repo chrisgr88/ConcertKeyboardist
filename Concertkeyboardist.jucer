@@ -24,8 +24,6 @@
                     resource="1" file="Documentation/Common/img/ConcertKeyboardistWindowOverview.jpg"/>
               <FILE id="i1jWM6" name="ConcertKeyboardistWindowOverview.snagproj"
                     compile="0" resource="1" file="Documentation/Common/img/ConcertKeyboardistWindowOverview.snagproj"/>
-              <FILE id="gWTLdo" name="GeosonixUI.jpg" compile="0" resource="1" file="Documentation/Common/img/GeosonixUI.jpg"/>
-              <FILE id="JyDV9x" name="GeosonixUI.png" compile="0" resource="1" file="Documentation/Common/img/GeosonixUI.png"/>
             </GROUP>
           </GROUP>
           <GROUP id="{951D2AD0-EB82-7F53-633D-B3E46740A152}" name="EN">

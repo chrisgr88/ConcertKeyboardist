@@ -104,12 +104,7 @@ void MainComponent::actionListenerCallback (const String& message)
         String pluginStateB64 = String(message.fromFirstOccurrenceOf(":", false, true));
         MemoryBlock m;
         m.fromBase64Encoding(pluginStateB64);
-//        MD5 md = MD5(processor->sequenceObject.pluginState);
-//        String checksum = md.toHexString();
-//        std::cout <<"Loaded sysex plugState  checksum "<<checksum
-//        <<" size "<<processor->sequenceObject.pluginState.getSize()<<"\n";
-//        if (processor->sequenceObject.pluginState.getSize()>0)
-//#include "TargetConditionals.h"
+
 #if !(TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE)
         if (thePlugin!=nullptr)
             thePlugin->setStateInformation(m.getData(), (int)m.getSize());

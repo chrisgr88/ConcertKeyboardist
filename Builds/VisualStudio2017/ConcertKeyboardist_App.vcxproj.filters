@@ -2158,9 +2158,6 @@
     <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\JuceLibraryCode\BinaryData2.cpp">
-      <Filter>JUCE Library Code</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
@@ -4149,12 +4146,6 @@
       <Filter>ConcertKeyboardist\Source\Resources\Documentation\Common\img</Filter>
     </None>
     <None Include="..\..\Documentation\Common\img\ConcertKeyboardistWindowOverview.snagproj">
-      <Filter>ConcertKeyboardist\Source\Resources\Documentation\Common\img</Filter>
-    </None>
-    <None Include="..\..\Documentation\Common\img\GeosonixUI.jpg">
-      <Filter>ConcertKeyboardist\Source\Resources\Documentation\Common\img</Filter>
-    </None>
-    <None Include="..\..\Documentation\Common\img\GeosonixUI.png">
       <Filter>ConcertKeyboardist\Source\Resources\Documentation\Common\img</Filter>
     </None>
     <None Include="..\..\Documentation\EN\builddoc.sh">
