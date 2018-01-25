@@ -423,26 +423,31 @@ void ScrollingNoteViewer::mouseDrag(const MouseEvent &event)
     startTimer(TIMER_MOUSE_DRAG, 1);
 }
 
-void ScrollingNoteViewer::mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &wheel)
+void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel)
 {
     processor->leadLag = 0;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
-    if (processor->isPlaying && processor->getZTLTime(0) > 0.1 && wheel.deltaX > 0.0f)
+    if (processor->isPlaying && processor->getZTLTime(0)>0.1 && wheel.deltaX>0.0f)
     {
-        processor->play(false, "current");
+        processor->play(false,"current");
     }
-    float newShift = horizontalShift - 300 * wheel.deltaX;
+    bool useDeltaX = abs(wheel.deltaX) > abs(wheel.deltaY);
+    float newShift;
+    if (useDeltaX)
+        newShift = horizontalShift-300*wheel.deltaX;
+    else
+        newShift = horizontalShift + 300 * wheel.deltaY;
     const double seqStartRelToLeftEdgeInPixels =
-            (sequenceStartPixel - processor->getTimeInTicks() * pixelsPerTick * horizontalScale +
-             newShift) * horizontalScale;
-    double seqDurationInPixels = processor->sequenceObject.seqDurationInTicks * pixelsPerTick;
-    double scaledSeqDurationInPixels = seqDurationInPixels * horizontalScale * horizontalScale;
+            (sequenceStartPixel - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
+             newShift)*horizontalScale;
+    double seqDurationInPixels = processor->sequenceObject.seqDurationInTicks*pixelsPerTick;
+    double scaledSeqDurationInPixels = seqDurationInPixels*horizontalScale*horizontalScale;
     const double seqEndRelToLeftEdgeInPixels = seqStartRelToLeftEdgeInPixels + scaledSeqDurationInPixels;
-    if (seqStartRelToLeftEdgeInPixels > sequenceStartPixel * horizontalScale)
-        newShift = processor->getTimeInTicks() * pixelsPerTick * horizontalScale;
-    else if (seqEndRelToLeftEdgeInPixels < sequenceStartPixel * horizontalScale)
-        newShift = processor->getTimeInTicks() * pixelsPerTick * horizontalScale -
-                   scaledSeqDurationInPixels / horizontalScale;
+    if (seqStartRelToLeftEdgeInPixels > sequenceStartPixel*horizontalScale)
+        newShift = processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
+    else if (seqEndRelToLeftEdgeInPixels < sequenceStartPixel*horizontalScale)
+        newShift =  processor->getTimeInTicks()*pixelsPerTick*horizontalScale - scaledSeqDurationInPixels/horizontalScale;
+//    std::cout << "newShift " << newShift << "\n";
     setHorizontalShift(newShift);
     processor->sendChangeMessage();
     repaint();
@@ -1364,10 +1369,10 @@ void ScrollingNoteViewer::makeNoteBars()
             //First make an array of Rectangles each with just a bar's start tick and width in ticks
             for (int i = 0; i < processor->sequenceObject.sustainPedalChanges.size(); i++)
             {
-                if (i<20)
-                    std::cout << "In make note bars " << i << " " << processor->sequenceObject.sustainPedalChanges.at(i).timeStamp
-                    << " value " << processor->sequenceObject.sustainPedalChanges.at(i).pedalOn
-                    <<"\n";
+//                if (i<20)
+//                    std::cout << "In make note bars " << i << " " << processor->sequenceObject.sustainPedalChanges.at(i).timeStamp
+//                    << " value " << processor->sequenceObject.sustainPedalChanges.at(i).pedalOn
+//                    <<"\n";
                 if (processor->sequenceObject.sustainPedalChanges.at(i).pedalOn)
                 {
                     sustainStartTick = processor->sequenceObject.sustainPedalChanges.at(i).timeStamp;
@@ -1382,7 +1387,7 @@ void ScrollingNoteViewer::makeNoteBars()
             bool inSustainBar = false;
             int highestNote = -1;
             int sustainBarNum = 0;
-            std::cout << "pSequence->size() " << pSequence->size() << std::endl;
+//            std::cout << "pSequence->size() " << pSequence->size() << std::endl;
             for (int step = 0; step < static_cast<int>(pSequence->size()); step++)
             {
                 //            const NoteWithOffTime msg = sequence->at(step);
@@ -1413,7 +1418,7 @@ void ScrollingNoteViewer::makeNoteBars()
                     const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0.5 * unscaledTVS;
                     addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 1.5,
                                  Colour(Colours::orange).brighter());
-                    std::cout << "sustain bar x, y " <<barLeft * pixelsPerTick<<" "<<y  << std::endl;
+//                    std::cout << "sustain bar x, y " <<barLeft * pixelsPerTick<<" "<<y  << std::endl;
                     sustainBarNum++;
                     if (msgTimeStamp > barRight)
                         highestNote = pSequence->at(step)->noteNumber;

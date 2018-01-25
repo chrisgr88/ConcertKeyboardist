@@ -897,10 +897,11 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             {
                 DialogWindow::LaunchOptions options;
                 AboutWindowComponent *aboutWindowComponent = new AboutWindowComponent;
-//                OtherLookAndFeel *olf = new OtherLookAndFeel;
-//                aboutWindowComponent->setLookAndFeel(olf);
                 options.content.setOwned(aboutWindowComponent);
-                Rectangle<int> area(0, 0, 650, 400);
+//                Label *label = new Label();
+//                label->setText("Hello World", NotificationType::dontSendNotification);
+                options.content.setOwned(aboutWindowComponent);
+                Rectangle<int> area(0, 0, 650, 350);
                 options.content->setSize(area.getWidth(), area.getHeight());
                 options.dialogTitle = "About This Application";
                 options.dialogBackgroundColour = Colour(0xff0e345a);

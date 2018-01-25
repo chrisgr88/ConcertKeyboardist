@@ -37,8 +37,8 @@ public:
         auto bounds = getLocalBounds();
         bounds.removeFromBottom (20);
 
-        auto rightSlice  = bounds.removeFromRight (50);
-        auto leftSlice   = bounds.removeFromLeft (50);
+        auto rightSlice  = bounds.removeFromRight (20);
+        auto leftSlice   = bounds.removeFromLeft (20);
         auto centreSlice = bounds;
 
         //======================================================================

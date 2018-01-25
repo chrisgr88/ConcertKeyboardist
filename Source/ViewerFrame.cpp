@@ -380,9 +380,9 @@ void ViewerFrame::buttonClicked (Button* button)
             if (processor->sequenceObject.theSequence.size()>0)
             {
                 processor->catchUp(false);
-                const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
-                                                                             processor->sequenceObject.tempoChanges);
-                processor->addRemoveBookmark(BOOKMARK_ADD,true,pAdjustedTempo->numberBox.getText().getDoubleValue()/scoreTempo);
+//                const double scoreTempo = processor->sequenceObject.getTempo(processor->getZTLTime(noteViewer.horizontalShift),
+//                                                                             processor->sequenceObject.tempoChanges);
+                processor->addRemoveBookmark(BOOKMARK_ADD,true,1.0);//pAdjustedTempo->numberBox.getText().getDoubleValue()/scoreTempo);
             }
         }
         else if(AltToolbarItemFactory::ToolbarItemIds::removeTempoChange == id)

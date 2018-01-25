@@ -1,2 +1,2 @@
-#define __CK_BUILD_DATE "2018-01-23-09:46:43"
-#define __CK_SHORT_HASH  "070217d"
+#define __CK_BUILD_DATE "2018-01-23-10:34:44"
+#define __CK_SHORT_HASH  "155f702"

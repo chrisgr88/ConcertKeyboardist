@@ -3,7 +3,7 @@
 
 ### Version and Licensing
 
-* Document Version: September 1, 2017 for Concert Keyboardist Alpha
+* Document Version: January 24, 2018 for Concert Keyboardist Alpha
 * Concert Keyboardist Licensing: [Licenses and Copyrights]
 
 ## Contact Information
@@ -16,14 +16,13 @@ Concert Keyboardist lets you perform music from a midi file.  It always plays th
 
 While playing, notes scroll right-to-left.  You choose when to play them and how long to hold them.  On an attached velocity-sensitive midi keyboard note velocity (loudness) is controlled by how hard you press the keys.  If you are playing on a computer keyboard (not velocity sensitive) Concert Keyboardist uses the note velocities from the score.
 
-You can also edit loaded midi files to make them playable according to your preferences, and you can save the settings with the file.
+You can edit imported midi files to make them play how you like and your changes are saved with the Concert Keyboardist [CK] file.
 
 ## Installation
 
 Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install: 
 
 * Copy the Concert keyboardist application to your Applications folder.  
-* Copy the ckdoc folder to the same place you copied the application.
 * Copy the included folder of example files to anywhere you choose.  Possibly your Desktop, Documents folder, or a folder where you keep midi files. 
 * Concert keyboardist currently does not make sound of its own.  It sends midi messages and you need to route theme to a software synthesizer (or hardware synthesizer).  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  Also GarageBand automatically received midi message from all output ports on you system so it automatically receives from the Concert Keyboardist default output.
 * Setup with GarageBand: 
@@ -38,9 +37,9 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:
 * If you have a midi keyboard attached to your computer you can configure Concert Keyboardist to receive from it.  Use the "Audio and Midi Settings" command in the File menu to open the settings dialog.  Click next to your midi controller to make it active and close the dialog.  Concert Keyboardist will remember this setting between sessions and it will remain available as long as your controller is active when Concert Keyboardist is started.
 
 
-<!-- ![](../Common/img/ConcertKeyboardistWindowOverview.jpg) -->
+<!-- ![](../Common/img/CKMainWindow.jpg) -->
 
-<img src="../Common/img/ConcertKeyboardistWindowOverview.jpg" alt="CK" style="float:right;width:80%;margin:0 0px 10px 0">
+<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:80%;margin:0 0px 10px 0">
 
 ## Main Window
 
@@ -154,8 +153,6 @@ There is much more to know about editing.  More detail will be included in a fut
 
 Copyright (C) 2017 Christopher Graham (chrisgr99@gmail.com)
 
-    To Be Done....
-
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -163,3 +160,10 @@ Copyright (C) 2017 Christopher Graham (chrisgr99@gmail.com)
     ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
     CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+### VST PlugIn Technology by Steinberg Media Technologies
+
+<img src="../Common/img/VSTLogoBlack.jpg" alt="VST" style="float:left;width:10%;margin:00 30px 0px 0">
+
+VST is a trademark and software of Steinberg Media Technologies GmbH

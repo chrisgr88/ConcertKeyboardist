@@ -605,8 +605,11 @@ Sequence::Bookmark MIDIProcessor::atBookmark()
 void MIDIProcessor::addRemoveBookmark (int action, bool tempoChange, double tempoScale)
 {
     int bookmark = -1;
+    double prevTempoScale = -1;
     for (int i=0;i<sequenceObject.bookmarkTimes.size();i++)
     {
+        if (sequenceObject.bookmarkTimes[i].tempoChange)
+            prevTempoScale = sequenceObject.bookmarkTimes[i].tempoScaleFactor;
         //                std::cout << "Bookmark at " << processor->sequenceObject.bookmarkTimes[i] << "\n";
         if (fabs(sequenceObject.bookmarkTimes[i].time+xInTicksFromViewer-getTimeInTicks())<4.0)
         {
@@ -623,7 +626,10 @@ void MIDIProcessor::addRemoveBookmark (int action, bool tempoChange, double temp
         Sequence::Bookmark bm;
         bm.time = getTimeInTicks();
         bm.tempoChange = tempoChange;
-        bm.tempoScaleFactor = tempoScale;
+        if (prevTempoScale==-1)
+            bm.tempoScaleFactor = 1.0;
+        else
+            bm.tempoScaleFactor = prevTempoScale;
         sequenceObject.bookmarkTimes.add(bm);
         sequenceObject.bookmarkTimes.sort();
         buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, getTimeInTicks());
