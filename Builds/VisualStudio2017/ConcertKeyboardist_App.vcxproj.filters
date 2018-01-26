@@ -4157,9 +4157,6 @@
     <None Include="..\..\Documentation\EN\ckdoc.htm">
       <Filter>ConcertKeyboardist\Source\Resources\Documentation\EN</Filter>
     </None>
-    <None Include="..\..\Documentation\EN\ckdoc.html">
-      <Filter>ConcertKeyboardist\Source\Resources\Documentation\EN</Filter>
-    </None>
     <None Include="..\..\Documentation\EN\ckdoc.md">
       <Filter>ConcertKeyboardist\Source\Resources\Documentation\EN</Filter>
     </None>

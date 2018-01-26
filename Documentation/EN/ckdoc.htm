@@ -32,7 +32,7 @@
 <li>If you have a midi keyboard attached to your computer you can configure Concert Keyboardist to receive from it. Use the &quot;Audio and Midi Settings&quot; command in the File menu to open the settings dialog. Click next to your midi controller to make it active and close the dialog. Concert Keyboardist will remember this setting between sessions and it will remain available as long as your controller is active when Concert Keyboardist is started.</li>
 </ul>
 <!-- ![](../Common/img/CKMainWindow.jpg) -->
-<p><img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:80%;margin:0 0px 10px 0"></p>
+<p><img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:70%;margin:0px 10px 10px 10px"></p>
 <h2 id="main-window">Main Window</h2>
 <ul>
 <li>Concert Keyboardist is like a player piano. Notes are horizontal bars that scroll right to left horizontally. A note's vertical position shows pitch and its left end shows start time. Its length shows duration. These times which are read from the midi and guide you when to play notes and how long to hold them.</li>
@@ -63,18 +63,66 @@
 </li>
 <li><strong>The Relative Time Line:</strong> This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played this note. In playing expressively you may be triggering notes before or after the Current Time Line. It's helpful to have a relative time marker showing when notes were actually played, not when they were suggested to be played. Experiment with playing notes before or after the Current Time Line to understand this better. The yellow line remains after you stop playing to mark the last note played before stopping.</li>
 </ul>
-<h2 id="transport-toolbar">Transport Toolbar</h2>
-<p><img src="../Common/img/CKTransportToolbar.jpg" alt="CK" style="float:right;width:70%;margin:0 0px 10px 0"></p>
-<p>The Transport Toolbar is at the bottom of the screen and includes:</p>
+<h2 id="main-toolbar">Main Toolbar</h2>
+<h3 id="information-area-left-of-both-toolbars">Information Area (left of both toolbars)</h3>
+<p>Hover the mouse pointer over a note and the the left side of the Transport Bar shows details on the note. Hover over a light or dark grey note track shows the note name and octave of that track. Drag on the display to select a range of notes and the left side of the toolbar shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.</p>
+<h3 id="file-management-tools">File Management Tools</h3>
+<p><img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px"></p>
+<p>There are &quot;File Open&quot;, &quot;File Save&quot; and &quot;File Save As&quot; tools. These do the same as the &quot;Open&quot;, &quot;Save&quot; and &quot;Save As&quot; commands in the File menu, and are very similar to commands you are probably know from other applications.</p>
+<h3 id="plugin-management-tools">Plugin Management Tools</h3>
+<p><img src="../Common/img/PluginManagementTools.jpg" alt="CK" style="width:6%;margin:0px 5px 0px 25px"></p>
+<h3 id="settings-tools">Settings Tools</h3>
+<p><img src="../Common/img/SettingsTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px"> There are two settings tools:</p>
+<ul>
+<li><strong>Audio Settings</strong>
+<ul>
+<li>Allows you to choose the audio output port used by plugin loaded into CK, if any.</li>
+<li>Allows you to choose an midi input device controller such as a keyboard, you will be able play CK with the controller. CK will always play the notes in the score no matter what notes you press on the keyboard.<br />
+</li>
+<li>Allows you to choose a midi output device to which midi messages from CK will be sent. Choose no output if you<br />
+are playing a plugin loaded into CK.</li>
+</ul></li>
+<li><strong>Tracks Viewer and Settings</strong>
+<ul>
+<li>Displays information on all the tracks that were in the originally imported midi file.<br />
+</li>
+<li>You can click on the button at the right to enable or disable tracks. The notes of disabled tracks do not appear in the scrolling view and are not played. Only tracks that contain notes can be selected for inclusion in the display.<br />
+At least one track must be enabled.<br />
+</li>
+<li>Midi files may or may not contain some tracks that give information about the contents of the file, the file's creator, copyrights, and other information.</li>
+</ul></li>
+</ul>
+<h3 id="hideshow-editing-tools">Hide/Show Editing Tools</h3>
+<p><img src="../Common/img/ToggleEditToolbarTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
+<p>The Editing Toolbar defaults to being hidden. Click the &quot;Hide/Show Editing Tools&quot; button to show the editing toolbar and click again to hide it. The editing toolbar also automatically is hidden when you start playing and reappears when you stop.</p>
+<h3 id="bookmark-tool">Bookmark Tool</h3>
+<p><img src="../Common/img/BookmarkTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
+<p>Bookmark Tool:</p>
+<h3 id="transport-tools">Transport Tools</h3>
+<p><img src="../Common/img/TransportTools.jpg" alt="CK" style="width:12%;margin:0px 0px 0px 25px"></p>
 <ul>
 <li><strong>Tempo</strong>: Concert Keyboardist shows two tempo numbers on the transport bar. The first is the original tempo from the midi file and the second is the actual playing tempo. You can set the playing tempo to be faster or slower than the original tempo by dragging up or down on the number. The tempo from the midi file can vary with position in the score and as the transport moves the displayed playing tempo is maintained at a constant ratio to the original tempo.</li>
 <li><strong>Play</strong>, <strong>Stop</strong>, <strong>Rewind</strong>: Pressing the Play button turns the Current Time Line orange. The next key you press will play the note at the Current Time Line and start the display scrolling. Pressing Stop halts the display and also ends notes that were sounding. Pressing Rewind once moves the display back to the first note you played. Pressing Rewind again moves the display to the start of the score. Pressing it again returns again to the first note you played. You will actually find it much easier to use the keyboard shortcuts for these buttons. Pressing the Spacebar when not playing is equivalent to pressing the Play button. Pressing the Spacebar when playing is equivalent to pressing the Stop button. Pressing the &quot;r&quot; key is equivalent to pressing the Rewind button.</li>
 <li><strong>Listen</strong>: The Listen button lets you hear the music starting at the Current Time Line. Press the Spacebar to stop listening and return to where listening started. While listening the display scrolls and you can hear the notes, but in this version sounding notes are not marked in yellow as they would be while actually playing.</li>
-<li><strong>Information Area</strong>: Hover the mouse pointer over a note and the the left side of the Transport Bar shows details on the note. Hover over a light or dark grey note track shows the note name and octave of that track. Drag on the display to select a range of notes and the left side of the toolbar shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.</li>
 </ul>
+<h3 id="tempo-tools">Tempo Tools</h3>
+<p><img src="../Common/img/TempoTools.jpg" alt="CK" style="width:14%;margin:0px 0px 0px 25px"></p>
+<h3 id="help-tool">Help Tool</h3>
+<p><img src="../Common/img/HelpTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
+<p>Opens the Concert keyboardist documentation in your default web browser.</p>
 <h2 id="editing-toolbar">Editing Toolbar</h2>
-<p>This documentation is work in progress...</p>
-<p><img src="../Common/img/CKEditingTools.jpg" alt="CK" style="float:right;width:70%;margin:0 0px 10px 0"></p>
+<h3 id="undo-and-redo-tools">Undo and Redo Tools</h3>
+<p><img src="../Common/img/UndoRedoTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px"></p>
+<h3 id="toggle-targetnotes-tool">Toggle TargetNotes Tool</h3>
+<p><img src="../Common/img/ToggleTargetNotesTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
+<h3 id="note-chaining-tools">Note Chaining Tools</h3>
+<p><img src="../Common/img/NoteChainingTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px"></p>
+<h3 id="note-velocity-tools">Note Velocity Tools</h3>
+<p><img src="../Common/img/VelocityTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px"></p>
+<h3 id="chord-tools">Chord Tools</h3>
+<p><img src="../Common/img/ChordTools.jpg" alt="CK" style="width:24%;margin:0px 0px 0px 25px"></p>
+<h3 id="pedal-tools">Pedal Tools</h3>
+<p><img src="../Common/img/PedalTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px"></p>
 <p>The Editing Toolbar includes commands to:</p>
 <ul>
 <li>Adjust note chaining</li>

@@ -2451,7 +2451,6 @@
     <None Include="..\..\Documentation\EN\builddoc.sh"/>
     <None Include="..\..\Documentation\EN\BuildHtmlWithPandoc.sh"/>
     <None Include="..\..\Documentation\EN\ckdoc.htm"/>
-    <None Include="..\..\Documentation\EN\ckdoc.html"/>
     <None Include="..\..\Documentation\EN\ckdoc.md"/>
     <None Include="..\..\Resources\AppIcon.png"/>
     <None Include="..\..\Resources\icons.zip"/>

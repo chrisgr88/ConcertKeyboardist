@@ -39,7 +39,7 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winn
 
 <!-- ![](../Common/img/CKMainWindow.jpg) -->
 
-<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:80%;margin:0 0px 10px 0">
+<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:70%;margin:0px 10px 10px 10px">
 
 ## Main Window
 
@@ -67,23 +67,104 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winn
 * **Playing legato notes** This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions.  If you play with at least two fingers you can overlap the on and off times of successive notes to create legato as in normal piano playing.  
 * **The Relative Time Line:** This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played this note.  In playing expressively you may be triggering notes before or after the Current Time Line.  It's helpful to have a relative time marker showing when notes were actually played, not when they were suggested to be played.  Experiment with playing notes before or after the Current Time Line to understand this better.  The yellow line remains after you stop playing to mark the last note played before stopping.
 
-## Transport Toolbar
+## Main Toolbar
 
-<img src="../Common/img/CKTransportToolbar.jpg" alt="CK" style="float:right;width:70%;margin:0 0px 10px 0">
+###Information Area (left of both toolbars)
 
-The Transport Toolbar is at the bottom of the screen and includes:
+Hover the mouse pointer over a note and the the left side of the Transport Bar shows details on the note.  Hover over a light or dark grey note track shows the note name and octave of that track.  Drag on the display to select a range of notes and the left side of the toolbar shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.
+
+### File Management Tools
+
+<img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px">
+
+There are "File Open", "File Save" and "File Save As" tools.  These do the same as the "Open", "Save" and 
+"Save As" commands in the File menu, and are very similar to commands you are probably know from other applications.
+
+### Plugin Management Tools
+
+<img src="../Common/img/PluginManagementTools.jpg" alt="CK" style="width:6%;margin:0px 5px 0px 25px">
+
+
+
+
+### Settings Tools
+
+<img src="../Common/img/SettingsTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px">  There are two settings tools:
+
+* **Audio Settings** 
+    * Allows you to choose the audio output port used by plugin loaded into CK, if any.
+    * Allows you to choose an midi input device controller such as a keyboard, you will be able play CK
+    with the controller.  CK will always play the notes in the score no matter what notes you press on the keyboard.  
+    * Allows you to choose a midi output device to which midi messages from CK will be sent.  Choose no output if you  
+    are playing a plugin loaded into CK. 
+
+* **Tracks Viewer and Settings** 
+    * Displays information on all the tracks that were in the originally imported midi file.  
+    * You can click on the button at the right to enable or disable tracks.  The notes of disabled tracks do not appear in the scrolling view and are not played.  Only tracks that contain notes can be selected for inclusion in the display.  
+    At least one track must be enabled.  
+    * Midi files may or may not contain some tracks that give information about the contents of the file,
+    the file's creator, copyrights, and other information.
+    
+
+### Hide/Show Editing Tools 
+
+<img src="../Common/img/ToggleEditToolbarTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px">
+
+The Editing Toolbar defaults to being hidden.  Click the "Hide/Show Editing Tools" button to show 
+the editing toolbar and click again to hide it.  The editing toolbar also automatically is hidden when you start
+ playing and reappears when you stop.
+
+### Bookmark Tool
+
+<img src="../Common/img/BookmarkTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px">
+
+
+Bookmark Tool:
+
+### Transport Tools
+
+<img src="../Common/img/TransportTools.jpg" alt="CK" style="width:12%;margin:0px 0px 0px 25px">
+
 
 * **Tempo**:  Concert Keyboardist shows two tempo numbers on the transport bar. The first is the original tempo from the midi file and the second is the actual playing tempo.  You can set the playing tempo to be faster or slower than the original tempo by dragging up or down on the number.  The tempo from the midi file can vary with position in the score and as the transport moves the displayed playing tempo is maintained at a constant ratio to the original tempo.
 * **Play**, **Stop**, **Rewind**: Pressing the Play button turns the Current Time Line orange.  The next key you press will play the note at the Current Time Line and start the display scrolling.  Pressing Stop halts the display and also ends notes that were sounding.  Pressing Rewind once moves the display back to the first note you played.  Pressing Rewind again moves the display to the start of the score.  Pressing it again returns again to the first note you played.  You will actually find it much easier to use the keyboard shortcuts for these buttons.  Pressing the Spacebar when not playing is equivalent to pressing the Play button.  Pressing the Spacebar when playing is equivalent to pressing the Stop button.  Pressing the "r" key is equivalent to pressing the Rewind button.
 * **Listen**:  The Listen button lets you hear the music starting at the Current Time Line.  Press the Spacebar to stop listening and return to where listening started.  While listening the display scrolls and you can hear the notes, but in this version sounding notes are not marked in yellow as they would be while actually playing.
-* **Information Area**:  Hover the mouse pointer over a note and the the left side of the Transport Bar shows details on the note.  Hover over a light or dark grey note track shows the note name and octave of that track.  Drag on the display to select a range of notes and the left side of the toolbar shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.
 
+### Tempo Tools
+
+<img src="../Common/img/TempoTools.jpg" alt="CK" style="width:14%;margin:0px 0px 0px 25px">
+
+### Help Tool
+
+<img src="../Common/img/HelpTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px">
+
+Opens the Concert keyboardist documentation in your default web browser.
 
 ## Editing Toolbar
 
-This documentation is work in progress...
+### Undo and Redo Tools
 
-<img src="../Common/img/CKEditingTools.jpg" alt="CK" style="float:right;width:70%;margin:0 0px 10px 0">
+<img src="../Common/img/UndoRedoTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px">
+
+### Toggle TargetNotes Tool
+
+<img src="../Common/img/ToggleTargetNotesTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px">
+
+### Note Chaining Tools
+
+<img src="../Common/img/NoteChainingTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px">
+
+### Note Velocity Tools
+
+<img src="../Common/img/VelocityTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px">
+
+### Chord Tools
+
+<img src="../Common/img/ChordTools.jpg" alt="CK" style="width:24%;margin:0px 0px 0px 25px">
+
+### Pedal Tools
+
+<img src="../Common/img/PedalTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px">
 
 The Editing Toolbar includes commands to:
 
