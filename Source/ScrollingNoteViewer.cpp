@@ -185,6 +185,10 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
     try
     {
         stopTimer(TIMER_MOUSE_DRAG);
+        const int xDist = abs(selectionAnchor.getX() - event.getPosition().getX());
+        const int yDist = abs(selectionAnchor.getY() - event.getPosition().getY());
+        distanceMouseMovedSinceMouseDown = xDist>yDist ? xDist :yDist;
+//        std::cout << "distanceMouseMovedSinceMouseDown " << distanceMouseMovedSinceMouseDown << std::endl;
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
         const double vert = (event.getPosition().getY() - ViewStateInfo::verticalScale * topMargin) /
                             ViewStateInfo::trackVerticalSize;
@@ -376,7 +380,7 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
             }
         } else if ((hoverChord < 0) && hoveringOver == HOVER_NOTEHEAD)
         {
-            if (!editingNote && !showingVelocities.getValue())
+            if (abs(distanceMouseMovedSinceMouseDown)<=1 && !showingVelocities.getValue())
             {
                 //We do the actual work on the message thread by calling a timer that turns itself off after one tick.
                 if (!draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable() &&

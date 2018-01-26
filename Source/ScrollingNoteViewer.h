@@ -163,6 +163,7 @@ public:
     virtual void mouseWheelMove (const MouseEvent& event,
                                  const MouseWheelDetails& wheel) override;
     virtual void mouseMagnify (const MouseEvent& event, float scaleFactor) override;
+    int distanceMouseMovedSinceMouseDown;
     
     OpenGLContext openGLContext;
     virtual void newOpenGLContextCreated() override;
