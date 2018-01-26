@@ -1311,7 +1311,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 {
                     File::getSpecialLocation(File::currentApplicationFile);
                     String docPath = File::getSpecialLocation(File::currentApplicationFile).
-                            getChildFile("Contents/Resources/Documentation/EN/ckdoc.html").getFullPathName();
+                            getChildFile("Contents/Resources/Documentation/EN/ckdoc.htm").getFullPathName();
                     docPath = "file://" + docPath;
                     std::cout << "doc path " << docPath << "\n";
                     URL docURL = URL(docPath);
