@@ -12,15 +12,15 @@ For questions or comments contact: chrisgr99@gmail.com
 
 ## Quick Introduction to Concert Keyboardist
 
-Concert Keyboardist lets you perform music from a midi file.  It always plays the correct notes, no matter what keys you play.  Each time you press a key on your computer keyboard or an attached midi keyboard, Concert Keyboardist plays the next "Target Note" in the score.  It also autoplays any notes "Chained" off this target note.  When it reaches the next Target Note it waits for you to press another key.  It's up to you to trigger the target notes at times that sound good to you, just like playing them on a real keyboard.
+Concert Keyboardist lets you perform music loaded from a midi file.  It always plays the correct notes, no matter what keys you play.  Each time you press a key on your computer keyboard or an attached midi keyboard, Concert Keyboardist plays the next "Target Note" in the score.  It also autoplays any notes "Chained" off this target note.  When it reaches the next Target Note it waits for you to press another key.  It's up to you to trigger the target notes at times that sound good to you, just like playing them on a real keyboard.
 
 While playing, notes scroll right-to-left.  You choose when to play them and how long to hold them.  On an attached velocity-sensitive midi keyboard note velocity (loudness) is controlled by how hard you press the keys.  If you are playing on a computer keyboard (not velocity sensitive) Concert Keyboardist uses the note velocities from the score.
 
-You can edit imported midi files to make them play how you like and your changes are saved with the Concert Keyboardist [CK] file.
+You can edit a midi files to customize how it plays and your changes can be saved in a Concert Keyboardist (...[CK].mid) file.
 
 ## Installation
 
-Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install: 
+Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winndows 10. To install: 
 
 * Copy the Concert keyboardist application to your Applications folder.  
 * Copy the included folder of example files to anywhere you choose.  Possibly your Desktop, Documents folder, or a folder where you keep midi files. 
@@ -43,15 +43,15 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:
 
 ## Main Window
 
-* Concert Keyboardist is like a "player piano" with the notes shown as horizontal bars.  A note's vertical position shows pitch and its left end shows start time. Its length shows duration.  These times taken from the midi file are guides to playing the notes.  
+* Concert Keyboardist is like a player piano.  Notes are horizontal bars that scroll right to left horizontally.  A note's vertical position shows pitch and its left end shows start time. Its length shows duration.  These times which are read from the midi and guide you when to play notes and how long to hold them.
 * While you play you control actual note start times and durations in real time.  This is like playing sheet music.  The notes are there but you add expression as you play.  You can also control note velocities if you have a velocity sensitive keyboard attached to your computer.
 * The score can be scrolled left or right with the mouse wheel or two finger drag on a touch pad.  The end of the score is at the far right.
 * The blue vertical line is the "Current Time Line" (CTL) which indicates the current playing time in the score.  It turns amber when ready to play and green while you are playing.
 * While you are playing, pressing any key instantly triggers the next magena-headed-note to the right of the Current Time Line.  The magenta notes are Target Notes, the ones that you directly play.
-* When a Target Note is played it also schedules for playing all notes chained from it, up to just before the next target note.  Chained notes are those without magenta heads.  
+* When a Target Note is played it also schedules for playing all notes chained from it up to just before the next target note.  Chained notes are those without magenta heads.  
 * Chained notes are triggered at appropriate times in the future based on the current tempo.
 * After all scheduled chained notes have been played no further notes will sound until you trigger the next target note.
-* Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the flow and rhythm of the music.  The tempo also adjusts to your playing speed.  If you continually play notes before their scheduled time the tempo speeds up and if you play notes behind the tempo slows.
+* Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the flow and rhythm of the music.  The tempo gradually adjusts itself to your playing speed.  If you continually play notes before their scheduled time the tempo speeds up and if you play notes behind the tempo slows.
 
 ## Quick Start to Playing
 * **Load a file:**  You can use the File-Open menu, the toolbar button, or Cmd+O.  A good introductory example is "Minuet in G[ck].mid" which is included with Concert Keyboardist.  It should look something like the above image.
