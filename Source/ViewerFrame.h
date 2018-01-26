@@ -222,7 +222,7 @@ private:
             _humanizeVelocityBox = 21
         };
         
-        void comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+        void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
         {
             std::cout << "in MainToolbarItemFactory comboBoxChanged " << comboBoxThatHasChanged << "\n";
             sendChangeMessage();
@@ -434,12 +434,12 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&) 
+            void textEditorTextChanged(TextEditor&) override
             {
 //                std::cout << "Entering text\n";
                 returnPressed = false;
             }
-            void textEditorReturnKeyPressed (TextEditor&)
+            void textEditorReturnKeyPressed (TextEditor&) override
             {
 //                std::cout << "Return pressed\n";
                 returnPressed = true;
@@ -595,7 +595,7 @@ private:
             _help                = 22
         };
         
-        void comboBoxChanged (ComboBox* comboBoxThatHasChanged) 
+        void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
         {
             std::cout << "in MainToolbarItemFactory comboBoxChanged " << comboBoxThatHasChanged << "\n";
             sendChangeMessage();
@@ -767,12 +767,12 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&)
+            void textEditorTextChanged(TextEditor&) override
             {
                 //                std::cout << "Entering text\n";
                 returnPressed = false;
             }
-            void textEditorReturnKeyPressed (TextEditor&)
+            void textEditorReturnKeyPressed (TextEditor&) override
             {
                 //                std::cout << "Return pressed\n";
                 returnPressed = true;
@@ -821,12 +821,12 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&) 
+            void textEditorTextChanged(TextEditor&)  override
             {
                 //                std::cout << "Entering text\n";
                 returnPressed = false;
             }
-            void textEditorReturnKeyPressed (TextEditor&) 
+            void textEditorReturnKeyPressed (TextEditor&) override
             {
                 //                std::cout << "Return pressed\n";
                 returnPressed = true;
@@ -934,7 +934,7 @@ private:
             void paintButtonArea (Graphics&, int, int, bool, bool) override
             {
             }
-            void textEditorTextChanged(TextEditor&) 
+            void textEditorTextChanged(TextEditor&)  override
             {
                 //                std::cout << "Entering text\n";
                 changed = false;
@@ -948,7 +948,7 @@ private:
             {
                 numberBox.setValueWhenMouseNotDown(val);
             }
-            void textEditorReturnKeyPressed (TextEditor&) 
+            void textEditorReturnKeyPressed (TextEditor&) override
             {
                 double newVal = numberBox.getText().getDoubleValue();
                 if (newVal<numberBox.min) newVal=newVal<numberBox.min;

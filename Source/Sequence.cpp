@@ -302,7 +302,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         for (auto i=0;i<m.getSize();i++)
         {
 //            if (m[i] > 127 )
-                std::cout << "i, m[i] " <<i<<" "<<(uint)(m[i]&0xff)<<" "<<(char)m[i]  << std::endl;
+//                std::cout << "i, m[i] " <<i<<" "<<(uint)(m[i]&0xff)<<" "<<(char)m[i]  << std::endl;
         }
         MD5 md = MD5(m);
         String checksum = md.toHexString();

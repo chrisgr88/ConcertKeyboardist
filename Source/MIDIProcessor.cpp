@@ -1154,7 +1154,7 @@ void MIDIProcessor::processBlock ()
             for (int noteToStart = 0;noteToStart < availableNotes.size();noteToStart++)
             {
                 const int step = availableNotes[noteToStart];
-                float velocity;
+                float velocity = 1.0f;
                // std::cout << timeInTicks << "NoteOn Channel "<< exprEvents[exprEventIndex].getChannel() <<"\n";
                 //The method of computing velocities is determined by the noteOn's midi channel
                 if (exprEvents[exprEventIndex].getChannel() == 16) //Computer keyboard sends on channel 16
@@ -1740,7 +1740,7 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
   bool MIDIProcessor::atPedalChange(PedalType pType)
   {
       const double currentZtlTime = timeInTicks-xInTicksFromViewer;
-      std::vector<Sequence::PedalMessage> *pedalChanges;
+//      std::vector<Sequence::PedalMessage> *pedalChanges;
       if (pType==sustPedal)
       {
           for (int i=0;i<sequenceObject.sustainPedalChanges.size();i+=2)
