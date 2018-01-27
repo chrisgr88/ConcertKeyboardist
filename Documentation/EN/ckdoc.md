@@ -1,4 +1,4 @@
-    
+
 # Concert Keyboardist User's Manual
 
 ### Version and Licensing
@@ -13,36 +13,31 @@ For questions or comments contact: chrisgr99@gmail.com
 ## Quick Introduction to Concert Keyboardist
 
 
-Concert Keyboardist was created for the enjoyment of playing existing midi files live.  Playing Concert Keyboardist feels remarkably 
-like playing a real instrument.   There are many thousands of midi files available for download for free on the Internet, 
-(or you can create your own) and you can play them though as you were a "Concert keybordist" even on just a computer keyboard.
-You play can the notes from any midi file, in real time with your own note timings, durations, velocities and tempo.
+Concert Keyboardist was created for the enjoyment of playing existing midi files live.  Playing Concert Keyboardist feels remarkably like playing a real instrument.  There are many thousands of midi files available for download for free on the Internet, 
+(or you can create your own) and you can play them as though you were a "Concert keybordist" even on just a computer keyboard.
+You play the notes in real time with your own note timings, durations, velocities and tempo.
 
-Concert Keyboardist **always** plays the correct notes, **no matter what keys or notes you play**.  Each time you press a key on your 
-keyboard, Concert Keyboardist plays the next "Target Note" in the score.  It them autoplays at the correct times any notes "Chained" 
-off the target note.  When it reaches the next Target Note it waits for you to press another key.  It's up to you to trigger the 
-target notes at times that sound good to you, like playing them on a real instrument.
+Concert Keyboardist **always** plays the correct notes, **no matter what keys or notes you play**.  Each time you press a key on your keyboard, Concert Keyboardist plays the next "Target Note" in the score.  Them it autoplays any notes "Chained" off the target note, at the correct times.  When it reaches the next Target Note it waits for you to press another key.  If you try to trigger the next target note while the previous chained notes are still playing, it and its chained notes are added to the currently playing chain.
 
-Notes scroll right-to-left as you play, at a rate approximately determined by the tempo from the midi file.  You choose when to play each 
-target note and how long to hold it.  On an attached velocity-sensitive midi keyboard you can also control note velocity (loudness) 
-by how  hard you press the key that triggers it.  The velocity of any notes chained off the target note are also adjusted proportionally.
+It's up to you to trigger the flowing target notes at times that sound good to you, like playing a real instrument, but easier.  
+
+Notes scroll right-to-left as you play, at a rate approximately determined by the tempo from the midi file.  You control when to play each target note and how long to hold it.  On an attached velocity-sensitive midi keyboard you can also control note velocity (loudness) by how  hard you press the key that triggers it.  The velocity of any notes chained off the target note are also adjusted proportionally.
 
 If you are playing on a computer keyboard (i.e. not velocity sensitive) Concert Keyboardist uses the note velocities from the score.
 
-Concert Keyboardist gradually adjusts its tempo to the tempo you choose to play so you are not locked to the tempo in the midi file.
+Concert Keyboardist gradually adjusts its tempo (rate of scrolling) to match to your current tempo.  You are not locked to the tempo in the midi file.
 
-You can also edit midi files to customize how they play and you can save your changes in a Concert Keyboardist file.
+You can also edit details of midi files to customize how they play and save your changes in a Concert Keyboardist file.
 
-It's important to realize however that in this version of Concert keyboardist it's not possible to add or remove notes (maybe in a
-future version).  However you can load and play midi files that you create in some other application.
+It's important to realize however that in this version of Concert keyboardist **it's not possible to add or remove notes** (maybe in a future version).  However you can load and play midi files that you create in some other application.
 
 ## Installation
 
-Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winndows 10. To install: 
+Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Windows 10. To install: 
 
 * Copy the Concert keyboardist application to your Applications folder.  
-* Copy the included folder of example files to anywhere you choose.  Possibly your Desktop, Documents folder, or a folder where you keep midi files. 
-* Concert keyboardist currently does not make sound of its own.  It sends midi messages and you need to route theme to a software synthesizer (or hardware synthesizer).  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  Also GarageBand automatically received midi message from all output ports on you system so it automatically receives from the Concert Keyboardist default output.
+* Copy the included folder of example files to anywhere you choose.  Possibly your Documents folder, Desktop, or a folder where you keep midi files. 
+* Concert keyboardist currently does not make sound of its own.  It sends midi messages and you need to route theme to a software synthesizer (or hardware synthesizer).  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  Also GarageBand automatically receives midi messages from all midi output ports on your system so it automatically receives from the Concert Keyboardist default output.
 * Setup with GarageBand: 
     * Download and install GarageBand (it's free to Mac owners).  
     * Open GarageBand.
@@ -57,30 +52,33 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winn
 
 <!-- ![](../Common/img/CKMainWindow.jpg) -->
 
-<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:70%;margin:0px 10px 10px 10px">
+<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:75%;margin:0px 10px 10px 10px">
 
 ## Main Window
 
-* Concert Keyboardist is like a player piano.  Notes are horizontal bars that scroll right to left horizontally.  A note's vertical position shows pitch and its left end shows start time. Its length shows duration.  These times which are read from the midi and guide you when to play notes and how long to hold them.
-* While you play you control actual note start times and durations in real time.  This is like playing sheet music.  The notes are there but you add expression as you play.  You can also control note velocities if you have a velocity sensitive keyboard attached to your computer.
-* The score can be scrolled left or right with the mouse wheel or two finger drag on a touch pad.  The end of the score is at the far right.
-* The blue vertical line is the "Current Time Line" (CTL) which indicates the current playing time in the score.  It turns amber when ready to play and green while you are playing.
-* While you are playing, pressing any key instantly triggers the next magena-headed-note to the right of the Current Time Line.  The magenta notes are Target Notes, the ones that you directly play.
-* When a Target Note is played it also schedules for playing all notes chained from it up to just before the next target note.  Chained notes are those without magenta heads.  
+* Concert Keyboardist is like a player piano.  **Notes** are horizontal bars that scroll right to left horizontally based on the current **tempo**.  A note's vertical position shows pitch and its left end shows start time. Its length shows duration.  This information is read from the midi file and guides you when to play notes and how long to hold them.
+* While you play you control **actual note start times and durations** in real time.  This is like playing sheet music.  The notes are there but you add expression as you play.  You can also control note velocities if you have a velocity sensitive keyboard attached to your computer.
+* The score can be **scrolled** left or right with the mouse wheel or two finger drag on a touch pad.  The end of the score is at the far right.
+* The blue vertical line is the **"Current Time Line"** (CTL) which indicates the current playing time in the score.  It turns amber when ready to play and green while you are playing.
+* While you are playing, pressing any key instantly triggers the next unplayed **Target Note**, magenta-headed-notes.  The these are the notes you directly play.
+* When a Target Note is played it also schedules for playing all notes **chained** from it up to just before the next target note.  Chained notes are those without magenta heads.  
 * Chained notes are triggered at appropriate times in the future based on the current tempo.
 * After all scheduled chained notes have been played no further notes will sound until you trigger the next target note.
-* Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the flow and rhythm of the music.  The tempo gradually adjusts itself to your playing speed.  If you continually play notes before their scheduled time the tempo speeds up and if you play notes behind the tempo slows.
+* Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the **flow and rhythm** of the music.  The **tempo** gradually adjusts itself to your playing speed.  If you continually play notes before their scheduled time the tempo speeds up and if you play notes behind the tempo slows.
+* If you try to play the next target note while previously chained notes are still playing, that target note and its chained notes are added to the previous chain.
+* Each time you trigger a target note a vertical yellow **"Relative Time Line"** is drawn at that exact position as a guide to when to play the next target note.  To play the upcoming target note at the current tempo, play it when it reaches the Relative Time Line.  You are free to play it earlier or later which alters the timing of that note and its chained notes.  i.e. The feel or rhythm of the music.  If you continue playing early or late the tempo gradually slows or speeds up.
+
 
 ## Quick Start to Playing
 * **Load a file:**  You can use the File-Open menu, the toolbar button, or Cmd+O.  A good introductory example is "Minuet in G[ck].mid" which is included with Concert Keyboardist.  It should look something like the above image.
 * **Prepare to play:**  Press the spacebar.  This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play.  In this mode as soon as you press a key the note at the CTL is played and the note bars start scrolling to the left.  The scroll rate is based on the tempo.
-* **Triggering Notes:** On your computer keyboard press any letter key except "r", "s" and "f", or any of the characters "[ ] ; ' < > and /".  On an English language keyboard these are the rows from "q" to "]", from "a" to " ' " and from "z" to "/".  If you are using a midi keyboard playing **any** note triggers the next target note.
+* **Triggering Notes:** On your computer keyboard press any letter key, or any of the characters "[ ] ; ' < > and /".  On an English language keyboard these are the rows from "q" to "]", from "a" to " ' " and from "z" to "/".  If you are using a midi keyboard playing **any** note triggers the next target note.
 * **Note Timing:** To play at the original tempo and rhythm press a key each time a target note reaches the Current Time Line.  You can play with one finger, or two or more fingers to play faster or smoother.  
-* **Stopping:** Press the spacebar again, or press the 'r' key for rewind, or roll the mouse wheel to scroll left or right.
+* **Stopping:** Press the spacebar again, or press the Return key for rewind, or roll the mouse wheel to scroll left or right.
 * **Yellow note heads** are those that are currently sounding.  As you play, notice that long notes continue sounding even as you trigger shorter simultaneous notes.
-* **Chords:** In the "Minuet in G" example the top notes of chords are target notes.  Simultaneous chord notes are chained from them, like any other chained notes.  This allows chords to be triggered by one note..
-* **Trills** are also like any other chained notes.  For example in bar 8 of Minuet in G the notes are chained making them easier to play.
-* **Rewind:** Press the 'r' key.  The first time you press "r" the transport rewinds to the place you most recently started.  A second press returns to the start.  You can also press "r" while the transport is running to stop and transport and rewind in one step.
+* **Chords:** In the "Minuet in G" example the top notes of chords are target notes.  Simultaneous or nearby chord notes are chained from them, like any other chained notes.  This allows chords to be triggered by one note..
+* **Trills** are like any other chained notes.  For example in bar 8 of Minuet in G the notes are chained making them easier to play.
+* **Rewind:** Press the Return key.  The first time you press Return the transport rewinds to the place you most recently started.  A second press returns to the start.  You can also press Return while the transport is running to stop and transport and rewind in one step.
 * **Basic Editing** You can edit which notes are target notes.  Click on the head a note to toggle its target vs chained status. Setting a note to be chained causes it to be added to the chain of the preceding target note.
 * **Playing legato notes** This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions.  If you play with at least two fingers you can overlap the on and off times of successive notes to create legato as in normal piano playing.  
 * **The Relative Time Line:** This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played this note.  In playing expressively you may be triggering notes before or after the Current Time Line.  It's helpful to have a relative time marker showing when notes were actually played, not when they were suggested to be played.  Experiment with playing notes before or after the Current Time Line to understand this better.  The yellow line remains after you stop playing to mark the last note played before stopping.
