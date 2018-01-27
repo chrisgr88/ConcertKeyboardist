@@ -7,9 +7,13 @@
 <h2 id="contact-information">Contact Information</h2>
 <p>For questions or comments contact: chrisgr99@gmail.com</p>
 <h2 id="quick-introduction-to-concert-keyboardist">Quick Introduction to Concert Keyboardist</h2>
-<p>Concert Keyboardist lets you perform music loaded from a midi file. It always plays the correct notes, no matter what keys you play. Each time you press a key on your computer keyboard or an attached midi keyboard, Concert Keyboardist plays the next &quot;Target Note&quot; in the score. It also autoplays any notes &quot;Chained&quot; off this target note. When it reaches the next Target Note it waits for you to press another key. It's up to you to trigger the target notes at times that sound good to you, just like playing them on a real keyboard.</p>
-<p>While playing, notes scroll right-to-left. You choose when to play them and how long to hold them. On an attached velocity-sensitive midi keyboard note velocity (loudness) is controlled by how hard you press the keys. If you are playing on a computer keyboard (not velocity sensitive) Concert Keyboardist uses the note velocities from the score.</p>
-<p>You can edit a midi files to customize how it plays and your changes can be saved in a Concert Keyboardist (...[CK].mid) file.</p>
+<p>Concert Keyboardist was created for the enjoyment of playing existing midi files live. Playing Concert Keyboardist feels remarkably like playing a real instrument. There are many thousands of midi files available for download for free on the Internet, (or you can create your own) and you can play them though as you were a &quot;Concert keybordist&quot; even on just a computer keyboard. You play can the notes from any midi file, in real time with your own note timings, durations, velocities and tempo.</p>
+<p>Concert Keyboardist <strong>always</strong> plays the correct notes, <strong>no matter what keys or notes you play</strong>. Each time you press a key on your keyboard, Concert Keyboardist plays the next &quot;Target Note&quot; in the score. It them autoplays at the correct times any notes &quot;Chained&quot; off the target note. When it reaches the next Target Note it waits for you to press another key. It's up to you to trigger the target notes at times that sound good to you, like playing them on a real instrument.</p>
+<p>Notes scroll right-to-left as you play, at a rate approximately determined by the tempo from the midi file. You choose when to play each target note and how long to hold it. On an attached velocity-sensitive midi keyboard you can also control note velocity (loudness) by how hard you press the key that triggers it. The velocity of any notes chained off the target note are also adjusted proportionally.</p>
+<p>If you are playing on a computer keyboard (i.e. not velocity sensitive) Concert Keyboardist uses the note velocities from the score.</p>
+<p>Concert Keyboardist gradually adjusts its tempo to the tempo you choose to play so you are not locked to the tempo in the midi file.</p>
+<p>You can also edit midi files to customize how they play and you can save your changes in a Concert Keyboardist file.</p>
+<p>It's important to realize however that in this version of Concert keyboardist it's not possible to add or remove notes (maybe in a future version). However you can load and play midi files that you create in some other application.</p>
 <h2 id="installation">Installation</h2>
 <p>Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winndows 10. To install:</p>
 <ul>
@@ -63,6 +67,17 @@
 </li>
 <li><strong>The Relative Time Line:</strong> This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played this note. In playing expressively you may be triggering notes before or after the Current Time Line. It's helpful to have a relative time marker showing when notes were actually played, not when they were suggested to be played. Experiment with playing notes before or after the Current Time Line to understand this better. The yellow line remains after you stop playing to mark the last note played before stopping.</li>
 </ul>
+<h2 id="navigating-around-the-score">Navigating Around The Score</h2>
+<ul>
+<li><strong>Scroll</strong> with the touchpad or mouse wheel.<br />
+</li>
+<li>Press the <strong>Return Key</strong> to go where you most recently started playing. Press a second time to return to the start.</li>
+<li><strong>The Right and Left arrow keys</strong> step one target note at a time forward or backward in the score.</li>
+<li><strong>The Shift+Right and Shift+Left arrow keys</strong> step one measure at a time forward or backward in the score.</li>
+<li><strong>Bookmarks:</strong> Cmd+Right Arrow and Cmd+Left Arrow (Ctrl on Windows) step one bookmark at a time forward or backward in the score.</li>
+<li>Press Cmd+b to create a bookmark at the Current Time Line. To delete a bookmark press Cmd+b with the bookmark already at the Current Time Line.</li>
+</ul>
+<p>There is much more to know about editing. More detail will be included in a future version of this document.</p>
 <h2 id="main-toolbar">Main Toolbar</h2>
 <h3 id="information-area-left-of-both-toolbars">Information Area (left of both toolbars)</h3>
 <p>Hover the mouse pointer over a note and the the left side of the Transport Bar shows details on the note. Hover over a light or dark grey note track shows the note name and octave of that track. Drag on the display to select a range of notes and the left side of the toolbar shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.</p>
@@ -94,19 +109,69 @@ At least one track must be enabled.<br />
 </ul>
 <h3 id="hideshow-editing-tools">Hide/Show Editing Tools</h3>
 <p><img src="../Common/img/ToggleEditToolbarTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
-<p>The Editing Toolbar defaults to being hidden. Click the &quot;Hide/Show Editing Tools&quot; button to show the editing toolbar and click again to hide it. The editing toolbar also automatically is hidden when you start playing and reappears when you stop.</p>
+<ul>
+<li>The Editing Toolbar defaults to being hidden.<br />
+</li>
+<li>Click the &quot;Hide/Show Editing Tools&quot; button to show the editing toolbar and click again to hide it.<br />
+</li>
+<li>The editing toolbar also automatically is hidden when you start playing and reappears when you stop.</li>
+<li>The keyboard shortcut hode/show the edit toolbar is is Cmd+e (Mac) and Ctrl+e (Windows).</li>
+</ul>
 <h3 id="bookmark-tool">Bookmark Tool</h3>
 <p><img src="../Common/img/BookmarkTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
-<p>Bookmark Tool:</p>
+<ul>
+<li>Adds or removes bookmarks that allow you to quickly return to a place in the score:</li>
+<li>Use the keyboard shortcuts Cmd+Right/Left Arrow (Mac) or Ctrl+Right/eft Arrow (Windows) to step between bookmarks.</li>
+<li>Click the Bookmark Tool to add a bookmark at the position of the Current Time Line.</li>
+<li>The Bookmark Tool turns into a Remove Bookmark Tool when any bookmark is directly above the Current Time Line. Click the button to remove the bookmark.</li>
+<li>The keyboard shortcut for add/remove bookmark is Cmd+b (Mac) and Ctrl+b (Windows).</li>
+</ul>
 <h3 id="transport-tools">Transport Tools</h3>
 <p><img src="../Common/img/TransportTools.jpg" alt="CK" style="width:12%;margin:0px 0px 0px 25px"></p>
 <ul>
-<li><strong>Tempo</strong>: Concert Keyboardist shows two tempo numbers on the transport bar. The first is the original tempo from the midi file and the second is the actual playing tempo. You can set the playing tempo to be faster or slower than the original tempo by dragging up or down on the number. The tempo from the midi file can vary with position in the score and as the transport moves the displayed playing tempo is maintained at a constant ratio to the original tempo.</li>
-<li><strong>Play</strong>, <strong>Stop</strong>, <strong>Rewind</strong>: Pressing the Play button turns the Current Time Line orange. The next key you press will play the note at the Current Time Line and start the display scrolling. Pressing Stop halts the display and also ends notes that were sounding. Pressing Rewind once moves the display back to the first note you played. Pressing Rewind again moves the display to the start of the score. Pressing it again returns again to the first note you played. You will actually find it much easier to use the keyboard shortcuts for these buttons. Pressing the Spacebar when not playing is equivalent to pressing the Play button. Pressing the Spacebar when playing is equivalent to pressing the Stop button. Pressing the &quot;r&quot; key is equivalent to pressing the Rewind button.</li>
 <li><strong>Listen</strong>: The Listen button lets you hear the music starting at the Current Time Line. Press the Spacebar to stop listening and return to where listening started. While listening the display scrolls and you can hear the notes, but in this version sounding notes are not marked in yellow as they would be while actually playing.</li>
+<li><strong>Rewind</strong>:
+<ul>
+<li>Pressing Rewind once moves the display back to the first note you played the last time you started playing.<br />
+</li>
+<li>Pressing Rewind again moves the display to the start of the score.<br />
+</li>
+<li>Pressing it again returns again to the to the first note you played the last time you started playing.<br />
+</li>
+<li>Press the Return key as a keyboard shortcut for Rewind.</li>
+</ul></li>
+<li><strong>Play</strong>
+<ul>
+<li>Pressing the Play button turns the Current Time Line orange but does not start the score scrolling.<br />
+</li>
+<li>The next playable key you press will trigger the Target Note that is at at the Current Time Line.</li>
+<li>The display will start scrolling.</li>
+<li>Press the Spacebar when not playing is is a keyboard shortcut for Play.</li>
+</ul></li>
+<li><strong>Stop</strong>
+<ul>
+<li>Pressing the Stop button stops the display scrolling and sends not-offs for any notes that are on.</li>
+<li>Press the Spacebar when playing as a keyboard shortcut for Stop.</li>
+</ul></li>
 </ul>
-<h3 id="tempo-tools">Tempo Tools</h3>
+<h3 id="red-tempo-graph-and-tempo-tools">Red Tempo Graph and Tempo Tools</h3>
 <p><img src="../Common/img/TempoTools.jpg" alt="CK" style="width:14%;margin:0px 0px 0px 25px"></p>
+<ul>
+<li>The Tempo Graph is the red horizontal line on the Concert Keyboardist display. It graphs the <strong>original tempo</strong> at each position in the score. The tempo in midi file may have been confugured to with position in the score as dicated by the music.</li>
+<li>Note that Midi files that were originally recorded live, such by recording from a midi keyboard, usually don't include tempo variations.... TBD</li>
+<li>The first number in the toolbar tempo tools is the tempo in beats per minute at the Current Time Line.</li>
+<li>To see the tempo at a given position in the score, scroll the score so that position is at the Current Time Line.</li>
+<li>You adjust how fast the entire score will play by by dragging up or down on the tempo number. You will see the red line move up or down.<br />
+</li>
+<li>Next to the tempo number is a <strong>percentage</strong> showing the ratio of the actual playing tempo as compared to the original score tempo.<br />
+As you drag up/down on the temp number the percentage number will be updated to show how the currently selected tempo is of the original score tempo.</li>
+<li><p>Normally this will change the tempo everywhere in the score keeping the tempo everywhere to be the same ratio ....</p></li>
+<li>The Tempo Change Tool
+<ul>
+<li>Inserts a &quot;Tempo Change Bookmark&quot; that allows a change in the ratio of the played tempo to the original tempo.</li>
+<li>To remove a tempo change...</li>
+</ul></li>
+</ul>
 <h3 id="help-tool">Help Tool</h3>
 <p><img src="../Common/img/HelpTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
 <p>Opens the Concert keyboardist documentation in your default web browser.</p>
@@ -137,15 +202,6 @@ At least one track must be enabled.<br />
 <p><strong>Selecting Notes</strong>: Many commands act on &quot;selected notes&quot;. To select a range of notes move the mouse pointer to anywhere not on a note bar, press the left mouse button and drag over the heads of notes to be selected and release the mouse button. The head of each selected note will be surrounded by a white box. To clear the selection click anywhere there is not a note bar.</p>
 <h3 id="editing-note-start-times-and-durations">Editing Note Start Times and Durations</h3>
 <h3 id="editing-note-velocities">Editing Note Velocities</h3>
-<h2 id="navigation">Navigation</h2>
-<p>Here are some shortcut keys to help you move backward and foreward through the score:</p>
-<ul>
-<li><strong>The Right and Left arrow keys</strong> step you one target note at a time forward or backward in the score.</li>
-<li><strong>The Shift+Right and Shift+Left arrow keys</strong> step you one measure at a time forward or backward in the score.</li>
-<li><strong>Bookmarks:</strong> You can create a bookmark at the position of the Current Time Line by pressing Cmd+b. To delete a bookmark go to it and press Cmd+b again.</li>
-<li><strong>The Cmd+Right and Cmd+Left arrow keys</strong> step you one bookmark at a time forward or backward in the score.</li>
-</ul>
-<p>There is much more to know about editing. More detail will be included in a future version of this document.</p>
 <h2 id="menu-commands">Menu Commands</h2>
 <ul>
 <li><p>File Menu</p>
