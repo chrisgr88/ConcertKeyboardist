@@ -57,7 +57,7 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winn
 
 <!-- ![](../Common/img/CKMainWindow.jpg) -->
 
-<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:70%;margin:0px 10px 10px 10px">
+<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:75%;margin:0px 10px 10px 10px">
 
 ## Main Window
 
@@ -91,16 +91,19 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Winn
 * **Scroll** with the touchpad or mouse wheel.  
 * Press the **Return Key** to go where you most recently started playing.  Press a second time to return to the start.
 * **The Right and Left arrow keys** step one target note at a time forward or backward in the score.
-* **The Shift+Right and Shift+Left arrow keys** step one measure at a time forward or backward in the score.
+* **The Shift+Right Arrow and Shift+Left Arrow keys** step one measure at a time forward or backward in the score.
 * **Bookmarks:** Cmd+Right Arrow and Cmd+Left Arrow (Ctrl on Windows) step one bookmark at a time forward or backward in the score.
 *  Press Cmd+b to create a bookmark at the Current Time Line.  To delete a bookmark press Cmd+b with the bookmark already at the 
 Current Time Line.
 
+## The Information Area 
+
+<img src="../Common/img/Information Area.jpg" alt="CK" style="width:30%;margin:0px 0px 0px 10px">
+
+The Information Area is in the lower left of the main window.  Hovering the mouse pointer over a note bar shows details on the note.  Hovering over a light or dark grey note track reveals the note name and octave of that track.  Dragging on the display to select 
+a range of notes shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.
+
 ## Main Toolbar
-
-###Information Area (left of both toolbars)
-
-Hover the mouse pointer over a note and the the left side of the Transport Bar shows details on the note.  Hover over a light or dark grey note track shows the note name and octave of that track.  Drag on the display to select a range of notes and the left side of the toolbar shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.
 
 ### File Management Tools
 
@@ -174,12 +177,12 @@ Click the button to remove the bookmark.
     * Pressing the Stop button stops the display scrolling and sends not-offs for any notes that are on.
     * Press the Spacebar when playing as a keyboard shortcut for Stop.
 
-### Red Tempo Graph and Tempo Tools
+### Tempo Graph and Tempo Tools
 
 <img src="../Common/img/TempoTools.jpg" alt="CK" style="width:14%;margin:0px 0px 0px 25px">
 
 * The Tempo Graph is the red horizontal line on the Concert Keyboardist display.  It graphs the **original tempo** at each 
-position in the score. The tempo in midi file may have been confugured to with position in the score as dicated by the music.
+position in the score. The tempo in midi file may have been configured to with position in the score as dicated by the music.
 * Note that Midi files that were originally recorded live, such by recording from a midi keyboard, usually don't include tempo
 variations.... TBD 
 * The first number in the toolbar tempo tools is the tempo in beats per minute at the Current Time Line.
