@@ -28,8 +28,6 @@
           </GROUP>
           <GROUP id="{951D2AD0-EB82-7F53-633D-B3E46740A152}" name="EN">
             <FILE id="A76vBD" name="builddoc.sh" compile="0" resource="1" file="Documentation/EN/builddoc.sh"/>
-            <FILE id="I4qROh" name="BuildHtmlWithPandoc.sh" compile="0" resource="1"
-                  file="Documentation/EN/BuildHtmlWithPandoc.sh"/>
             <FILE id="BPk5z1" name="ckdoc.htm" compile="0" resource="1" file="Documentation/EN/ckdoc.htm"/>
             <FILE id="MrHWHN" name="ckdoc.md" compile="0" resource="1" file="Documentation/EN/ckdoc.md"/>
           </GROUP>

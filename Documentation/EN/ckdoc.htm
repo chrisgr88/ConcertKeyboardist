@@ -80,15 +80,23 @@
 <li><strong>Bookmarks:</strong> Cmd+Right Arrow and Cmd+Left Arrow (Ctrl on Windows) step one bookmark at a time forward or backward in the score.</li>
 <li>Press Cmd+b to create a bookmark at the Current Time Line. To delete a bookmark press Cmd+b with the bookmark already at the Current Time Line.</li>
 </ul>
-<h2 id="the-information-area">The Information Area</h2>
+<h2 id="note-information-viewer">Note Information Viewer</h2>
 <p><img src="../Common/img/Information Area.jpg" alt="CK" style="width:30%;margin:0px 0px 0px 10px"></p>
-<p>The Information Area is in the lower left of the main window. Hovering the mouse pointer over a note bar shows details on the note. Hovering over a light or dark grey note track reveals the note name and octave of that track. Dragging on the display to select a range of notes shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.</p>
+<p>The Note Information Viewer is in the lower left corner of the main window. Hovering the mouse pointer over a note bar shows details on the note. Hovering over a light or dark grey note track reveals the note name and octave of that track. Dragging on the display to select a range of notes shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.</p>
 <h2 id="main-toolbar">Main Toolbar</h2>
 <h3 id="file-management-tools">File Management Tools</h3>
 <p><img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px"></p>
-<p>There are &quot;File Open&quot;, &quot;File Save&quot; and &quot;File Save As&quot; tools. These do the same as the &quot;Open&quot;, &quot;Save&quot; and &quot;Save As&quot; commands in the File menu, and are very similar to commands you are probably know from other applications.</p>
+<p>There are buttons for &quot;File Open&quot;, &quot;File Save&quot; and &quot;File Save As&quot;. These do the same as the &quot;Open&quot;, &quot;Save&quot; and &quot;Save As&quot; commands in the File menu, and are very similar to commands you are probably know from other applications.</p>
+<p>File Open will open either normal midi files (extension .mid) or Concert Keyboardist files (extension [CK].mid). Opening a normal midi file automatically imports it.</p>
+<p>When you save a file, it becomes a Concert keyboardist file and the [CK] marker is added before the extension. Because it's also a normal midi files you should be able to load it into any other application that loads midi files.</p>
+<p>If you re-save a [CK].mid file from another application Concert Keyboardist may or may not retain any customizations. These are in an extra track encoded in &quot;system exclusive&quot; format. Whether another application retains sysex tracks depends on the application.</p>
 <h3 id="plugin-management-tools">Plugin Management Tools</h3>
 <p><img src="../Common/img/PluginManagementTools.jpg" alt="CK" style="width:6%;margin:0px 5px 0px 25px"></p>
+<p>There are two plugin related tools:</p>
+<ul>
+<li>The first tool reveals a menu where you can choose a plugin to load, a command to scan for plugins, and a command to unload the current plugin, if needed. You can load VST, VST3 plugins on Mac or Windows, and Audio Unit plugins on Mac. Only instrument plugins can be loaded, and only one at a time.</li>
+<li>The second tool is for opening the current plugin's window.</li>
+</ul>
 <h3 id="settings-tools">Settings Tools</h3>
 <p><img src="../Common/img/SettingsTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px"> There are two settings tools:</p>
 <ul>
@@ -168,11 +176,11 @@ At least one track must be enabled.<br />
 </li>
 <li>Next to the tempo number is a <strong>percentage</strong> showing the ratio of the actual playing tempo as compared to the original score tempo.<br />
 As you drag up/down on the temp number the percentage number will be updated to show how the currently selected tempo is of the original score tempo.</li>
-<li><p>Normally this will change the tempo everywhere in the score keeping the tempo everywhere to be the same ratio ....</p></li>
+<li>Normally this will change the tempo everywhere in the score keeping the tempo everywhere to be the same ratio TBD</li>
 <li>The Tempo Change Tool
 <ul>
 <li>Inserts a &quot;Tempo Change Bookmark&quot; that allows a change in the ratio of the played tempo to the original tempo.</li>
-<li>To remove a tempo change...</li>
+<li>To remove a tempo change TBD</li>
 </ul></li>
 </ul>
 <h3 id="help-tool">Help Tool</h3>

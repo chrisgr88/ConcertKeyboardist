@@ -38,7 +38,7 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Wind
 
 * Copy the Concert keyboardist application to your Applications folder.  
 * Copy the included folder of example files to anywhere you choose.  Possibly your Documents folder, Desktop, or a folder where you keep midi files. 
-* Concert keyboardist currently does not make sound of its own.  It sends midi messages and you need to route theme to a software synthesizer (or hardware synthesizer).  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  Also GarageBand automatically receives midi messages from all midi output ports on your system so it automatically receives from the Concert Keyboardist default output.
+* TBD Concert keyboardist currently does not make sound of its own.  It sends midi messages and you need to route theme to a software synthesizer (or hardware synthesizer).  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  Also GarageBand automatically receives midi messages from all midi output ports on your system so it automatically receives from the Concert Keyboardist default output.
 * Setup with GarageBand: 
     * Download and install GarageBand (it's free to Mac owners).  
     * Open GarageBand.
@@ -95,11 +95,11 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Wind
 *  Press Cmd+b to create a bookmark at the Current Time Line.  To delete a bookmark press Cmd+b with the bookmark already at the 
 Current Time Line.
 
-## The Information Area 
+## Note Information Viewer 
 
 <img src="../Common/img/Information Area.jpg" alt="CK" style="width:30%;margin:0px 0px 0px 10px">
 
-The Information Area is in the lower left of the main window.  Hovering the mouse pointer over a note bar shows details on the note.  Hovering over a light or dark grey note track reveals the note name and octave of that track.  Dragging on the display to select 
+The Note Information Viewer is in the lower left corner of the main window.  Hovering the mouse pointer over a note bar shows details on the note.  Hovering over a light or dark grey note track reveals the note name and octave of that track.  Dragging on the display to select 
 a range of notes shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.
 
 ## Main Toolbar
@@ -108,15 +108,23 @@ a range of notes shows details of the selection: The time in ticks of its first 
 
 <img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px">
 
-There are "File Open", "File Save" and "File Save As" tools.  These do the same as the "Open", "Save" and 
+There are buttons for "File Open", "File Save" and "File Save As".  These do the same as the "Open", "Save" and 
 "Save As" commands in the File menu, and are very similar to commands you are probably know from other applications.
+
+File Open will open either normal midi files (extension .mid) or Concert Keyboardist files (extension [CK].mid).  Opening a normal midi file automatically imports it.  
+
+When you save a file, it becomes a Concert keyboardist file and the [CK] marker is added before the extension.  Because it's also a normal midi files you should be able to load it into any other application that loads midi files.  
+
+If you re-save a [CK].mid file from another application Concert Keyboardist may or may not retain any customizations.  These are in an extra track encoded in "system exclusive" format.  Whether another application retains sysex tracks depends on the application.
 
 ### Plugin Management Tools
 
 <img src="../Common/img/PluginManagementTools.jpg" alt="CK" style="width:6%;margin:0px 5px 0px 25px">
 
+There are two plugin related tools:
 
-
+* The first tool reveals a menu where you can choose a plugin to load, a command to scan for plugins, and a command to unload the current plugin, if needed.  You can load VST, VST3 plugins on Mac or Windows, and Audio Unit plugins on Mac.  Only instrument plugins can be loaded, and only one at a time.
+* The second tool is for opening the current plugin's window.
 
 ### Settings Tools
 
@@ -192,11 +200,10 @@ move up or down.
 As you drag up/down on the temp number the percentage number will be updated to show how the currently selected tempo is of the 
 original score tempo.
 * Normally this will change the tempo everywhere in the score keeping the tempo everywhere to be the 
-same ratio ....
-
+same ratio TBD
 * The Tempo Change Tool
     * Inserts a "Tempo Change Bookmark" that allows a change in the ratio of the played tempo to the original tempo.
-    * To remove a tempo change...
+    * To remove a tempo change TBD
 
 ### Help Tool
 

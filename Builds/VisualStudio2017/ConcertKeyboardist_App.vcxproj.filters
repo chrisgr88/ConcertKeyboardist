@@ -4151,9 +4151,6 @@
     <None Include="..\..\Documentation\EN\builddoc.sh">
       <Filter>ConcertKeyboardist\Source\Resources\Documentation\EN</Filter>
     </None>
-    <None Include="..\..\Documentation\EN\BuildHtmlWithPandoc.sh">
-      <Filter>ConcertKeyboardist\Source\Resources\Documentation\EN</Filter>
-    </None>
     <None Include="..\..\Documentation\EN\ckdoc.htm">
       <Filter>ConcertKeyboardist\Source\Resources\Documentation\EN</Filter>
     </None>
