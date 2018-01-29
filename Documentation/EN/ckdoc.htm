@@ -8,6 +8,7 @@
 <p>For questions or comments contact: chrisgr99@gmail.com</p>
 <h2 id="quick-introduction-to-concert-keyboardist">Quick Introduction to Concert Keyboardist</h2>
 <p>Concert Keyboardist was created for the enjoyment of playing existing midi files live. Playing Concert Keyboardist feels remarkably like playing a real instrument. There are many thousands of midi files available for download for free on the Internet, (or you can create your own) and you can play them as though you were a &quot;Concert keybordist&quot; even on just a computer keyboard. You play the notes in real time with your own note timings, durations, velocities and tempo.</p>
+<p><img src="../Common/img/Pathetique.jpg" alt="CK" style="width:100%;margin:20px 0px 10px 0px"></p>
 <p>Concert Keyboardist <strong>always</strong> plays the correct notes, <strong>no matter what keys or notes you play</strong>. Each time you press a key on your keyboard, Concert Keyboardist plays the next &quot;Target Note&quot; in the score. Them it autoplays any notes &quot;Chained&quot; off the target note, at the correct times. When it reaches the next Target Note it waits for you to press another key. If you try to trigger the next target note while the previous chained notes are still playing, it and its chained notes are added to the currently playing chain.</p>
 <p>It's up to you to trigger the flowing target notes at times that sound good to you, like playing a real instrument, but easier.</p>
 <p>Notes scroll right-to-left as you play, at a rate approximately determined by the tempo from the midi file. You control when to play each target note and how long to hold it. On an attached velocity-sensitive midi keyboard you can also control note velocity (loudness) by how hard you press the key that triggers it. The velocity of any notes chained off the target note are also adjusted proportionally.</p>
@@ -15,13 +16,16 @@
 <p>Concert Keyboardist gradually adjusts its tempo (rate of scrolling) to match to your current tempo. You are not locked to the tempo in the midi file.</p>
 <p>You can also edit details of midi files to customize how they play and save your changes in a Concert Keyboardist file.</p>
 <p>It's important to realize however that in this version of Concert keyboardist it's not possible to add or remove notes (maybe in a future version). However you can load and play midi files that you create in some other application.</p>
-<h2 id="installation">Installation</h2>
-<p>Concert Keyboardist is compatible with Mac OS 10.6 or higher, Windows 7 and Windows 10. To install:</p>
+<h2 id="installation-and-setup-on-a-macintosh">Installation and Setup on a Macintosh</h2>
+<p>Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:</p>
 <ul>
 <li>Copy the Concert keyboardist application to your Applications folder.<br />
 </li>
 <li>Copy the included folder of example files to anywhere you choose. Possibly your Documents folder, Desktop, or a folder where you keep midi files.</li>
-<li>Concert keyboardist currently does not make sound of its own. It sends midi messages and you need to route theme to a software synthesizer (or hardware synthesizer). The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from. Also GarageBand automatically receives midi messages from all midi output ports on your system so it automatically receives from the Concert Keyboardist default output.</li>
+<li>Concert keyboardist can produce sound either by loading a VST or Audio Unit plugin, or by sending midi to another application.<br />
+</li>
+<li>If you are familiar with plugins and have any on your computer, load a suitable one (e.g. piano) as described in the Plugin Management Tools section below, and configure the Concert Keyboardist audio output as described in the Audio Settings <a href="#settings-tools">Settings Tools</a> topic below. See To use an external application you need to route theme to a software synthesizer (or hardware synthesizer). The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from. Also GarageBand automatically receives midi messages from all midi output ports on your system so it automatically receives from the Concert Keyboardist default output.</li>
+<li>If you prefer to use an external midi software or hardware synthesizer</li>
 <li>Setup with GarageBand:
 <ul>
 <li>Download and install GarageBand (it's free to Mac owners).<br />
@@ -36,12 +40,26 @@
 <li>If you are more experienced with midi you should know how to configure your preferred sound generator to receive from the Concert Keyboardist default output.</li>
 <li>If you have a midi keyboard attached to your computer you can configure Concert Keyboardist to receive from it. Use the &quot;Audio and Midi Settings&quot; command in the File menu to open the settings dialog. Click next to your midi controller to make it active and close the dialog. Concert Keyboardist will remember this setting between sessions and it will remain available as long as your controller is active when Concert Keyboardist is started.</li>
 </ul>
+<h2 id="installation-and-setup-on-a-windows">Installation and Setup on a Windows</h2>
+<p>Concert Keyboardist is compatible with Windows 7 and Windows 10 (possibly Windows XT but this has not been tested). To install:</p>
+<ul>
+<li>Copy the Concert keyboardist application to your Program Files folder.<br />
+</li>
+<li>Copy the included folder of example files to anywhere you choose. Possibly your Documents folder, Desktop, or a folder where you keep midi files.</li>
+<li>If you are familiar with VST plugins and have any on your computer, load a suitable one (e.g. piano) as described in the Plugin Management Tools section below, and configure the Concert Keyboardist audio output as described in the Audio Settings section below.</li>
+<li>You can also play by routing midi from Concert keyboardist to a exteral sound generator: a DAW, softsynth or hardware synthesizer.
+<ul>
+<li>If your external sound generator has a virtual midi input port choose it as the Concert Keyboardist midi output: Click on the Audio/Midi Settings tool in the CK toolbar and choose that output.</li>
+<li>If your external sound generator does not have a virtual midi input port you will need to install a virtual midi routing driver such as <a href="http://www.nerds.de/en/loopbe1.html">LoopBee</a>. Then choose it as the output to Concert Keyboardist and the input port on your sound generator.</li>
+<li>In your sound generator choose a suitable sound such as piano.</li>
+</ul></li>
+</ul>
 <!-- ![](../Common/img/CKMainWindow.jpg) -->
 <p><img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:75%;margin:0px 10px 10px 10px"></p>
 <h2 id="main-window">Main Window</h2>
 <ul>
 <li>Concert Keyboardist is like a player piano. <strong>Notes</strong> are horizontal bars that scroll right to left horizontally based on the current <strong>tempo</strong>. A note's vertical position shows pitch and its left end shows start time. Its length shows duration. This information is read from the midi file and guides you when to play notes and how long to hold them.</li>
-<li>While you play you control <strong>actual note start times and durations</strong> in real time. This is like playing sheet music. The notes are there but you add expression as you play. You can also control note velocities if you have a velocity sensitive keyboard attached to your computer.</li>
+<li>In real time while you play <strong>you control note start times and durations</strong>. This is like playing sheet music. The notes are there but you add expression as you play. If you have a velocity sensitive midi keyboard you can also control note velocities.</li>
 <li>The score can be <strong>scrolled</strong> left or right with the mouse wheel or two finger drag on a touch pad. The end of the score is at the far right.</li>
 <li>The blue vertical line is the <strong>&quot;Current Time Line&quot;</strong> (CTL) which indicates the current playing time in the score. It turns amber when ready to play and green while you are playing.</li>
 <li>While you are playing, pressing any key instantly triggers the next unplayed <strong>Target Note</strong>, magenta-headed-notes. The these are the notes you directly play.</li>
@@ -80,9 +98,16 @@
 <li><strong>Bookmarks:</strong> Cmd+Right Arrow and Cmd+Left Arrow (Ctrl on Windows) step one bookmark at a time forward or backward in the score.</li>
 <li>Press Cmd+b to create a bookmark at the Current Time Line. To delete a bookmark press Cmd+b with the bookmark already at the Current Time Line.</li>
 </ul>
+<h2 id="selecting-notes">Selecting Notes</h2>
+<p>Many commands act on &quot;selected notes&quot;. To select a range of notes move the mouse pointer to anywhere not on a note bar, press the left mouse button and drag over the heads of notes to be selected and release the mouse button. The head of each selected note will be surrounded by a white box. To clear the selection click anywhere there is not a note bar.</p>
+<p>To add notes to the selection hold down the shift key while some notes are selected and drag the marquee around other notes. They will also become selected.</p>
+<p>To remove notes from the selection hold down the Option key and drag, starting with some notes selected. Any selected notes you drag the marquee over will become unselected.</p>
+<p>If you drag past the right or left end of the score the score will autoscroll and stop if it reaches that end of the score.</p>
+<p>To select all notes in the score use the keyboard shortcut Cmd+a on Mac or Ctrl+a on Windows. Press the Escape key to unselect all notes.</p>
+<p>You can't select a single note by clicking directly on its head. This toggles it between being a target or non target note. To select a single note, start on the background near it and drag a marquee around it.</p>
 <h2 id="note-information-viewer">Note Information Viewer</h2>
 <p><img src="../Common/img/Information Area.jpg" alt="CK" style="width:30%;margin:0px 0px 0px 10px"></p>
-<p>The Note Information Viewer is in the lower left corner of the main window. Hovering the mouse pointer over a note bar shows details on the note. Hovering over a light or dark grey note track reveals the note name and octave of that track. Dragging on the display to select a range of notes shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.</p>
+<p>The Note Information Viewer is in the lower left corner of the main window. Hovering the mouse pointer over a note bar shows details on the note.Hovering over a light or dark grey note track reveals the note name and octave of that track. Dragging on the display to select a range of notes shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.</p>
 <h2 id="main-toolbar">Main Toolbar</h2>
 <h3 id="file-management-tools">File Management Tools</h3>
 <p><img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px"></p>
@@ -189,34 +214,45 @@ As you drag up/down on the temp number the percentage number will be updated to 
 <h2 id="editing-toolbar">Editing Toolbar</h2>
 <h3 id="undo-and-redo-tools">Undo and Redo Tools</h3>
 <p><img src="../Common/img/UndoRedoTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px"></p>
-<h3 id="toggle-targetnotes-tool">Toggle TargetNotes Tool</h3>
+<p>These buttons perform undo and redo, for any of the following commands:</p>
+<ul>
+<li>The <a href="#toggle-target-notes-tool">Toggle Target Notes Tool</a>.</li>
+<li>The <a href="#note-chaining-tools">Note Chaining Tools</a>.</li>
+<li>Dragging notes to change their start times.</li>
+<li>Dragging notes to change their durations.</li>
+<li>All <a href="#note-velocity-tools">Note Velocity Tools</a>.</li>
+<li>Humanize chord note start times (in <a href="#chord-tools">Chord Tools</a>)</li>
+<li>Humanize chord note velocities (in <a href="#chord-tools">Chord Tools</a>)</li>
+</ul>
+<h3 id="toggle-target-notes-tool">Toggle Target Notes Tool</h3>
 <p><img src="../Common/img/ToggleTargetNotesTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
+<p>You can edit which notes are target notes and which are not.</p>
+<ul>
+<li>The Toggle Target Notes Tool converts notes between being target and non-target notes. To use it select one or more notes by dragging a marquee around them and click the tool. The <strong>first or leftmost</strong> note in the selection is toggled and all other notes in the selection are set to the resulting state of the first note. Click the tool again to switch all selected notes between being target or non-target notes.</li>
+<li>A keyboard shortcut for this Cmd+t or Ctrl+t on Windows.</li>
+<li>Another quick way to toggle target/non-target notes is simply to click on a note head. That note is toggled between target and non-target status. All other selected notes also change to be the same as the resulting status of the clicked on note. Click again to switch them to the opposite state.</li>
+</ul>
 <h3 id="note-chaining-tools">Note Chaining Tools</h3>
 <p><img src="../Common/img/NoteChainingTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px"></p>
+<p>Editing to set target and non-target notes for a long midi file would be a lot of work! Fortunately the chain command is an easier way do most of the work automatically. We usually want each target note to follow a break in the flow of notes. Notes that are closer together we would want to be chained from the preceding target note.</p>
+<p>The chain command acts on a selected range of notes, or the entire midi file. The numeric field next to the chain button gives the size of the break in sixteenth notes that should trigger a target note to be marked. What works best for a given midi file make take some experimentation, but an amount of 1.0 sixteenths works well for a lot of files.</p>
+<p>The chain command is automaticaly run with an interval of one sixteenth when a midi file is first imported. This usually results in a quite playable file depending on its complexity. To try other intervals select a range or all notes in the score. Then click on the &quot;chain amount&quot; number in the toolbar, and choose some other amount from the popup list. The selected range of notes will instantly be rechained based on that interval.</p>
+<p>If you don't like the result you can undo it. If it's close to what you want you can adjust some notes using the <a href="#toggle-target-notes-tool">Toggle Target Notes Tool</a>.</p>
+<p>The chain button reapplies chain command using the visible &quot;chain amount&quot; number.</p>
+<p>After chaining, usually only one note in a chord (unless it's a long broken chord) is set as a target note. The other notes are chained from it, either simultaneous or offset slightly in time. The note that came first is made the target note, which is not necessarily the top note or bottom note of the chord as you might expect. This is why it may appear somewhat arbitrary which note of a chord becomes a target note.</p>
+<p>Slight variations in chord note start times result in more natural sounding music. If they were present in the original midi file (probably because it was recorded live by a real human) they are retained and automatically replayed at the current tempo when you trigger the chord's target note. Midi files that were manually entered or step-sequenced usually do not have these subtle variations in chord times but you can simulate them with one of the Concert Keyboardist <a href="#chord-tools">Chord Tools</a>.</p>
 <h3 id="note-velocity-tools">Note Velocity Tools</h3>
 <p><img src="../Common/img/VelocityTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px"></p>
 <h3 id="chord-tools">Chord Tools</h3>
 <p><img src="../Common/img/ChordTools.jpg" alt="CK" style="width:24%;margin:0px 0px 0px 25px"></p>
 <h3 id="pedal-tools">Pedal Tools</h3>
 <p><img src="../Common/img/PedalTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px"></p>
-<p>The Editing Toolbar includes commands to:</p>
-<ul>
-<li>Adjust note chaining</li>
-<li>Show or hide note velocities for editing</li>
-<li>Show or hide chords</li>
-<li>Group and ungroup notes into chords</li>
-<li>Add or remove regions where the sustain or soft pedal are pressed</li>
-<li>Automatically adjust the start times of chord notes with respect to top chord note</li>
-<li>Automatically adjust chord note velocities with respect to top chord note</li>
-<li>Get Help - Open the Concert keyboardist documentation in your default web browser.</li>
-</ul>
-<p><strong>Selecting Notes</strong>: Many commands act on &quot;selected notes&quot;. To select a range of notes move the mouse pointer to anywhere not on a note bar, press the left mouse button and drag over the heads of notes to be selected and release the mouse button. The head of each selected note will be surrounded by a white box. To clear the selection click anywhere there is not a note bar.</p>
 <h3 id="editing-note-start-times-and-durations">Editing Note Start Times and Durations</h3>
 <h3 id="editing-note-velocities">Editing Note Velocities</h3>
 <h2 id="menu-commands">Menu Commands</h2>
 <ul>
 <li><p>File Menu</p>
-<p>About... : Information about Concert Keyboardist (currently unimplemented)</p>
+<p>About Concert keyboardist ... : Gives copyright information and information about the verision number of this copy of Concert Keyboardist.</p>
 <p>Open... : Open a file. Either normal midi files, extension .mid, or Concert Keyboardist files can be opened. A CK file also has an extension of .mid but has [ck] added just before the extension.</p>
 <p>Open Recent File : The ten most recently opened files are shown.</p>
 <p>Save : Save the current file as a CK file. If this file was opened a normal midi fileacs, is is converted to a CK file when saved. The file retains the same tracks as the original midi file but has some extra tracks containing extra information as system exclusive blocks.</p>
@@ -227,9 +263,9 @@ As you drag up/down on the temp number the percentage number will be updated to 
 <p>Undo : Undo most recent command. Can be performed repeatedely to undo more than one command. Only currently works for the set and unset target note commands, and the chain command. Keyboard shorcut: Cmd+z.</p>
 <p>Redo : Redo the most recent undone command. Can be performed repeatedely to redo more than one undone command. Keyboard shortcut: Shift+Cmd+z.</p>
 <p>Play/Pause : Ready the score for playing, or stop it playing. The keyboard shortcut is spacebar (no modifier key).</p>
-<p>Listen : Listen to the score starting at the note after the Current Time Line. Press the spacebar to stop. When listening is stopped the transport is returned to the place where listening started. You can use this to listen to a passage to get a feel for it before playing it yourself. Same as the Listen toolbar button. Keyboard shortcut is &quot;=&quot; (no modifier key).</p></li>
-<li><p>Sequence: Not currently used</p></li>
-<li><p>Window: Not currently used</p></li>
+<p>Listen : Listen to the score starting at the note after the Current Time Line. Press the spacebar to stop. When listening is stopped the transport is returned to the place where listening started. You can use this to listen to a passage to get a feel for it before playing it yourself. Same as the Listen toolbar button. Keyboard shortcut is &quot;=&quot; (no modifier key).</p>
+<p>Show Edit Toolbar : Toggles the hiding and showing of the edit toolbar. This is the same as the equivalent toolbar button.</p>
+<p>Hide Measure Lines : This toggles the hiding and showing of the measure and beat lines on the score. The reason you may want to do this is that most midi files that were recorded by a live performer do not have their notes aligned to the beat or measure lines. They were simply recorded at some constant tempo with the played note occuring in no particular relatinship to the measures of the nominal tempo. You can identify a midi file like this when the notes seem to bear no relationship to the beats and measure. The numerical tempo is also almost always constant at some value like 120 beats per minute. For files like this it's usually better to hide the beat and measure lines to remove clutter and avoid confusion at you play, where you might be expecting the lines to be relevant. If you turn off beat and measure lines this property is saved with the [CK].mid file and retained next time it is opened.</p></li>
 </ul>
 <h2 id="licenses-and-copyrights">Licenses and Copyrights</h2>
 <h3 id="concert-keyboardist-license">Concert Keyboardist License</h3>

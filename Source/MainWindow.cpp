@@ -499,7 +499,7 @@ ApplicationProperties& getAppProperties();
 //                result.defaultKeypresses.add (KeyPress ('-', ModifierKeys::noModifiers, 0));
 //                break;
             case CommandIDs::listenToSelection:
-                result.setInfo ("listenToSelection", "listenToSelection", category, 0);
+                result.setInfo ("Listen", "listen", category, 0);
                 result.defaultKeypresses.add (KeyPress ('=', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::rewind:
@@ -634,13 +634,13 @@ ApplicationProperties& getAppProperties();
                 break;
 
             case CommandIDs::hide_measure_lines:
-                result.setInfo ("hide_measure_lines", "hide_measure_lines", category, 0);
+                result.setInfo ("Hide Measure Lines", "Hide Measure Lines", category, 0);
                 result.setTicked(midiProcessor.sequenceObject.hideMeasureLines);
                 result.addDefaultKeypress ('m', ModifierKeys::commandModifier);
                 break;
 
             case CommandIDs::showEditToolbar:
-                result.setInfo ("showEditToolbar", "showEditToolbar", category, 0);
+                result.setInfo ("Show Edit Toolbar", "Show Edit Toolbar", category, 0);
                 result.addDefaultKeypress ('e', ModifierKeys::commandModifier);
                 break;
             default:

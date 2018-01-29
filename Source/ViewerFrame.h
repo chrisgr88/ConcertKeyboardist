@@ -668,7 +668,7 @@ private:
                 case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "Save as", "document-save-as.svg");
                 case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load plugin", "LoadPluginButton.svg");
                 case editPlugin:        return createButtonFromZipFileSVG (itemId, "Show plugin window", "EditPluginButton.svg");
-                case audioSettings:     return createButtonFromZipFileSVG (itemId, "Show audio settings", "AudioSettingsTool.svg");
+                case audioSettings:     return createButtonFromZipFileSVG (itemId, "Show audio/midi settings", "AudioSettingsTool.svg");
                 case scoreInfo:         return createButtonFromZipFileSVG (itemId, "Show tracks Information", "ScoreInfoTool.svg");
                 case _help:             return createButtonFromZipFileSVG (itemId, "Open help in browser", "help.svg");
                 case _play:             return createButtonFromZipFileSVG (itemId, "Set ready to play", "media-playback-start.svg");
