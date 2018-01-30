@@ -108,6 +108,7 @@ ApplicationProperties& getAppProperties();
 
     MainWindow::MainWindow (String name) : DocumentWindow (name, Colour(15,15,15), DocumentWindow::allButtons)
     {
+        LookAndFeel::setDefaultLookAndFeel (new GlobalLookAndFeel);
         getLookAndFeel().setColour(DocumentWindow::textColourId, Colour(199,199,199));
         Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
         ckBlockClosing = false;

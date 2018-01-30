@@ -20,6 +20,11 @@
 #include <string>
 #include <regex>
 
+class GlobalLookAndFeel : public juce::LookAndFeel_V4 {
+public:
+    void playAlertSound() override {}
+};
+
 /** A desktop window containing a plugin's UI. */
 class PluginWindow  : public DocumentWindow
 {

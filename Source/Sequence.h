@@ -22,6 +22,71 @@ const char* const filenameWildcard = "*.mid";
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
+class DemoBackgroundThread  : public ThreadWithProgressWindow
+{
+public:
+    DemoBackgroundThread()
+            : ThreadWithProgressWindow ("Saving file...", true, true)
+    {
+//        setStatusMessage ("Getting ready...");
+    }
+
+    bool shouldExit = false;
+
+    bool threadShouldExit ()  {
+        return shouldExit;
+    }
+
+    void run() override
+    {
+//        setProgress (-1.0); // setting a value beyond the range 0 -> 1 will show a spinning bar..
+//        setStatusMessage ("Preparing to do some stuff...");
+//        wait (2000);
+
+        const int thingsToDo = 10;
+
+        for (int i = 0; i < thingsToDo; ++i)
+        {
+            // must check this as often as possible, because this is
+            // how we know if the user's pressed 'cancel'
+            if (threadShouldExit())
+                return;
+
+            // this will update the progress bar on the dialog box
+            setProgress (i / (double) thingsToDo);
+
+//            setStatusMessage (String (thingsToDo - i) + " Saving...");
+
+            wait (200);
+        }
+
+        setProgress (0.9); // setting a value beyond the range 0 -> 1 will show a spinning bar..
+//        setStatusMessage ("Saving plugin settings...");
+        wait (500);
+    }
+
+    // This method gets called on the message thread once our thread has finished..
+    void threadComplete (bool userPressedCancel) override
+    {
+        if (userPressedCancel)
+        {
+//            AlertWindow::showMessageBoxAsync (AlertWindow::WarningIcon,
+//                                              "Progress window",
+//                                              "You pressed cancel!");
+        }
+        else
+        {
+            // thread finished normally..
+//            AlertWindow::showMessageBoxAsync (AlertWindow::WarningIcon,
+//                                              "Progress window",
+//                                              "Thread finished ok!");
+        }
+
+        // ..and clean up by deleting our thread object..
+        delete this;
+    }
+};
+
 class Sequence  : public FileBasedDocument, public ActionBroadcaster
 {
 public:
@@ -238,7 +303,7 @@ public:
     void saveSequence(File fileToSave);
     void dumpData(Array<int>);
     void dumpData(int start, int end, int nn);
-    
+
     void setChordTimeHumanize(String value, bool documentReallyChanged)
     {
         chordTimeHumanize = value;

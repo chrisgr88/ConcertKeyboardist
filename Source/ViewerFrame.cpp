@@ -74,10 +74,6 @@ altToolbarFactory(this)
             pAdjustedTempo->numberBox.setFont (Font (18.00f, Font::plain));
             pAdjustedTempo->numberBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey).darker());
         }
-//        else if (id == AltToolbarItemFactory::ToolbarItemIds::scoreTempo)
-//        {
-//            pScoreTempo = (AltToolbarItemFactory::ScoreTempo *) altToolbar.getItemComponent(i);
-//        }
         else if (id == AltToolbarItemFactory::ToolbarItemIds::scaledTempo)
         {
             pScaledTempo = (AltToolbarItemFactory::ScaledTempo *) altToolbar.getItemComponent(i);
@@ -89,23 +85,17 @@ altToolbarFactory(this)
     hoverStepInfo.setJustificationType (Justification::left);
     hoverStepInfo.setColour (Label::textColourId, Colours::lightgrey);
     
-//    scoreTempoLabel.setText("Suggested Tempo",NotificationType::dontSendNotification);
     scoreTempoLabel.setFont (Font (19.00f, Font::plain ));
     scoreTempoLabel.setJustificationType (Justification::left);
     scoreTempoLabel.setColour (Label::textColourId, Colour(206,206,206));
     addAndMakeVisible (scoreTempoLabel);
-    
-//    adjustedTempoLabel.setText("BPM",NotificationType::dontSendNotification);
-//    adjustedTempoLabel.setFont (Font (18.00f, Font::plain));
-//    adjustedTempoLabel.setJustificationType (Justification::right);
-//    adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
-//    addAndMakeVisible (adjustedTempoLabel);
+
+    progBar = new ProgressBar(progress);
     
     playableKeys = "qwertyuiopasdfghjklzxcvbnm;',./[]";
 
-    for (int i=0;i<playableKeys
-         .length();i++)
-keysThatAreDown.add(false);
+    for (int i=0;i<playableKeys.length();i++)
+        keysThatAreDown.add(false);
     
 //    std::cout << "ViewerComponent isBroughtToFrontOnMouseClick " << isBroughtToFrontOnMouseClick()  <<"\n";
     startTimer(250);

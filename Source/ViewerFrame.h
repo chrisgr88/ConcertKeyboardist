@@ -72,7 +72,7 @@ public:
 //                    std::cout << "Kbd NoteOn " << (int)msg.getNoteNumber() << " " << (int)msg.getVelocity() << "\n";
 //                else
 //                    std::cout << "Controller " << (int)msg.getControllerNumber() << " " << (int)msg.getControllerValue() << "\n";
-                msg.setChannel(16); //Channel 16 indicates notes from the computer keyboardk
+                msg.setChannel(16); //Channel 16 indicates notes from the computer progoardk
                 processor->addMessageToQueue(msg);
                 keysThatAreDown.set(i,true);
                 handledKey = true;
@@ -181,6 +181,8 @@ private:
     Label hoverStepInfo;
     Label scoreTempoLabel;
     Label adjustedTempoLabel;
+    ProgressBar *progBar;
+    double progress;
     ComponentBoundsConstrainer resizeLimits;
 
     bool altToolbarVisible = false;
