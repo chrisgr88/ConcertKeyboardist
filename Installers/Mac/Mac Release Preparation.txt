@@ -1,0 +1,7 @@
+Mac Release Preparation
+1) Duplicate the Template Folder
+2) Rename it as follows, appending the version number e.g. "Concert Keyboardist 1.0.1.alpha"
+3) Copy the latest ConcertKeyboardist.app release build into it
+4) Copy the latest "Concert Keyboardist Files" folder into it
+5) Compress it
+6) Upload to release server

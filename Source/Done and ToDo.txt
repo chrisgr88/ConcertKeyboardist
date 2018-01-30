@@ -36,7 +36,7 @@ Alpha:
 - Shortcut key commands to re-pitch, add and remove notes?
 - Switch to loading plugins into an audio graph to fix need to patch the JUCE source to suppress asserts?
 - Windows Installer & document creation process
-- Mac Installer & document creation process
+- DONE Mac Installer -> Put app and examples folder in a zip file.
 - Update documentation
 - Create folder of demo files
 - Switch to paid version of JUCE
