@@ -95,7 +95,12 @@ namespace CommandIDs
     static const int create_chord       = 0x43010;
     static const int delete_chord       = 0x43012;
 
-    static const int hide_measure_lines  = 0x44000;
+    static const int add_note  = 0x44000;
+    static const int delete_selected_notes  = 0x44010;
+    static const int increase_note_pitch  = 0x44020;
+    static const int decrease_note_pitch  = 0x44030;
+
+    static const int hide_measure_lines  = 0x45000;
     
     static const int toggleBookmark             = 0x49000;
     static const int playPause                  = 0x50001;

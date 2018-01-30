@@ -368,8 +368,25 @@ ApplicationProperties& getAppProperties();
         else if (message == "delete_chord")
         {
             perform (CommandIDs::delete_chord);
-//            midiProcessor.deleteChords(true);
         }
+
+        else if (message == "add_note")
+        {
+//            perform (CommandIDs::delete_chord);
+        }
+        else if (message == "delete_selected_notes")
+        {
+//            perform (CommandIDs::delete_chord);
+        }
+        else if (message == "increase_note_pitch")
+        {
+//            perform (CommandIDs::delete_chord);
+        }
+        else if (message == "decrease_note_pitch")
+        {
+//            perform (CommandIDs::delete_chord);
+        }
+
         else if (message == "help")
         {
             perform (CommandIDs::help);
@@ -597,6 +614,24 @@ ApplicationProperties& getAppProperties();
                 result.setInfo ("delete_chord", "delete_chord", category, 0);
                 result.addDefaultKeypress ('d', ModifierKeys::shiftModifier);
                 break;
+
+            case CommandIDs::add_note:
+                result.setInfo ("add_note", "add_note", category, 0);
+                break;
+            case CommandIDs::delete_selected_notes:
+                result.setInfo ("delete_selected_notes", "delete_selected_notes", category, 0);
+                result.addDefaultKeypress (KeyPress::backspaceKey, ModifierKeys::noModifiers);
+                result.addDefaultKeypress (KeyPress::deleteKey, ModifierKeys::noModifiers);
+                break;
+            case CommandIDs::increase_note_pitch:
+                result.setInfo ("increase_note_pitch", "increase_note_pitch", category, 0);
+                result.addDefaultKeypress (KeyPress::upKey, ModifierKeys::commandModifier);
+                break;
+            case CommandIDs::decrease_note_pitch:
+                result.setInfo ("decrease_note_pitch", "decrease_note_pitch", category, 0);
+                result.addDefaultKeypress (KeyPress::downKey, ModifierKeys::commandModifier);
+                break;
+
             case CommandIDs::previousTargetNote:
                 result.setInfo ("PreviousTargetNote", "Go to Previous Target Note", category, 0);
                 result.addDefaultKeypress (KeyPress::leftKey, ModifierKeys::noModifiers);
@@ -861,6 +896,12 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::drawVelocities,
             CommandIDs::create_chord,
             CommandIDs::delete_chord,
+
+            CommandIDs::delete_selected_notes,
+            CommandIDs::add_note,
+            CommandIDs::increase_note_pitch,
+            CommandIDs::decrease_note_pitch,
+
             CommandIDs::rewind,
             CommandIDs::previousTargetNote,
             CommandIDs::previousMeasure,
@@ -945,6 +986,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             case CommandIDs::showEditToolbar:
             {
                 pViewerFrame->mainToolbar.setVisible(!pViewerFrame->mainToolbar.isVisible());
+                menuItemsChanged();
                 std::cout << "showEditToolbar" <<"\n";
                 break;
             }
@@ -1253,6 +1295,21 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                     midiProcessor.deleteChords(true);
                 break;
+
+            case CommandIDs::add_note:
+                std::cout <<"add_note\n";
+                break;
+            case CommandIDs::delete_selected_notes:
+                std::cout <<"delete_selected_notes\n";
+                break;
+            case CommandIDs::increase_note_pitch:
+                std::cout <<"increase_note_pitch\n";
+                break;
+            case CommandIDs::decrease_note_pitch:
+                std::cout <<"decrease_note_pitch\n";
+                break;
+
+
             case CommandIDs::toggleBookmark:
                 if (!midiProcessor.isPlaying)
                 {

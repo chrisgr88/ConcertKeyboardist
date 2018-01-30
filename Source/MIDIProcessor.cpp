@@ -1366,6 +1366,37 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
     return stepActivityList;
 }
 
+  Array<Sequence::StepActivity> moveNotesUpDown(bool moveUp, Array<int> steps)  {
+      Array<Sequence::StepActivity> stepActivityList;
+      for (int i=0;i<steps.size();i++)
+      {
+          if (sequenceObject.theSequence.at(steps[i])->targetNote)
+          {
+              const Sequence::StepActivity act = {steps[i], true};
+              stepActivityList.add(act);
+          }
+          else
+          {
+              const Sequence::StepActivity act = {steps[i], false};
+              stepActivityList.add(act);
+          }
+          sequenceObject.theSequence.at(steps[i])->targetNote = true;
+      }
+
+      if (undoMgr->inUndo || undoMgr->inRedo)
+          ;//setTimeInTicks(sequenceObject.theSequence.at(sequenceObject.selectionToRestoreForUndoRedo[0])->getTimeStamp());
+      else
+      {
+          sequenceObject.setChangedFlag(true);
+          catchUp();
+      }
+      //        inUndoRedo = true;
+      changeMessageType = CHANGE_MESSAGE_UNDO;
+      ;//sequenceObject.selectionToRestoreForUndoRedo = steps;
+      sendSynchronousChangeMessage(); //To viewer
+      return stepActivityList;
+  }
+
 Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> steps, String timeSpec)
 {
     Array<Sequence::PrevNoteTimes> prevNoteTimesList;

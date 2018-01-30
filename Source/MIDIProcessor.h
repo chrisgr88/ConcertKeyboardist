@@ -252,6 +252,7 @@ public:
     int lastPlayedNoteStep = -1; //The step of the last played note, even if its note a target note (for tracking tempo and measures)
     double getLastUserPlayedStepTime();
     Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps);
+    Array<Sequence::StepActivity> moveNotesUpDown(bool moveUp, Array<int> steps);
     
     Array<Sequence::PrevNoteTimes> timeHumanizeChords (Array<int> steps, String timeSpec);
     Array<Sequence::NoteVelocities> velocityHumanizeChords (Array<int> steps, String velSpec);
@@ -389,6 +390,125 @@ private:
     
 public:
     MyUndoManager *undoMgr;
+
+    class ActionAddNote : public UndoableAction //ActionAddNote =============================================
+    {
+        MIDIProcessor& proc;
+
+    public:
+        ActionAddNote(MIDIProcessor& _proc, bool setNotesActive, Array<int> stps) : proc(_proc)
+        {
+            setActive = setNotesActive;
+            steps = stps;
+
+            selection.clear();
+            for (int i=0; i<stps.size();i++)
+                selection.push_back(proc.sequenceObject.theSequence.at(stps[i]));
+        }
+        ~ActionAddNote()
+        {
+        }
+        bool perform()
+        {
+            prevValues = proc.setNoteListActivity(setActive, steps);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            return true;
+        }
+        bool undo()
+        {
+            proc.setIndividualNotesActivity(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
+            return true;
+        }
+    private:
+        bool setActive;
+        Array<int> steps;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<Sequence::StepActivity> prevValues;
+    };
+
+    class ActionDeleteSelectedNotes : public UndoableAction //ActionDeleteSelectedNotes =============================================
+    {
+        MIDIProcessor& proc;
+
+    public:
+        ActionDeleteSelectedNotes(MIDIProcessor& _proc, bool setNotesActive, Array<int> stps) : proc(_proc)
+        {
+            setActive = setNotesActive;
+            steps = stps;
+
+            selection.clear();
+            for (int i=0; i<stps.size();i++)
+                selection.push_back(proc.sequenceObject.theSequence.at(stps[i]));
+        }
+        ~ActionDeleteSelectedNotes()
+        {
+        }
+        bool perform()
+        {
+            prevValues = proc.setNoteListActivity(setActive, steps);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            return true;
+        }
+        bool undo()
+        {
+            proc.setIndividualNotesActivity(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
+            return true;
+        }
+    private:
+        bool setActive;
+        Array<int> steps;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<Sequence::StepActivity> prevValues;
+    };
+
+    class ActionMoveNotesUpDown : public UndoableAction //ActionMoveNotesUpDown =============================================
+    {
+        MIDIProcessor& proc;
+
+    public:
+        ActionMoveNotesUpDown(MIDIProcessor& _proc, bool _moveUp, Array<int> stps) : proc(_proc)
+        {
+            moveUp = _moveUp;
+            steps = stps;
+
+            selection.clear();
+            for (int i=0; i<stps.size();i++)
+                selection.push_back(proc.sequenceObject.theSequence.at(stps[i]));
+        }
+        ~ActionMoveNotesUpDown()
+        {
+        }
+        bool perform()
+        {
+            prevValues = proc.moveNotesUpDown(moveUp, steps);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            return true;
+        }
+        bool undo()
+        {
+            proc.setIndividualNotesActivity(prevValues);
+            proc.sequenceObject.selectionToRestoreForUndoRedo = selection;
+            proc.changeMessageType = CHANGE_MESSAGE_UNDO;
+            proc.sendSynchronousChangeMessage();
+            proc.changeMessageType = CHANGE_MESSAGE_NONE;
+            return true;
+        }
+    private:
+        bool moveUp;
+        Array<int> steps;
+        std::vector<std::shared_ptr<NoteWithOffTime>> selection;
+        Array<Sequence::StepActivity> prevValues;
+    };
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     
     class ActionSetNoteActivity : public UndoableAction //ActionSetNoteActivity =============================================
     {
