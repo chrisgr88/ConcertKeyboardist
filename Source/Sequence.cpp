@@ -177,9 +177,6 @@ double Sequence::getTempoMultipier (double currentTime)
  */
 void Sequence::saveSequence(File fileToSave)// String  name = "")
 {
-    DemoBackgroundThread *progressBar = new DemoBackgroundThread();
-    progressBar->launchThread();
-    progressBar->setProgress(0.0);
     setScoreFile(fileToSave); //Used for file name display it must be changed on save (updated in by ViewerFrame change notifier)
     
     const String shortHash = getAppProperties().getUserSettings()->getValue ("shortHash");
@@ -286,7 +283,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
             sysexSeq.addEvent(sysex);
         }
     }
-    progressBar->setProgress(0.2);
     if (pThePlugin)
     {
 //        String name = thePlugin->getPluginDescription().descriptiveName;
@@ -335,8 +331,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         std::cout << " Write sysex plugState "<< checksum <<" "<< m.getSize()<<" "<< b64.length()<< "\n";
     }
     //    std::cout << " Number of sysex records written - "<< seq->getNumEvents()<< "\n";
-
-    progressBar->setProgress(0.5);
 
     int tracksToCopy = midiFile.getNumTracks();
     if (loadedCkfFile)
@@ -391,7 +385,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
                 trackSeq.addEvent(msg);
             }
         }
-        progressBar->setProgress(0.7);
         for (int trackStep=0;trackStep<allNotes.at(trk).size();trackStep++)
         {
             double proposedOnTime = allNotes.at(trk).at(trackStep)->getTimeStamp();
@@ -457,7 +450,6 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     outputFile.writeTo(outputStream);
     sendChangeMessage();
     setChangedFlag(false);
-    progressBar->shouldExit = true;
 }
 
 //This is for when a plain midi file is loaded or when called from chain command
