@@ -38,6 +38,7 @@ Alpha:
 - DONE Fix bug where sometimes pedal bar symbols would not be shown
 - DONE Fix bug where if a pedal bar's end was beyond end of score, an index error would occur.
 
+- Error loading "hey_song.mid" - zero length? - also incorrectly changes current file name
 - Windows Installer & document creation process
 - DONE Mac Installer -> Put app and examples folder in a zip file.
 - Update documentation
