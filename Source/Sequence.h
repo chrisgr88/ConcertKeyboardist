@@ -74,12 +74,22 @@ public:
     File fileToLoad;
     Result loadDocument (const File& file) override
     {
-        fileToLoad = file;
-        loadDoc = true;
-        //The actual loading is done in midiProcessor
-        sendSynchronousChangeMessage();
-        propertiesChanged = true;
-        return Result::ok();
+        const String ext = file.getFileExtension();
+        if (file.getSize()>0 && !file.isDirectory() && ext == ".mid")
+        {
+            fileToLoad = file;
+            loadDoc = true;
+            //The actual loading is done in midiProcessor
+            sendSynchronousChangeMessage();
+            propertiesChanged = true;
+            return Result::ok();
+        }
+        else
+        {
+            std::cout << "Can't open - bad file\n";
+            AlertWindow::showNativeDialogBox("Warning", "Can't load this file: Not a midi file or file is empty.", false);
+            return Result::fail("Bad file");
+        }
     }
     
     /** This method should try to write your document to the given file.

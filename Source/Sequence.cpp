@@ -552,7 +552,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
 /*=============================================================
  <#loadSequence#>
  */
-//Loads the file in fileToLoad which must be set before calling if LoadType is load
+//Loads the file in fileToLoad which must be set before calling ßif LoadType is load
 bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 {
     targetNoteTimes.clear();
