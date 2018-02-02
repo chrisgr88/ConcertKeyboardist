@@ -1142,12 +1142,14 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                     {
                         Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),true);
                         sustainPedalChanges.push_back(pedalMsg);
+//                        std::cout<< " sust on "<<"\n";
                         sustainOn = true;
                     }
                     else if (ctrMsg.isSustainPedalOff() && sustainOn)
                     {
                         Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(ctrMsg.getTimeStamp(),false);
                         sustainPedalChanges.push_back(pedalMsg);
+//                        std::cout<< " sust off "<<"\n";
                         sustainOn = false;
                     }
                 }
@@ -1166,6 +1168,16 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                         softOn = false;
                     }
                 }
+            }
+            if (sustainPedalChanges.size()>0 && sustainPedalChanges[sustainPedalChanges.size()-1].pedalOn)
+            {
+                Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(seqDurationInTicks+1,false);
+                sustainPedalChanges.push_back(pedalMsg);
+            }
+            if (softPedalChanges.size()>0 && sustainPedalChanges[softPedalChanges.size()-1].pedalOn)
+            {
+                Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(seqDurationInTicks+1,false);
+                softPedalChanges.push_back(pedalMsg);
             }
         }
     }
