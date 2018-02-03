@@ -150,6 +150,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     }
     
     AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
+    pPlugin->setPlayConfigDetails(0,2,sampRate,blockSize);
     thePlugin = pPlugin;
     processor->sequenceObject.pThePlugin = pPlugin;
     if (thePlugin)

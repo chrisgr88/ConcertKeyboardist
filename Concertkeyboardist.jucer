@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="IilE7R" name="ConcertKeyboardist" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.newCK" includeBinaryInAppConfig="1" jucerVersion="5.2.0"
-              displaySplashScreen="1" reportAppUsage="1" splashScreenColour="Dark"
+              displaySplashScreen="0" reportAppUsage="0" splashScreenColour="Dark"
               cppLanguageStandard="14" companyCopyright="">
   <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">
     <GROUP id="{D43238F0-992F-BC5A-F1AA-31BBBD3D17B0}" name="Source">

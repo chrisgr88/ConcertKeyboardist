@@ -42,6 +42,8 @@ Alpha:
 - DONE Hover over note head should show info
 - DONE Create folder of demo files
 - DONE Ensure correct initial state for edit toolbar
+- DONE Switch to paid version of JUCE
+- DONE Set correct input and output bus config for audio processor (setPlayConfigDetails)
 
 - Windows Installer & Description of installer creation process
 - Ensure shortcut keys make sense on Windows
@@ -49,9 +51,8 @@ Alpha:
 - Remove plugins from all demo files & clean up.
 - Update documentation
 
-- Switch to paid version of JUCE
 - Build "release" versions
-- Add github tag to repo to mark released version (and branch for future work?)
+- Add github tag to repo to mark released version (and branch for future work)
 - Upload Mac and Win CK installer versions to github
 
 - Demo Video?

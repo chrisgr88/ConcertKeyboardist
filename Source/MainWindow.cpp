@@ -434,7 +434,7 @@ ApplicationProperties& getAppProperties();
     
     StringArray MainWindow::getMenuBarNames()
     {
-        const char* const names[] = {"File", "Edit", "Plugins", "Sequence", "Window", "Help", nullptr };
+        const char* const names[] = {"File", "Edit", "Plugins", "Help", nullptr };
         
         return StringArray (names);
     }
