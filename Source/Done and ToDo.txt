@@ -41,12 +41,14 @@ Alpha:
 - DONE Clear undo/redo on file load
 - DONE Hover over note head should show info
 - DONE Create folder of demo files
-
-- Ensure correct initial state for edit toolbar
-- Ensure shortcut keys make sense on Windows
-- Update documentation
+- DONE Ensure correct initial state for edit toolbar
 
 - Windows Installer & Description of installer creation process
+- Ensure shortcut keys make sense on Windows
+
+- Remove plugins from all demo files & clean up.
+- Update documentation
+
 - Switch to paid version of JUCE
 - Build "release" versions
 - Add github tag to repo to mark released version (and branch for future work?)

@@ -944,8 +944,9 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             }
             case CommandIDs::showEditToolbar:
             {
-                pViewerFrame->mainToolbar.setVisible(!pViewerFrame->mainToolbar.isVisible());
-                std::cout << "showEditToolbar" <<"\n";
+                auto wasVisible = (getAppProperties().getUserSettings()->getValue ("editToolbarVisible") == "true");
+                pViewerFrame->mainToolbar.setVisible(!wasVisible);
+                getAppProperties().getUserSettings()->setValue("editToolbarVisible", wasVisible?"false":"true");
                 break;
             }
             case CommandIDs::hide_measure_lines:

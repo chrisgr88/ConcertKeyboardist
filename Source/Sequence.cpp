@@ -1171,12 +1171,12 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             }
             if (sustainPedalChanges.size()>0 && sustainPedalChanges[sustainPedalChanges.size()-1].pedalOn)
             {
-                Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(seqDurationInTicks+1,false);
+                Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(seqDurationInTicks+10,false);
                 sustainPedalChanges.push_back(pedalMsg);
             }
             if (softPedalChanges.size()>0 && sustainPedalChanges[softPedalChanges.size()-1].pedalOn)
             {
-                Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(seqDurationInTicks+1,false);
+                Sequence::PedalMessage pedalMsg = Sequence::PedalMessage(seqDurationInTicks+10,false);
                 softPedalChanges.push_back(pedalMsg);
             }
         }

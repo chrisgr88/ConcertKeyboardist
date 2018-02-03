@@ -84,7 +84,9 @@ public:
         //App properties - saved in app settings file
         getAppProperties().getUserSettings()->setValue ("buildDate", __CK_BUILD_DATE);
         getAppProperties().getUserSettings()->setValue ("shortHash", __CK_SHORT_HASH);
-//        getAppProperties().getUserSettings()->setValue ("editToolbarVisible","false");
+        String vis = getAppProperties().getUserSettings()->getValue ("editToolbarVisible","notSet");
+        if (vis=="notSet")
+            getAppProperties().getUserSettings()->setValue ("editToolbarVisible","false");
         
         String shortHash = getAppProperties().getUserSettings()->getValue ("shortHash");
         String buildDate = getAppProperties().getUserSettings()->getValue("buildDate");

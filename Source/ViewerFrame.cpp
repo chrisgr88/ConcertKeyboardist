@@ -27,7 +27,7 @@ altToolbarFactory(this)
     addAndMakeVisible(mainToolbar);
     mainToolbar.addDefaultItems (mainFactory);
     mainToolbar.setColour(Toolbar::ColourIds::backgroundColourId, Colour(48,48,48));
-    mainToolbar.setVisible(false);
+    mainToolbar.setVisible(getAppProperties().getUserSettings()->getValue ("editToolbarVisible") == "true" ? true : false);
     mainFactory.addChangeListener(this);
 
     addAndMakeVisible(altToolbar);
