@@ -37,17 +37,21 @@ Alpha:
 - LATER Switch to loading plugins into an audio graph to fix need to patch the JUCE source to suppress asserts?
 - DONE Fix bug where sometimes pedal bar symbols would not be shown
 - DONE Fix bug where if a pedal bar's end was beyond end of score, an index error would occur.
+- DONE Mac Installer -> Put app and examples folder in a zip file.
+- DONE Clear undo/redo on file load
+
+- Ensure correct initial state for edit toolbar
 
 - Windows Installer & document creation process
-- DONE Mac Installer -> Put app and examples folder in a zip file.
 - Update documentation
 - Create folder of demo files
 - Switch to paid version of JUCE
 - Ensure shortcut keys make sense on Windows
-- Demo Video
 - Build "release" versions
 - Add gitdhub tag to repo to mark released version (and branch for future work?)
 - Upload Mac and Win installers versions to github
+
+- Demo Video?
 - Website?
 - Announce
 - Document build & release processes

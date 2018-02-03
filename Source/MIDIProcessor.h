@@ -88,7 +88,10 @@ public:
     void loadSpecifiedFile (File file)//const bool showMessageOnFailure)
     {
         if (sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
+        {
+            undoMgr->clearUndoHistory();
             sequenceObject.loadDocument(file);
+        }
     }
     
     void buildSequenceAsOf (Sequence::LoadType type, Sequence::Retain retainEdits, double time)
@@ -358,7 +361,7 @@ private:
     class MyUndoManager : public UndoManager //MyUndoManager ============================================================
     {
     public:
-        MyUndoManager (int maxNumberOfUnitsToKeep = 30000,
+        explicit MyUndoManager (int maxNumberOfUnitsToKeep = 30000,
                         int minimumTransactionsToKeep = 30)
         {
             UndoManager::UndoManager(maxNumberOfUnitsToKeep, minimumTransactionsToKeep);
