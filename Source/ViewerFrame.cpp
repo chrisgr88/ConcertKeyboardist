@@ -408,7 +408,16 @@ void ViewerFrame::buttonClicked (Button* button)
         }
         else if(AltToolbarItemFactory::ToolbarItemIds::showEditToolbar == id)
         {
-            mainToolbar.setVisible(!mainToolbar.isVisible());
+            const String visible = getAppProperties().getUserSettings()->getValue ("editToolbarVisible", "false");
+            if (visible == "false") {
+                getAppProperties().getUserSettings()->setValue ("editToolbarVisible","true");
+                mainToolbar.setVisible(true);
+            }
+            else
+            {
+                getAppProperties().getUserSettings()->setValue ("editToolbarVisible","false");
+                mainToolbar.setVisible(false);
+            }
             std::cout << "showEditToolbar\n";//sendActionMessage("listenToSelection");
         }
         else if(AltToolbarItemFactory::ToolbarItemIds::_help == id)

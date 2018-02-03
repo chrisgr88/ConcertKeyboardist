@@ -42,6 +42,7 @@ Alpha:
 
 - Ensure correct initial state for edit toolbar
 
+- Error loading "hey_song.mid" - zero length? - also incorrectly changes current file name
 - Windows Installer & document creation process
 - Update documentation
 - Create folder of demo files

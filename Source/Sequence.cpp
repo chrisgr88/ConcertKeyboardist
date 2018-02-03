@@ -1014,7 +1014,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
 //                    std::cout <<"Loading: b64 length "<<pluginStateB64.length()<<"\n";
                     String pluginStateString = "pluginStateChange:"+pluginStateB64;
                     sendActionMessage(pluginStateString);
-//                    std::cout <<"pluginStateB64  "<<pluginStateB64<<"\n";
+//                  std::cout <<"pluginStateB64  "<<pluginStateB64<<"\n";
                 }
             }
             else //midi file
