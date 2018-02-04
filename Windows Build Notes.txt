@@ -1,0 +1,4 @@
+Windows Buid Notes
+
+- Enable plugin types in projucer (VST & Vst3)
+- Ensure VST SDK is correct

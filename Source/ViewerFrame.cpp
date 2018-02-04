@@ -180,8 +180,11 @@ void ViewerFrame::timerCallback()
     const String newName = "Concert Keyboardist - " + processor->sequenceObject.getScoreFileName() + plugin;
     if (prevName != newName)
     {
-        getTopLevelComponent()->setName (newName);
-        repaint();
+		if (!(getTopLevelComponent()->getName() == newName))
+		{
+			getTopLevelComponent()->setName(newName);
+			repaint();
+		}
     }
     processor->sequenceObject.propertiesChanged = false;
     if (pChainAmountComboBox->newValue())
