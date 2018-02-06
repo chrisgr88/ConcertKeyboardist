@@ -2,3 +2,10 @@ Windows Buid Notes
 
 - Enable plugin types in projucer (VST & Vst3)
 - Ensure VST SDK is correct
+
+- To set the Appicon.ico
+	- Drag the .ico file into the "virtual"Application Folder (on the "Target Machine")
+	- Click on the branch one below the top in Solution Explorer
+	- At the bottom should be Deployment Project Properties
+	- Click on the item to the right of the "AddRemoveProgramsIcon" item, at the top of the properties list
+	- Navigate to choose the ico file that was dragged to teh virtual Application Folder
