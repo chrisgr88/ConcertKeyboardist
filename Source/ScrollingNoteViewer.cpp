@@ -430,6 +430,7 @@ void ScrollingNoteViewer::mouseDrag(const MouseEvent &event)
 void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel)
 {
     processor->leadLag = 0;
+    processor->fullPowerMode = true;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
     if (processor->isPlaying && processor->getZTLTime(0)>0.1 && wheel.deltaX>0.0f)
     {
@@ -559,9 +560,9 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
                 if (!processor->playing())
                 {
                     hoverInfo = MidiMessage::getMidiNoteName(nn, true, true, 3)
-                                + ": note number " + String::String(nn) + "; "
-                                + "track " + String::String(pSequence->at(hoverStep)->track)+ "; "
-                                + "ch " + String::String(pSequence->at(hoverStep)->channel)
+                                + ": note number " + String::String(nn) +
+                                + "\ntrack " + String::String(pSequence->at(hoverStep)->track)+ "; "
+                                + "channel " + String::String(pSequence->at(hoverStep)->channel)
                                 + "\nvelocity " + String(127.0 * pSequence->at(hoverStep)->velocity)+ "; "
                                 + "duration " +
                                 String((pSequence->at(hoverStep)->getOffTime() -
@@ -822,8 +823,8 @@ void ScrollingNoteViewer::renderOpenGL()
         if (rebuidingGLBuffer)
 	            return;
         const ScopedLock myScopedLock (glRenderLock);
-        //if (!processor->appIsActive)
-        //    return;
+        if (!processor->fullPowerMode)
+            return;
         rendering = true;
         ++frameCounter;
         jassert (OpenGLHelpers::isContextActive());
@@ -1409,6 +1410,8 @@ void ScrollingNoteViewer::makeNoteBars()
                         if (msgTimeStamp >= barLeft)
                         {
 //                            std::cout << "Sustain bar ended before next note "<<step<<" "<<msgTimeStamp<<" "<<barRight<<"\n";
+							if (highestNote == -1)
+								highestNote = pSequence->at(step)->noteNumber;
                             const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0. * unscaledTVS;
                             addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 1.5,
                                          Colour(Colours::orange).brighter());

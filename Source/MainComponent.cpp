@@ -26,8 +26,8 @@ MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
         audioDeviceManager.initialise (0, 2, savedAudioState, true);
-        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
-        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
+//        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
+//        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
         std::cout << "Audio Device Initialized " << audioDeviceManager.getCurrentAudioDevice()->getName() << "\n";
 //        graph.addNode(&midiInNode,0);
 //        graph.addNode(&audioOutNode,4);
@@ -138,7 +138,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     }
         
     const double sampRate = curDevice->getCurrentSampleRate();
-    const double bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
+    const int bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
     String errorMsg;
     processor->sequenceObject.pThePlugin = nullptr;
     if (thePlugin)
@@ -150,6 +150,14 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     }
     
     AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
+//<<<<<<< HEAD
+//=======
+//    AudioProcessor::BusesLayout bl = pPlugin->getBusesLayout();
+//    int nInputs = bl.getMainInputChannels();
+//    int nOutputs = bl.getMainOutputChannels();
+////    pPlugin->disableNonMainBuses();
+//    pPlugin->setPlayConfigDetails(nInputs,nOutputs,sampRate,bufSz);
+//>>>>>>> 1be6f6cd44ea296389e2a93b53ac58f35a624112
     thePlugin = pPlugin;
     processor->sequenceObject.pThePlugin = pPlugin;
     if (thePlugin)
@@ -168,7 +176,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     //        graph.addNode(&audioOutNode,4);
     //        graph.addConnection(0, 0, 2, 0);
     //        graph.addConnection(0, 2, 4, 0);
-    thePlayer.setProcessor(&graph);
+//    thePlayer.setProcessor(&graph);
     thePlayer.setProcessor(thePlugin);
     audioDeviceManager.addAudioCallback (&thePlayer);
     thePlugin->suspendProcessing(false);
