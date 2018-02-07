@@ -9,13 +9,11 @@
 		5345B11540AF5F39D65F975D = {isa = PBXBuildFile; fileRef = BCC50B48B1A4B967949B2DB2; };
 		CE2807371257B52B1D2B06E0 = {isa = PBXBuildFile; fileRef = D8FF2E14B072C8B9544C95BF; };
 		189A987224B9646B9AA0D399 = {isa = PBXBuildFile; fileRef = C64527E74752ECF0B056A9F5; };
-		C33BFE8767A14652ED5730D2 = {isa = PBXBuildFile; fileRef = 96D2678E05E84ABAD2A8A608; };
 		D273118FCE8FE8583D9D4AB2 = {isa = PBXBuildFile; fileRef = CCC23D1BCFBE5FFC700F8608; };
 		FBD0FB1E585C84BF818F4CDF = {isa = PBXBuildFile; fileRef = A72937CA4518472989B5644D; };
 		354BBD7645C4F76503133A20 = {isa = PBXBuildFile; fileRef = 90E350DA6DF0535788EDA0C7; };
 		C568BD20102D15116F05E6D4 = {isa = PBXBuildFile; fileRef = AE90B98838251D28244F281D; };
 		A3BEED6474CF4D29FB8CA568 = {isa = PBXBuildFile; fileRef = 87D653D986B3CB91809A6AA1; };
-		9764F5FACE386970915AC618 = {isa = PBXBuildFile; fileRef = A0B64A9770F5998A16C831E7; };
 		06478CB91ACDAE12E9E577CC = {isa = PBXBuildFile; fileRef = E08966BABF342FCAD8DA7A07; };
 		62B45B3673D1655B7418C1E6 = {isa = PBXBuildFile; fileRef = FC7EF3CDEE50B555E15E362D; };
 		02EF462BC2B7477532926CB4 = {isa = PBXBuildFile; fileRef = DCC6CD0D96DF5D56628DC513; };
@@ -83,9 +81,7 @@
 		90E350DA6DF0535788EDA0C7 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		93EB964E952AD2FFD553EB68 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_data_structures.mm"; path = "../../JuceLibraryCode/include_juce_data_structures.mm"; sourceTree = "SOURCE_ROOT"; };
 		949572AC6185AEDD8DA7AC70 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_opengl.mm"; path = "../../JuceLibraryCode/include_juce_opengl.mm"; sourceTree = "SOURCE_ROOT"; };
-		96D2678E05E84ABAD2A8A608 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		9C9897300A293F6B57F9CDD8 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_data_structures"; path = "../../JuceLibraryCode/modules/juce_data_structures"; sourceTree = "SOURCE_ROOT"; };
-		A0B64A9770F5998A16C831E7 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = System/Library/Frameworks/CoreAudioKit.framework; sourceTree = SDKROOT; };
 		A373D65BDAB25C19EC6A05AE = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A72937CA4518472989B5644D = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		A7A229511154A5A91A29958D = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-App.plist"; path = "Info-App.plist"; sourceTree = "SOURCE_ROOT"; };
@@ -209,13 +205,11 @@
 		27CABD79CAE4AAD868B6F6AE = {isa = PBXGroup; children = (
 					D8FF2E14B072C8B9544C95BF,
 					C64527E74752ECF0B056A9F5,
-					96D2678E05E84ABAD2A8A608,
 					CCC23D1BCFBE5FFC700F8608,
 					A72937CA4518472989B5644D,
 					90E350DA6DF0535788EDA0C7,
 					AE90B98838251D28244F281D,
 					87D653D986B3CB91809A6AA1,
-					A0B64A9770F5998A16C831E7,
 					E08966BABF342FCAD8DA7A07,
 					FC7EF3CDEE50B555E15E362D,
 					DCC6CD0D96DF5D56628DC513,
@@ -295,7 +289,6 @@
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.newCK;
@@ -415,13 +408,11 @@
 		AF94D754542EEF998EE0EF72 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (
 					CE2807371257B52B1D2B06E0,
 					189A987224B9646B9AA0D399,
-					C33BFE8767A14652ED5730D2,
 					D273118FCE8FE8583D9D4AB2,
 					FBD0FB1E585C84BF818F4CDF,
 					354BBD7645C4F76503133A20,
 					C568BD20102D15116F05E6D4,
 					A3BEED6474CF4D29FB8CA568,
-					9764F5FACE386970915AC618,
 					06478CB91ACDAE12E9E577CC,
 					62B45B3673D1655B7418C1E6,
 					02EF462BC2B7477532926CB4,

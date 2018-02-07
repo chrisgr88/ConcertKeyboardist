@@ -15,13 +15,19 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_023D2AA35DF7483D9BCA779C3CB1F734"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_032EBEEB6BE44862B3AF19F114E13AA8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_09AC7FC8E55146EFA6AD1D5B84F7D8DE"
+        "MsmKey" = "8:_04DF7C02E4D84A52A93B42E0ECF292AC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -33,7 +39,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_14E8539A845B48A6A381FBA1540D7EA3"
+        "MsmKey" = "8:_13F4EAE9D29542D7AA29C7F10FB25CD7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_189DC1D20F814F1493E55244A3FE284A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -63,7 +75,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4E71892CD8374DF59D80CD938BBD61E0"
+        "MsmKey" = "8:_3523BC50042448869D83A729637A03B2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3B2547D3887741A7ACFA9F4E3660AE8F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_42C09B672D7D449B8E91957AC5BFE7B2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_46DC9C6C02F14DEC8489779FDF0C616E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -75,19 +105,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_50248FF467154DBFB56C8F983E8CA29F"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_51E9875F1CB340438CC72593DC2708A6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_539F5DB87E1946EAA03B8AC5D15F3917"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_550486AF187B4D3696F86436C844615B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_591B987A9B1F40B48D1D19C912AFBC0F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -135,12 +171,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_67E4172E643C48BD8D0926F74F3475E5"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_765AD27A78274FF597455AAE8AAA222B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -148,6 +178,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7894C1FF8A8042A88EF0A29E5E6C184D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_79E9A47F1A844BD1B8FE36F4E80E09A1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -207,7 +243,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_95E13B62DA654157B9EE60AC8C4B3B61"
+        "MsmKey" = "8:_96BFD12AB2524B408A4892E53BF39B28"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -219,13 +255,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A36F0FF27036415CAF7B75C75CD66D48"
+        "MsmKey" = "8:_9F8F72823BD4453EBE6192115623CF64"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A9369A29BBAD4EF0873024EFEEA65188"
+        "MsmKey" = "8:_A2A335BC550F435FB7786C2350E74113"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A36F0FF27036415CAF7B75C75CD66D48"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -237,7 +279,25 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B59D7984E0354B0281C8AD834BC73C66"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B7CCF417D52D471BBF38AD2A9D1329DB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B7F23FAA847645658D8BB4AADB07A4DA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BA4BF6AA67B844A0969BF51FEBBB04A5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -255,13 +315,37 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C12F17FFAE1F4D5482DA1F5F0F8B8F21"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C1F3FA6395BE44608B1F53654973E5B5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C3D445B024174C37A0C66B01B88758A9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C9CB61CC26C04377A60E9611F2C14BE4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_CA354ACD78774162B29F1A9DE65B6CF2"
+        "MsmKey" = "8:_C9D69810948C49BA8A729B589D172F75"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CECCA2C02EFF4B938F89B60D396EACD9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -273,31 +357,37 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D9E4AB39D30448C6989AFF84816E3A30"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDF79C19207C40D0A049151CA5207989"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DFBA423C37C54CDCA0AA7F2BDB32D390"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E3569815D25A4D97A95E8CAE5FD2EC28"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_EB83C922A4E74F43B5BE9DBA8875AB4C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_EED3B23C82874175A9371B428C54F95C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_F05F74E220EE418698B0012C67C800AD"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FB904A71B79D45E0B0ACD37E679AE2BC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FD8EDE94A162478D92A079FE95A187C1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -388,6 +478,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_023D2AA35DF7483D9BCA779C3CB1F734"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\197-Sibelius - Valse Triste[ck].mid"
+            "TargetName" = "8:197-Sibelius - Valse Triste[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_032EBEEB6BE44862B3AF19F114E13AA8"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\NoteChainingTools.jpg"
@@ -408,10 +518,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_09AC7FC8E55146EFA6AD1D5B84F7D8DE"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_04DF7C02E4D84A52A93B42E0ECF292AC"
             {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\193-Schumann - Whims Op-12 No-4[ck].mid"
-            "TargetName" = "8:193-Schumann - Whims Op-12 No-4[ck].mid"
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\104-Grieg - Gavotte (Holberg)[ck].mid"
+            "TargetName" = "8:104-Grieg - Gavotte (Holberg)[ck].mid"
             "Tag" = "8:"
             "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
@@ -448,10 +558,30 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_14E8539A845B48A6A381FBA1540D7EA3"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_13F4EAE9D29542D7AA29C7F10FB25CD7"
             {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\Alexander Scriabin - Etude In C Sharp Opus 8 Nr 1[ck].mid"
-            "TargetName" = "8:Alexander Scriabin - Etude In C Sharp Opus 8 Nr 1[ck].mid"
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\095-Grainger - Country Gardens[ck].mid"
+            "TargetName" = "8:095-Grainger - Country Gardens[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_189DC1D20F814F1493E55244A3FE284A"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\Pavanne-Pour-Une-Infante-Defunte[ck].mid"
+            "TargetName" = "8:Pavanne-Pour-Une-Infante-Defunte[ck].mid"
             "Tag" = "8:"
             "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
@@ -548,10 +678,70 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E71892CD8374DF59D80CD938BBD61E0"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3523BC50042448869D83A729637A03B2"
             {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\202-CHOPIN Frederic Francois - Op-72 Nocturne No-1 in E-min[ck].mid"
-            "TargetName" = "8:202-CHOPIN Frederic Francois - Op-72 Nocturne No-1 in E-min[ck].mid"
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\couperin_baricades[ck].mid"
+            "TargetName" = "8:couperin_baricades[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3B2547D3887741A7ACFA9F4E3660AE8F"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\Debussy Suite Bergamasque 1mov[ck].mid"
+            "TargetName" = "8:Debussy Suite Bergamasque 1mov[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_42C09B672D7D449B8E91957AC5BFE7B2"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\The Spruce[ck].mid"
+            "TargetName" = "8:The Spruce[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_46DC9C6C02F14DEC8489779FDF0C616E"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\Minuet in G[ck].mid"
+            "TargetName" = "8:Minuet in G[ck].mid"
             "Tag" = "8:"
             "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
@@ -588,26 +778,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_50248FF467154DBFB56C8F983E8CA29F"
-            {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\178-Schumann - Curious Story Op-15 No-2[ck].mid"
-            "TargetName" = "8:178-Schumann - Curious Story Op-15 No-2[ck].mid"
-            "Tag" = "8:"
-            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_51E9875F1CB340438CC72593DC2708A6"
             {
             "SourcePath" = "8:..\\..\\..\\Builds\\VisualStudio2017\\x64\\Debug\\App\\ConcertKeyboardist.exe"
@@ -628,12 +798,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_539F5DB87E1946EAA03B8AC5D15F3917"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\193-Schumann - Whims Op-12 No-4[ck].mid"
+            "TargetName" = "8:193-Schumann - Whims Op-12 No-4[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_550486AF187B4D3696F86436C844615B"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\PedalTools.jpg"
             "TargetName" = "8:PedalTools.jpg"
             "Tag" = "8:"
             "Folder" = "8:_3933DA6F338A4E57A4073D1A908E78AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_591B987A9B1F40B48D1D19C912AFBC0F"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\178-Schumann - Curious Story Op-15 No-2[ck].mid"
+            "TargetName" = "8:178-Schumann - Curious Story Op-15 No-2[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -788,26 +998,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_67E4172E643C48BD8D0926F74F3475E5"
-            {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\189-Schumann - Soaring Op-12 No-2[ck].mid"
-            "TargetName" = "8:189-Schumann - Soaring Op-12 No-2[ck].mid"
-            "Tag" = "8:"
-            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_765AD27A78274FF597455AAE8AAA222B"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\ChordTools.jpg"
@@ -834,6 +1024,26 @@
             "TargetName" = "8:CKTransportToolbar.jpg"
             "Tag" = "8:"
             "Folder" = "8:_3933DA6F338A4E57A4073D1A908E78AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_79E9A47F1A844BD1B8FE36F4E80E09A1"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\liz_rhap02[ck].mid"
+            "TargetName" = "8:liz_rhap02[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1028,10 +1238,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_95E13B62DA654157B9EE60AC8C4B3B61"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_96BFD12AB2524B408A4892E53BF39B28"
             {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\Le-Tombeau-De-Couperin-(Forlane)[ck].mid"
-            "TargetName" = "8:Le-Tombeau-De-Couperin-(Forlane)[ck].mid"
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\mapleleafrag[ck].mid"
+            "TargetName" = "8:mapleleafrag[ck].mid"
             "Tag" = "8:"
             "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
@@ -1068,12 +1278,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A36F0FF27036415CAF7B75C75CD66D48"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9F8F72823BD4453EBE6192115623CF64"
             {
-            "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\CKTransportToolbar.snagproj"
-            "TargetName" = "8:CKTransportToolbar.snagproj"
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\GoldbergVariations[ck].mid"
+            "TargetName" = "8:GoldbergVariations[ck].mid"
             "Tag" = "8:"
-            "Folder" = "8:_3933DA6F338A4E57A4073D1A908E78AF"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1088,12 +1298,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A9369A29BBAD4EF0873024EFEEA65188"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A2A335BC550F435FB7786C2350E74113"
             {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\078-Debussy - Arabesque No-2 in G[ck].mid"
-            "TargetName" = "8:078-Debussy - Arabesque No-2 in G[ck].mid"
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\189-Schumann - Soaring Op-12 No-2[ck].mid"
+            "TargetName" = "8:189-Schumann - Soaring Op-12 No-2[ck].mid"
             "Tag" = "8:"
             "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A36F0FF27036415CAF7B75C75CD66D48"
+            {
+            "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\CKTransportToolbar.snagproj"
+            "TargetName" = "8:CKTransportToolbar.snagproj"
+            "Tag" = "8:"
+            "Folder" = "8:_3933DA6F338A4E57A4073D1A908E78AF"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1128,12 +1358,72 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B59D7984E0354B0281C8AD834BC73C66"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\Toccata-and-Fugue-Dm[ck].mid"
+            "TargetName" = "8:Toccata-and-Fugue-Dm[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B7CCF417D52D471BBF38AD2A9D1329DB"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\ToggleEditToolbarTool.jpg"
             "TargetName" = "8:ToggleEditToolbarTool.jpg"
             "Tag" = "8:"
             "Folder" = "8:_3933DA6F338A4E57A4073D1A908E78AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B7F23FAA847645658D8BB4AADB07A4DA"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\mendel_op30_1_format0[ck].mid"
+            "TargetName" = "8:mendel_op30_1_format0[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BA4BF6AA67B844A0969BF51FEBBB04A5"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\brams_rhapsody[ck].mid"
+            "TargetName" = "8:brams_rhapsody[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1188,6 +1478,66 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C12F17FFAE1F4D5482DA1F5F0F8B8F21"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\prali_sk[ck].mid"
+            "TargetName" = "8:prali_sk[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C1F3FA6395BE44608B1F53654973E5B5"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\078-Debussy - Arabesque No-2 in G[ck].mid"
+            "TargetName" = "8:078-Debussy - Arabesque No-2 in G[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C3D445B024174C37A0C66B01B88758A9"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\Le-Tombeau-De-Couperin-(Forlane)[ck].mid"
+            "TargetName" = "8:Le-Tombeau-De-Couperin-(Forlane)[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C9CB61CC26C04377A60E9611F2C14BE4"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\VSTLogoBlack.jpg"
@@ -1208,10 +1558,30 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CA354ACD78774162B29F1A9DE65B6CF2"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C9D69810948C49BA8A729B589D172F75"
             {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\Ariettes_Oubliees_-_Green_Debussy[ck].mid"
-            "TargetName" = "8:Ariettes_Oubliees_-_Green_Debussy[ck].mid"
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"
+            "TargetName" = "8:215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CECCA2C02EFF4B938F89B60D396EACD9"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\Suite danzas criollas Danza 3[ck].mid"
+            "TargetName" = "8:Suite danzas criollas Danza 3[ck].mid"
             "Tag" = "8:"
             "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
@@ -1248,6 +1618,86 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D9E4AB39D30448C6989AFF84816E3A30"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\ravel_pavanne_(c)oguri[ck].mid"
+            "TargetName" = "8:ravel_pavanne_(c)oguri[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DDF79C19207C40D0A049151CA5207989"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\humoresque_7[ck].mid"
+            "TargetName" = "8:humoresque_7[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DFBA423C37C54CDCA0AA7F2BDB32D390"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\202-CHOPIN Frederic Francois - Op-72 Nocturne No-1 in E-min[ck].mid"
+            "TargetName" = "8:202-CHOPIN Frederic Francois - Op-72 Nocturne No-1 in E-min[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E3569815D25A4D97A95E8CAE5FD2EC28"
+            {
+            "SourcePath" = "8:..\\..\\..\\Concert Keyboardist Files\\Mazurka opus.24 No.4[ck].mid"
+            "TargetName" = "8:Mazurka opus.24 No.4[ck].mid"
+            "Tag" = "8:"
+            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EB83C922A4E74F43B5BE9DBA8875AB4C"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\CKMainWindow.jpg"
@@ -1268,72 +1718,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EED3B23C82874175A9371B428C54F95C"
-            {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\197-Sibelius - Valse Triste[ck].mid"
-            "TargetName" = "8:197-Sibelius - Valse Triste[ck].mid"
-            "Tag" = "8:"
-            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F05F74E220EE418698B0012C67C800AD"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\PluginManagementTools.jpg"
             "TargetName" = "8:PluginManagementTools.jpg"
             "Tag" = "8:"
             "Folder" = "8:_3933DA6F338A4E57A4073D1A908E78AF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FB904A71B79D45E0B0ACD37E679AE2BC"
-            {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"
-            "TargetName" = "8:215-Von Weber - Rondo Brilliant in E-flat Op-62[ck].mid"
-            "Tag" = "8:"
-            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FD8EDE94A162478D92A079FE95A187C1"
-            {
-            "SourcePath" = "8:..\\..\\Concert Keyboardist Files\\Christmas_Carols_-_Frosty_The_Snowman[ck].mid"
-            "TargetName" = "8:Christmas_Carols_-_Frosty_The_Snowman[ck].mid"
-            "Tag" = "8:"
-            "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"

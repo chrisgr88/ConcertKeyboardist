@@ -1309,11 +1309,14 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             {
                 std::cout <<"Get Help\n";
                 if (!midiProcessor.isPlaying)
-                {
-                    File::getSpecialLocation(File::currentApplicationFile);
-                    String docPath = File::getSpecialLocation(File::currentApplicationFile).
-                            getChildFile("Contents/Resources/Documentation/EN/ckdoc.htm").getFullPathName();
-                    docPath = "file://" + docPath;
+                { 
+                    File currentApp = File::getSpecialLocation(File::currentApplicationFile);
+#if JUCE_MAC
+					String docPath = currentApp.getChildFile("Contents/Resources/Documentation/EN/ckdoc.htm").getFullPathName();				
+#else
+					String docPath = currentApp.getSiblingFile("Documentation/EN/ckdoc.htm").getFullPathName();
+#endif
+					docPath = "file://" + docPath;
                     std::cout << "doc path " << docPath << "\n";
                     URL docURL = URL(docPath);
                     docURL.launchInDefaultBrowser();
