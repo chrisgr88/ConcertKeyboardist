@@ -1,5 +1,6 @@
 Windows Buid Notes
 
+- Ensure Mac version was built just previously to update date header
 - Enable plugin types in projucer (VST & Vst3)
 - Ensure VST SDK is correct
 
@@ -8,4 +9,4 @@ Windows Buid Notes
 	- Click on the branch one below the top in Solution Explorer
 	- At the bottom should be Deployment Project Properties
 	- Click on the item to the right of the "AddRemoveProgramsIcon" item, at the top of the properties list
-	- Navigate to choose the ico file that was dragged to teh virtual Application Folder
+	- Navigate to choose the ico file that was dragged to the virtual Application Folder
