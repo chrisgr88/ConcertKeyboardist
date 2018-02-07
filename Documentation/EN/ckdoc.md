@@ -30,7 +30,7 @@ As you play the score scrolls right-to-left based on tempos set in the score's m
 
 Played with a computer keyboard Concert Keyboardist uses note velocities from the score.  Played with a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes, and velocities of chained notes are adjusted proportional to the velocity of their target note.
 
-Concert Keyboardist gradually adjusts its tempo (rate of scrolling) toward your playing tempo.  You are not locked to the tempo in the midi file.
+Concert Keyboardist gradually adjusts its tempo (rate of scrolling) toward your playing tempo.  You are not locked to the tempo in the midi file, and you don't have to play target notes exactly when Concert Keyboardist suggests.  If you did play them exactly when suggested and hold them exactly as long as suggested, the result would be exactly like playing back the midi file.  But even if you tried to do this your natural human variations would bring life to the music.  You could even choose to play with more varied timings or a different rhythm.
 
 Concert Keyboardist has tools to edit things like note velocities, note start times, note durations, and variations in the  tempo.  You can save your edited scores in Concert Keyboardist files, which are normal midi files but with an extra invisible track for your edits.
 
