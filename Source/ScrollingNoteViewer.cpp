@@ -1410,6 +1410,8 @@ void ScrollingNoteViewer::makeNoteBars()
                         if (msgTimeStamp >= barLeft)
                         {
 //                            std::cout << "Sustain bar ended before next note "<<step<<" "<<msgTimeStamp<<" "<<barRight<<"\n";
+							if (highestNote == -1)
+								highestNote = pSequence->at(step)->noteNumber;
                             const float y = noteYs[highestNote] * rescaleHeight + topMargin - 0. * unscaledTVS;
                             addRectangle(barLeft * pixelsPerTick, y, (barRight - barLeft) * pixelsPerTick, 1.5,
                                          Colour(Colours::orange).brighter());
