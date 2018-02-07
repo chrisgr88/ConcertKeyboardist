@@ -12,24 +12,23 @@ For questions or comments contact: chrisgr99@gmail.com
 
 ## Quick Introduction to Concert Keyboardist
 
-<iframe src="https://player.vimeo.com/video/163994420" width="640" height="400" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-<p><a href="https://vimeo.com/163994420">Mysterious &amp; Bluesy - Geosonix Synced To Ableton</a> from <a href="https://vimeo.com/user4679000">geosonix</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+Concert Keyboardist is like an easy to learn expressive musical instrument that never lets you play a wrong note.  Load a midi file and it becomes an  instrument for performing a particular piece of music where you control in real time when and how notes are played.  It's magical to play like a "Concert Keyboardist" on your computer keyboard.   Or use a midi keyboard for even more expressiveness.
 
-Concert Keyboardist was created for the enjoyment of playing existing midi files live.  Playing Concert Keyboardist feels remarkably like playing a real instrument.  There are many thousands of midi files available for download for free on the Internet, 
-(or you can create your own) and you can play them as though you were a "Concert keybordist" even on just a computer keyboard.
+Where to get midi files to play?  There are tens of thousands available around the Internet for download or you can create your own.  Before Concert Keyboardist a replayed midi file was always exactly the same and could sound mechanical.  With Concert Keyboardist it comes alive under your fingers as you play.
+
+## This is Concert Keyboardist
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/xb66fzwdDS4?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 <img src="../Common/img/Pathetique.jpg" alt="CK" style="width:100%;margin:20px 0px 10px 0px">
 
+**How it works**:  In the above image the heads of the "Target Notes" have magenta heads and "Chained" notes have white or grey heads. Each time you press a key (any key) Concert Keyboardist triggers the next Target Note in the score.  It also schedules any notes Chained off the target note for autoplaying according to the tempo.
 
-**Concert Keyboardist always plays the correct notes that you play real time with your own timings, durations, velocities and tempo**.
+Then when you press the next key (any key) Concert Keyboardist triggers the next target note and schedules its chained notes, and so on.  If you trigger another target note before the previous chained notes have all been played, the new target note and its chained notes are added to the currently playing chain.
 
-**How it works**:  Each time you press a key Concert Keyboardist triggers the next "Target Note" in the score, then autoplays any notes "Chained" off the target note according to the tempo.  Each time you press any key, Concert Keyboardist triggers another arget note its chained notes.  If you trigger another target note before the previous chained notes have all been played, the new target note and its chained notes are added to the currently playing chain.
+As you play the score scrolls right-to-left based on tempos set in the score's midi file.  You control when to play target notes and how long to hold them.  Concert keyboardist continually keeps you visually informed on played notes, sounding notes, upcoming unplayed target notes, suggested times to play them, and the tempo.  This carefully designed visual feedback is crucial to the ability to play a midi file live, and more than two years of testing went into perfecting it.
 
-In the above image the heads of the target notes have magenta heads.  Chained notes have white or grey heads.
-
-As you play, the score scrolls right-to-left based on the  possibly varying tempos set in the score's midi file.  You control when to play target notes and how long to hold them.
-
-Played with a computer keyboard Concert Keyboardist uses the note velocities from the score.  Played with a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes, with velocities of chained notes adjusted proportional to the velocity of their target note.
+Played with a computer keyboard Concert Keyboardist uses note velocities from the score.  Played with a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes, and velocities of chained notes are adjusted proportional to the velocity of their target note.
 
 Concert Keyboardist gradually adjusts its tempo (rate of scrolling) toward your playing tempo.  You are not locked to the tempo in the midi file.
 
