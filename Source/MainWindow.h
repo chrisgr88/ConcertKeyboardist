@@ -146,23 +146,23 @@ public:
     {
 //        std::cout << "Active Window Process::isForegroundProcess()"<< Process::isForegroundProcess()<< "\n";
         Process::isForegroundProcess();
-        if (!midiProcessor.appIsActive && (Process::isForegroundProcess()/* || isMouseOver(true)*/))
+        if (!midiProcessor.fullPowerMode && (Process::isForegroundProcess()/* || isMouseOver(true)*/))
         {
 //            std::cout << "Make Active \n";
-            midiProcessor.appIsActive = true;
+            midiProcessor.fullPowerMode = true;
             mainComponent->audioDeviceManager.restartLastAudioDevice();
         }
-        else if (midiProcessor.appIsActive && !(Process::isForegroundProcess()/* || isMouseOver(true)*/) )
+        else if (midiProcessor.fullPowerMode && !(Process::isForegroundProcess()/* || isMouseOver(true)*/) )
         {
 //            std::cout << "Make InActive \n";
-            midiProcessor.appIsActive = false;
+            midiProcessor.fullPowerMode = false;
             mainComponent->audioDeviceManager.closeAudioDevice();
         }
     }
     
 //    virtual void mouseDown (const MouseEvent& event) override
 //    {
-//        midiProcessor.appIsActive = true;
+//        midiProcessor.fullPowerMode = true;
 //    }
     
     TooltipWindow tooltipWindow;    

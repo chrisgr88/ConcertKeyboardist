@@ -430,6 +430,7 @@ void ScrollingNoteViewer::mouseDrag(const MouseEvent &event)
 void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel)
 {
     processor->leadLag = 0;
+    processor->fullPowerMode = true;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
     if (processor->isPlaying && processor->getZTLTime(0)>0.1 && wheel.deltaX>0.0f)
     {
@@ -822,8 +823,8 @@ void ScrollingNoteViewer::renderOpenGL()
         if (rebuidingGLBuffer)
 	            return;
         const ScopedLock myScopedLock (glRenderLock);
-        //if (!processor->appIsActive)
-        //    return;
+        if (!processor->fullPowerMode)
+            return;
         rendering = true;
         ++frameCounter;
         jassert (OpenGLHelpers::isContextActive());

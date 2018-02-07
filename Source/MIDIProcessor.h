@@ -64,7 +64,7 @@ public:
     }
     void setLeadTimeInTicks(int ticks) {leadTimeInTicks = ticks;}
     
-    void loadFromUserSpecifiedFile ()//const bool showMessageOnFailure)
+    void loadFromUserSpecifiedFile ()
     {
 #if JUCE_IOS
         auto ckDocs = File::getSpecialLocation(File::currentApplicationFile);
@@ -282,7 +282,7 @@ public:
     void setListenSequence(double startTime, double endTime, Array<int> tracks);
     double variableTempoRatio; // variableTempoRatio = variableTimeIncrement/curTimeIncrement
     
-    bool appIsActive = true;
+    bool fullPowerMode = true;
     int sampleRate;
     std::atomic_bool pauseProcessing;
     bool pluginEnabled;
