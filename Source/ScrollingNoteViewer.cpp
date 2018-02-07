@@ -560,9 +560,9 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
                 if (!processor->playing())
                 {
                     hoverInfo = MidiMessage::getMidiNoteName(nn, true, true, 3)
-                                + ": note number " + String::String(nn) + "; "
-                                + "track " + String::String(pSequence->at(hoverStep)->track)+ "; "
-                                + "ch " + String::String(pSequence->at(hoverStep)->channel)
+                                + ": note number " + String::String(nn) +
+                                + "\ntrack " + String::String(pSequence->at(hoverStep)->track)+ "; "
+                                + "channel " + String::String(pSequence->at(hoverStep)->channel)
                                 + "\nvelocity " + String(127.0 * pSequence->at(hoverStep)->velocity)+ "; "
                                 + "duration " +
                                 String((pSequence->at(hoverStep)->getOffTime() -
