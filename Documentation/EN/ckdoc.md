@@ -40,58 +40,49 @@ However, it's important to understand that in this version of Concert keyboardis
 
 Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install: 
 
+* Download and uncompress the install files.
 * Copy the Concert keyboardist application to your Applications folder.  
-* Copy the included folder of example files to anywhere you choose.  Possibly your Documents folder, Desktop, or a folder where you keep midi files. 
-* Concert keyboardist can produce sound either by loading a VST or Audio Unit plugin, or by sending midi to another application.  
-* If you are familiar with plugins and have any on your computer, load a suitable one (e.g. piano) as described in the Plugin Management Tools section below, and configure the Concert Keyboardist audio output as described in the Audio Settings [Settings Tools] topic below.  See To use an external application you need to route theme to a software synthesizer (or hardware synthesizer).  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  Also GarageBand automatically receives midi messages from all midi output ports on your system so it automatically receives from the Concert Keyboardist default output.
-* If you prefer to use an external midi software or hardware synthesizer
-* Setup with GarageBand: 
+* Copy the included "Concery Keyboardist Files" folder to anywhere you choose: your Documents folder, Desktop, or a folder where you keep midi files. 
+* Concert keyboardist can produce sound with a VST or Audio Unit plugin, or by sending midi to another software or hardware synthesizer.  
+* If you are familiar with plugins and have a suitable one on your computer (e.g. piano) load it as described in [Plugin Management Tools], and configure the Concert Keyboardist audio output as described in Audio and Midi Settings in [Settings Tools].  
+* Instead of a plugin you can route midi from Concert keyboardist to a standlaone software or hardware synthesizer.  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  GarageBand automatically receives midi messages from all midi output on your system so it automatically receives from the Concert Keyboardist default output.
+* To set up with GarageBand: 
     * Download and install GarageBand (it's free to Mac owners).  
     * Open GarageBand.
     * When it opens choose "Empty Project"
     * Choose "Software Instrument".  It should default to Classic Electric Piano.
     * You could play the Classic Electric Piano but it's better to use a true piano sound for the piano music included with Concert Keyboardist.
     * To choose a piano sound click on "Sounds" in the frame on the left, click on "Piano" and double click on "Steinway Grand Piano".
-    * Switch to Concert Keyboardist and follow the Quick Start to Playing, below.  When you play you should hear piano notes.
-* If you are more experienced with midi you should know how to configure your preferred sound generator to receive from the Concert Keyboardist default output.
-* If you have a midi keyboard attached to your computer you can configure Concert Keyboardist to receive from it.  Use the "Audio and Midi Settings" command in the File menu to open the settings dialog.  Click next to your midi controller to make it active and close the dialog.  Concert Keyboardist will remember this setting between sessions and it will remain available as long as your controller is active when Concert Keyboardist is started.
+    * Then open Concert Keyboardist and follow the steps in [Quick Start to Playing], below.  When you play you should hear piano notes.
+* If you are more experienced with midi you should know how to configure your preferred midi synthesizer to receive from the Concert Keyboardist default output.
+* If you have a midi keyboard attached to your computer, configure it as the Concert Keyboardist midi input as shown in Audio and Midi Settings in [Settings Tools].  Be sure your controller is active when Concert Keyboardist is started.
+* Go to the [Quick Start to Playing].
 
-## Installation and Setup on a Windows
+## Installation and Setup on Windows
 
 Concert Keyboardist is compatible with Windows 7 and Windows 10 (possibly Windows XT but this has not been tested). To install: 
 
-* Copy the Concert keyboardist application to your Program Files folder.  
-* Copy the included folder of example files to anywhere you choose.  Possibly your Documents folder, Desktop, or a folder where you keep midi files.
-* If you are familiar with VST plugins and have any on your computer, load a suitable one (e.g. piano) as described in the Plugin Management Tools section below, and configure the Concert Keyboardist audio output as described in the Audio Settings section below.
-* You can also play by routing midi from Concert keyboardist to a exteral sound generator: a DAW, softsynth or hardware synthesizer.  
-    * If your external sound generator has a virtual midi input port choose it as the Concert Keyboardist midi output:  Click on the Audio/Midi Settings tool in the CK toolbar and choose that output.
-    * If your external sound generator does not have a virtual midi input port you will need to install a virtual midi routing driver such as [LoopBee](http://www.nerds.de/en/loopbe1.html).  Then choose it as the output to Concert Keyboardist and the input port on your sound generator.
-    * In your sound generator choose a suitable sound such as piano.
-
-<!-- ![](../Common/img/CKMainWindow.jpg) -->
-
-<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:75%;margin:0px 10px 10px 10px">
-
-## Main Window
-
-* Concert Keyboardist is like a player piano.  **Notes** are horizontal bars that scroll right to left horizontally based on the current **tempo**.  A note's vertical position shows pitch and its left end shows start time. Its length shows duration.  This information is read from the midi file and guides you when to play notes and how long to hold them.
-* In real time while you play **you control note start times and durations**.  This is like playing sheet music.  The notes are there but you add expression as you play.  If you have a velocity sensitive midi keyboard you can also control note velocities.
-* The score can be **scrolled** left or right with the mouse wheel or two finger drag on a touch pad.  The end of the score is at the far right.
-* The blue vertical line is the **"Current Time Line"** (CTL) which indicates the current playing time in the score.  It turns amber when ready to play and green while you are playing.
-* While you are playing, pressing any key instantly triggers the next unplayed **Target Note**, magenta-headed-notes.  The these are the notes you directly play.
-* When a Target Note is played it also schedules for playing all notes **chained** from it up to just before the next target note.  Chained notes are those without magenta heads.  
-* Chained notes are triggered at appropriate times in the future based on the current tempo.
-* After all scheduled chained notes have been played no further notes will sound until you trigger the next target note.
-* Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the **flow and rhythm** of the music.  The **tempo** gradually adjusts itself to your playing speed.  If you continually play notes before their scheduled time the tempo speeds up and if you play notes behind the tempo slows.
-* If you try to play the next target note while previously chained notes are still playing, that target note and its chained notes are added to the previous chain.
-* Each time you trigger a target note a vertical yellow **"Relative Time Line"** is drawn at that exact position as a guide to when to play the next target note.  To play the upcoming target note at the current tempo, play it when it reaches the Relative Time Line.  You are free to play it earlier or later which alters the timing of that note and its chained notes.  i.e. The feel or rhythm of the music.  If you continue playing early or late the tempo gradually slows or speeds up.
-
+* Download the Windows installer.
+* Double click on the installer to run it and follow the prompts.  
+* It will install Concert Keyboardist to your Programs folder and create a directory called "Concert Keyboardist Files" of example files in your Documents directory.
+* Run Concert Keyboardist. You should find shortcuts to Concert Keyboardist on Desktop and in the Start menu.  If you wish, pin it to the Taskbar.
+* Configure the Concert Keyboardist audio output as described in the Audio and Midi Settings in [Settings Tools].
+* Concert keyboardist can produce sound with a VST plugin, or by sending midi to another application. 
+* If you are familiar with audio plugins and have any on your computer, load a suitable one (e.g. piano) as described in the [Plugin Management Tools] section below.
+* Instead of a plugin you can route midi from Concert keyboardist to a standalone software or hardware synthesizer.  
+* To route midi to a software synthesizer will need a virtual midi routing driver such as [LoopBee](http://www.nerds.de/en/loopbe1.html), which is free for the basic version, which is sufficient.  
+* Install LoopBee, or the equivalent.  Then choose it as both the Concert Keyboardist midi output  as described in Audio and Midi Settings in [Settings Tools].  Also set LoopBee as the input port on your software synthesizer.
+* If you have an external hardware synthesizer attached to your computer, choose that as the Concert Keyboardist midi output.
+* On your synthesizer choose a suitable sound such as piano.
+* Go to the [Quick Start to Playing].
 
 ## Quick Start to Playing
-* **Load a file:**  You can use the File-Open menu, the toolbar button, or Cmd+O.  A good introductory example is "Minuet in G[ck].mid" which is included with Concert Keyboardist.  It should look something like the above image.
-* **Prepare to play:**  Press the spacebar.  This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play.  In this mode as soon as you press a key the note at the CTL is played and the note bars start scrolling to the left.  The scroll rate is based on the tempo.
+
+* If at any point you need more detail, refer to the [Overview of The Main Window].
+* **Load a file:**  You can use the File-Open menu, the toolbar button, or Cmd+O.  A good introductory example is "Minuet in G[ck].mid" which is among the example files.  When loaded it should look something like the image in the [Overview of The Main Window].
+* **Prepare to play:**  Press the spacebar.  This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play.  In this mode as soon as you press a key the note at the Current Time Line is played and the note bars start scrolling to the left.  The scroll rate is based on the tempo.
 * **Triggering Notes:** On your computer keyboard press any letter key, or any of the characters "[ ] ; ' < > and /".  On an English language keyboard these are the rows from "q" to "]", from "a" to " ' " and from "z" to "/".  If you are using a midi keyboard playing **any** note triggers the next target note.
-* **Note Timing:** To play at the original tempo and rhythm press a key each time a target note reaches the Current Time Line.  You can play with one finger, or two or more fingers to play faster or smoother.  
+* **Note Timing:** To play at the original tempo and rhythm press a key each time a target note reaches the vertical yellow line drawn when the previous note was played.  You can play with one finger, or two or more fingers to play faster or smoother.  
 * **Stopping:** Press the spacebar again, or press the Return key for rewind, or roll the mouse wheel to scroll left or right.
 * **Yellow note heads** are those that are currently sounding.  As you play, notice that long notes continue sounding even as you trigger shorter simultaneous notes.
 * **Chords:** In the "Minuet in G" example the top notes of chords are target notes.  Simultaneous or nearby chord notes are chained from them, like any other chained notes.  This allows chords to be triggered by one note..
@@ -101,6 +92,23 @@ Concert Keyboardist is compatible with Windows 7 and Windows 10 (possibly Window
 * **Playing legato notes** This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions.  If you play with at least two fingers you can overlap the on and off times of successive notes to create legato as in normal piano playing.  
 * **The Relative Time Line:** This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played this note.  In playing expressively you may be triggering notes before or after the Current Time Line.  It's helpful to have a relative time marker showing when notes were actually played, not when they were suggested to be played.  Experiment with playing notes before or after the Current Time Line to understand this better.  The yellow line remains after you stop playing to mark the last note played before stopping.
 
+<!-- ![](../Common/img/CKMainWindow.jpg) -->
+
+<img src="../Common/img/CKMainWindow.jpg" alt="CK" style="float:right;width:75%;margin:0px 10px 10px 10px">
+
+## Overview of The Main Window
+
+* Concert Keyboardist is like a player piano.  **Notes** are horizontal bars that scroll right to left horizontally based on the current **tempo**.  A note's vertical position shows pitch and its left end shows start time. Its length shows duration.  This information is read from the midi file and guides you when to play notes and how long to hold them.
+* In real time while you play **you control note start times and durations**.  This is like playing sheet music.  The notes are there but you add expression as you play.  If you have a velocity sensitive midi keyboard you can also control note velocities.
+* The score can be **scrolled** left or right with the mouse wheel or two finger drag on a touch pad.  The end of the score is at the far right.
+* The blue vertical line is the **"Current Time Line"** which indicates the current playing time in the score.  It turns amber when ready to play and green while you are playing.
+* While you are playing, pressing any key instantly triggers the next unplayed **Target Note**, magenta-headed-notes.  The these are the notes you directly play.
+* When a Target Note is played it also schedules for playing all notes **chained** from it up to just before the next target note.  Chained notes are those without magenta heads.  
+* Chained notes are triggered at appropriate times in the future based on the current tempo.
+* After all scheduled chained notes have been played no further notes will sound until you trigger the next target note.
+* Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the **flow and rhythm** of the music.  The **tempo** gradually adjusts itself to your playing speed.  If you continually play notes before their scheduled time the tempo speeds up and if you play notes behind the tempo slows.
+* If you try to play the next target note while previously chained notes are still playing, that target note and its chained notes are added to the previous chain.
+* Each time you trigger a target note a vertical yellow **"Relative Time Line"** is drawn at that exact position as a guide to when to play the next target note.  To play the upcoming target note at the current tempo, play it when it reaches the Relative Time Line.  You are free to play it earlier or later which alters the timing of that note and its chained notes.  i.e. The feel or rhythm of the music.  If you continue playing early or late the tempo gradually slows or speeds up.
 
 ## Navigating Around The Score
 
@@ -164,7 +172,7 @@ There are two plugin related tools:
 
 <img src="../Common/img/SettingsTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px">  There are two settings tools:
 
-* **Audio Settings**
+* **Audio and Midi Settings**
     * Allows you to choose the audio output port used by plugin loaded into CK, if any.
     * Allows you to choose an midi input device controller such as a keyboard, you will be able play CK
     with the controller.  CK will always play the notes in the score no matter what notes you press on the keyboard.  
@@ -334,7 +342,7 @@ these subtle variations in chord times but you can simulate them with one of the
 
     **Save As**... : Brings up a prompt to save your work as a file with a different name.
 
-    **Audio and Midi Settings**... Choose the midi input and output channels.  The audio settings are currently not used.  On Macintosh CK also automatically creates input and output midi ports called ConcertKeyboardist that can used used by other software such as a Digital Audio Workstation (DAW or softsynth) to receive midi from Concert keyboardist.
+    **Audio and Midi Settings**... See [Settings Tools]
 
     **Tracks**... : Show the tracks in the score.  Tracks can be marked as active or inactive.  Inactive tracks are not displayed and ignored while playing.  This is especially useful for multitimbral music where there are many instruments.
 

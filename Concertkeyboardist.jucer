@@ -64,7 +64,7 @@
                vst3Folder="/Users/chrisgr/SDKs/VST3 SDK" iosDevelopmentTeamID="Y6ELW6M79S"
                prebuildCommand="$PROJECT_DIR/../../MakeDateHeader.sh" postbuildCommand="$PROJECT_DIR/../../CopyDocumentation.sh">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" osxCompatibility="10.10 SDK" isDebug="1" optimisation="1"
+        <CONFIGURATION name="Debug" osxCompatibility="10.10 SDK" isDebug="0" optimisation="1"
                        targetName="ConcertKeyboardist" enablePluginBinaryCopyStep="1"
                        codeSigningIdentity="Mac Developer"/>
         <CONFIGURATION name="Release" osxCompatibility="10.10 SDK" isDebug="0" optimisation="3"
@@ -148,7 +148,7 @@
     <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
     <MODULES id="juce_video" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_PLUGINHOST_VST="enabled" JUCE_PLUGINHOST_VST3="enabled"/>
+  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"/>
   <LIVE_SETTINGS>
     <OSX enableCxx11="1"/>
   </LIVE_SETTINGS>

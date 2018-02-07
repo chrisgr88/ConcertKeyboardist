@@ -154,7 +154,7 @@ public:
 ////            mainComponent->audioDeviceManager.restartLastAudioDevice();
 //=======
             midiProcessor.fullPowerMode = true;
-            mainComponent->audioDeviceManager.restartLastAudioDevice();
+//            mainComponent->audioDeviceManager.restartLastAudioDevice();
 //>>>>>>> 1be6f6cd44ea296389e2a93b53ac58f35a624112
         }
         else if (midiProcessor.fullPowerMode && !(Process::isForegroundProcess()/* || isMouseOver(true)*/) )
@@ -165,7 +165,7 @@ public:
 ////            mainComponent->audioDeviceManager.closeAudioDevice();
 //=======
             midiProcessor.fullPowerMode = false;
-            mainComponent->audioDeviceManager.closeAudioDevice();
+//            mainComponent->audioDeviceManager.closeAudioDevice();
 //>>>>>>> 1be6f6cd44ea296389e2a93b53ac58f35a624112
         }
     }
