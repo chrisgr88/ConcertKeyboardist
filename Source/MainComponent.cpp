@@ -14,7 +14,7 @@ Foo
 ApplicationCommandManager& getCommandManager();
 ApplicationProperties& getAppProperties();
 
-MainComponent::MainComponent(MIDIProcessor *p) :
+MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
     viewerFrame(p),
     scrollingNoteViewer(p),
     processor(p)
@@ -150,7 +150,6 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     }
     
     AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
-    pPlugin->setPlayConfigDetails(0,2,sampRate,blockSize);
     thePlugin = pPlugin;
     processor->sequenceObject.pThePlugin = pPlugin;
     if (thePlugin)

@@ -7,15 +7,21 @@
 <h2 id="contact-information">Contact Information</h2>
 <p>For questions or comments contact: chrisgr99@gmail.com</p>
 <h2 id="quick-introduction-to-concert-keyboardist">Quick Introduction to Concert Keyboardist</h2>
-<p>Concert Keyboardist was created for the enjoyment of playing existing midi files live. Playing Concert Keyboardist feels remarkably like playing a real instrument. There are many thousands of midi files available for download for free on the Internet, (or you can create your own) and you can play them as though you were a &quot;Concert keybordist&quot; even on just a computer keyboard. You play the notes in real time with your own note timings, durations, velocities and tempo.</p>
+<iframe src="https://player.vimeo.com/video/163994420" width="640" height="400" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen>
+</iframe>
+<p>
+<a href="https://vimeo.com/163994420">Mysterious &amp; Bluesy - Geosonix Synced To Ableton</a> from <a href="https://vimeo.com/user4679000">geosonix</a> on <a href="https://vimeo.com">Vimeo</a>.
+</p>
+<p>Concert Keyboardist was created for the enjoyment of playing existing midi files live. Playing Concert Keyboardist feels remarkably like playing a real instrument. There are many thousands of midi files available for download for free on the Internet, (or you can create your own) and you can play them as though you were a &quot;Concert keybordist&quot; even on just a computer keyboard.</p>
 <p><img src="../Common/img/Pathetique.jpg" alt="CK" style="width:100%;margin:20px 0px 10px 0px"></p>
-<p>Concert Keyboardist <strong>always</strong> plays the correct notes, <strong>no matter what keys or notes you play</strong>. Each time you press a key on your keyboard, Concert Keyboardist plays the next &quot;Target Note&quot; in the score. Them it autoplays any notes &quot;Chained&quot; off the target note, at the correct times. When it reaches the next Target Note it waits for you to press another key. If you try to trigger the next target note while the previous chained notes are still playing, it and its chained notes are added to the currently playing chain.</p>
-<p>It's up to you to trigger the flowing target notes at times that sound good to you, like playing a real instrument, but easier.</p>
-<p>Notes scroll right-to-left as you play, at a rate approximately determined by the tempo from the midi file. You control when to play each target note and how long to hold it. On an attached velocity-sensitive midi keyboard you can also control note velocity (loudness) by how hard you press the key that triggers it. The velocity of any notes chained off the target note are also adjusted proportionally.</p>
-<p>If you are playing on a computer keyboard (i.e. not velocity sensitive) Concert Keyboardist uses the note velocities from the score.</p>
-<p>Concert Keyboardist gradually adjusts its tempo (rate of scrolling) to match to your current tempo. You are not locked to the tempo in the midi file.</p>
-<p>You can also edit details of midi files to customize how they play and save your changes in a Concert Keyboardist file.</p>
-<p>It's important to realize however that in this version of Concert keyboardist it's not possible to add or remove notes (maybe in a future version). However you can load and play midi files that you create in some other application.</p>
+<p><strong>Concert Keyboardist always plays the correct notes that you play real time with your own timings, durations, velocities and tempo</strong>.</p>
+<p><strong>How it works</strong>: Each time you press a key Concert Keyboardist triggers the next &quot;Target Note&quot; in the score, then autoplays any notes &quot;Chained&quot; off the target note according to the tempo. Each time you press any key, Concert Keyboardist triggers another arget note its chained notes. If you trigger another target note before the previous chained notes have all been played, the new target note and its chained notes are added to the currently playing chain.</p>
+<p>In the above image the heads of the target notes have magenta heads. Chained notes have white or grey heads.</p>
+<p>As you play, the score scrolls right-to-left based on the possibly varying tempos set in the score's midi file. You control when to play target notes and how long to hold them.</p>
+<p>Played with a computer keyboard Concert Keyboardist uses the note velocities from the score. Played with a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes, with velocities of chained notes adjusted proportional to the velocity of their target note.</p>
+<p>Concert Keyboardist gradually adjusts its tempo (rate of scrolling) toward your playing tempo. You are not locked to the tempo in the midi file.</p>
+<p>Concert Keyboardist has tools to edit things like note velocities, note start times, note durations, and variations in the tempo. You can save your edited scores in Concert Keyboardist files, which are normal midi files but with an extra invisible track for your edits.</p>
+<p>However, it's important to understand that in this version of Concert keyboardist it's not possible to create scores or add and remove notes. There are many powerful applications for creating and manipulating midi files, but Concert Keyboardist is unique in its ability to allow you to &quot;perform&quot; them under real time control.</p>
 <h2 id="installation-and-setup-on-a-macintosh">Installation and Setup on a Macintosh</h2>
 <p>Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:</p>
 <ul>
@@ -252,20 +258,20 @@ As you drag up/down on the temp number the percentage number will be updated to 
 <h2 id="menu-commands">Menu Commands</h2>
 <ul>
 <li><p>File Menu</p>
-<p>About Concert keyboardist ... : Gives copyright information and information about the verision number of this copy of Concert Keyboardist.</p>
-<p>Open... : Open a file. Either normal midi files, extension .mid, or Concert Keyboardist files can be opened. A CK file also has an extension of .mid but has [ck] added just before the extension.</p>
-<p>Open Recent File : The ten most recently opened files are shown.</p>
-<p>Save : Save the current file as a CK file. If this file was opened a normal midi fileacs, is is converted to a CK file when saved. The file retains the same tracks as the original midi file but has some extra tracks containing extra information as system exclusive blocks.</p>
-<p>Save As... : Brings up a prompt to save your work as a file with a different name.</p>
-<p>Audio and Midi Settings... Choose the midi input and output channels. The audio settings are currently not used. On Macintosh CK also automatically creates input and output midi ports called ConcertKeyboardist that can used used by other software such as a Digital Audio Workstation (DAW or softsynth) to receive midi from Concert keyboardist.</p>
-<p>Tracks... : Show the tracks in the score. Tracks can be marked as active or inactive. Inactive tracks are not displayed and ignored while playing. This is especially useful for multitimbral music where there are many instruments.</p></li>
+<p><strong>About Concert keyboardist</strong> ... : Gives copyright information and information about the verision number of this copy of Concert Keyboardist.</p>
+<p><strong>Open</strong>... : Open a file. Either normal midi files, extension .mid, or Concert Keyboardist files can be opened. A CK file also has an extension of .mid but has [ck] added just before the extension.</p>
+<p><strong>Open Recent File</strong> : The ten most recently opened files are shown.</p>
+<p><strong>Save</strong> : Save the current file as a CK file. If this file was opened a normal midi fileacs, is is converted to a CK file when saved. The file retains the same tracks as the original midi file but has some extra tracks containing extra information as system exclusive blocks.</p>
+<p><strong>Save As</strong>... : Brings up a prompt to save your work as a file with a different name.</p>
+<p><strong>Audio and Midi Settings</strong>... Choose the midi input and output channels. The audio settings are currently not used. On Macintosh CK also automatically creates input and output midi ports called ConcertKeyboardist that can used used by other software such as a Digital Audio Workstation (DAW or softsynth) to receive midi from Concert keyboardist.</p>
+<p><strong>Tracks</strong>... : Show the tracks in the score. Tracks can be marked as active or inactive. Inactive tracks are not displayed and ignored while playing. This is especially useful for multitimbral music where there are many instruments.</p></li>
 <li><p>Edit Menu</p>
-<p>Undo : Undo most recent command. Can be performed repeatedely to undo more than one command. Only currently works for the set and unset target note commands, and the chain command. Keyboard shorcut: Cmd+z.</p>
-<p>Redo : Redo the most recent undone command. Can be performed repeatedely to redo more than one undone command. Keyboard shortcut: Shift+Cmd+z.</p>
-<p>Play/Pause : Ready the score for playing, or stop it playing. The keyboard shortcut is spacebar (no modifier key).</p>
-<p>Listen : Listen to the score starting at the note after the Current Time Line. Press the spacebar to stop. When listening is stopped the transport is returned to the place where listening started. You can use this to listen to a passage to get a feel for it before playing it yourself. Same as the Listen toolbar button. Keyboard shortcut is &quot;=&quot; (no modifier key).</p>
+<p><strong>Undo</strong> : Undo most recent command. Can be performed repeatedely to undo more than one command. Keyboard shorcut: Cmd+z.</p>
+<p><strong>Redo</strong> : Redo the most recent undone command. Can be performed repeatedely to redo more than one undone command. Keyboard shortcut: Shift+Cmd+z.</p>
+<p><strong>Play/Pause</strong> : Ready the score for playing, or stop it playing. The keyboard shortcut for Play and Pause is the spacebar.</p>
+<p><strong>Listen</strong> : Listen to the score starting at the note after the Current Time Line. Press the spacebar to stop. When listening is stopped the transport is returned to the place where listening started. You can use this to listen to a passage to get a feel for it before playing it yourself. Same as the Listen toolbar button. Keyboard shortcut is &quot;=&quot; (no modifier key).</p>
 <p>Show Edit Toolbar : Toggles the hiding and showing of the edit toolbar. This is the same as the equivalent toolbar button.</p>
-<p>Hide Measure Lines : This toggles the hiding and showing of the measure and beat lines on the score. The reason you may want to do this is that most midi files that were recorded by a live performer do not have their notes aligned to the beat or measure lines. They were simply recorded at some constant tempo with the played note occuring in no particular relatinship to the measures of the nominal tempo. You can identify a midi file like this when the notes seem to bear no relationship to the beats and measure. The numerical tempo is also almost always constant at some value like 120 beats per minute. For files like this it's usually better to hide the beat and measure lines to remove clutter and avoid confusion at you play, where you might be expecting the lines to be relevant. If you turn off beat and measure lines this property is saved with the [CK].mid file and retained next time it is opened.</p></li>
+<p>Hide Measure Lines : Toggles the hiding and showing of the measure and beat lines on the score. The reason you may want to do this is that most midi files that were recorded by a live performer do not have their notes aligned to the beat or measure lines. They were simply recorded at some constant tempo with the played note occuring in no particular relatinship to the measures of the nominal tempo. You can identify a midi file like this when the notes seem to bear no relationship to the beats and measure. The numerical tempo is also almost always constant at some value like 120 beats per minute. For files like this it's usually better to hide the beat and measure lines to remove clutter and avoid confusion at you play, where you might be expecting the lines to be relevant. If you turn off beat and measure lines this property is saved with the [CK].mid file and retained next time it is opened.</p></li>
 </ul>
 <h2 id="licenses-and-copyrights">Licenses and Copyrights</h2>
 <h3 id="concert-keyboardist-license">Concert Keyboardist License</h3>

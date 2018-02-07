@@ -66,7 +66,7 @@ public:
     AudioProcessorPlayer thePlayer;
     ScopedPointer<AudioPluginInstance> thePlugin;
 
-    AudioProcessorGraph graph;
+//    AudioProcessorGraph graph;
     
     void changeListenerCallback (ChangeBroadcaster* changed) override;
 //    {
