@@ -12,9 +12,9 @@ For questions or comments contact: chrisgr99@gmail.com
 
 ## Quick Introduction to Concert Keyboardist
 
-Concert Keyboardist is like an easy to learn expressive musical instrument that never lets you play a wrong note.  Load a midi file and it becomes an  instrument for performing a particular piece of music where you control in real time when and how notes are played.  It's magical to play like a "Concert Keyboardist" on your computer keyboard.   Or use a midi keyboard for even more expressiveness.
+Concert Keyboardist is an easy to learn musical instrument that never lets you play a wrong note.  When you load any midi file Concert Keyboardist becomes an instrument to perform that particular piece of music.  You control when and how notes are played, in real time.  Play like a "Concert Keyboardist" on your computer keyboard or use a midi keyboard for even more expressiveness.
 
-Where to get midi files to play?  There are tens of thousands available around the Internet for download or you can create your own.  With any other application replaying a midi file is always exactly the same and can sound mechanical.  With Concert Keyboardist you bring it to life under your fingers as you play.
+Where to get midi files to play?  There are tens of thousands available around the Internet for download or you can create your own.  Before Concert Keyboardist, midi files always replayed exactly the same.  With Concert Keyboardist music comes alive under your fingers.
 
 ## This is Concert Keyboardist
 
@@ -22,15 +22,17 @@ Where to get midi files to play?  There are tens of thousands available around t
 
 <img src="../Common/img/Pathetique.jpg" alt="CK" style="width:100%;margin:20px 0px 10px 0px">
 
-**How it works**:  In the above image the heads of the "Target Notes" have magenta heads and "Chained" notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score.  It also schedules any notes Chained off each target note for autoplaying according to the tempo.  Chained accompaniment notes continue to play while you play overlapping target notes from the melody.  You can play polyphonic music and even complex chords easily.  You can even play music with multiple midi channels playing multiple instruments, or mute any combination of channels to concentrate on some part of the music.
+**How it works**:  In the above image the heads of the "Target Notes" have magenta heads and "Chained" notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score.  It also schedules any notes Chained off each target note for autoplaying according to the tempo.  Chained accompaniment notes can continue to play while you play overlapping target notes.  It's easy to play polyphonic music, even complex chords.  Play multi channel midi with multiple simultaneous instruments, or mute some combination of channels to concentrate on some part of the music.
 
-As you play the score scrolls right-to-left based on tempos set in the score's midi file.  You control when to play target notes and how long to hold them.  Concert keyboardist continually keeps you visually informed on played notes, currently sounding notes, and upcoming unplayed target notes, and marks suggested times to play them at the current tempo.  This carefully designed note triggering system and ongoing visual feedback is crucial to the ability to play a midi file live.  More than two years of testing went into perfecting it.
+As you play, the score scrolls right-to-left based on tempos in the score's midi file.  You control when to play target notes and how long to hold them.  Concert keyboardist continually shows you the notes you've played, currently playing notes, and upcoming unplayed target notes, and it gives you a visual cue of when to play the next target note at the current tempo.  
 
-Played with a computer keyboard Concert Keyboardist uses note velocities from the score.  Played with a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes.  Velocities of chained notes are adjusted proportional to the velocity of their target note.
+This carefully designed note triggering system and ongoing visual feedback is crucial to the ability to play a midi file live,  and more than two years of testing went into perfecting it.
 
-Concert Keyboardist gradually adjusts its tempo (rate of scrolling) toward your playing tempo.  You are not locked to the tempo in the midi file, and you don't have to play target notes exactly when Concert Keyboardist suggests.  If you did play them exactly when suggested and hold them exactly as long as suggested, the result would be exactly like playing back the midi file.  But even if you tried to do this your natural human variations would bring life to the music, or you could play notes at times that feel right to you, or a different rhythm.
+When you play on computer keyboard Concert Keyboardist uses note velocities from the score.  When you play on a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes and velocities of chained notes are adjusted proportional to the velocity of their target note.
 
-Concert Keyboardist has tools to edit things like note velocities, note start times, note durations, and variations in the  tempo.  You can save your edited scores in Concert Keyboardist files, which are normal midi files but with an extra invisible track for your edits.
+Concert Keyboardist gradually adjusts its tempo (rate of scrolling) toward your playing tempo.  You are not locked to the tempo in the midi file, and you don't have to play target notes exactly when Concert Keyboardist suggests.  If you did play them exactly when suggested and hold them exactly as long as suggested, the result would be exactly like playing back the midi file.  But even if you tried to do this your natural human variations would bring life to the music, or you could play notes at more varied times that feel right to you for the flow of the music, or vary the rhythm.
+
+Concert Keyboardist has tools to edit which notes are target notes, note velocities, note start times, note durations, variations in the  tempo, and to "humanize" the relative notes times and velocities of notes in midi chords.  You can save your edited scores in Concert Keyboardist files which are normal midi files but with an extra invisible track for additional settings.
 
 However, it's important to understand that in this version of Concert keyboardist it's not possible to create scores or add and remove notes.  There are many powerful applications for creating and manipulating midi files, but Concert Keyboardist is unique in its ability to allow you to "perform" them under real time control.
 
@@ -40,10 +42,10 @@ Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:
 
 * Download and uncompress the install files.
 * Copy the Concert keyboardist application to your Applications folder.  
-* Copy the included "Concery Keyboardist Files" folder to anywhere you choose: your Documents folder, Desktop, or a folder where you keep midi files. 
+* Copy the included "Concert Keyboardist Files" folder to your Documents folder or a folder where you keep midi files. 
 * Concert keyboardist can produce sound with a VST or Audio Unit plugin, or by sending midi to another software or hardware synthesizer.  
-* If you are familiar with plugins and have a suitable one on your computer (e.g. piano) load it as described in [Plugin Management Tools], and configure the Concert Keyboardist audio output as described in Audio and Midi Settings in [Settings Tools].  
-* Instead of a plugin you can route midi from Concert keyboardist to a standlaone software or hardware synthesizer.  The easiest option on a Macintosh is to use GarageBand which is free and has a wide range of sounds to choose from.  GarageBand automatically receives midi messages from all midi output on your system so it automatically receives from the Concert Keyboardist default output.
+* If you are familiar with plugins load a piano-like one in using the [Plugin Management Tools].  Then configure the Concert Keyboardist audio output using Audio and Midi Settings in [Settings Tools].  
+* If you don't use a plugin you will need to route midi from Concert keyboardist to a standlaone software or hardware synthesizer.  The easiest to set up is GarageBand which is free and has a wide range of sounds to choose from.  GarageBand automatically receives midi messages from all midi output on your system so it automatically receives from the Concert Keyboardist default output.
 * To set up with GarageBand: 
     * Download and install GarageBand (it's free to Mac owners).  
     * Open GarageBand.
@@ -120,27 +122,57 @@ Current Time Line.
 
 ## Selecting Notes
 
-Many commands act on "selected notes". To select a range of notes move the mouse pointer to anywhere not on a note bar, press the left mouse button and drag over the heads of notes to be selected and release the mouse button. The head of each selected note will be surrounded by a white box. To clear the selection click anywhere there is not a note bar.
+<<Video - Selecting Notes>>
 
-To add notes to the selection hold down the shift key while some notes are selected and drag the marquee around other notes.  They will 
-also become selected.  
+Many commands act on the currently "selected notes".  Here is how to control the selection:
 
-To remove notes from the selection hold down the Option key and drag, starting with some notes selected.  Any selected 
-notes you drag the marquee over will become unselected.
+Select a range of notes:
 
-If you drag past the right or left end of the score the score will autoscroll and stop if it reaches that end of the score.
+* Move the mouse pointer to anywhere not on a note bar.
+* Press the left mouse button and drag the yellow rectangle to surround heads of all notes to be selected.
+* Release the mouse button. 
+* The head of each selected note will be surrounded by a white box. 
 
-To select all notes in the score use the keyboard shortcut Cmd+a on Mac or Ctrl+a on Windows.  Press the Escape key to unselect all notes.
+Add notes to the selection:
 
-You can't select a single note by clicking directly on its head.  This toggles it between being a target or non target note.  To select a 
-single note, start on the background near it and drag a marquee around it.
+* Hold down the shift key, starting with some notes selected.
+* Drag the yellow rectangle around other notes.
+* They will also be selected.  
 
-## Note Information Viewer 
+Remove notes from the selection:
+
+* Hold down the Option key and drag, starting with some notes selected.
+* Any selected notes you drag the yellow rectangle around over will be deselected.
+
+Drag the selection past the left or right of the visible display:
+
+* Drag as above but move the mouse pointer a little bit past the left or right end of the score.
+* The score will autoscroll in that direcction.
+* It will stop if it reaches that end of the score.
+
+Select all notes in the score:
+
+* Use the keyboard shortcut Cmd+a on Mac or Ctrl+a on Windows.
+
+Clear the selection:
+
+* Click anywhere not on a note bar, or
+* Press the Escape.
+
+Select a single note:
+
+* Start on the background near it and drag a yello rectangle around it.
+* You can't select a single note by clicking directly on its head as this toggles it between being a target or non target note.  
+
+## Note Information Viewer
 
 <img src="../Common/img/Information Area.jpg" alt="CK" style="width:30%;margin:0px 0px 0px 10px">
 
-The Note Information Viewer is in the lower left corner of the main window.  Hovering the mouse pointer over a note bar shows details on the note.Hovering over a light or dark grey note track reveals the note name and octave of that track.  Dragging on the display to select 
-a range of notes shows details of the selection: The time in ticks of its first and last note and the duration in ticks from the first to the last note.
+The Note Information Viewer is in the lower left corner of the window.  
+
+* Hover the mouse pointer over a note bar to see details of the note, its note name, note number, channel, track, etc.
+* Hover over a note track to see the note name and octave of the track.
+* While drag-selecting the viewer shows the time in ticks of the first and last selected note, and the duration of the selection in ticks.
 
 ## Main Toolbar
 
@@ -148,23 +180,45 @@ a range of notes shows details of the selection: The time in ticks of its first 
 
 <img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px">
 
-There are buttons for "File Open", "File Save" and "File Save As".  These do the same as the "Open", "Save" and 
-"Save As" commands in the File menu, and are very similar to commands you are probably know from other applications.
+These tools are the same as the commands in the File menu, and are very similar to commands you will have used in many other applications.
 
-File Open will open either normal midi files (extension .mid) or Concert Keyboardist files (extension [CK].mid).  Opening a normal midi file automatically imports it.  
-
-When you save a file, it becomes a Concert keyboardist file and the [CK] marker is added before the extension.  Because it's also a normal midi files you should be able to load it into any other application that loads midi files.  
-
-If you re-save a [CK].mid file from another application Concert Keyboardist may or may not retain any customizations.  These are in an extra track encoded in "system exclusive" format.  Whether another application retains sysex tracks depends on the application.
+* "File Open" opens either a normal midi file (extension .mid) or a Concert Keyboardist file (extension [CK].mid).  Opening a normal midi file imports it.
+* "File Save"  saves the current score replacing the file it was loaded from.  If you save an just-imported midi file this command is the same as Save As.  When you save an imported midi file it is saved as a Concert keyboardist file and [CK] is added to the name in front of the .mid extension.   
+* "File Save As" creates a new file that you can give a different name.
+* You can also open a file by dragging and dropping it on the Concert Keyboardist window.
+* If you try to open a file without saving your edits to the previous file, Concert Keyboardist warns you and gives you a chance to saave your work.
 
 ### Plugin Management Tools
 
 <img src="../Common/img/PluginManagementTools.jpg" alt="CK" style="width:6%;margin:0px 5px 0px 25px">
 
-There are two plugin related tools:
+Before loading a plugin, scan your system making a list of plugins to choose from:
 
-* The first tool reveals a menu where you can choose a plugin to load, a command to scan for plugins, and a command to unload the current plugin, if needed.  You can load VST, VST3 plugins on Mac or Windows, and Audio Unit plugins on Mac.  Only instrument plugins can be loaded, and only one at a time.
-* The second tool is for opening the current plugin's window.
+* Click on the Plugin Management Tool  on the left and choose that looks like a puzzle piece and choose "Manage Available Plugins...". 
+* Click the Options button on the lower left and choose from the options to scan for VST and VST3 plusins.  
+* On a Mac also scan for Audio Unit plugins.
+* You should see plugins being added to the plugin management window.
+
+To load a plugin:
+
+* Click on the same button as above and choose any audio synthesizer in the menu.
+* The plugin should be loaded and its window should open.
+* Choose a patch (sound) in the window in whatever manner required by that plugin.
+* You can leave the plugin window open and click on the main Concert keyboardist window to the front by clicking on it.
+* Or close the plugin window.  You can reopen is as below.
+
+To change the sound or edit settings of a loaded plugin:
+
+* Click on the tool that looks like a puzzle piece with an orange arrow over it.
+
+To unload a plugin (possibly to use an external synthesizer):
+
+* Click on the tool that looks like a puzzle piece and choose "No Plugin".
+
+To ennable or disable the midi out port (that routes midi to external synthesizers):
+
+* Click on the Plugins menu at the top of the screen (on Mac) or the top of the window (on Windows).
+* Choose "Enable Midi Out" to check or uncheck that menu item.
 
 ### Settings Tools
 
@@ -239,8 +293,7 @@ move up or down.
 * Next to the tempo number is a **percentage** showing the ratio of the actual playing tempo as compared to the original score tempo.  
 As you drag up/down on the temp number the percentage number will be updated to show how the currently selected tempo is of the 
 original score tempo.
-* Normally this will change the tempo everywhere in the score keeping the tempo everywhere to be the 
-same ratio TBD
+* Normally this will change the tempo everywhere in the score keeping the tempo everywhere to be the same ratio TBD
 * The Tempo Change Tool
     * Inserts a "Tempo Change Bookmark" that allows a change in the ratio of the played tempo to the original tempo.
     * To remove a tempo change TBD
