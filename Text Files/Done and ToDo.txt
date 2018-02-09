@@ -45,17 +45,24 @@ Alpha:
 - DONE Switch to paid version of JUCE
 - DONE Set correct input and output bus config for audio processor (setPlayConfigDetails)
 
-- Windows Installer & Description of installer creation process
-- Ensure shortcut keys make sense on Windows
-
+- DONE Windows Installer & Description of installer creation process
+- DONE Ensure shortcut keys make sense on Windows
 - Remove plugins from all demo files & clean up.
 - Update documentation
+    - Embedded demo Video
+    - Finalize installer and getting started doc
+    - Note Velocity Tools
+    - Chord Tools
+    - Pedal Tools
+    - Editing Note Start Times and Durations
+    - Editing Note Velocities
+    - Documentation videos
+        - 
 
 - Build "release" versions
 - Add github tag to repo to mark released version (and branch for future work)
 - Upload Mac and Win CK installer versions to github
 
-- Demo Video?
 - Website?
 - Announce
 - Document build & release processes
