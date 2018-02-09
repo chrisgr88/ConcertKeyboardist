@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>Welcome to Concert Keyboardist</title>
+  </head>
+  <body bgcolor=white>
+
+    <img src="Common/img/AppIcon.png" style="float:centre;width:10%;margin:00 0px 0px 0">
+    <h1>Welcome to Concert Keyboardist</h1>
+
+
+    <h2>Links:</h2>
+    <ul>
+      <li> <a href="http://www.concertkeyboardist.com/Documentation/EN/ckdoc.htm">User's Manual</a>.
+      <li> <a href="https://github.com/chrisgr88/ConcertKeyboardist/releases">Downloads</a>.
+    </ul>
+
+  </body>
+</html>
