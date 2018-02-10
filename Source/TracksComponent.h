@@ -35,7 +35,7 @@ public:
         table.setColour (ListBox::outlineColourId, Colours::grey);
         table.setOutlineThickness (1);
         table.getHeader().addColumn ("Track", 1,   32,32,32,   TableHeaderComponent::defaultFlags);
-        table.getHeader().addColumn ("Text", 2,   350,100,450,   TableHeaderComponent::defaultFlags);
+        table.getHeader().addColumn ("Text", 2,   350,100,2000,   TableHeaderComponent::defaultFlags);
         table.getHeader().addColumn ("Instrument", 3, 120,70,200,   TableHeaderComponent::defaultFlags);
         table.getHeader().addColumn ("Notes", 4,  35,35,50,   TableHeaderComponent::defaultFlags);
         
