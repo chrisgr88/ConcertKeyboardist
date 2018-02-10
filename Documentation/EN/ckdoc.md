@@ -12,7 +12,7 @@ For questions or comments contact: chrisgr99@gmail.com
 
 ## Quick Introduction to Concert Keyboardist
 
-Concert Keyboardist is like a musical instrument that never lets you play a wrong note. Load a midi file and Concert Keyboardist becomes an instrument not just listen to, but expressively perform that music. You control when and how notes are played, in real time. Play expressively like a "Concert Keyboardist" with just your computer keyboard, or use a midi keyboard for even more expressiveness.
+Concert Keyboardist is like a musical instrument that never lets you play a wrong note. Load a midi file and Concert Keyboardist becomes an instrument to perform that music expressively, not just to listen passively. You control when and how notes are played, in real time. Play like a "Concert Keyboardist" with just your computer keyboard, or use a midi keyboard for even more control.
 
 Where to get midi files to play?  There are tens of thousands available around the Internet for download or you can create your own.  Before Concert Keyboardist, midi files always replayed exactly the same.  With Concert Keyboardist music comes alive under your fingers.
 
