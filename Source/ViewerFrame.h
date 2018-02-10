@@ -665,9 +665,9 @@ private:
         {
             switch (itemId)
             {
-                case doc_open:          return createButtonFromZipFileSVG (itemId, "Open", "document-open.svg");
-                case doc_save:          return createButtonFromZipFileSVG (itemId, "Save", "document-save.svg");
-                case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "Save as", "document-save-as.svg");
+                case doc_open:          return createButtonFromZipFileSVG (itemId, "File open", "document-open.svg");
+                case doc_save:          return createButtonFromZipFileSVG (itemId, "File save", "document-save.svg");
+                case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "File save as", "document-save-as.svg");
                 case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load plugin", "LoadPluginButton.svg");
                 case editPlugin:        return createButtonFromZipFileSVG (itemId, "Show plugin window", "EditPluginButton.svg");
                 case audioSettings:     return createButtonFromZipFileSVG (itemId, "Show audio/midi settings", "AudioSettingsTool.svg");

@@ -12,7 +12,7 @@ For questions or comments contact: chrisgr99@gmail.com
 
 ## Quick Introduction to Concert Keyboardist
 
-Concert Keyboardist is an easy to learn musical instrument that never lets you play a wrong note.  When you load any midi file Concert Keyboardist becomes an instrument to perform that particular piece of music.  You control when and how notes are played, in real time.  Play like a "Concert Keyboardist" on your computer keyboard or use a midi keyboard for even more expressiveness.
+Concert Keyboardist is like a musical instrument that never lets you play a wrong note. Load a midi file and Concert Keyboardist becomes an instrument not just listen to, but expressively perform that music. You control when and how notes are played, in real time. Play expressively like a "Concert Keyboardist" with just your computer keyboard, or use a midi keyboard for even more expressiveness.
 
 Where to get midi files to play?  There are tens of thousands available around the Internet for download or you can create your own.  Before Concert Keyboardist, midi files always replayed exactly the same.  With Concert Keyboardist music comes alive under your fingers.
 
@@ -22,7 +22,7 @@ Where to get midi files to play?  There are tens of thousands available around t
 
 <img src="../Common/img/Pathetique.jpg" alt="CK" style="width:100%;margin:20px 0px 10px 0px">
 
-**How it works**:  In the above image the heads of the "Target Notes" have magenta heads and "Chained" notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score.  It also schedules any notes Chained off each target note for autoplaying according to the tempo.  Chained accompaniment notes can continue to play while you play overlapping target notes.  It's easy to play polyphonic music, even complex chords.  Play multi channel midi with multiple simultaneous instruments, or mute some combination of channels to concentrate on some part of the music.
+**How it works**:  In the above image the heads of the "Target Notes" have magenta heads and "Chained" notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score.  It also schedules any notes Chained off the target and autoplays them according to the tempo.  Chained accompaniment notes can continue to play while you play overlapping target notes.  It's easy to play polyphonic music and even complex chords.  Play multi channel midi with multiple simultaneous instruments, or mute some combination of channels to concentrate on some part of the music.
 
 As you play, the score scrolls right-to-left based on tempos in the score's midi file.  You control when to play target notes and how long to hold them.  Concert keyboardist continually shows you the notes you've played, currently playing notes, and upcoming unplayed target notes, and it gives you a visual cue of when to play the next target note at the current tempo.  
 
@@ -122,9 +122,7 @@ Current Time Line.
 
 ## Selecting Notes
 
-<<Video - Selecting Notes>>
-
-Many commands act on the currently "selected notes".  Here is how to control the selection:
+Many commands act on a group of notes called the "selection":
 
 Select a range of notes:
 
@@ -137,16 +135,16 @@ Add notes to the selection:
 
 * Hold down the shift key, starting with some notes selected.
 * Drag the yellow rectangle around other notes.
-* They will also be selected.  
+* They will be added to the selection.  
 
 Remove notes from the selection:
 
 * Hold down the Option key and drag, starting with some notes selected.
 * Any selected notes you drag the yellow rectangle around over will be deselected.
 
-Drag the selection past the left or right of the visible display:
+Extend the selection past the left or right of the currently visible notes:
 
-* Drag as above but move the mouse pointer a little bit past the left or right end of the score.
+* Drag as above but move the mouse pointer a slightly past the left or right end of the window.
 * The score will autoscroll in that direcction.
 * It will stop if it reaches that end of the score.
 
@@ -161,7 +159,7 @@ Clear the selection:
 
 Select a single note:
 
-* Start on the background near it and drag a yello rectangle around it.
+* Start on the background near it and drag a yellow rectangle around it.
 * You can't select a single note by clicking directly on its head as this toggles it between being a target or non target note.  
 
 ## Note Information Viewer
@@ -172,7 +170,7 @@ The Note Information Viewer is in the lower left corner of the window.
 
 * Hover the mouse pointer over a note bar to see details of the note, its note name, note number, channel, track, etc.
 * Hover over a note track to see the note name and octave of the track.
-* While drag-selecting the viewer shows the time in ticks of the first and last selected note, and the duration of the selection in ticks.
+* While dragging to select notes the viewer shows the time in ticks of the first and last selected note  followed by the duration of the selection in ticks.
 
 ## Main Toolbar
 
@@ -180,10 +178,12 @@ The Note Information Viewer is in the lower left corner of the window.
 
 <img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px">
 
-These tools are the same as the commands in the File menu, and are very similar to commands you will have used in many other applications.
+These tools are the same as the commands in the File menu.  They are very similar to commands you will have used in other applications.
 
-* "File Open" opens either a normal midi file (extension .mid) or a Concert Keyboardist file (extension [CK].mid).  Opening a normal midi file imports it.
-* "File Save"  saves the current score replacing the file it was loaded from.  If you save an just-imported midi file this command is the same as Save As.  When you save an imported midi file it is saved as a Concert keyboardist file and [CK] is added to the name in front of the .mid extension.   
+* "File Open" opens either a normal midi file (extension .mid) or a Concert Keyboardist file (extension [CK].mid).  
+* Opening a normal midi file imports it as a Concert Keyboardist score.
+* "File Save"  saves the current score replacing the file it was loaded from.  
+* If you do "File Save" to a newly imported midi file, it is converted to a Concert keyboardist file and [CK] is added to the name in front of the .mid extension.   
 * "File Save As" creates a new file that you can give a different name.
 * You can also open a file by dragging and dropping it on the Concert Keyboardist window.
 * If you try to open a file without saving your edits to the previous file, Concert Keyboardist warns you and gives you a chance to saave your work.
@@ -207,7 +207,7 @@ To load a plugin:
 * You can leave the plugin window open and click on the main Concert keyboardist window to the front by clicking on it.
 * Or close the plugin window.  You can reopen is as below.
 
-To change the sound or edit settings of a loaded plugin:
+To edit settings of a loaded plugin:
 
 * Click on the tool that looks like a puzzle piece with an orange arrow over it.
 
@@ -222,21 +222,25 @@ To ennable or disable the midi out port (that routes midi to external synthesize
 
 ### Settings Tools
 
-<img src="../Common/img/SettingsTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px">  There are two settings tools:
+<img src="../Common/img/SettingsTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px">  The first button opens Audio and Midi Settings.  The second opens the Tracks Viewer.
 
-* **Audio and Midi Settings**
-    * Allows you to choose the audio output port used by plugin loaded into CK, if any.
-    * Allows you to choose an midi input device controller such as a keyboard, you will be able play CK
-    with the controller.  CK will always play the notes in the score no matter what notes you press on the keyboard.  
-    * Allows you to choose a midi output device to which midi messages from CK will be sent.  Choose no output if you  
-    are playing a plugin loaded into CK. 
+**Audio and Midi Settings**
 
-* **Tracks Viewer and Settings** 
-    * Displays information on all the tracks that were in the originally imported midi file.  
-    * You can click on the button at the right to enable or disable tracks.  The notes of disabled tracks do not appear in the scrolling view and are not played.  Only tracks that contain notes can be selected for inclusion in the display.  
-    At least one track must be enabled.  
-    * Midi files may or may not contain some tracks that give information about the contents of the file,
-    the file's creator, copyrights, and other information.
+<img src="../Common/img/AudioSettingsWindow.jpg" alt="CK" style="width:50%;margin:0px 0px 0px 25px">
+
+* The Audio settings are used by a synthesizer plugin you load into Concert Keyboardist.
+* If you choose an "Active Midi Input" it should be the one connected to your midi keyboard (if any).  Of course Concert Keyboardist will always play the notes in the score no matter what notes you press on the keyboard, but note velocities are taken from the keyboard.  
+* If you aren't generating sound on a plugin, then set the "MIDI Output" to the port connected to your software or hardware synthesizer. 
+
+**Tracks Viewer** 
+
+<img src="../Common/img/TracksWindow.jpg" alt="CK" style="width:90%;margin:0px 0px 0px 25px">
+
+* The Tracks Viewer displays information on all the tracks that were in the originally imported midi file.  
+* You can click on the buttons at the right end of each line to enable or disable tracks.  The notes of disabled tracks do not appear in the scrolling view and are not played.  Only tracks that contain notes can be selected for inclusion in the display.  
+At least one track must be enabled.  
+* Midi files may or may not contain some tracks that give information about the contents of the file,
+the file's creator, copyrights, and other information.
     
 
 ### Hide/Show Editing Tools 

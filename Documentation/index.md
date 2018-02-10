@@ -1,9 +1,7 @@
 
 # Welcome to Concert Keyboardist
 
-<img src="Common/img/AppIcon.png" alt="CK" style="width:10%;margin:0px 0px 10px 0px">
-
-Concert Keyboardist is an application that's like a musical instrument that never lets you play a wrong note.  Load any midi file and Concert Keyboardist becomes an instrument to perform that particular piece of music.  You control when and how notes are played, in real time.  Play expressively like a "Concert Keyboardist" with just your computer keyboard, or use a midi keyboard for even more expressiveness.
+Concert Keyboardist is like a musical instrument that never lets you play a wrong note.  Load a midi file and Concert Keyboardist becomes an instrument not just listen to, but expressively perform that music.  You control when and how notes are played, in real time.  Play expressively like a "Concert Keyboardist" with just your computer keyboard, or use a midi keyboard for even more expressiveness.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/xb66fzwdDS4?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
