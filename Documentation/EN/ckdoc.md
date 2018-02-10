@@ -8,7 +8,7 @@
 
 ## Contact Information
 
-For questions or comments contact: chrisgr99@gmail.com
+For questions or comments contact: chrisgr99 at gmail
 
 ## Quick Introduction to Concert Keyboardist
 
@@ -425,7 +425,7 @@ these subtle variations in chord times but you can simulate them with one of the
 
 ### Concert Keyboardist License
 
-Copyright (C) 2017 Christopher Graham (chrisgr99@gmail.com)
+Copyright (C) 2018 Christopher Graham (chrisgr99 at gmail)
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF

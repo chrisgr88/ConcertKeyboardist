@@ -1,0 +1,33 @@
+Windows Buid & Release Notes
+
+- Ensure up to date with repo
+- Load into Projucer and export
+- Ensure Mac version was built just previously to update date header
+- Enable plugin types in projucer (VST & Vst3) and disable AU
+- Ensure VST SDK is correct
+- Choose release or debug build
+
+- Windows Release
+	- Build a "release" version, as above
+	- Open "Setup2.sln" in the Win release directory 
+	- Ensure midi files in installer are up to date
+	- Build the installer
+	- Test on this computer
+	- Test on a different computer
+	- Create a tag on github
+	- Upload the installer to github
+	- Download on a different system
+		- Test install
+		- Test run
+
+To set the Appicon.ico in the installer
+	- Drag the .ico file into the "virtual"Application Folder (on the "Target Machine")
+	- Click on the branch one below the top in Solution Explorer
+	- At the bottom should be Deployment Project Properties
+	- Click on the item to the right of the "AddRemoveProgramsIcon" item, at the top of the properties list
+	- Navigate to choose the ico file that was dragged to the virtual Application Folder
+
+To move midi files to the installer
+	- delete all in the installer
+	- Drag entire current "Concert Keyboard File" directory to the installer
+

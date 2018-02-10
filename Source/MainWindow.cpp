@@ -10,6 +10,11 @@
 
 #include "MainWindow.h"
 
+class SilentLookAndFeel : public juce::LookAndFeel_V4 {
+public:
+    void playAlertSound() override {}
+};
+
 //PluginWindow ==============================================================================
 static Array<PluginWindow*> activePluginWindows;
 
@@ -897,6 +902,11 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             {
                 DialogWindow::LaunchOptions options;
                 AboutWindowComponent *aboutWindowComponent = new AboutWindowComponent;
+                LookAndFeel *lf;
+                lf = &(LookAndFeel::getDefaultLookAndFeel());
+                LookAndFeel *silent = new SilentLookAndFeel;
+//                silent->setColour(DialogWindow::textColourId, Colours::darkgrey);
+                LookAndFeel::setDefaultLookAndFeel(new SilentLookAndFeel);
                 options.content.setOwned(aboutWindowComponent);
 //                Label *label = new Label();
 //                label->setText("Hello World", NotificationType::dontSendNotification);
@@ -908,7 +918,10 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 options.escapeKeyTriggersCloseButton = true;
                 options.useNativeTitleBar = true;
                 options.resizable = true;
+//                LookAndFeel::setDefaultLookAndFeel (new SilentLookAndFeel);
                 options.runModal();
+                LookAndFeel::setDefaultLookAndFeel(lf);
+//                LookAndFeel::setDefaultLookAndFeel (nullptr);
                 break;
             }
             case CommandIDs::audioMidiSettings:
@@ -1310,15 +1323,15 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 std::cout <<"Get Help\n";
                 if (!midiProcessor.isPlaying)
                 { 
-                    File currentApp = File::getSpecialLocation(File::currentApplicationFile);
-#if JUCE_MAC
-					String docPath = currentApp.getChildFile("Contents/Resources/Documentation/EN/ckdoc.htm").getFullPathName();				
-#else
-					String docPath = currentApp.getSiblingFile("Documentation/EN/ckdoc.htm").getFullPathName();
-#endif
-					docPath = "file://" + docPath;
-                    std::cout << "doc path " << docPath << "\n";
-                    URL docURL = URL(docPath);
+//                    File currentApp = File::getSpecialLocation(File::currentApplicationFile);
+//#if JUCE_MAC
+//                    String docPath = currentApp.getChildFile("Contents/Resources/Documentation/EN/ckdoc.htm").getFullPathName();
+//#else
+//                    String docPath = currentApp.getSiblingFile("Documentation/EN/ckdoc.htm").getFullPathName();
+//#endif
+//                    docPath = "file://" + docPath;
+//                    std::cout << "doc path " << docPath << "\n";
+                    URL docURL = URL("http://www.concertkeyboardist.com/Documentation/EN/ckdoc.htm");
                     docURL.launchInDefaultBrowser();
                 }
                 break;

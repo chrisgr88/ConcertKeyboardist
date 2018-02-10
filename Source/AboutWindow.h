@@ -10,23 +10,24 @@ class AboutWindowComponent    : public Component
 public:
     AboutWindowComponent()
     {
-//        bool showPurchaseButton = false;
-
+//        bool showPurchaseButton = false; test
         addAndMakeVisible (titleLabel);
         titleLabel.setJustificationType (Justification::centred);
         titleLabel.setFont (Font (35.0f, Font::FontStyleFlags::bold));
+        titleLabel.setColour(Label::textColourId, Colours::darkgrey.darker());
 
         auto buildDate = Time::getCompilationDate();
         addAndMakeVisible (versionLabel);
-        versionLabel.setText ("ConcertKeyboardist build: " + String(__CK_SHORT_HASH)
-                              + "\nDate: " + String (__CK_BUILD_DATE),
+        versionLabel.setText (String("Version: 1.0.0 alpha\n") +
+                              String("Build: ") + String(__CK_SHORT_HASH) + String("\n")
+                              + String("Date: ") + String (__CK_BUILD_DATE),
                               dontSendNotification);
-
-
-
+        versionLabel.setColour(Label::textColourId, Colours::darkgrey);
+        
         versionLabel.setJustificationType (Justification::centred);
         addAndMakeVisible (copyrightLabel);
         copyrightLabel.setJustificationType (Justification::centred);
+        copyrightLabel.setColour(Label::textColourId, Colours::darkgrey);
 
 //        aboutButton.setJustificationType (Justification::centred);
 //        addAndMakeVisible(aboutButton);

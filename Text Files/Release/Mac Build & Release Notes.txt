@@ -1,0 +1,15 @@
+Mac Build Process
+
+Mac Installer Creation
+- Ensure up to date with repo
+- Insert the version information versionLabel.setText in AboutWindow.h.  In the format below.
+- Do a "release" build
+- Ensure the About window shows the correct information
+- Duplicate the Template Folder in the Installers/Mac directory
+- Rename it as follows, appending the version number e.g. "Version: 1.0.0 alpha"
+- Copy the latest ConcertKeyboardist.app release build into it
+- Copy the latest "Concert Keyboardist Files" folder into it
+- Compress it
+- Create a tag on github
+- Upload to release server
+- Download on different system and test

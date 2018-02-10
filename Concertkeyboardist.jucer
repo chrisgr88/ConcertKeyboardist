@@ -64,7 +64,7 @@
                vst3Folder="/Users/chrisgr/SDKs/VST3 SDK" iosDevelopmentTeamID="Y6ELW6M79S"
                prebuildCommand="$PROJECT_DIR/../../MakeDateHeader.sh" postbuildCommand="$PROJECT_DIR/../../CopyDocumentation.sh">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" osxCompatibility="10.10 SDK" isDebug="0" optimisation="1"
+        <CONFIGURATION name="Debug" osxCompatibility="10.10 SDK" isDebug="1" optimisation="1"
                        targetName="ConcertKeyboardist" enablePluginBinaryCopyStep="1"
                        codeSigningIdentity="Mac Developer"/>
         <CONFIGURATION name="Release" osxCompatibility="10.10 SDK" isDebug="0" optimisation="3"
