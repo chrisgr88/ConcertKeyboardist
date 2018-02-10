@@ -239,6 +239,7 @@ private:
     ScopedPointer<Component> pAboutWindow;
     String windowPosProperty;
     ScopedPointer<TracksWindow> tracksWindow;
+    LookAndFeel *lf;
     
     String chordTimeHumanizeSpec = String();
     String chordVelocityHumanizeSpec = String();

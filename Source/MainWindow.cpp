@@ -902,11 +902,11 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             {
                 DialogWindow::LaunchOptions options;
                 AboutWindowComponent *aboutWindowComponent = new AboutWindowComponent;
-                LookAndFeel *lf;
+//                LookAndFeel *lf;
                 lf = &(LookAndFeel::getDefaultLookAndFeel());
-                LookAndFeel *silent = new SilentLookAndFeel;
+                
 //                silent->setColour(DialogWindow::textColourId, Colours::darkgrey);
-                LookAndFeel::setDefaultLookAndFeel(new SilentLookAndFeel);
+                LookAndFeel::setDefaultLookAndFeel( ScopedPointer<LookAndFeel> (new SilentLookAndFeel));
                 options.content.setOwned(aboutWindowComponent);
 //                Label *label = new Label();
 //                label->setText("Hello World", NotificationType::dontSendNotification);
