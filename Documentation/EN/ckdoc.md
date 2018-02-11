@@ -3,8 +3,8 @@
 
 ### Version and Licensing
 
-* Document Version: January 24, 2018 for Concert Keyboardist Alpha
-* Concert Keyboardist Licensing: [Licenses and Copyrights]
+* Version: February 11, 2018 for Concert Keyboardist Alpha
+* Licensing: [Licenses and Copyrights]
 
 ## Contact Information
 

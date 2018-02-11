@@ -1,4 +1,4 @@
-Mac Build Process
+Mac Build Process (do before Windows build)
 
 Mac Installer Creation
 - Ensure up to date with repo
@@ -12,4 +12,6 @@ Mac Installer Creation
 - Compress it
 - Create a tag on github
 - Upload to release server
+- Build and upload most recent version of help
+- Build and upload most recent version of index.htm
 - Download on different system and test

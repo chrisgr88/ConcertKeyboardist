@@ -45,8 +45,7 @@ altToolbarFactory(this)
         else if (id == MainToolbarItemFactory::ToolbarItemIds::_humanizeTimeBox)
         {
             
-            pHumanizeStartTime =
-            (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
+            pHumanizeStartTime = (MainToolbarItemFactory::ChainAmountBox *) mainToolbar.getItemComponent(i);
             pHumanizeStartTime->setWidth(40);
             pHumanizeStartTime->textBox.setColour(TextEditor::ColourIds::textColourId, Colour(Colours::darkgrey));
             pHumanizeStartTime->textBox.setText("40"); //This value should be initialized in MainWindow
@@ -206,6 +205,20 @@ void ViewerFrame::timerCallback()
         sendActionMessage("humanizeVelocity:"+String(humanizeVelocityAmount));
         grabKeyboardFocus();
         pHumanizeVelocity->returnPressed = false;
+    }
+    if (pHumanizeStartTime->returnPressed)
+    {
+        std::cout << "Return pressed - HumanizeStartTime " <<pHumanizeStartTime->textBox.getText().getDoubleValue()<<"\n";
+//        String temp = pHumanizeStartTime->textBox.getText();
+//        humanizeTimeAmount.clear();
+        sendActionMessage("humanizeTime:"+pHumanizeStartTime->textBox.getText());
+//        for (int i=0;i<temp.length();i++)
+//            if (temp.substring(i,i+1).containsAnyOf  (".0123456789,"))
+//                humanizeVelocityAmount.append(temp.substring(i,i+1), 1);
+//
+//        sendActionMessage("humanizeVelocity:"+String(humanizeVelocityAmount));
+        grabKeyboardFocus();
+        pHumanizeStartTime->returnPressed = false;
     }
     if (pAdjustedTempo->changed)
     {
