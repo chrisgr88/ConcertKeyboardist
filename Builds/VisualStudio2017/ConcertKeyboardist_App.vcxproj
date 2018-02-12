@@ -209,6 +209,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPESynthesiserVoice.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEUtils.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEValue.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1830,6 +1833,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPESynthesiser.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPESynthesiserBase.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPESynthesiserVoice.h"/>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEUtils.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEValue.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEZone.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEZoneLayout.h"/>

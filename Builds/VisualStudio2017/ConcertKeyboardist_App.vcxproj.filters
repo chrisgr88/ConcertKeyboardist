@@ -463,6 +463,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPESynthesiserVoice.cpp">
       <Filter>JUCE Modules\juce_audio_basics\mpe</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEUtils.cpp">
+      <Filter>JUCE Modules\juce_audio_basics\mpe</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEValue.cpp">
       <Filter>JUCE Modules\juce_audio_basics\mpe</Filter>
     </ClCompile>
@@ -2296,6 +2299,9 @@
       <Filter>JUCE Modules\juce_audio_basics\mpe</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPESynthesiserVoice.h">
+      <Filter>JUCE Modules\juce_audio_basics\mpe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEUtils.h">
       <Filter>JUCE Modules\juce_audio_basics\mpe</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\mpe\juce_MPEValue.h">

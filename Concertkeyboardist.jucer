@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="IilE7R" name="ConcertKeyboardist" projectType="guiapp" version="1.0.0"
-              bundleIdentifier="com.newCK" includeBinaryInAppConfig="1" jucerVersion="5.2.0"
+              bundleIdentifier="com.newCK" includeBinaryInAppConfig="1" jucerVersion="5.2.1"
               displaySplashScreen="0" reportAppUsage="0" splashScreenColour="Dark"
               cppLanguageStandard="14" companyCopyright="">
   <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">

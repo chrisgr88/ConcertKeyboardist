@@ -258,7 +258,7 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "loadPluginMenu")
         {
-            Point<int> pos = getMouseXYRelative();
+            Point<int> pos = getMouseXYRelative() + getPosition();
             auto desc = pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
             if (desc!=nullptr && mainComponent->thePlugin)
             {
