@@ -34,6 +34,7 @@ public:
     track(trk),
     indexInTrack(-1),
     timeStamp(tStamp),
+    nxtTargetNoteTime(-1),
 //    originalIndexInTrack(-1),
     channel(chan),
     noteNumber(noteNum),
@@ -74,6 +75,7 @@ public:
     track(note.track),
     indexInTrack(note.indexInTrack),
     timeStamp(note.timeStamp),
+    nxtTargetNoteTime(note.nxtTargetNoteTime),
 //    originalIndexInTrack(note.originalIndexInTrack),
     channel(note.channel),
     noteNumber(note.noteNumber),
@@ -114,6 +116,7 @@ public:
     track(0),
     indexInTrack(-1),
     timeStamp(0.0),
+    nxtTargetNoteTime(-1),
 //    originalIndexInTrack(-1),
     channel(1),
     noteNumber(0),
@@ -239,6 +242,7 @@ public:
     int track;
     int indexInTrack; //Index to this note's entry in its track in midiFile
     int timeStamp;
+    int nxtTargetNoteTime;
 //    int originalIndexInTrack;
     int channel;
     int noteNumber;

@@ -231,6 +231,8 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         listenStep = 0;
         lastPlayedSeqStep = -1;
         lastUserPlayedSeqStep = -1;
+        lastPlayedTargetNoteTime = -1;
+        nextDueTargetNoteTime = -1;
         lastPlayedNoteStep = -1;
         if (listenSequence.size()>0)
         {
@@ -280,6 +282,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
             lastPlayedNoteStep = 0;
             lastPlayedSeqStep = currentSeqStep;
             timeInTicks = 0;
+//            timeInTicks = sequenceObject.theSequence.at(0)->getTimeStamp();
             metTimeInTicks = 0;
             metronomeLighted = false;
             currentBeat = 0;
@@ -1031,8 +1034,14 @@ void MIDIProcessor::processBlock ()
                     {
                         if (scheduledNotes.size()==0)
                             leadLag = noteTimeStamp - timeInTicks;
-//                        std::cout << "leadLag " << leadLag << "\n";
+//                        std::cout
+//                        << "timeInTicks "<< timeInTicks
+//                        <<"   nxtTargetNoteTime " << sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime
+//                        << "  duetimeNextTargetNote " << duetimeNextTargetNote
+//                        << "\n";
                         availableNotes.add(noteIndex); //This is the triggering note
+                        lastPlayedTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
+                        nextDueTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime;
                         mostRecentNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
                         const double vel = sequenceObject.theSequence.at(noteIndex)->velocity;
 //                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex)->track))
@@ -1079,6 +1088,7 @@ void MIDIProcessor::processBlock ()
             {
                 if (availableNotes.size()>0)
                 {
+//                    double nextSchedNoteTime = getLastUserPlayedStepTime() - processor->getTimeInTicks();
                     sequenceReadHead = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()+1;
                     const double noteOnLag = (mostRecentNoteTime-timeInTicks)/10.0;
                     const double deltaNoteOnLag = noteOnLag - prevNoteOnLag;

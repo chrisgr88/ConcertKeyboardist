@@ -291,6 +291,7 @@ public:
     
     double horizontalShift;  //Shift in pixels due to drag left or right on the resize bar
     double horizontalShiftAtStop;
+    double prevHLinePos = 0;
     inline void setHorizontalShift(double shift)
     {
         horizontalShift = shift;
@@ -410,7 +411,7 @@ private:
 //    int lastStepToReset;
     int leadTimeInTicks;
     double leadTimeProportionOfWidth;
-    double sequenceStartPixel;
+    double xPositionOfBaseLine;
     int seqEndInPixels;
     float wKbd;
     int maxNote;

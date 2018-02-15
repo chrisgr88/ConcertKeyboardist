@@ -1640,7 +1640,14 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             std::cout << " error loadSequence: finding triggered and triggeredOff notes " << "\n";
         }
     }
-
+    int nxtTargetNoteTime = -1;
+    for (int step=(int)theSequence.size()-1; step>=0;step--)
+    {
+        theSequence.at(step)->nxtTargetNoteTime = nxtTargetNoteTime;
+//        std::cout << step << " nxtTargetNoteTime " << nxtTargetNoteTime<<"\n";
+        if (theSequence.at(step)->targetNote)
+            nxtTargetNoteTime = theSequence.at(step)->getTimeStamp();
+    }
     setLoadingFile(false);
     return true;
 } //End of loadSequence

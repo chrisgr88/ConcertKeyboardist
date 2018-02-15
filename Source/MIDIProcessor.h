@@ -253,6 +253,8 @@ public:
     int lastPlayedSeqStep = -1; //Equal to the step of the target just before the next to be played
     int lastUserPlayedSeqStep = -1; //Previous value of lastPlayedSeqStep
     int lastPlayedNoteStep = -1; //The step of the last played note, even if its note a target note (for tracking tempo and measures)
+    int lastPlayedTargetNoteTime= -1;
+    int nextDueTargetNoteTime = -1;
     double getLastUserPlayedStepTime();
     Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps);
     
