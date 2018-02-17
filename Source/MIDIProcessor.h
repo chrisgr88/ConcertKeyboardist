@@ -227,6 +227,8 @@ public:
     double mostRecentNoteTime;
     double earliness;
     double leadLag;
+    double prevLeadLag;
+    double noteOnLag;
     int initialWindowHeight;
     
     void setNotesEditable(bool edit)

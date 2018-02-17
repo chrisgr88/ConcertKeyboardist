@@ -940,7 +940,7 @@ void ScrollingNoteViewer::renderOpenGL()
             if (step<pSequence->size())
             {
                 const float timeStamp = pSequence->at(step)->getTimeStamp();
-                const float width = 4.0f;// (sequence->at(step+1).timeStamp-timeStamp)*pixelsPerTick;
+                const float width = 4.0f;
                 setRectanglePos(nextNoteRect, timeStamp*pixelsPerTick, 0.0f, width, 15.f);
             }
         }
@@ -1545,47 +1545,33 @@ void ScrollingNoteViewer::updatePlayedNotes()
 }
 
 //<#paint#>
-//###
+/////
 void ScrollingNoteViewer::paint (Graphics& g)
 {
     if (rendering)
         return;
+    const double scaledPixPerTick = pixelsPerTick * horizontalScale;
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
     {
-        const double hLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + processor->leadLag * pixelsPerTick * horizontalScale;
+        const double yellowLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + processor->leadLag * scaledPixPerTick;
         g.setColour (colourNoteOn);
-        g.fillRect(Rectangle<float>(hLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
-        int timePlayed = processor->leadLag + processor->getTimeInTicks();
-        int spacingInPixels = (processor->nextDueTargetNoteTime - processor->lastPlayedTargetNoteTime)*pixelsPerTick * horizontalScale;
-        int nextDueTargetNoteXPos = hLinePos + spacingInPixels;
-        std::cout
-//        <<" xPositionOfBaseLine "<< xPositionOfBaseLine
-//        <<" processor->leadLag "<< processor->leadLag
-        <<" timePlayed " << timePlayed
-//        << " lastPlayedTargetNoteTime  "<< processor->lastPlayedTargetNoteTime
-//        << " nextDueTargetNoteTime  "<< processor->nextDueTargetNoteTime
-        << " xPositionOfBaseLine  "<< xPositionOfBaseLine
-        << " nextDueTargetNoteXPos " << nextDueTargetNoteXPos
-        << " leadLag " << processor->leadLag
-        << " hLinePos  "<< hLinePos
-        << " prevHLinePos " << prevHLinePos
-        << " late/early " << prevHLinePos - hLinePos
-        << " late/early in ticks " << (prevHLinePos - hLinePos)/pixelsPerTick
-        << "\n";
+        g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
+//        std::cout
+//        << " late/early simplified " << prevLeadLag - processor->leadLag
+//        << "\n";
         g.setColour (Colours::mediumseagreen);
-        g.fillRect(Rectangle<float>(nextDueTargetNoteXPos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
-        prevHLinePos = hLinePos;
+        prevLeadLag = processor->leadLag;
     }
     else
     {
         if (processor->getLastUserPlayedStepTime()>=0.0)
         {
             const double lastTime = processor->getLastUserPlayedStepTime() - processor->getTimeInTicks();
-            const double hLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + lastTime * pixelsPerTick * horizontalScale + horizontalShift;
+            const double yellowLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + lastTime * scaledPixPerTick + horizontalShift;
             g.setColour (colourNoteOn);
-            g.fillRect(Rectangle<float>(hLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
+            g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
         }
     }
     
@@ -1646,7 +1632,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             const float graphHeight = ViewStateInfo::viewHeight - topMargin*ViewStateInfo::verticalScale;
             const float velY = ((1.0-vel) * graphHeight) + topMargin*ViewStateInfo::verticalScale;
             const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-            const float velX = scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
+            const float velX = scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick;
             const Line<float> velLine = Line<float> (velX,
                                                      velY,
                                                      velX+6.0f*horizontalScale,
@@ -1683,7 +1669,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                     widthFactor = 1.0;
                 }
                 const Rectangle<float> chordRect = Rectangle<float>(
-                               rct.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                               rct.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
                                rct.getY()*ViewStateInfo::verticalScale,
                                rct.getWidth()*horizontalScale * widthFactor,
                                rct.getHeight()*ViewStateInfo::verticalScale);
@@ -1693,7 +1679,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 {
                     Rectangle<float> headRct = processor->sequenceObject.chords.at(ch).notePointers.at(np)->head;
                     headRct = Rectangle<float>(
-                                                                        headRct.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                                                                        headRct.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
                                                                         headRct.getY()*ViewStateInfo::verticalScale,
                                                                         headRct.getWidth()*horizontalScale,
                                                                         headRct.getHeight()*ViewStateInfo::verticalScale);
@@ -1709,7 +1695,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
         {
             const Rectangle<float> scaledHead = pSequence->at(displayedSelection[i])->head;
             const Rectangle<float> head = Rectangle<float>(
-                 scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                 scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
                  scaledHead.getY()*ViewStateInfo::verticalScale,
                  scaledHead.getWidth()*horizontalScale,
                  scaledHead.getHeight()*ViewStateInfo::verticalScale).expanded(2, 2);
@@ -1721,7 +1707,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 const float vel = pSequence->at(displayedSelection[i])->velocity;
                 const float graphHeight = ViewStateInfo::viewHeight - topMargin*ViewStateInfo::verticalScale;
                 const float velY = ((1.0-vel) * graphHeight) + topMargin*ViewStateInfo::verticalScale;
-                const float velX = scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
+                const float velX = scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick;
                 Point<float> velPoint(velX, velY);
                 if (i>0)
                 {
@@ -1742,9 +1728,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
             {
                 g.setColour (Colour(0xFFF0F0FF));
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-                Rectangle<float> guideLine = Rectangle<float>(
-                       (timeAfterDrag*pixelsPerTick)*horizontalScale+xPositionOfBaseLine+horizontalShift -
-                                                               processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                Rectangle<float> guideLine = Rectangle<float>(timeAfterDrag*scaledPixPerTick+xPositionOfBaseLine+horizontalShift -
+                                                               processor->getTimeInTicks()*scaledPixPerTick,
                        (scaledHead.getY())*ViewStateInfo::verticalScale,
                                                                
                        2.0*horizontalScale,
@@ -1762,7 +1747,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
                 Rectangle<float> guideLine = Rectangle<float>(
                        (offTimeAfterDrag*pixelsPerTick)*horizontalScale+xPositionOfBaseLine+horizontalShift -
-                       processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                       processor->getTimeInTicks()*scaledPixPerTick,
                        (scaledHead.getY())*ViewStateInfo::verticalScale,
                        2.0*horizontalScale,
                        scaledHead.getHeight()*ViewStateInfo::verticalScale);
@@ -1774,15 +1759,11 @@ void ScrollingNoteViewer::paint (Graphics& g)
             }
         }
     }
+    /////
     if (!ViewStateInfo::finishedPaintAfterRewind)
     {
         ViewStateInfo::finishedPaintAfterRewind = true;
-        prevHLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + processor->leadLag * pixelsPerTick * horizontalScale;
-//        std::cout <<"prevHLinePos, rewind leadLag, xPositionOfBaseLine "
-//        <<prevHLinePos
-//        << " " <<processor->leadLag
-//        << " " <<xPositionOfBaseLine
-//        <<"\n";
+        prevLeadLag = 0;
     }
 }
 
