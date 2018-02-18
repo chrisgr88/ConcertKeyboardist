@@ -674,7 +674,7 @@ private:
                 case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load plugin", "LoadPluginButton.svg");
                 case editPlugin:        return createButtonFromZipFileSVG (itemId, "Plugin window", "EditPluginButton.svg");
                 case audioSettings:     return createButtonFromZipFileSVG (itemId, "Audio/midi settings", "AudioSettingsTool.svg");
-                case scoreInfo:         return createButtonFromZipFileSVG (itemId, "Show tracks Information", "ScoreInfoTool.svg");
+                case scoreInfo:         return createButtonFromZipFileSVG (itemId, "MIDI tracks", "ScoreInfoTool.svg");
                 case preferences:         return createButtonFromZipFileSVG (itemId, "Preferences", "Preferences.svg");
                 case _help:             return createButtonFromZipFileSVG (itemId, "Open help in browser", "help.svg");
                 case _play:             return createButtonFromZipFileSVG (itemId, "Set ready to play", "media-playback-start.svg");
@@ -685,7 +685,7 @@ private:
                 case removeTempoChange: return createButtonFromZipFileSVG (itemId, "Remove tempo change marker","RemoveTempoAdjustment.svg");
                 case addBookmark:       return createButtonFromZipFileSVG (itemId, "Add bookmark","AddBookmark.svg");
                 case removeBookmark:    return createButtonFromZipFileSVG (itemId, "Remove bookmark","RemoveBookmark.svg");
-                case showEditToolbar:    return createButtonFromZipFileSVG (itemId, "Show/hide edit tools","ShowEditTools.svg");
+                case showEditToolbar:    return createButtonFromZipFileSVG (itemId, "Toggle edit tools","ShowEditTools.svg");
                 case scoreTempo:
                 {
                     ScoreTempo *scoreTempo = new ScoreTempo(itemId);
