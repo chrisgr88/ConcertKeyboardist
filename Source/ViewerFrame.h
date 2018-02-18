@@ -669,8 +669,8 @@ private:
                 case doc_save:          return createButtonFromZipFileSVG (itemId, "File save", "document-save.svg");
                 case doc_saveAs:        return createButtonFromZipFileSVG (itemId, "File save as", "document-save-as.svg");
                 case loadPlugin:        return createButtonFromZipFileSVG (itemId, "Load plugin", "LoadPluginButton.svg");
-                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Show plugin window", "EditPluginButton.svg");
-                case audioSettings:     return createButtonFromZipFileSVG (itemId, "Show audio/midi settings", "AudioSettingsTool.svg");
+                case editPlugin:        return createButtonFromZipFileSVG (itemId, "Plugin window", "EditPluginButton.svg");
+                case audioSettings:     return createButtonFromZipFileSVG (itemId, "Audio/midi settings", "AudioSettingsTool.svg");
                 case scoreInfo:         return createButtonFromZipFileSVG (itemId, "Show tracks Information", "ScoreInfoTool.svg");
                 case _help:             return createButtonFromZipFileSVG (itemId, "Open help in browser", "help.svg");
                 case _play:             return createButtonFromZipFileSVG (itemId, "Set ready to play", "media-playback-start.svg");
@@ -681,7 +681,7 @@ private:
                 case removeTempoChange: return createButtonFromZipFileSVG (itemId, "Remove tempo change marker","RemoveTempoAdjustment.svg");
                 case addBookmark:       return createButtonFromZipFileSVG (itemId, "Add bookmark","AddBookmark.svg");
                 case removeBookmark:    return createButtonFromZipFileSVG (itemId, "Remove bookmark","RemoveBookmark.svg");
-                case showEditToolbar:    return createButtonFromZipFileSVG (itemId, "Show or hide editing tools","ShowEditToolbar.svg");
+                case showEditToolbar:    return createButtonFromZipFileSVG (itemId, "Show/hide edit tools","ShowEditTools.svg");
                 case scoreTempo:
                 {
                     ScoreTempo *scoreTempo = new ScoreTempo(itemId);
@@ -986,6 +986,7 @@ private:
     AltToolbarItemFactory::AdjustedTempo *pAdjustedTempo;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeVelocity;
     MainToolbarItemFactory::ChainAmountBox *pHumanizeStartTime;
+    ToolbarItemComponent *pShowEditToolbarButton;
     
     double chainAmount;
     String humanizeVelocityAmount = String();
