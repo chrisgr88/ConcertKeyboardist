@@ -580,6 +580,7 @@ private:
             loadPlugin      = 23,
             editPlugin      = 24,
             audioSettings    = 25,
+            preferences    = 27,
             scoreInfo      = 26,
             _play           = 5,
             _stop           = 6,
@@ -611,6 +612,7 @@ private:
             ids.add (loadPlugin);
             ids.add (editPlugin);
             ids.add (audioSettings);
+            ids.add (preferences);
             ids.add (scoreInfo);
             ids.add (_help);
             ids.add (_play);
@@ -640,6 +642,7 @@ private:
             ids.add (loadPlugin);
             ids.add (editPlugin);
             ids.add (separatorBarId);
+            ids.add (preferences);
             ids.add (audioSettings);
             ids.add (scoreInfo);
             ids.add (showEditToolbar);
@@ -672,6 +675,7 @@ private:
                 case editPlugin:        return createButtonFromZipFileSVG (itemId, "Plugin window", "EditPluginButton.svg");
                 case audioSettings:     return createButtonFromZipFileSVG (itemId, "Audio/midi settings", "AudioSettingsTool.svg");
                 case scoreInfo:         return createButtonFromZipFileSVG (itemId, "Show tracks Information", "ScoreInfoTool.svg");
+                case preferences:         return createButtonFromZipFileSVG (itemId, "Preferences", "Preferences.svg");
                 case _help:             return createButtonFromZipFileSVG (itemId, "Open help in browser", "help.svg");
                 case _play:             return createButtonFromZipFileSVG (itemId, "Set ready to play", "media-playback-start.svg");
                 case _stop:             return createButtonFromZipFileSVG (itemId, "Stop playing", "media-playback-stop.svg");

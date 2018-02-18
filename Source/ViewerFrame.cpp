@@ -376,6 +376,10 @@ void ViewerFrame::buttonClicked (Button* button)
         
         else if(AltToolbarItemFactory::ToolbarItemIds::audioSettings == id)
             sendActionMessage("audioSettings");
+        else if(AltToolbarItemFactory::ToolbarItemIds::preferences == id)
+        {
+            sendActionMessage("audioSettings");
+        }
         else if(AltToolbarItemFactory::ToolbarItemIds::scoreInfo == id)
             sendActionMessage("scoreInfo");
         
