@@ -396,42 +396,58 @@ ApplicationProperties& getAppProperties();
     
     void MainWindow::showAudioSettings()
     {
-        AudioDeviceSelectorComponent audioSettingsComp (mainComponent->audioDeviceManager, 0, 0, 0, 256, true, true, true, false);
-        audioSettingsComp.setSize (500, 450);
-        DialogWindow::LaunchOptions o;
-        o.content.setNonOwned (&audioSettingsComp);
-        o.dialogTitle                   = "Audio/MIDI Settings";
-        o.componentToCentreAround       = this;
-        o.dialogBackgroundColour        = Colours::azure;
-        o.escapeKeyTriggersCloseButton  = true;
-        o.useNativeTitleBar             = true;
-        o.resizable                     = true;
-        
-        ckBlockClosing = true;
-        o.runModal();
-        ckBlockClosing = false;
-        ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
-//        getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
-        getAppProperties().getUserSettings()->saveIfNeeded();
-        const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
-//        std::cout << "synthMessageCollector "<<(int) midiProcessor.synthMessageCollector<<"\n";
-//        midiProcessor.synthMessageCollectorReset(sampRate);
-        if (midiProcessor.pluginMessageCollector)
-            midiProcessor.pluginMessageCollector->reset(sampRate);
-        const StringArray midiInputs (MidiInput::getDevices());
-//        midiProcessor.midiOutEnabled = false;
-        for (int i = 0; i < midiInputs.size(); ++i)
-        {
-            if (mainComponent->audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
-            {
-                midiProcessor.midiOutEnabled = true;
-                std::cout <<"Midi "<<midiInputs[i]<<"\n";
-                break;
-            }
-        }
-        midiProcessor.defaultMidiOutput = mainComponent->audioDeviceManager.getDefaultMidiOutput();
+        showPreferences();
+//        AudioDeviceSelectorComponent audioSettingsComp (mainComponent->audioDeviceManager, 0, 0, 0, 256, true, true, true, false);
+//        audioSettingsComp.setSize (500, 450);
+//        DialogWindow::LaunchOptions o;
+//        o.content.setNonOwned (&audioSettingsComp);
+//        o.dialogTitle                   = "Audio/MIDI Settings";
+//        o.componentToCentreAround       = this;
+//        o.dialogBackgroundColour        = Colours::azure;
+//        o.escapeKeyTriggersCloseButton  = true;
+//        o.useNativeTitleBar             = true;
+//        o.resizable                     = true;
+//
+//        ckBlockClosing = true;
+//        o.runModal();
+//        ckBlockClosing = false;
+//        ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
+////        getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
+//        getAppProperties().getUserSettings()->saveIfNeeded();
+//        const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+////        std::cout << "synthMessageCollector "<<(int) midiProcessor.synthMessageCollector<<"\n";
+////        midiProcessor.synthMessageCollectorReset(sampRate);
+//        if (midiProcessor.pluginMessageCollector)
+//            midiProcessor.pluginMessageCollector->reset(sampRate);
+//        const StringArray midiInputs (MidiInput::getDevices());
+////        midiProcessor.midiOutEnabled = false;
+//        for (int i = 0; i < midiInputs.size(); ++i)
+//        {
+//            if (mainComponent->audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
+//            {
+//                midiProcessor.midiOutEnabled = true;
+//                std::cout <<"Midi "<<midiInputs[i]<<"\n";
+//                break;
+//            }
+//        }
+//        midiProcessor.defaultMidiOutput = mainComponent->audioDeviceManager.getDefaultMidiOutput();
     }
-    
+void MainWindow::showPreferences()
+{
+    DialogWindow::LaunchOptions o;
+    o.content.setOwned(new PreferencesComponent);
+    o.dialogTitle                   = "Preferences";
+    o.componentToCentreAround       = this;
+//    o.dialogBackgroundColour        = Colours::darkgreen;
+    o.escapeKeyTriggersCloseButton  = true;
+    o.useNativeTitleBar             = true;
+    o.resizable                     = true;
+    o.content->setSize(200, 100);
+    ckBlockClosing = true;
+    o.runModal();
+    ckBlockClosing = false;
+}
+
     void MainWindow::menuBarActivated (bool isActive)
     {
 //        std::cout <<"menuBarActivated\n";

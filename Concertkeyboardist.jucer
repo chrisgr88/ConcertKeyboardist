@@ -6,6 +6,8 @@
               cppLanguageStandard="14" companyCopyright="">
   <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">
     <GROUP id="{D43238F0-992F-BC5A-F1AA-31BBBD3D17B0}" name="Source">
+      <FILE id="Q1v6pX" name="PreferencesComponent.h" compile="0" resource="0"
+            file="Source/PreferencesComponent.h"/>
       <FILE id="GcQUY3" name="TracksComponent.h" compile="0" resource="0"
             file="Source/TracksComponent.h"/>
       <GROUP id="{EC8297D7-1F95-3949-37E8-625A410B096D}" name="Resources">

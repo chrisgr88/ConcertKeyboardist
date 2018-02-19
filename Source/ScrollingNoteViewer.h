@@ -222,6 +222,7 @@ public:
 #define TIMER_MOUSE_UP 5
 #define TIMER_PERIODIC 6
 #define TIMER_IGNORE_WHEEL 7
+#define TIMER_CLICK_ZTL 8
     
     bool ignoreWheel;
     Point<int> curDragPosition;

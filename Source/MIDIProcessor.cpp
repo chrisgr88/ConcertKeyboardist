@@ -1105,7 +1105,7 @@ void MIDIProcessor::processBlock ()
 //                    double nextSchedNoteTime = getLastUserPlayedStepTime() - processor->getTimeInTicks();
                     sequenceReadHead = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()+1;
 //                    const double noteOnLag = (mostRecentNoteTime-timeInTicks)/10.0;
-                    const double noteOnLag = leadLag/5.0;
+                    const double noteOnLag = leadLag*tempoFollowFactor;
                     const double deltaNoteOnLag = noteOnLag - prevNoteOnLag;
                     prevNoteOnLag = noteOnLag;
 //                    int latePlayAdjustmentWindow = 100; //To prevent big speed jumps if the user plays far too early

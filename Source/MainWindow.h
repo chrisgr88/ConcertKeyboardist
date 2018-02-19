@@ -18,6 +18,7 @@
 #include "ViewerFrame.h"
 #include "TracksComponent.h"
 #include <string>
+#include "PreferencesComponent.h"
 #include <regex>
 
 /** A desktop window containing a plugin's UI. */
@@ -200,6 +201,8 @@ public:
     bool keyStateChanged (bool isKeyDown, Component* originatingComponent) override;
     
     void showAudioSettings();
+    
+    void showPreferences();
     
 //    void showScoreSettings();
     

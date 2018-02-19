@@ -1798,6 +1798,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\PreferencesComponent.h"/>
     <ClInclude Include="..\..\Source\TracksComponent.h"/>
     <ClInclude Include="..\..\Source\AboutWindow.h"/>
     <ClInclude Include="..\..\Source\MainWindow.h"/>
