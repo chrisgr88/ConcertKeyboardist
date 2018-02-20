@@ -75,7 +75,7 @@ public:
     Result loadDocument (const File& file) override
     {
         const String ext = file.getFileExtension();
-        if (file.getSize()>0 && !file.isDirectory() && ext == ".mid")
+        if (file.getSize()>0 && !file.isDirectory() && ext.toLowerCase() == ".mid")
         {
             fileToLoad = file;
             loadDoc = true;
@@ -280,13 +280,7 @@ public:
         setChangedFlag (documentReallyChanged);
     }
     
-    enum TempoControl {autoTempo, fixedTempo, proportionalToOriginalTempo};
-    TempoControl tempoControl;
-    void setTempoControl(TempoControl value)
-    {
-        tempoControl = value;
-        sequenceProps.setValue("tempoControl", "auto"); //enum: autoTempo, fixedTempo, tempoFromFile
-    }
+    double tempoAdjustmentRate; //How fast tempo adjusts based on early/late note playing
     std::vector<MidiMessage> tempoChanges;
     std::vector<MidiMessage> scaledTempoChanges;
     //Actual tempo is the midi file multiplied by tempoMultiplier

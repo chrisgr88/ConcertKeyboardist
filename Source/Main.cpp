@@ -22,7 +22,7 @@
   ==============================================================================
 */
 
-
+extern bool ckBlockClosing;
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../DateHeader.h"
 #include <array>
@@ -46,14 +46,6 @@ public:
     ScopedPointer<ApplicationProperties> appProperties;
     LookAndFeel_V3 lookAndFeel;
     
-    class MyLogger : public juce::Logger
-    {
-        void logMessage (const String& message) override
-        {
-            std::cout << message << "\n";
-        }
-    };
-    
     //==============================================================================
     void initialise (const String&) override
     {
@@ -61,10 +53,7 @@ public:
         options.applicationName     = "ConcertKeyboardist";
         options.filenameSuffix      = "settings";
         options.osxLibrarySubFolder = "Preferences";
-        
-        MyLogger *lg = new MyLogger();
-        juce::Logger::setCurrentLogger(lg);
-        DBG("Starting");
+        ckBlockClosing = false;
         appProperties = new ApplicationProperties();
         appProperties->setStorageParameters (options);
         
@@ -74,12 +63,6 @@ public:
 
         commandManager.registerAllCommandsForTarget (this);
         commandManager.registerAllCommandsForTarget (mainWindow);
-//        KeyPressMappingSet *kms = commandManager.getKeyMappings();
-//        for (int i=0;i<kms->findCommandForKeyPress(<#const juce::KeyPress &keyPress#>) size();i++)
-//        kms->clearAllKeyPresses();
-//        KeyM kp = KeyPress(KeyPress::leftKey, ModifierKeys::shiftModifier);
-//        KeyPress kc = kp.getFirst();
-//            std::cout << kc.getKeyCode() << "\n";
         
         //App properties - saved in app settings file
         getAppProperties().getUserSettings()->setValue ("buildDate", __CK_BUILD_DATE);
@@ -109,7 +92,7 @@ public:
 
     void systemRequestedQuit() override
     {
-        if (!mainWindow->ckBlockClosing)
+        if (!ckBlockClosing)
         {
             if (mainWindow->midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                 quit();

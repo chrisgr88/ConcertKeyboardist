@@ -516,11 +516,6 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
 
         if (!selecting && fabs(xPositionOfBaseLine - x) <= 4)
         {
-            std::cout << "fabs(xPositionOfBaseLine - x), mouseXinTicks " << fabs(xPositionOfBaseLine - x)
-            <<" "<<mouseXinTicks
-            <<" "<<vert
-            <<"\n";
-            std::cout << "HOVER_ZEROTIMELINE!" << "\n";
             hoveringOver = HOVER_ZEROTIMELINE;
             
             int tempo = processor->sequenceObject.getTempo(processor->getZTLTime(horizontalShift),
@@ -528,12 +523,12 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
             
             hoverInfo = String("\n")+
             "Realtime Tempo: "+String((int)tempo*processor->variableTempoRatio) + "\n"+
-            "Tempo Tracking Strength: "+String(processor->tempoFollowFactor, 2)+"\n";
+            "Tempo Adjustment Rate: "+String(processor->sequenceObject.tempoAdjustmentRate, 2)+"\n"+
+            "Click line To edit.";
             sendChangeMessage();
         }
         else if (vert > 0.0) //Test if we are on a note bar
         {
-            std::cout << "at 1 " << "\n";
             const int nn = maxNote - vert + 1;
             bool inHead = false;
             bool inBar = false;
@@ -548,7 +543,6 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
             }
             if (!inHead)
             {
-                std::cout << "at 2 " << "\n";
                 for (int i = 0; i < pSequence->size(); i++)
                 {
                     if (pSequence->at(i)->bar.contains(sequenceScaledX, scaledY))
@@ -563,7 +557,6 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
 //        std::cout << "set hoverStep " << step <<"\n";
             if (!(inHead || inBar))
             {
-                std::cout << "at 3 " << "\n";
                 hoveringOver = HOVER_NOTETRACK;
                 String note = MidiMessage::getMidiNoteName(nn, true, true, 3);
                 if (selectedNotes.size() > 1)
@@ -578,7 +571,6 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
                     hoverInfo = "";
             } else
             {
-                std::cout << "at 4 " << "\n";
                 if (inHead)
                     hoveringOver = HOVER_NOTEHEAD;
                 else
@@ -603,12 +595,11 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
             sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
         } else if (!selecting && fabs(xPositionOfBaseLine - x) <= 4)
         {
-            std::cout << "at 5 " << "\n";
             if (0 < y && y && event.position.getY() < ViewStateInfo::verticalScale * topMargin)
                 hoveringOver = HOVER_ZEROTIMEHANDLE;
             else
             {
-                std::cout << "HOVER_ZEROTIMELINE" << "\n";
+//                std::cout << "HOVER_ZEROTIMELINE" << "\n";
                 hoveringOver = HOVER_ZEROTIMELINE;
             }
         } else
@@ -2031,7 +2022,11 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     {
         stopTimer(TIMER_CLICK_ZTL);
         if (hoveringOver==HOVER_ZEROTIMELINE)
-            std::cout << "click ztl\n";
+        {
+            showPreferences();
+//            sendActionMessage("preferences");
+//            std::cout << "click ztl\n";
+        }
     }
     else if (timerID == TIMER_TOGGLE_TARGET_NOTE)
     {

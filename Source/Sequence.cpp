@@ -18,7 +18,6 @@ Sequence::Sequence()
     tempoChanges.clear();
     triggeredNoteLimit = 60;
     hideMeasureLines = false;
-    tempoControl = TempoControl::autoTempo;
     waitForFirstNote = true;
     autoPlaySustains = true;
     autoPlaySofts = true;
@@ -28,6 +27,7 @@ Sequence::Sequence()
     setLeadLagAdjustmentFactor(1.0);
     setKX(0.00000005);
     setKV(0.00010);
+    tempoAdjustmentRate = 0.2;
     setLowerTempoLimit(0.6);
     setUpperTempoLimit(1.4);
     setSoundfontFile("//root/soundfront.sfz");
@@ -184,6 +184,7 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     sequenceProps.setValue("shortHash", var(shortHash));
     sequenceProps.setValue("buildDate", var(buildDate));
     sequenceProps.setValue("hideMeasureLines", var(hideMeasureLines));
+    sequenceProps.setValue("tempoAdjustmentRate", var(tempoAdjustmentRate));
 
     StringPairArray props = sequenceProps.getAllProperties();
     StringArray keys = props.getAllKeys();
@@ -858,7 +859,6 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                     int sysexSize = ckfSysex.getEventPointer(0)->message.getSysExDataSize();
                     HeapBlock<char> allSysex;
                     allSysex.allocate(sysexSize, true);
-
                     char *pSysex;
                     pSysex = (char*) ckfSysex.getEventPointer(0)->message.getSysExData();
                     String sysexStr;
@@ -920,7 +920,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                             bm.tempoChange = true;
                             bm.tempoScaleFactor = values[3].getDoubleValue();
                         }
-                        std::cout <<"read bookmark "<< bm.time << " " << bm.tempoChange<<" "<<bm.tempoScaleFactor <<"\n";
+//                        std::cout <<"read bookmark "<< bm.time << " " << bm.tempoChange<<" "<<bm.tempoScaleFactor <<"\n";
                         bookmarkTimes.add(bm);
                     }
                     else if (retainEdits==Sequence::doNotRetainEdits && key == "trackDetails")
@@ -1028,6 +1028,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                 sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
                 sequenceProps.setValue("horizontalScale", var(1.0));
                 sequenceProps.setValue("hideMeasureLines", var(false));
+                sequenceProps.setValue("tempoAdjustmentRate", var(0.2));
 
                 std::cout <<"D:horizontalScale  "<<1.0<<"\n";
             }
@@ -1038,6 +1039,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             autoPlaySofts = sequenceProps.getBoolValue("autoPlaySofts", var(true));
             exprVelToScoreVelRatio = sequenceProps.getDoubleValue("exprVelToScoreVelRatio", var(1.0));
             hideMeasureLines = sequenceProps.getBoolValue("hideMeasureLines", var(false));
+            tempoAdjustmentRate = sequenceProps.getDoubleValue("tempoAdjustmentRate", var(0.2));
 
             StringPairArray props = sequenceProps.getAllProperties();
             StringArray keys = props.getAllKeys();

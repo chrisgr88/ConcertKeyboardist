@@ -16,7 +16,7 @@
  
  ==============================================================================
  */
-
+extern bool ckBlockClosing;
 #ifndef __JUCE_HEADER_B11C4CC4490D982E__
 #define __JUCE_HEADER_B11C4CC4490D982E__
 
@@ -29,6 +29,7 @@
 #include <queue>
 #include "NoteWithOffTime.h"
 #include "MIDIProcessor.h"
+#include "PreferencesComponent.h"
 //[/Headers]
 
 struct Vertex  // class storing the information about a single vertex
@@ -92,7 +93,8 @@ class ScrollingNoteViewer  :
     private OpenGLContext,
     private OpenGLRenderer,
     public ChangeBroadcaster,
-    public ChangeListener
+    public ChangeListener,
+    public ActionBroadcaster
 {
     friend NoteTimeComparator;
 public:
@@ -111,6 +113,33 @@ public:
 //        <<" onScreen "<<(0<positionOfTime && positionOfTime<ViewStateInfo::viewWidth)<<"\n";
         
         return (0<positionOfTime && positionOfTime<ViewStateInfo::viewWidth);
+    }
+    
+    void showPreferences()
+    {
+        PreferencesComponent *prefComp = new PreferencesComponent;
+        prefComp->setTempoAdjustmentRate(processor->sequenceObject.tempoAdjustmentRate);
+        DialogWindow::LaunchOptions o;
+        o.content.setNonOwned(prefComp);
+        o.dialogTitle                   = "Tempo Adjustment Settings";
+        o.componentToCentreAround      = this;
+        //    o.dialogBackgroundColour        = Colours::darkgreen;
+        o.escapeKeyTriggersCloseButton  = true;
+        o.useNativeTitleBar               = true;
+        o.resizable                       = true;
+        o.content->setSize(260, 90);
+        ckBlockClosing = true;
+        o.runModal();
+        ckBlockClosing = false;
+        processor->sequenceObject.tempoAdjustmentRate = prefComp->tempoAdjustmentRateSlider->getValue();
+        delete prefComp;
+        int tempo = processor->sequenceObject.getTempo(processor->getZTLTime(horizontalShift),
+                                                       processor->sequenceObject.scaledTempoChanges);
+        hoverInfo = String("\n")+
+        "Realtime Tempo: "+String((int)tempo*processor->variableTempoRatio) + "\n"+
+        "Tempo Adjustment Rate: "+String(processor->sequenceObject.tempoAdjustmentRate, 2)+"\n"+
+        "Click line To edit.";
+        sendChangeMessage();
     }
     
     int seqSize = 0;

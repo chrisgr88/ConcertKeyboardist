@@ -10,6 +10,7 @@
 
 #include "MainWindow.h"
 
+bool ckBlockClosing;
 class SilentLookAndFeel : public juce::LookAndFeel_V4 {
 public:
     void playAlertSound() override {}
@@ -249,10 +250,6 @@ ApplicationProperties& getAppProperties();
         else if (message.upToFirstOccurrenceOf(":",false,true) == "loadPlugin")
         {
             String pluginId = String(message.fromFirstOccurrenceOf(":", false, true));
-            //TODO  Define  a new version of loadPlugin( ) in MainComponent ...
-            //...that takes an identString as an argument and loads that plugin
-            //... and call loadPlugin  from here.
-            // Before calling loadPlugin call 
             PluginWindow::closeAllCurrentlyOpenWindows();
             mainComponent->loadPlugin(pluginId);
         }
@@ -267,9 +264,6 @@ ApplicationProperties& getAppProperties();
                 if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
                     w->toFront (true);
             }
-//            if (pluginListWindow == nullptr)
-//                pluginListWindow = new PluginListWindow (*this, mainComponent->formatManager);
-//            pluginListWindow->toFront (true);
         }
         else if (message == "editPlugin")
         {
@@ -322,11 +316,6 @@ ApplicationProperties& getAppProperties();
                 else
                     slopeSign = -1;
             }
-//            std::cout << htSpec << ": " << std::regex_match(htSpec, justRand) << " Matches justRand"<< '\n';
-//            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlope) << " Matches randAndSlope"<<" "<<slopeSign<< '\n';
-//            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSlopeAndSeed)<<" Matches randAndSlopeAndSeed"<<" "<<slopeSign<< '\n';
-//            std::cout << htSpec << ": " << std::regex_match(htSpec, randAndSeed) << " Matches randAndSeed"<< '\n';
-            
             if (std::regex_match(htSpec, justRand) || std::regex_match(htSpec, randAndSlope) ||
                 std::regex_match(htSpec, randAndSlopeAndSeed) || std::regex_match(htSpec, randAndSeed))
                 chordTimeHumanizeSpec = htSpec;
@@ -373,12 +362,10 @@ ApplicationProperties& getAppProperties();
         else if (message == "delete_chord")
         {
             perform (CommandIDs::delete_chord);
-//            midiProcessor.deleteChords(true);
         }
         else if (message == "help")
         {
             perform (CommandIDs::help);
-            //            midiProcessor.deleteChords(true);
         }
     }
     
@@ -396,57 +383,41 @@ ApplicationProperties& getAppProperties();
     
     void MainWindow::showAudioSettings()
     {
-        showPreferences();
-//        AudioDeviceSelectorComponent audioSettingsComp (mainComponent->audioDeviceManager, 0, 0, 0, 256, true, true, true, false);
-//        audioSettingsComp.setSize (500, 450);
-//        DialogWindow::LaunchOptions o;
-//        o.content.setNonOwned (&audioSettingsComp);
-//        o.dialogTitle                   = "Audio/MIDI Settings";
-//        o.componentToCentreAround       = this;
-//        o.dialogBackgroundColour        = Colours::azure;
-//        o.escapeKeyTriggersCloseButton  = true;
-//        o.useNativeTitleBar             = true;
-//        o.resizable                     = true;
-//
-//        ckBlockClosing = true;
-//        o.runModal();
-//        ckBlockClosing = false;
-//        ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
-////        getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
-//        getAppProperties().getUserSettings()->saveIfNeeded();
-//        const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
-////        std::cout << "synthMessageCollector "<<(int) midiProcessor.synthMessageCollector<<"\n";
-////        midiProcessor.synthMessageCollectorReset(sampRate);
-//        if (midiProcessor.pluginMessageCollector)
-//            midiProcessor.pluginMessageCollector->reset(sampRate);
-//        const StringArray midiInputs (MidiInput::getDevices());
-////        midiProcessor.midiOutEnabled = false;
-//        for (int i = 0; i < midiInputs.size(); ++i)
-//        {
-//            if (mainComponent->audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
-//            {
-//                midiProcessor.midiOutEnabled = true;
-//                std::cout <<"Midi "<<midiInputs[i]<<"\n";
-//                break;
-//            }
-//        }
-//        midiProcessor.defaultMidiOutput = mainComponent->audioDeviceManager.getDefaultMidiOutput();
+        AudioDeviceSelectorComponent audioSettingsComp (mainComponent->audioDeviceManager, 0, 0, 0, 256, true, true, true, false);
+        audioSettingsComp.setSize (500, 450);
+        DialogWindow::LaunchOptions o;
+        o.content.setNonOwned (&audioSettingsComp);
+        o.dialogTitle                   = "Audio/MIDI Settings";
+        o.componentToCentreAround       = this;
+        o.dialogBackgroundColour        = Colours::azure;
+        o.escapeKeyTriggersCloseButton  = true;
+        o.useNativeTitleBar             = true;
+        o.resizable                     = true;
+
+        ckBlockClosing = true;
+        o.runModal();
+        ckBlockClosing = false;
+        ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
+//        getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
+        getAppProperties().getUserSettings()->saveIfNeeded();
+        const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
+//        std::cout << "synthMessageCollector "<<(int) midiProcessor.synthMessageCollector<<"\n";
+//        midiProcessor.synthMessageCollectorReset(sampRate);
+        if (midiProcessor.pluginMessageCollector)
+            midiProcessor.pluginMessageCollector->reset(sampRate);
+        const StringArray midiInputs (MidiInput::getDevices());
+//        midiProcessor.midiOutEnabled = false;
+        for (int i = 0; i < midiInputs.size(); ++i)
+        {
+            if (mainComponent->audioDeviceManager.isMidiInputEnabled (midiInputs[i]))
+            {
+                midiProcessor.midiOutEnabled = true;
+                std::cout <<"Midi "<<midiInputs[i]<<"\n";
+                break;
+            }
+        }
+        midiProcessor.defaultMidiOutput = mainComponent->audioDeviceManager.getDefaultMidiOutput();
     }
-void MainWindow::showPreferences()
-{
-    DialogWindow::LaunchOptions o;
-    o.content.setOwned(new PreferencesComponent);
-    o.dialogTitle                   = "Preferences";
-    o.componentToCentreAround       = this;
-//    o.dialogBackgroundColour        = Colours::darkgreen;
-    o.escapeKeyTriggersCloseButton  = true;
-    o.useNativeTitleBar             = true;
-    o.resizable                     = true;
-    o.content->setSize(200, 100);
-    ckBlockClosing = true;
-    o.runModal();
-    ckBlockClosing = false;
-}
 
     void MainWindow::menuBarActivated (bool isActive)
     {

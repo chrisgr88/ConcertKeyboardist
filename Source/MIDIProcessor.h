@@ -227,7 +227,7 @@ public:
     double mostRecentNoteTime;
     double earliness;
     double leadLag;
-    double tempoFollowFactor = 0.0;
+//    double tempoAdjustmentRate = 0.0;
     double prevLeadLag;
     double noteOnLag;
     int initialWindowHeight;

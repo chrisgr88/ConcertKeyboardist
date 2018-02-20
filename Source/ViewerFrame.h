@@ -642,7 +642,7 @@ private:
             ids.add (loadPlugin);
             ids.add (editPlugin);
             ids.add (separatorBarId);
-            ids.add (preferences);
+//            ids.add (preferences);
             ids.add (audioSettings);
             ids.add (scoreInfo);
             ids.add (showEditToolbar);

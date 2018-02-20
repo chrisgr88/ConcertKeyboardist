@@ -176,9 +176,7 @@ public:
 //        midiProcessor.fullPowerMode = true;
 //    }
     
-    TooltipWindow tooltipWindow;    
-    
-    bool ckBlockClosing;
+    TooltipWindow tooltipWindow;
     
     bool isInterestedInFileDrag (const StringArray& files) override
     {

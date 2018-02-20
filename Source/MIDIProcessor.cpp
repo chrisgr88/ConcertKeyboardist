@@ -1050,9 +1050,6 @@ void MIDIProcessor::processBlock ()
                         <<"  noteOnLag " << noteOnLag
 //                        << "  duetimeNextTargetNote " << duetimeNextTargetNote
                         << "\n";
-                        int f00;
-                        if (noteOnLag>1000)
-                            f00 = 99;
                         availableNotes.add(noteIndex); //This is the triggering note
                         lastPlayedTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
                         nextDueTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime;
@@ -1105,7 +1102,7 @@ void MIDIProcessor::processBlock ()
 //                    double nextSchedNoteTime = getLastUserPlayedStepTime() - processor->getTimeInTicks();
                     sequenceReadHead = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()+1;
 //                    const double noteOnLag = (mostRecentNoteTime-timeInTicks)/10.0;
-                    const double noteOnLag = leadLag*tempoFollowFactor;
+                    const double noteOnLag = leadLag*sequenceObject.tempoAdjustmentRate;
                     const double deltaNoteOnLag = noteOnLag - prevNoteOnLag;
                     prevNoteOnLag = noteOnLag;
 //                    int latePlayAdjustmentWindow = 100; //To prevent big speed jumps if the user plays far too early
