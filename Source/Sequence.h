@@ -280,7 +280,6 @@ public:
         setChangedFlag (documentReallyChanged);
     }
     
-    double tempoAdjustmentRate; //How fast tempo adjusts based on early/late note playing
     std::vector<MidiMessage> tempoChanges;
     std::vector<MidiMessage> scaledTempoChanges;
     //Actual tempo is the midi file multiplied by tempoMultiplier
@@ -309,12 +308,6 @@ public:
         latePlayAdjustmentWindow = value;
         sequenceProps.setValue("latePlayAdjustmentWindow", value);
     }
-    double leadLagAdjustmentFactor;
-    void setLeadLagAdjustmentFactor(double value)
-    {
-        leadLagAdjustmentFactor = value;
-        sequenceProps.setValue("leadLagAdjustmentFactor", value);
-    }
     double kV;
     void setKV(double value)
     {
@@ -327,6 +320,9 @@ public:
         kX = value;
         sequenceProps.setValue("kX", value); //float - Tempo adjustment due to noteOnLag
     }
+    
+    double tempoAdjustmentRate; //How fast tempo adjusts based on early/late note playing
+    double maxTimeDelta;  //Allow to range between 0.0 ... 0.2
     
     double upperTempoLimit; //As ratio of score tempo
     void setUpperTempoLimit(double value)

@@ -21,7 +21,7 @@
 
   ==============================================================================
 */
-
+#define JUCE_ENABLE_LIVE_CONSTANT_EDITOR  1
 extern bool ckBlockClosing;
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../DateHeader.h"

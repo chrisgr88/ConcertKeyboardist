@@ -22,11 +22,13 @@ public:
         tempoAdjustmentRateSlider->setValue (tempoAdjustmentRate, dontSendNotification);
         tempoAdjustmentRateSlider->setSliderStyle (Slider::LinearBar);
         addAndMakeVisible(tempoAdjustmentRateSlider);
-
-//        testLabel = new Label;
-//        testLabel->setSize(getWidth(), getHeight());
-//        testLabel->setText("Press Me", dontSendNotification);
-//        addAndMakeVisible(testLabel);
+        
+        maxTimeDeltaSlider = new Slider;
+        maxTimeDeltaSlider->setSize(getWidth(), getHeight());
+        maxTimeDeltaSlider->setRange (0.0, 0.2, 0.01);
+        maxTimeDeltaSlider->setValue (tempoAdjustmentRate, dontSendNotification);
+        maxTimeDeltaSlider->setSliderStyle (Slider::LinearBar);
+        addAndMakeVisible(maxTimeDeltaSlider);
     }
     ~PreferencesComponent()
     {
@@ -36,17 +38,28 @@ public:
         tempoAdjustmentRate = tar;
         tempoAdjustmentRateSlider->setValue (tempoAdjustmentRate, dontSendNotification);
     }
+    void setMaxTimeDelta(double mtd)
+    {
+        maxTimeDelta = mtd;
+        maxTimeDeltaSlider->setValue (maxTimeDelta, dontSendNotification);
+    }
     void resized () override
     {
-        Rectangle<int> b = getBounds().reduced(10, 40);
-        tempoAdjustmentRateSlider->setBounds(b);
+//        Rectangle<int> topHalf = getBounds().removeFromTop(getHeight()/2);
+        Rectangle<int> tempoRateArea = getBounds().removeFromTop(getHeight()/2).reduced(10, 40);
+        Rectangle<int> maxDeltaArea = getBounds().removeFromBottom(getHeight()/2).reduced(10, 40);
+        tempoAdjustmentRateSlider->setBounds(tempoRateArea);
+        maxTimeDeltaSlider->setBounds(maxDeltaArea);
 //        testLabel->setBounds(getBounds());
     }
     void paint (Graphics& g) override
     {
-        g.drawText("Tempo Adjustment Rate", 5, 15, 200, 10, Justification::centred);
+        g.drawText("Tempo Adjustment Rate", 5, tempoAdjustmentRateSlider->getBounds().getY()-20, 200, 10, Justification::centred);
+        g.drawText("Max Rate Change", 5, maxTimeDeltaSlider->getBounds().getY()-20, 200, 10, Justification::centred);
     }
     ScopedPointer<Slider> tempoAdjustmentRateSlider;
-    double tempoAdjustmentRate = 0.77;
+    ScopedPointer<Slider> maxTimeDeltaSlider;
+    double tempoAdjustmentRate;
+    double maxTimeDelta;
 //    Label *testLabel;
 };

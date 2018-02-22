@@ -439,7 +439,7 @@ void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWh
     processor->leadLag = 0;
     processor->fullPowerMode = true;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
-    if (processor->isPlaying && processor->getZTLTime(0)>0.1 && wheel.deltaX>0.0f)
+    if (processor->isPlaying && processor->getZTLTime(0)>0.1 && abs(wheel.deltaX)>0.0f)
     {
         processor->play(false,"current");
     }
@@ -1574,13 +1574,9 @@ void ScrollingNoteViewer::paint (Graphics& g)
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
     {
-        const double yellowLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + processor->leadLag * scaledPixPerTick;
+        const double yellowLineXPos = 2.8 * horizontalScale + xPositionOfBaseLine + processor->leadLag * scaledPixPerTick;
         g.setColour (colourNoteOn);
-        g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
-//        std::cout
-//        << " late/early simplified " << prevLeadLag - processor->leadLag
-//        << "\n";
-        g.setColour (Colours::mediumseagreen);
+        g.fillRect(Rectangle<float>(yellowLineXPos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
         prevLeadLag = processor->leadLag;
     }
     else
@@ -1936,8 +1932,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 	//return;
     int wid = selectionRect.getWidth();
   try {
-      if (timerID!=TIMER_PERIODIC)
-          std::cout << " timer callback " << timerID <<" "<<hoveringOver<<"\n";
+//      if (timerID!=TIMER_PERIODIC)
+//          std::cout << " timer callback " << timerID <<" "<<hoveringOver<<"\n";
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
     {

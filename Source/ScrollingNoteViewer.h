@@ -119,6 +119,7 @@ public:
     {
         PreferencesComponent *prefComp = new PreferencesComponent;
         prefComp->setTempoAdjustmentRate(processor->sequenceObject.tempoAdjustmentRate);
+        prefComp->setMaxTimeDelta(processor->sequenceObject.maxTimeDelta);
         DialogWindow::LaunchOptions o;
         o.content.setNonOwned(prefComp);
         o.dialogTitle                   = "Tempo Adjustment Settings";
@@ -127,11 +128,12 @@ public:
         o.escapeKeyTriggersCloseButton  = true;
         o.useNativeTitleBar               = true;
         o.resizable                       = true;
-        o.content->setSize(260, 90);
+        o.content->setSize(260, 200);
         ckBlockClosing = true;
         o.runModal();
         ckBlockClosing = false;
         processor->sequenceObject.tempoAdjustmentRate = prefComp->tempoAdjustmentRateSlider->getValue();
+        processor->sequenceObject.maxTimeDelta = prefComp->maxTimeDeltaSlider->getValue();
         delete prefComp;
         int tempo = processor->sequenceObject.getTempo(processor->getZTLTime(horizontalShift),
                                                        processor->sequenceObject.scaledTempoChanges);

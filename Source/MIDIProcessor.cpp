@@ -233,7 +233,6 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         lastPlayedSeqStep = -1;
         lastUserPlayedSeqStep = -1;
         lastPlayedTargetNoteTime = -1;
-        nextDueTargetNoteTime = -1;
         lastPlayedNoteStep = -1;
         if (listenSequence.size()>0)
         {
@@ -288,6 +287,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
             metTimeInTicks = 0;
             metronomeLighted = false;
             currentBeat = 0;
+            nxtTargetNoteTime = sequenceObject.theSequence.at(0)->nxtTargetNoteTime;
     //        accompTimeInTicks = 0;
     //        beatTickCounter = 0;
         }
@@ -304,6 +304,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
                 step = (int)sequenceObject.theSequence.size() - 1;
             if (step==-1)
                 step = 0;
+            nxtTargetNoteTime = sequenceObject.theSequence.at(step)->nxtTargetNoteTime;
     //        std::cout << "rewind Set to position: step =  " <<step<< "\n";
 
             sequenceReadHead = sequenceObject.theSequence.at(step)->getTimeStamp();
@@ -911,14 +912,6 @@ void MIDIProcessor::processBlock ()
                     MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(stepToTurnOff)->channel,
                                                               sequenceObject.theSequence.at(stepToTurnOff)->noteNumber, (uint8) 0);
                     String note = MidiMessage::getMidiNoteName(sequenceObject.theSequence.at(stepToTurnOff)->noteNumber,true,true,3);
-//                    std::cout << timeInTicks << " Repeated note forced noteOff " << step << " " << note
-//                    << " triggeredBy "<<theSequence->at(stepToTurnOff).triggeredBy
-//                    << " timeStamp "<<theSequence->at(stepToTurnOff).timeStamp
-//                    << " firstInChain "<<theSequence->at(stepToTurnOff).firstInChain
-//                    << " firstInChain TS "<<theSequence->at(theSequence->at(stepToTurnOff).firstInChain).timeStamp
-//                    << "\n";
-//                    midiMessages.addEvent(noteOff,0);
-//                    midiOutput->sendMessageNow(noteOff);
                     double t = Time::getMillisecondCounterHiRes()*0.001;
                     noteOff.setTimeStamp(t);
                     if (pluginMessageCollectorIsReset)
@@ -939,17 +932,8 @@ void MIDIProcessor::processBlock ()
                         noteOnOffFifoBuffer [start2 + i] = deHighlightSteps[n++];
                     noteOnOffFifo.finishedWrite (size1 + size2);
                 }
-//                else
-//                    assert(false);//Should not get to here
             }
-            
-//            String note = MidiMessage::getMidiNoteName (theSequence->at(step).getNoteNumber(), true, true, 3);
-//            std::cout << timeInTicks << " noteOn " << step << " " << note
-//            << " triggeredBy "<<theSequence->at(step).triggeredBy
-//            << " timeStamp "<<theSequence->at(step).timeStamp
-//            << " firstInChain "<<theSequence->at(step).firstInChain
-//            << " firstInChain TS "<<theSequence->at(theSequence->at(step).firstInChain).timeStamp
-//            << "\n";
+
             MidiMessage noteOn = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,
                                                     sequenceObject.theSequence.at(step)->noteNumber,
                                                     sequenceObject.theSequence.at(step)->adjustedVelocity);
@@ -1020,49 +1004,47 @@ void MIDIProcessor::processBlock ()
                 if (sequenceObject.theSequence.at(noteIndex)->getTimeStamp()>=sequenceReadHead &&
                     sequenceObject.theSequence.at(noteIndex)->firstInChain == noteIndex)
                 {
-                    earliness = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()-timeInTicks;
                     const int stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
-                    lastUserPlayedSeqStep = stepPlayed;
                     const double noteTimeStamp = sequenceObject.theSequence.at(stepPlayed)->getTimeStamp();
-                    changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
-                    sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
-                    double howEarlyIsAllowed;
-                    if (autoPlaying)
-                        howEarlyIsAllowed = 1000;//sequenceObject.notePlayWindowAutoplaying;
-                    else
-                        howEarlyIsAllowed = 9999999;
-                        
-                    if (earliness < howEarlyIsAllowed)
+                    const double proposedLeadLag = noteTimeStamp - timeInTicks;
+                    const double proposedNoteOnLag = proposedLeadLag-prevLeadLag;
+                    double ticksToNextTargetNote = -1;
+                    if (lastUserPlayedSeqStep != -1)
+                        ticksToNextTargetNote =
+                            sequenceObject.theSequence.at(lastUserPlayedSeqStep)->nxtTargetNoteTime -
+                            sequenceObject.theSequence.at(lastUserPlayedSeqStep)->timeStamp;
+                    double maxAllowableLead = ticksToNextTargetNote*.6;
+                    
+//                    std::cout << "noteOnLag " << noteOnLag
+//                    << " noteTimeStamp " << noteTimeStamp
+//                    << " nxtTargetNoteTime " << nxtTargetNoteTime
+//                    << " ticksToNextTargetNote "<<ticksToNextTargetNote
+//                    << " maxAllowableLead "<<maxAllowableLead
+//                    << " lastUserPlayedSeqStep " <<lastUserPlayedSeqStep
+//                    <<"\n";
+                    if (ticksToNextTargetNote == -1 || proposedNoteOnLag <= maxAllowableLead)
                     {
-                        leadLag = noteTimeStamp - timeInTicks;
-                        noteOnLag = leadLag-prevLeadLag;
+                        leadLag = proposedLeadLag;
+                        noteOnLag = proposedNoteOnLag;
                         prevLeadLag = leadLag;
-                        if (scheduledNotes.size()==0)
-                        {
-                            std::cout << " creating scheduledNotes " << leadLag <<"\n";
-                        }
-                        else
-                        {
-                            std::cout << " extending scheduledNotes " << leadLag <<"\n";
-                        }
-                        std::cout
-//                        << "timeInTicks "<< timeInTicks
-                        <<"  noteOnLag " << noteOnLag
-//                        << "  duetimeNextTargetNote " << duetimeNextTargetNote
-                        << "\n";
+                        nxtTargetNoteTime = sequenceObject.theSequence.at(stepPlayed)->nxtTargetNoteTime;
+                        lastUserPlayedSeqStep = stepPlayed;
+//                        std::cout << "leadLag,  leadTimeInTicks" << leadLag << " " << leadTimeInTicks
+//                        <<"\n";
+                        changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
+                        sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
                         availableNotes.add(noteIndex); //This is the triggering note
                         lastPlayedTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
-                        nextDueTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime;
                         mostRecentNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
                         const double vel = sequenceObject.theSequence.at(noteIndex)->velocity;
-//                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex)->track))
-//                        {
-                            nPrimaryNotes++;
-                            sumPrimaryVel += vel;
-//                        }
+                        nPrimaryNotes++;
+                        sumPrimaryVel += vel;
                     }
                     else
+                    {
+                        std::cout << " Play too early " << noteOnLag <<"\n";
                         skipProcessingTheseEvents = true;//std::cout << "Ignore noteOn" << "\n";
+                    }
                     break;
                 }
             }
@@ -1101,47 +1083,68 @@ void MIDIProcessor::processBlock ()
                 {
 //                    double nextSchedNoteTime = getLastUserPlayedStepTime() - processor->getTimeInTicks();
                     sequenceReadHead = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()+1;
-//                    const double noteOnLag = (mostRecentNoteTime-timeInTicks)/10.0;
                     const double noteOnLag = leadLag*sequenceObject.tempoAdjustmentRate;
                     const double deltaNoteOnLag = noteOnLag - prevNoteOnLag;
                     prevNoteOnLag = noteOnLag;
-//                    int latePlayAdjustmentWindow = 100; //To prevent big speed jumps if the user plays far too early
-                    if (true)//!autoPlaying)
-                    {
-                        float timeDelta = sequenceObject.kV*deltaNoteOnLag + (timeInTicks-prevTimeInTicks)*noteOnLag*sequenceObject.kX;
-//                        std::cout
-//                        << "noteOnLag " <<noteOnLag
-//                        << " leadTimeInTicks " <<leadTimeInTicks
-//                        << " timeDelta "<<timeDelta
-//                        << " variableTimeIncrement "<<variableTimeIncrement
-//                        << " speedCorrection "<<(variableTempoRatio-1)*0.05
-//                        << " newDelta " << timeDelta-(variableTempoRatio-1)*0.05
-//                        <<"\n";
+                    
+                    float timeDelta = sequenceObject.kV * deltaNoteOnLag +
+                                     sequenceObject.kX * noteOnLag * (timeInTicks-prevTimeInTicks);
+                    
+                    std::cout
+                    <<" leadLag "<<leadLag
+                    <<" leadTimeInTicks "<< leadTimeInTicks
+                    <<" timeDelta "<< timeDelta
+                    <<"\n" ;
 //                        std::cout
 //                        << "leadTimeInTicks " <<leadTimeInTicks
 //                        << " noteOnLag " <<noteOnLag
 //                        <<" deltaNoteOnLag "<<deltaNoteOnLag
 //                        <<" timeDelta "<<timeDelta
 //                        <<"\n";
-                        
-//                        if (leadTimeInTicks>-noteOnLag) //Prevent adjustment if play head is off left edge of view
-//                        {
-                            if (timeDelta<0) //Reduce adjustment for trailing time deltas
-                                timeDelta = timeDelta * sequenceObject.leadLagAdjustmentFactor;
-
-                        const double proposedTimeIncrement = variableTimeIncrement+timeDelta;
-                        if (timeIncrement*sequenceObject.lowerTempoLimit < proposedTimeIncrement &&
-                            proposedTimeIncrement < timeIncrement*sequenceObject.upperTempoLimit)
+                    if (timeDelta>sequenceObject.maxTimeDelta)
+                        timeDelta = sequenceObject.maxTimeDelta;
+                    else if (timeDelta<-sequenceObject.maxTimeDelta)
+                        timeDelta = -sequenceObject.maxTimeDelta;
+                    if (-leadLag > 0.25 * leadTimeInTicks)
+                    {
+//                        std::cout << "Slow Down  "
+//                        <<"\n" ;
+                        timeDelta = -0.003;
+                    }
+                    else if ( leadLag > 0.5 * leadTimeInTicks )
+                    {
+//                        std::cout << "Speed up  " << leadTimeInTicks-leadLag<<" "
+//                        <<"\n" ;
+                        timeDelta = 0.003;
+                    }
+                    std::cout << "leadLag  " << leadLag<<" "
+                    " timeDelta  " << timeDelta
+                    <<"\n" ;
+                    if (abs(noteOnLag) < 20)
+                    {
+                        if (leadLag<0)
                         {
-                            if (timeDelta+variableTimeIncrement>0.0) //Don't let speed go too negative or zero
-                            {
-                                std::cout << "ADJUST  "<<noteOnLag<<" "<< timeDelta<<"\n" ;
-                                variableTimeIncrement = variableTimeIncrement + timeDelta;
-                            }
-                            variableTempoRatio = variableTimeIncrement/timeIncrement;
+                            std::cout << "slower  "<<"\n" ;
+                            timeDelta -= 0.002;
+                        }
+                        else
+                        {
+                            std::cout << "faster  "<<"\n" ;
+                            timeDelta += 0.002;
                         }
                     }
-//                sequenceObject.suppressSpeedAdjustment = autoPlaying; //The next note after autoplaying should not cause speed adjustment
+                    
+                    if (timeDelta+variableTimeIncrement>0.0) //Don't let speed go too negative or zero
+                    {
+                        std::cout << "ADJUST  "
+//                        <<" noteOnLag "<<noteOnLag
+                        <<" timeDelta "<< timeDelta
+//                        <<" variableTempoRatio "<< variableTempoRatio
+                        <<" variableTimeIncrement "<<variableTimeIncrement
+                        <<"\n" ;
+                        variableTimeIncrement = variableTimeIncrement + timeDelta;
+                    }
+                    variableTempoRatio = variableTimeIncrement/timeIncrement;
                     prevTimeInTicks = timeInTicks;
                 }
             }

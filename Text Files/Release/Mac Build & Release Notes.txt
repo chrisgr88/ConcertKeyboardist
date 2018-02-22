@@ -2,6 +2,7 @@ Mac Build Process (do before Windows build)
 
 Mac Installer Creation
 - Ensure up to date with repo
+- Apply the "patch" to setPlayConfigDetails, given below
 - Insert the version information versionLabel.setText in AboutWindow.h.  In the format below.
 - Do a "release" build
 - Ensure the About window shows the correct information
@@ -15,3 +16,30 @@ Mac Installer Creation
 - Build and upload most recent version of help
 - Build and upload most recent version of index.htm
 - Download on different system and test
+
+//Patch
+void AudioProcessor::setPlayConfigDetails (int newNumIns, int newNumOuts, double newSampleRate, int newBlockSize)
+{
+    bool success = true;
+
+    if (getTotalNumInputChannels() != newNumIns)
+        success &= setChannelLayoutOfBus (true,  0, AudioChannelSet::canonicalChannelSet (newNumIns));
+
+    // failed to find a compatible input configuration
+    jassert (success);
+
+    if (getTotalNumOutputChannels() != newNumOuts)
+        success &= setChannelLayoutOfBus (false, 0, AudioChannelSet::canonicalChannelSet (newNumOuts));
+
+    // failed to find a compatible output configuration
+    jassert (success);
+
+    // if the user is using this method then they do not want any side-buses or aux outputs
+    success &= disableNonMainBuses();
+//    jassert (success);
+
+    // the processor may not support this arrangement at all
+//    jassert (success && newNumIns == getTotalNumInputChannels() && newNumOuts == getTotalNumOutputChannels());
+
+    setRateAndBufferSizeDetails (newSampleRate, newBlockSize);
+}

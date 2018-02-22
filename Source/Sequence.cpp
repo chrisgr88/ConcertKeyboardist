@@ -24,10 +24,10 @@ Sequence::Sequence()
     setNotePlayWindowAutoplaying(30);
     setNotePlayWindow(200);
     setLatePlayAdjustmentWindow(100);
-    setLeadLagAdjustmentFactor(1.0);
     setKX(0.00000005);
     setKV(0.00010);
     tempoAdjustmentRate = 0.2;
+    maxTimeDelta = 0.005;
     setLowerTempoLimit(0.6);
     setUpperTempoLimit(1.4);
     setSoundfontFile("//root/soundfront.sfz");
@@ -185,7 +185,8 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
     sequenceProps.setValue("buildDate", var(buildDate));
     sequenceProps.setValue("hideMeasureLines", var(hideMeasureLines));
     sequenceProps.setValue("tempoAdjustmentRate", var(tempoAdjustmentRate));
-
+    sequenceProps.setValue("maxTimeDelta", var(maxTimeDelta));
+    
     StringPairArray props = sequenceProps.getAllProperties();
     StringArray keys = props.getAllKeys();
     
@@ -1028,8 +1029,8 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                 sequenceProps.setValue("exprVelToOriginalValRatio", var(1.0));
                 sequenceProps.setValue("horizontalScale", var(1.0));
                 sequenceProps.setValue("hideMeasureLines", var(false));
-                sequenceProps.setValue("tempoAdjustmentRate", var(0.2));
-
+                sequenceProps.setValue("tempoAdjustmentRate", var(0.3));
+                sequenceProps.setValue("maxTimeDelta", var(0.01));
                 std::cout <<"D:horizontalScale  "<<1.0<<"\n";
             }
             //Get values from sequenceProps
@@ -1039,14 +1040,14 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
             autoPlaySofts = sequenceProps.getBoolValue("autoPlaySofts", var(true));
             exprVelToScoreVelRatio = sequenceProps.getDoubleValue("exprVelToScoreVelRatio", var(1.0));
             hideMeasureLines = sequenceProps.getBoolValue("hideMeasureLines", var(false));
-            tempoAdjustmentRate = sequenceProps.getDoubleValue("tempoAdjustmentRate", var(0.2));
-
+            tempoAdjustmentRate = sequenceProps.getDoubleValue("tempoAdjustmentRate", var(0.3));
+            maxTimeDelta = sequenceProps.getDoubleValue("maxTimeDelta", var(0.01));
             StringPairArray props = sequenceProps.getAllProperties();
             StringArray keys = props.getAllKeys();
             StringArray vals = props.getAllValues();
-        //        std::cout <<"Properties loaded: " <<"\n";
-        //        for (int i=0;i<props.size();i++)
-        //            std::cout <<" property: " << keys[i] << " / " << vals[i] <<"\n";
+                std::cout <<"Properties loaded: " <<"\n";
+                for (int i=0;i<props.size();i++)
+                    std::cout <<" property: " << keys[i] << " / " << vals[i] <<"\n";
             ckfSysex.clear();
             sendChangeMessage(); //Is this needed?
             setChangedFlag (false);
