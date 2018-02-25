@@ -1881,15 +1881,24 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_RETURN_BASELINE)
         {
-            std::cout << "CHANGE_MESSAGE_RETURN_BASELINE " <<  "\n";
-            horizontalShiftTemporary += 300;
-            horizontalShift += 300;
+            const double ztlTime = processor->getZTLTime(horizontalShift);
+            const double nxtTime = processor->nextDueTargetNoteTime;
+            const double shift  = (processor->getTimeInTicks() - nxtTime)*pixelsPerTick* horizontalScale - horizontalShiftTemporary;
+//            std::cout << "CHANGE_MESSAGE_RETURN_BASELINE "
+//            << " ztlTime " << ztlTime
+//            << " nxtTime " << nxtTime
+//            << " timeInTicks " << processor->getTimeInTicks()
+//            << " shift " << shift
+//            << "\n";
+            
+            horizontalShiftTemporary += shift;
+            horizontalShift += shift;
             repaint();
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_NOTE_PLAYED)
         {
             //            std::cout << "CHANGE_MESSAGE_BEAT_CHANGED " <<  "\n";
-//            repaint();
+            repaint();
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_UNDO)
         {

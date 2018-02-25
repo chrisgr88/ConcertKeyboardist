@@ -508,7 +508,7 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::returnToBaseline:
                 result.setInfo ("ReturnToBaseline", "Return To Baseline", category, 0);
-                result.defaultKeypresses.add (KeyPress (KeyPress::tabKey, ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress (KeyPress::escapeKey, ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::scoreSettings:
                 result.setInfo ("Tracks...", "Tracks in this score", category, 0);
@@ -1064,9 +1064,14 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 midiProcessor.decreaseTempo();
                 break;
             case CommandIDs::returnToBaseline:
-                std::cout <<"returnToBaseline\n";
-                midiProcessor.returnToBaseline();
+            {
+                if (midiProcessor.isPlaying)
+                {
+                    std::cout <<"returnToBaseline\n";
+                    midiProcessor.returnToBaseline();
+                }
                 break;
+            }
             case CommandIDs::scoreSettings:
                 std::cout <<"tracksWindow\n";
                 if (!midiProcessor.isPlaying)
