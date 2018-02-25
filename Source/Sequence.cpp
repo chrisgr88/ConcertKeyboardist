@@ -91,7 +91,7 @@ void Sequence::setTempoMultiplier(double value, double currentTime, bool documen
     sendChangeMessage();
 }
 
-double Sequence::getTempo (double currentTime, std::vector<MidiMessage> &tempos)
+double Sequence::getTempo (double currentTime, std::vector<MidiMessage> &tempos) 
 {
     static int prevTempoChangeIndex = 0;
     static double prevTime = 0;

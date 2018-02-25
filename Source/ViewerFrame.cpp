@@ -102,9 +102,11 @@ altToolbarFactory(this)
     
     playableKeys = "qwertyuiopasdfghjklzxcvbnm;',./[]";
 
-    for (int i=0;i<playableKeys
-         .length();i++)
-keysThatAreDown.add(false);
+    for (int i=0;i<playableKeys.length();i++)
+        keysThatAreDown.add(false);
+    
+    cmdDown = false;
+    altDown = false;
     
 //    std::cout << "ViewerComponent isBroughtToFrontOnMouseClick " << isBroughtToFrontOnMouseClick()  <<"\n";
     startTimer(250);

@@ -36,6 +36,8 @@ Array<Vertex> ViewStateInfo::vertices;
 Array<int> ViewStateInfo::indices;
 bool ViewStateInfo::openGLStarted = false;
 bool ViewStateInfo::finishedPaintAfterRewind = false;
+double ViewStateInfo::xPositionOfBaseLine;
+
 
 GLint ScrollingNoteViewer::Uniforms::viewMatrixHandle;
 GLint ScrollingNoteViewer::Uniforms::projectionMatrixHandle;
@@ -72,7 +74,8 @@ ScrollingNoteViewer::ScrollingNoteViewer(MIDIProcessor *p) :
     draggingVelocity = false;
     drawingVelocity = false;
     draggingOffTime = false;
-    xPositionOfBaseLine = -1;
+    ViewStateInfo::xPositionOfBaseLine = -1;
+    horizontalShiftTemporary = 0;
 //    showVelocityIndicator = false;
 
     setPaintingIsUnclipped(true);
@@ -87,7 +90,7 @@ ScrollingNoteViewer::ScrollingNoteViewer(MIDIProcessor *p) :
     horizontalScale = 1.0f;
     ViewStateInfo::verticalScale = 1.0f;
     initialMeasuresAcrossWindow = 5;
-    leadTimeProportionOfWidth = 0.4;
+    leadTimeProportionOfWidth = 0.5;
     grabbedInitialWindowSize = false;
     zoomDragStarting = false;
     zoomOrScrollDragging = false;
@@ -197,7 +200,7 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
                             ViewStateInfo::trackVerticalSize;
 
         const double xInTicks =
-                ((event.getPosition().getX() - (horizontalShift + xPositionOfBaseLine)) / pixelsPerTick) /
+                ((event.getPosition().getX() - (horizontalShift + ViewStateInfo::xPositionOfBaseLine)) / pixelsPerTick) /
                 horizontalScale + processor->getTimeInTicks();
         const float sequenceScaledX = mouseXinTicks * pixelsPerTick;
         const float scaledY = event.getPosition().getY() / ViewStateInfo::verticalScale;
@@ -427,7 +430,7 @@ void ScrollingNoteViewer::mouseDrag(const MouseEvent &event)
     if (event.position.getY() < topMargin * ViewStateInfo::verticalScale)
         event.source.enableUnboundedMouseMovement(true, false);
     const double x = event.position.getX();
-    mouseXinTicks = ((x - (horizontalShift + xPositionOfBaseLine)) / pixelsPerTick) / horizontalScale +
+    mouseXinTicks = ((x - (horizontalShift + ViewStateInfo::xPositionOfBaseLine)) / pixelsPerTick) / horizontalScale +
                     processor->getTimeInTicks();
     stopTimer(TIMER_MOUSE_HOLD);
     curDragPosition = event.getPosition();
@@ -450,14 +453,14 @@ void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWh
     else
         newShift = horizontalShift + 300 * wheel.deltaY;
     const double seqStartRelToLeftEdgeInPixels =
-            (xPositionOfBaseLine - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
+            (ViewStateInfo::xPositionOfBaseLine - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
              newShift)*horizontalScale;
     double seqDurationInPixels = processor->sequenceObject.seqDurationInTicks*pixelsPerTick;
     double scaledSeqDurationInPixels = seqDurationInPixels*horizontalScale*horizontalScale;
     const double seqEndRelToLeftEdgeInPixels = seqStartRelToLeftEdgeInPixels + scaledSeqDurationInPixels;
-    if (seqStartRelToLeftEdgeInPixels > xPositionOfBaseLine*horizontalScale)
+    if (seqStartRelToLeftEdgeInPixels > ViewStateInfo::xPositionOfBaseLine*horizontalScale)
         newShift = processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
-    else if (seqEndRelToLeftEdgeInPixels < xPositionOfBaseLine*horizontalScale)
+    else if (seqEndRelToLeftEdgeInPixels < ViewStateInfo::xPositionOfBaseLine*horizontalScale)
         newShift =  processor->getTimeInTicks()*pixelsPerTick*horizontalScale - scaledSeqDurationInPixels/horizontalScale;
 //    std::cout << "newShift " << newShift << "\n";
     setHorizontalShift(newShift);
@@ -477,7 +480,7 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
         const double x = event.position.getX();
         const double y = event.position.getY();
         const double vert = (y - ViewStateInfo::verticalScale * topMargin) / ViewStateInfo::trackVerticalSize;
-        mouseXinTicks = ((x - (horizontalShift + xPositionOfBaseLine)) / pixelsPerTick) / horizontalScale +
+        mouseXinTicks = ((x - (horizontalShift + ViewStateInfo::xPositionOfBaseLine)) / pixelsPerTick) / horizontalScale +
                         processor->getTimeInTicks();
         const float sequenceScaledX = mouseXinTicks * pixelsPerTick;
         const float scaledY = y / ViewStateInfo::verticalScale;
@@ -514,7 +517,7 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
             }
         }
 
-        if (!selecting && fabs(xPositionOfBaseLine - x) <= 4)
+        if (!selecting && fabs(ViewStateInfo::xPositionOfBaseLine - x) <= 4)
         {
             hoveringOver = HOVER_ZEROTIMELINE;
             
@@ -593,7 +596,7 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
             }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
             sendChangeMessage();  //Being sent to VieweFrame to display the info in the toolbar
-        } else if (!selecting && fabs(xPositionOfBaseLine - x) <= 4)
+        } else if (!selecting && fabs(ViewStateInfo::xPositionOfBaseLine - x) <= 4)
         {
             if (0 < y && y && event.position.getY() < ViewStateInfo::verticalScale * topMargin)
                 hoveringOver = HOVER_ZEROTIMEHANDLE;
@@ -893,7 +896,7 @@ void ScrollingNoteViewer::renderOpenGL()
         timeShiftInPixels = -processor->getTimeInTicks()*pixelsPerTick;
 
         prevTime = processor->getTimeInTicks();
-		openGLContext.extensions.glUniformMatrix4fv(Uniforms::viewMatrixHandle, 1, false, getViewMatrix(timeShiftInPixels+(xPositionOfBaseLine+horizontalShift)/horizontalScale).mat);
+		openGLContext.extensions.glUniformMatrix4fv(Uniforms::viewMatrixHandle, 1, false, getViewMatrix(timeShiftInPixels+(ViewStateInfo::xPositionOfBaseLine+horizontalShift)/horizontalScale).mat);
 		openGLContext.extensions.glUniformMatrix4fv(Uniforms::projectionMatrixHandle, 1, false, getProjectionMatrix(horizontalScale, ViewStateInfo::verticalScale).mat);
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
         openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -1058,7 +1061,7 @@ void ScrollingNoteViewer::makeKeyboard()
     pixelsPerTick = ViewStateInfo::initialWidth/(ticksPerQuarter * numerator * initialMeasuresAcrossWindow);
     leadTimeInTicks = ((getWidth()-wKbd+leftMargin)/pixelsPerTick)*leadTimeProportionOfWidth;
     processor->setLeadTimeInTicks(leadTimeInTicks);
-    xPositionOfBaseLine = leadTimeInTicks*pixelsPerTick;
+    ViewStateInfo::xPositionOfBaseLine = leadTimeInTicks*pixelsPerTick;
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
     nKeys = maxNote-minNote+1;
     int height = ViewStateInfo::viewHeight;
@@ -1137,7 +1140,7 @@ void ScrollingNoteViewer::makeNoteBars()
             clearSelectedNotes();
         seqSize = static_cast<int>(pSequence->size());
         int seqDurationInTicks = processor->sequenceObject.getSeqDurationInTicks();
-        const int sequenceWidthPixels = seqDurationInTicks + xPositionOfBaseLine;
+        const int sequenceWidthPixels = seqDurationInTicks + ViewStateInfo::xPositionOfBaseLine;
 
         const float noteBarVerticalSize = unscaledTVS * noteBarWidthRatio;
 
@@ -1574,23 +1577,25 @@ void ScrollingNoteViewer::paint (Graphics& g)
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
     {
-        const double yellowLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + processor->leadLag * scaledPixPerTick;
+        double yellowLinePos = 2.8 * horizontalScale + ViewStateInfo::xPositionOfBaseLine + processor->leadLag * scaledPixPerTick;
+        yellowLinePos += horizontalShiftTemporary;
+//        yellowLinePos += horizontalShiftToView;
         g.setColour (colourNoteOn);
-        g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
+        g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.3, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
 //        std::cout
-//        << " late/early simplified " << prevLeadLag - processor->leadLag
+//        << " yellowLinePos " << yellowLinePos
 //        << "\n";
-        g.setColour (Colours::mediumseagreen);
-        prevLeadLag = processor->leadLag;
+//        g.setColour (Colours::mediumseagreen);
+//        prevLeadLag = processor->leadLag;
     }
     else
     {
         if (processor->getLastUserPlayedStepTime()>=0.0)
         {
             const double lastTime = processor->getLastUserPlayedStepTime() - processor->getTimeInTicks();
-            const double yellowLinePos = 2.8 * horizontalScale + xPositionOfBaseLine + lastTime * scaledPixPerTick + horizontalShift;
+            const double yellowLinePos = 2.8 * horizontalScale + ViewStateInfo::xPositionOfBaseLine + lastTime * scaledPixPerTick + horizontalShift;
             g.setColour (colourNoteOn);
-            g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.1, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
+            g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.3, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
         }
     }
     
@@ -1607,18 +1612,18 @@ void ScrollingNoteViewer::paint (Graphics& g)
         ztlCol = Colour(30,30,255).brighter(); //Blue
 
     g.setColour (ztlCol);
-    g.fillRect(Rectangle<float>(xPositionOfBaseLine-1.f,0.0, 2.0, ViewStateInfo::viewHeight)); //ZTL
+    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f,0.0, 2.0, ViewStateInfo::viewHeight)); //ZTL
     
     const float vtrIndicatorLevel = (ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale) *
                     ( 0.5 + (1.0f-processor->variableTempoRatio));
     const float vtrIndicatorNullPt = (ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale) * 0.5;
     const float tempoIndicatorLength = 20;
     g.setColour (Colours::yellow);
-    g.fillRect(Rectangle<float>(xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorLevel+
+    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorLevel+0.5+
                                 topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 2.0)); //Moving indicator
     g.setColour (ztlCol);
-    g.fillRect(Rectangle<float>(xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorNullPt+
-                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 2.0)); //Zero point
+    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorNullPt+
+                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 1.0)); //Zero point
     
     const int meas = processor->getMeasure(horizontalShift);
     const int totalMeas = (int) processor->sequenceObject.measureTimes.size();
@@ -1627,9 +1632,9 @@ void ScrollingNoteViewer::paint (Graphics& g)
     g.setFont(f);
     g.setColour (Colour(199,199,199));
     const String measTxt = String(meas)+"/"+String(totalMeas-1)+" ["+String(processor->getZTLTime(horizontalShift)/10.0,1)+"]";
-    if (xPositionOfBaseLine!=-1)
+    if (ViewStateInfo::xPositionOfBaseLine!=-1)
         if (processor->sequenceObject.measureTimes.size()>0)
-            g.drawText(measTxt, xPositionOfBaseLine+6, 3.0*ViewStateInfo::verticalScale, 150,
+            g.drawText(measTxt, ViewStateInfo::xPositionOfBaseLine+6, 3.0*ViewStateInfo::verticalScale, 150,
                        9*ViewStateInfo::verticalScale, juce::Justification::centredLeft);
     if (!processor->isPlaying)
     {
@@ -1651,7 +1656,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             const float graphHeight = ViewStateInfo::viewHeight - topMargin*ViewStateInfo::verticalScale;
             const float velY = ((1.0-vel) * graphHeight) + topMargin*ViewStateInfo::verticalScale;
             const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-            const float velX = scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick;
+            const float velX = scaledHead.getX()*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick;
             const Line<float> velLine = Line<float> (velX,
                                                      velY,
                                                      velX+6.0f*horizontalScale,
@@ -1688,7 +1693,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                     widthFactor = 1.0;
                 }
                 const Rectangle<float> chordRect = Rectangle<float>(
-                               rct.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
+                               rct.getX()*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
                                rct.getY()*ViewStateInfo::verticalScale,
                                rct.getWidth()*horizontalScale * widthFactor,
                                rct.getHeight()*ViewStateInfo::verticalScale);
@@ -1698,7 +1703,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 {
                     Rectangle<float> headRct = processor->sequenceObject.chords.at(ch).notePointers.at(np)->head;
                     headRct = Rectangle<float>(
-                                                                        headRct.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
+                                                                    headRct.getX()*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
                                                                         headRct.getY()*ViewStateInfo::verticalScale,
                                                                         headRct.getWidth()*horizontalScale,
                                                                         headRct.getHeight()*ViewStateInfo::verticalScale);
@@ -1714,7 +1719,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
         {
             const Rectangle<float> scaledHead = pSequence->at(displayedSelection[i])->head;
             const Rectangle<float> head = Rectangle<float>(
-                 scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
+                 scaledHead.getX()*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick,
                  scaledHead.getY()*ViewStateInfo::verticalScale,
                  scaledHead.getWidth()*horizontalScale,
                  scaledHead.getHeight()*ViewStateInfo::verticalScale).expanded(2, 2);
@@ -1726,7 +1731,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 const float vel = pSequence->at(displayedSelection[i])->velocity;
                 const float graphHeight = ViewStateInfo::viewHeight - topMargin*ViewStateInfo::verticalScale;
                 const float velY = ((1.0-vel) * graphHeight) + topMargin*ViewStateInfo::verticalScale;
-                const float velX = scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick;
+                const float velX = scaledHead.getX()*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*scaledPixPerTick;
                 Point<float> velPoint(velX, velY);
                 if (i>0)
                 {
@@ -1747,7 +1752,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
             {
                 g.setColour (Colour(0xFFF0F0FF));
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
-                Rectangle<float> guideLine = Rectangle<float>(timeAfterDrag*scaledPixPerTick+xPositionOfBaseLine+horizontalShift -
+                Rectangle<float> guideLine = Rectangle<float>(timeAfterDrag*scaledPixPerTick+ViewStateInfo::xPositionOfBaseLine+horizontalShift -
                                                                processor->getTimeInTicks()*scaledPixPerTick,
                        (scaledHead.getY())*ViewStateInfo::verticalScale,
                                                                
@@ -1765,7 +1770,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
                 g.setColour (Colour(0xFFF0F0FF));
                 const Rectangle<float> scaledHead = pSequence->at(hoverStep)->head;
                 Rectangle<float> guideLine = Rectangle<float>(
-                       (offTimeAfterDrag*pixelsPerTick)*horizontalScale+xPositionOfBaseLine+horizontalShift -
+                       (offTimeAfterDrag*pixelsPerTick)*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift -
                        processor->getTimeInTicks()*scaledPixPerTick,
                        (scaledHead.getY())*ViewStateInfo::verticalScale,
                        2.0*horizontalScale,
@@ -1782,7 +1787,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
     if (!ViewStateInfo::finishedPaintAfterRewind)
     {
         ViewStateInfo::finishedPaintAfterRewind = true;
-        prevLeadLag = 0;
+        horizontalShiftTemporary = 0;
+//        prevLeadLag = 0;
     }
 }
 
@@ -1795,9 +1801,10 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
 //        std::cout << " ViewerCallback:  " <<  processor->changeMessageType <<" animationStep "<<animationStep<<"\n";
         if (processor->changeMessageType == CHANGE_MESSAGE_REWIND)
         {
+            if (isVisible())
+                grabKeyboardFocus();
             if (processor->sequenceObject.fileToLoad != prevFileLoaded)
                 clearSelectedNotes();
-//            std::cout <<"animationStep "<<animationStep<<"\n";
             if (animationStep<=1) //Skip rebuilding gl objects in the middle of tweening
             {
                     if (processor->getTimeInTicks()==0)
@@ -1813,10 +1820,6 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
                         sequenceChanged = true;
                     }
             }
-//            else
-//            {
-//                std::cout << "animationStep "<<animationStep<<"\n";
-//            }
             setHorizontalShift(0);
             prevFileLoaded = processor->sequenceObject.fileToLoad;
             ViewStateInfo::openGLStarted = false;
@@ -1870,6 +1873,18 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         {
 //            std::cout << "CHANGE_MESSAGE_BEAT_CHANGED " <<  "\n";
 //            repaint();
+        }
+        else if (processor->changeMessageType == CHANGE_MESSAGE_TEMPO_CHANGE)
+        {
+            std::cout << "CHANGE_MESSAGE_TEMPO_CHANGE " <<  "\n";
+            repaint();
+        }
+        else if (processor->changeMessageType == CHANGE_MESSAGE_RETURN_BASELINE)
+        {
+            std::cout << "CHANGE_MESSAGE_RETURN_BASELINE " <<  "\n";
+            horizontalShiftTemporary += 300;
+            horizontalShift += 300;
+            repaint();
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_NOTE_PLAYED)
         {
@@ -1941,6 +1956,25 @@ void ScrollingNoteViewer::timerCallback (int timerID)
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
     {
+        if (!processor->isListening)
+        {
+            const double scaledPixPerTick = pixelsPerTick * horizontalScale;
+            const double timeShiftInPixels = -processor->getTimeInTicks()*scaledPixPerTick;
+            double test = processor->nextDueTargetNoteTime * scaledPixPerTick+timeShiftInPixels
+                                +ViewStateInfo::xPositionOfBaseLine+horizontalShift;
+    //        if (processor->isPlaying  && !processor->waitingForFirstNote)
+    //        std::cout
+    //        << " horizontalShift " << horizontalShift
+    //        << " timeShiftInPixels " << timeShiftInPixels
+    //        << " xPositionOfBaseLine " << ViewStateInfo::xPositionOfBaseLine
+    //        << " nextDueTargetNoteTime " << processor->nextDueTargetNoteTime
+    //        << " nextDueTargetNoteTime in pixels " << processor->nextDueTargetNoteTime * scaledPixPerTick
+            if (processor->isPlaying && test<0 && processor->nextDueTargetNoteTime != -1)
+            {
+                horizontalShift += ViewStateInfo::xPositionOfBaseLine;
+                horizontalShiftTemporary += ViewStateInfo::xPositionOfBaseLine;
+            }
+        }
 		if (processor->isPlaying || processor->isListening)
 			return;
         if (prevShowingVelocities != (bool)showingVelocities.getValue() && !showingVelocities.getValue())
@@ -2197,10 +2231,10 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     }
                 }
                 
-                xInTicksLeft = ((selectionRect.getX() - (horizontalShift+xPositionOfBaseLine))/pixelsPerTick)/
+                xInTicksLeft = ((selectionRect.getX() - (horizontalShift+ViewStateInfo::xPositionOfBaseLine))/pixelsPerTick)/
                 horizontalScale + processor->getTimeInTicks();
                 
-                xInTicksRight = ((selectionRect.getRight() - (horizontalShift+xPositionOfBaseLine))/pixelsPerTick)/
+                xInTicksRight = ((selectionRect.getRight() - (horizontalShift+ViewStateInfo::xPositionOfBaseLine))/pixelsPerTick)/
                 horizontalScale + processor->getTimeInTicks();
                 selRect = Rectangle<float>::leftTopRightBottom((float)selectionRect.getX(),
                                                                                 (float)selectionRect.getY(),
@@ -2211,7 +2245,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 bool suppressAutoscroll = false;
                 if (xInTicksLeft < 0)
                 {
-                    int xReversed = ((0-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+xPositionOfBaseLine);
+                    int xReversed = ((0-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+ViewStateInfo::xPositionOfBaseLine);
                     selectionRect.setX(xReversed);
                     selectionRect.setWidth(wid);
                     suppressAutoscroll = true;
@@ -2220,7 +2254,7 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 
                 if (xInTicksRight > processor->sequenceObject.seqDurationInTicks)
                 {
-                    int xReversed = ((processor->sequenceObject.seqDurationInTicks-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+xPositionOfBaseLine);
+                    int xReversed = ((processor->sequenceObject.seqDurationInTicks-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+ViewStateInfo::xPositionOfBaseLine);
                     selectionRect.setWidth(wid);
                     selectionRect.setRight(xReversed);
                     suppressAutoscroll = true;
@@ -2247,14 +2281,14 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     if (horizontalShift<0)
                         horizontalShift = 0;
                     const double seqStartRelToLeftEdgeInPixels =
-                    (xPositionOfBaseLine - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
+                    (ViewStateInfo::xPositionOfBaseLine - processor->getTimeInTicks()*pixelsPerTick*horizontalScale +
                      shift)*horizontalScale;
                     double seqDurationInPixels = processor->sequenceObject.seqDurationInTicks*pixelsPerTick;
                     double scaledSeqDurationInPixels = seqDurationInPixels*horizontalScale*horizontalScale;
                     const double seqEndRelToLeftEdgeInPixels = seqStartRelToLeftEdgeInPixels + scaledSeqDurationInPixels;
-                    if (seqStartRelToLeftEdgeInPixels > xPositionOfBaseLine*horizontalScale)
+                    if (seqStartRelToLeftEdgeInPixels > ViewStateInfo::xPositionOfBaseLine*horizontalScale)
                         shift = processor->getTimeInTicks()*pixelsPerTick*horizontalScale;
-                    else if (seqEndRelToLeftEdgeInPixels < xPositionOfBaseLine*horizontalScale)
+                    else if (seqEndRelToLeftEdgeInPixels < ViewStateInfo::xPositionOfBaseLine*horizontalScale)
                         shift =  processor->getTimeInTicks()*pixelsPerTick*horizontalScale - scaledSeqDurationInPixels/horizontalScale;
                     setHorizontalShift(shift);
                     processor->sendChangeMessage();
@@ -2271,10 +2305,10 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     {
                         const Rectangle<float> scaledHead = pSequence->at(step)->head;
                         const Rectangle<float> head = Rectangle<float>(
-                                                                 scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
-                                                                 scaledHead.getY()*ViewStateInfo::verticalScale,
-                                                                 scaledHead.getWidth()*horizontalScale,
-                                                                 scaledHead.getHeight()*ViewStateInfo::verticalScale);
+                                        scaledHead.getX()*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                                         scaledHead.getY()*ViewStateInfo::verticalScale,
+                                         scaledHead.getWidth()*horizontalScale,
+                                         scaledHead.getHeight()*ViewStateInfo::verticalScale);
                         
                         if (head.intersects(selRect))
                         {
@@ -2342,10 +2376,10 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                     {
                         const Rectangle<float> scaledHead = pSequence->at(step)->head;
                         const Rectangle<float> head = Rectangle<float>(
-                                                                       scaledHead.getX()*horizontalScale+xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
-                                                                       scaledHead.getY()*ViewStateInfo::verticalScale,
-                                                                       scaledHead.getWidth()*horizontalScale,
-                                                                       scaledHead.getHeight()*ViewStateInfo::verticalScale);
+                                           scaledHead.getX()*horizontalScale+ViewStateInfo::xPositionOfBaseLine+horizontalShift - processor->getTimeInTicks()*pixelsPerTick*horizontalScale,
+                                           scaledHead.getY()*ViewStateInfo::verticalScale,
+                                           scaledHead.getWidth()*horizontalScale,
+                                           scaledHead.getHeight()*ViewStateInfo::verticalScale);
 //                        std::cout << "head "<<head.getX()<<" "<<head.getY()<<"\n";
                         if (head.contains (mousePt))
                         {

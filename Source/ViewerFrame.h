@@ -30,7 +30,8 @@ private Button::Listener,
 private Slider::Listener,
 private TextEditor::Listener,
 public FileBrowserListener,
-public ActionBroadcaster
+public ActionBroadcaster,
+public KeyListener
 {
 public:
     ViewerFrame (MIDIProcessor *p);
@@ -51,8 +52,13 @@ public:
     {
         processor->play(!processor->playing(),"lastPlayed");
     }
-
-    bool keyStateChanged(bool isKeyDown, Component* originatingComponent)
+    
+    virtual bool keyPressed (const KeyPress& key, Component* originatingComponent) override
+    {
+        std::cout << "keyPressed\n";
+        return false;
+    }
+    bool keyStateChanged(bool isKeyDown, Component* originatingComponent) override
     {
         if (!processor->isPlaying)
             return true;
@@ -60,18 +66,12 @@ public:
         for (int i=0;i<playableKeys.length();i++)
         {
             KeyPress kp = KeyPress(playableKeys[i],ModifierKeys::noModifiers, playableKeys[i]);
+
             if (kp.isCurrentlyDown() && !keysThatAreDown[i])
             {
                 MidiMessage msg;
-//                if (playableKeys[i] == 's')
-//                    msg = MidiMessage::controllerEvent(1, 0x40, 127);
-//                else
                 msg = MidiMessage::noteOn(1, 60+i, (uint8)127);
                 msg.setTimeStamp(99); //Value doesn't matter.
-//                if (msg.isNoteOn())
-//                    std::cout << "Kbd NoteOn " << (int)msg.getNoteNumber() << " " << (int)msg.getVelocity() << "\n";
-//                else
-//                    std::cout << "Controller " << (int)msg.getControllerNumber() << " " << (int)msg.getControllerValue() << "\n";
                 msg.setChannel(16); //Channel 16 indicates notes from the computer progoardk
                 processor->addMessageToQueue(msg);
                 keysThatAreDown.set(i,true);
@@ -82,8 +82,6 @@ public:
                 MidiMessage msg;
                 if (playableKeys[i] == 'r')
                     ;
-//                else if (playableKeys[i] == 's')
-//                    msg = MidiMessage::controllerEvent(1, 64, 0);
                 else
                     msg = MidiMessage::noteOff(1, 60+i, (uint8)60);
                 msg.setTimeStamp(99);
@@ -169,6 +167,7 @@ private:
     ScopedPointer<TextEditor> textEditor;
     String playableKeys = String();
     Array<bool> keysThatAreDown; //String containing characters of keys that are down (for playing from computer keyboard)
+    bool cmdDown, altDown, bothDown;
 
     float noteViewerBottom;
     
@@ -186,7 +185,6 @@ private:
     ComponentBoundsConstrainer resizeLimits;
 
     bool altToolbarVisible = false;
-    //<#foo#>
 //==============================================================================
     class MainToolbarItemFactory   : public ToolbarItemFactory, public ComboBox::Listener, public ChangeBroadcaster
     {

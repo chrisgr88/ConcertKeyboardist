@@ -131,7 +131,9 @@ public:
 #define CHANGE_MESSAGE_BEAT_CHANGED 4
 #define CHANGE_MESSAGE_MEASURE_CHANGED 5
 #define CHANGE_MESSAGE_NOTE_PLAYED 6
-#define CHANGE_MESSAGE_UNDO 7
+#define CHANGE_MESSAGE_TEMPO_CHANGE 7
+#define CHANGE_MESSAGE_RETURN_BASELINE 8
+#define CHANGE_MESSAGE_UNDO 9
     int changeMessageType; //Set before sending a change message - used by viewer to choose desired action
     //Set before sending a CHANGE_MESSAGE_TWEEN
     double tweenTo;
@@ -166,7 +168,7 @@ public:
     
     bool playing() {return isPlaying;}
 
-    void play(bool ply, String fromWhere);  //Set to >= 0 reset viewer. All notes up to this step are marked as played.
+    void play (bool ply, String fromWhere);  //Set to >= 0 reset viewer. All notes up to this step are marked as played.
 
     double getSequenceReadHead()
     {
@@ -227,7 +229,6 @@ public:
     double mostRecentNoteTime;
     double earliness;
     double leadLag;
-//    double tempoAdjustmentRate = 0.0;
     double prevLeadLag;
     double noteOnLag;
     int initialWindowHeight;
@@ -244,15 +245,32 @@ public:
         }
         changeMessageType = CHANGE_MESSAGE_REWIND; //To cause makeNoteBars to redraw note heads
         sendSynchronousChangeMessage();
-//        repaint();
     }
     inline bool getNotesEditable()
     {
         return notesEditable;
     }
-    
+    void increaseTempo()
+    {
+        variableTempoRatio *= 1.1;
+        std::cout << "increase variableTimeIncrement  "<<variableTimeIncrement<<"\n" ;
+        changeMessageType = CHANGE_MESSAGE_TEMPO_CHANGE;
+        sendSynchronousChangeMessage();
+    }
+    void decreaseTempo()
+    {
+        variableTempoRatio *= 1.0/1.1;
+        std::cout << "decrease variableTimeIncrement  "<<variableTimeIncrement<<"\n";
+        changeMessageType = CHANGE_MESSAGE_TEMPO_CHANGE;
+        sendSynchronousChangeMessage();
+    }
+    void returnToBaseline()
+    {
+        std::cout << "returnToBaseline  "<<variableTimeIncrement<<"\n";
+        changeMessageType = CHANGE_MESSAGE_RETURN_BASELINE;
+        sendSynchronousChangeMessage();
+    }
     void setTempoMultiplier(double value, double currentTime, bool documentReallyChanged);
-    
     int lastPlayedSeqStep = -1; //Equal to the step of the target just before the next to be played
     int lastUserPlayedSeqStep = -1; //Previous value of lastPlayedSeqStep
     int lastPlayedNoteStep = -1; //The step of the last played note, even if its note a target note (for tracking tempo and measures)
@@ -260,10 +278,8 @@ public:
     int nextDueTargetNoteTime = -1;
     double getLastUserPlayedStepTime();
     Array<Sequence::StepActivity> setNoteListActivity(bool setNotesActive, Array<int> steps);
-    
     Array<Sequence::PrevNoteTimes> timeHumanizeChords (Array<int> steps, String timeSpec);
     Array<Sequence::NoteVelocities> velocityHumanizeChords (Array<int> steps, String velSpec);
-    
     enum PedalType {sustPedal, softPedal};
     void addPedalChange(PedalType pType);
     void deletePedalChange(PedalType pType);
@@ -286,7 +302,6 @@ public:
     void setCopyOfSelectedNotes(Array<int> sel);
     void setListenSequence(double startTime, double endTime, Array<int> tracks);
     double variableTempoRatio; // variableTempoRatio = variableTimeIncrement/curTimeIncrement
-    
     bool fullPowerMode = true;
     int sampleRate;
     std::atomic_bool pauseProcessing;

@@ -500,11 +500,15 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::increaseTempo:
                 result.setInfo ("IncreaseTempo", "Increase Tempo", category, 0);
-//                result.defaultKeypresses.add (KeyPress ('8', ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress ('2', ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::decreaseTempo:
                 result.setInfo ("DecreaseTempo", "Decrease Tempo", category, 0);
-//                result.defaultKeypresses.add (KeyPress ('7', ModifierKeys::noModifiers, 0));
+                result.defaultKeypresses.add (KeyPress ('1', ModifierKeys::noModifiers, 0));
+                break;
+            case CommandIDs::returnToBaseline:
+                result.setInfo ("ReturnToBaseline", "Return To Baseline", category, 0);
+                result.defaultKeypresses.add (KeyPress (KeyPress::tabKey, ModifierKeys::noModifiers, 0));
                 break;
             case CommandIDs::scoreSettings:
                 result.setInfo ("Tracks...", "Tracks in this score", category, 0);
@@ -832,6 +836,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             CommandIDs::listenToSelection,
             CommandIDs::increaseTempo,
             CommandIDs::decreaseTempo,
+            CommandIDs::returnToBaseline,
             CommandIDs::scoreSettings,
             CommandIDs::editUndo,
             CommandIDs::editRedo,
@@ -1051,12 +1056,16 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 break;
             }
             case CommandIDs::increaseTempo:
-                midiProcessor.sequenceObject.increaseTempo(1.03);
                 std::cout <<"increaseTempo\n";
+                midiProcessor.increaseTempo();
                 break;
             case CommandIDs::decreaseTempo:
-                midiProcessor.sequenceObject.decreaseTempo(0.97);
                 std::cout <<"decreaseTempo\n";
+                midiProcessor.decreaseTempo();
+                break;
+            case CommandIDs::returnToBaseline:
+                std::cout <<"returnToBaseline\n";
+                midiProcessor.returnToBaseline();
                 break;
             case CommandIDs::scoreSettings:
                 std::cout <<"tracksWindow\n";

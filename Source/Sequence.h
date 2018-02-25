@@ -171,11 +171,11 @@ public:
     void setNoteActive(int nt, int channel, bool setting)
     {
         //If there are no program changes to be sent then we assume there is just one output device, so even if we are
-        //sending on multiple channels we treat is as one channel.  This is to prevent (if we are playing on a single device)
+        //sending on multiple channels we treat it as one channel.  This is to prevent (if we are playing on a single device)
         //a note from being played on one channel, then immediately repeated on a different one, therefore not forcing off
         //the previous note, resulting in the previous note from being terminated abruptly.
         if (!areThereProgramChanges)
-            channel = 0;
+            channel = 1;
         const int ndx = 16*(channel-1)+nt;
 //        String note = MidiMessage::getMidiNoteName (nt, true, true, 3);
         noteIsOn[ndx]=setting;
@@ -184,7 +184,7 @@ public:
     bool isNoteActive(int nt, int channel)
     {
         if (!areThereProgramChanges)
-            channel = 0;
+            channel = 1;
         const int ndx = 16*(channel-1)+nt;
 //        String note = MidiMessage::getMidiNoteName (nt, true, true, 3);
 //        std::cout << "isNoteActive " << note<<" "<< channel<<" "<<noteActive[ndx]<<" Ndx "<<ndx<<"\n";
@@ -291,14 +291,6 @@ public:
         tempo = tem;
     }
     
-    void increaseTempo(double factor)
-    {
-        tempoMultiplier *= factor;
-    }
-    void decreaseTempo(double factor)
-    {
-        tempoMultiplier *= factor;
-    }
     double getTempo (double currentTime, std::vector<MidiMessage> &tempos);
     double getTempoMultipier (double currentTime);
     

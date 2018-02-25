@@ -54,6 +54,7 @@ struct ViewStateInfo
     static Array<int> indices;
     static bool openGLStarted;
     static bool finishedPaintAfterRewind;
+    static double xPositionOfBaseLine;
 };
 //These are in the cpp file
 //int ViewStateInfo::initialWidth = 0;
@@ -320,10 +321,12 @@ public:
     };
     
     double horizontalShift;  //Shift in pixels due to drag left or right on the resize bar
+    double horizontalShiftTemporary; //Extra shift while playing to keep the playing position visible
     double horizontalShiftAtStop;
     double prevLeadLag = 0;
     inline void setHorizontalShift(double shift)
     {
+//        std::cout << "set horizontalShift " << horizontalShift<<"\n";
         horizontalShift = shift;
 //        const double xInTicks = processor->getTimeInTicks()-horizontalShift*pixelsPerTick;
         if (horizontalShift==0)
@@ -441,7 +444,7 @@ private:
 //    int lastStepToReset;
     int leadTimeInTicks;
     double leadTimeProportionOfWidth;
-    double xPositionOfBaseLine;
+//    double xPositionOfBaseLine;
     int seqEndInPixels;
     float wKbd;
     int maxNote;

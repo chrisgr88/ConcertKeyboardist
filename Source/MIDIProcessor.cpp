@@ -1024,8 +1024,8 @@ void MIDIProcessor::processBlock ()
                     const int stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
                     lastUserPlayedSeqStep = stepPlayed;
                     const double noteTimeStamp = sequenceObject.theSequence.at(stepPlayed)->getTimeStamp();
-                    changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
-                    sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
+//                    changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
+//                    sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
                     double howEarlyIsAllowed;
                     if (autoPlaying)
                         howEarlyIsAllowed = 1000;//sequenceObject.notePlayWindowAutoplaying;
@@ -1135,8 +1135,8 @@ void MIDIProcessor::processBlock ()
                         {
                             if (timeDelta+variableTimeIncrement>0.0) //Don't let speed go too negative or zero
                             {
-                                std::cout << "ADJUST  "<<noteOnLag<<" "<< timeDelta<<"\n" ;
-                                variableTimeIncrement = variableTimeIncrement + timeDelta;
+                                std::cout << "ADJUST  "<<noteOnLag<<" "<< timeDelta<<" "<<variableTimeIncrement<<"\n" ;
+//                                variableTimeIncrement = variableTimeIncrement + timeDelta;
                             }
                             variableTempoRatio = variableTimeIncrement/timeIncrement;
                         }

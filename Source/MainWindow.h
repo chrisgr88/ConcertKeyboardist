@@ -105,6 +105,7 @@ namespace CommandIDs
     static const int rewind                     = 0x50010;
     static const int increaseTempo              = 0x50020;
     static const int decreaseTempo              = 0x50030;
+    static const int returnToBaseline           = 0x50040;
     //////////////
     static const int previousTargetNote         = 0x60010;
     static const int previousMeasure            = 0x60020;
