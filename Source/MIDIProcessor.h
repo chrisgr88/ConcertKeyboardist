@@ -130,7 +130,7 @@ public:
 #define CHANGE_MESSAGE_STOP_PLAYING 3
 #define CHANGE_MESSAGE_BEAT_CHANGED 4
 #define CHANGE_MESSAGE_MEASURE_CHANGED 5
-#define CHANGE_MESSAGE_NOTE_PLAYED 6
+#define CHANGE_MESSAGE_REPAINT_VIEWER 6
 #define CHANGE_MESSAGE_TEMPO_CHANGE 7
 #define CHANGE_MESSAGE_RETURN_BASELINE 8
 #define CHANGE_MESSAGE_UNDO 9
@@ -302,6 +302,7 @@ public:
     void setCopyOfSelectedNotes(Array<int> sel);
     void setListenSequence(double startTime, double endTime, Array<int> tracks);
     double variableTempoRatio; // variableTempoRatio = variableTimeIncrement/curTimeIncrement
+    double prevTempo;
     bool fullPowerMode = true;
     int sampleRate;
     std::atomic_bool pauseProcessing;

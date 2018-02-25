@@ -1618,12 +1618,32 @@ void ScrollingNoteViewer::paint (Graphics& g)
                     ( 0.5 + (1.0f-processor->variableTempoRatio));
     const float vtrIndicatorNullPt = (ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale) * 0.5;
     const float tempoIndicatorLength = 20;
+//    g.setColour (Colours::yellow);
+//    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorLevel+0.5+
+//                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 2.0)); //Moving indicator
+    
+//    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorNullPt+
+//                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 1.0)); //Zero point
+    
+    double fullGraphHeight = (300.0 - topMargin) - 2 * toolbarHeight;
+    const double tempo = processor->sequenceObject.getTempo(processor->getZTLTime(horizontalShift),
+                                                            processor->sequenceObject.scaledTempoChanges);
+    double graphHeight =  fullGraphHeight * (1 - (tempo / 300.0)) - 3.5;
+    
+    double graphHeightAdj =  fullGraphHeight * (1 - (tempo*processor->variableTempoRatio / 300.0)) - 3.5;
+//    std::cout
+//    << "graphHeight " << graphHeight
+//    << " horizontalShift " << horizontalShift
+//    <<"\n";
+    g.setColour (Colours::red);
+    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,
+                                (graphHeight+topMargin-1)*ViewStateInfo::verticalScale,
+                                tempoIndicatorLength, 3.0*ViewStateInfo::verticalScale));
+    
     g.setColour (Colours::yellow);
-    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorLevel+0.5+
-                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 2.0)); //Moving indicator
-    g.setColour (ztlCol);
-    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorNullPt+
-                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 1.0)); //Zero point
+    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,
+                                (graphHeightAdj+topMargin-1+0.75)*ViewStateInfo::verticalScale,
+                                tempoIndicatorLength, 1.5*ViewStateInfo::verticalScale));
     
     const int meas = processor->getMeasure(horizontalShift);
     const int totalMeas = (int) processor->sequenceObject.measureTimes.size();
@@ -1895,7 +1915,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
             horizontalShift += shift;
             repaint();
         }
-        else if (processor->changeMessageType == CHANGE_MESSAGE_NOTE_PLAYED)
+        else if (processor->changeMessageType == CHANGE_MESSAGE_REPAINT_VIEWER)
         {
             //            std::cout << "CHANGE_MESSAGE_BEAT_CHANGED " <<  "\n";
             repaint();

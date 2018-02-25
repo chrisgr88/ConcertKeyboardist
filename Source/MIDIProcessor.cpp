@@ -244,7 +244,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         variableTimeIncrement = timeIncrement;
         leadLag = 0;
         prevLeadLag = 0;
-        changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
+        changeMessageType = CHANGE_MESSAGE_REPAINT_VIEWER;
         if (sendChangeMessages)
             sendSynchronousChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
         HighResolutionTimer::stopTimer();
@@ -683,22 +683,15 @@ void MIDIProcessor::processBlock ()
                 }
             }
         }
-//        if (lastPlayedNoteStep>=0)
-//        {
-////            const double tempo = sequenceObject.getTempo(sequenceObject.theSequence.at(lastPlayedNoteStep)->getTimeStamp(),
-////                                                         sequenceObject.scaledTempoChanges);
-//            const double tempo = sequenceObject.getTempo(timeInTicks+leadLag,
-//                                                         sequenceObject.scaledTempoChanges);
-//            std::cout << "timeInTicks, leadLag,  " <<timeInTicks<<" "<< leadLag<<" "<<timeInTicks+leadLag<<" "<<tempo<<"\n";
-//            timeIncrement = 10.0*tempo / 625;
-//            variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
-////            std::cout << "timeInTicks, timeIncrement,  " <<lastPlayedNoteStep<<" "<< meas<<" "<<tempo<<" "<<timeInTicks
-////            <<", "<<timeIncrement<< ", "<< variableTimeIncrement<<"\n";
-//        }
-        
         const double tempo = sequenceObject.getTempo(timeInTicks+leadLag,sequenceObject.scaledTempoChanges);
+        if (prevTempo!=tempo)
+        {
+            changeMessageType = CHANGE_MESSAGE_TEMPO_CHANGE;
+            sendChangeMessage();
+        }
         timeIncrement = 10.0*tempo / 625;
         variableTimeIncrement = 10*variableTempoRatio * tempo / 625;
+        prevTempo = tempo;
     }
     else
     {
@@ -1024,7 +1017,7 @@ void MIDIProcessor::processBlock ()
                     const int stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
                     lastUserPlayedSeqStep = stepPlayed;
                     const double noteTimeStamp = sequenceObject.theSequence.at(stepPlayed)->getTimeStamp();
-                    changeMessageType = CHANGE_MESSAGE_NOTE_PLAYED;
+                    changeMessageType = CHANGE_MESSAGE_REPAINT_VIEWER;
                     sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
                     double howEarlyIsAllowed;
                     if (autoPlaying)
@@ -1037,19 +1030,19 @@ void MIDIProcessor::processBlock ()
                         leadLag = noteTimeStamp - timeInTicks;
                         noteOnLag = leadLag-prevLeadLag;
                         prevLeadLag = leadLag;
-                        if (scheduledNotes.size()==0)
-                        {
-                            std::cout << " creating scheduledNotes " << leadLag <<"\n";
-                        }
-                        else
-                        {
-                            std::cout << " extending scheduledNotes " << leadLag <<"\n";
-                        }
-                        std::cout
+//                        if (scheduledNotes.size()==0)
+//                        {
+//                            std::cout << " creating scheduledNotes " << leadLag <<"\n";
+//                        }
+//                        else
+//                        {
+//                            std::cout << " extending scheduledNotes " << leadLag <<"\n";
+//                        }
+//                        std::cout
 //                        << "timeInTicks "<< timeInTicks
-                        <<"  noteOnLag " << noteOnLag
+//                        <<"  noteOnLag " << noteOnLag
 //                        << "  duetimeNextTargetNote " << duetimeNextTargetNote
-                        << "\n";
+//                        << "\n";
                         availableNotes.add(noteIndex); //This is the triggering note
                         lastPlayedTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
                         nextDueTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime;
@@ -1135,7 +1128,7 @@ void MIDIProcessor::processBlock ()
                         {
                             if (timeDelta+variableTimeIncrement>0.0) //Don't let speed go too negative or zero
                             {
-                                std::cout << "ADJUST  "<<noteOnLag<<" "<< timeDelta<<" "<<variableTimeIncrement<<"\n" ;
+//                                std::cout << "ADJUST  "<<noteOnLag<<" "<< timeDelta<<" "<<variableTimeIncrement<<"\n" ;
 //                                variableTimeIncrement = variableTimeIncrement + timeDelta;
                             }
                             variableTempoRatio = variableTimeIncrement/timeIncrement;
