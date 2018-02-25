@@ -213,7 +213,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
         endListen();
     }
 //    changeMessageType = CHANGE_MESSAGE_MEASURE_CHANGED;
-    sendChangeMessage();
+//    sendChangeMessage();
 }
 
 void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to given timeInTicks

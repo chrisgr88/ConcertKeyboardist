@@ -55,6 +55,7 @@ struct ViewStateInfo
     static bool openGLStarted;
     static bool finishedPaintAfterRewind;
     static double xPositionOfBaseLine;
+    static std::atomic_bool rebuidingGLBuffer;
 };
 //These are in the cpp file
 //int ViewStateInfo::initialWidth = 0;
@@ -200,7 +201,6 @@ public:
     virtual void renderOpenGL() override;
     virtual void openGLContextClosing() override;
     CriticalSection glRenderLock;
-    std::atomic_bool rebuidingGLBuffer;
     std::atomic_bool rendering;
     CriticalSection mkNoteBars;
     

@@ -37,6 +37,7 @@ Array<int> ViewStateInfo::indices;
 bool ViewStateInfo::openGLStarted = false;
 bool ViewStateInfo::finishedPaintAfterRewind = false;
 double ViewStateInfo::xPositionOfBaseLine;
+std::atomic_bool ViewStateInfo::rebuidingGLBuffer;
 
 
 GLint ScrollingNoteViewer::Uniforms::viewMatrixHandle;
@@ -56,7 +57,7 @@ ScrollingNoteViewer::ScrollingNoteViewer(MIDIProcessor *p) :
 {
     processor->initialWindowHeight = 88;
     glBufferUpdateCountdown = 0; //Countdown of number of renders to pass before another buffer update is allowed.
-    rebuidingGLBuffer = false;
+    ViewStateInfo::rebuidingGLBuffer = false;
     rendering = false;
     sequenceChanged = false;
     ignoreWheel = false;
@@ -842,7 +843,7 @@ void ScrollingNoteViewer::renderOpenGL()
   double timeShiftInPixels;
   try {
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
-        if (rebuidingGLBuffer)
+        if (ViewStateInfo::rebuidingGLBuffer)
 	            return;
         const ScopedLock myScopedLock (glRenderLock);
         if (!processor->fullPowerMode)
@@ -855,7 +856,7 @@ void ScrollingNoteViewer::renderOpenGL()
         OpenGLHelpers::clear (Colour::greyLevel (0.1f));
         if (glBufferUpdateCountdown > 0)
             glBufferUpdateCountdown--;
-        if  (sequenceChanged && glBufferUpdateCountdown == 0)// && ViewStateInfo::vertices.size()>0)
+        if  (processor->changeMessageType != CHANGE_MESSAGE_REWIND && sequenceChanged && glBufferUpdateCountdown == 0)// && ViewStateInfo::vertices.size()>0)
         {
             glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
 //            resized();
@@ -1122,10 +1123,11 @@ void ScrollingNoteViewer::makeNoteBars()
     try
     {
         std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
-        rebuidingGLBuffer = true;
+        ViewStateInfo::rebuidingGLBuffer = true;
         if (processor->initialWindowHeight < topMargin || ViewStateInfo::viewHeight < 0.0000001f)
         {
             std::cout << "... but failed to enter makeNoteBars " << "\n";
+            ViewStateInfo::rebuidingGLBuffer = false;
             return;
         }
         horizontalScale = processor->sequenceObject.sequenceProps.getDoubleValue("horizontalScale", var(1.0));
@@ -1152,7 +1154,7 @@ void ScrollingNoteViewer::makeNoteBars()
 
         if (seqSize == 0)
         {
-            rebuidingGLBuffer = false;
+            ViewStateInfo::rebuidingGLBuffer = false;
             return;
         }
 
@@ -1166,7 +1168,6 @@ void ScrollingNoteViewer::makeNoteBars()
                 addRectangle(-sequenceWidthPixels, noteYs[note] * rescaleHeight + topMargin, sequenceWidthPixels * 30,
                              unscaledTVS, Colour(0xFF404040));
         }
-
         //Beat & measure lines
         if (!processor->sequenceObject.hideMeasureLines)
         {
@@ -1214,7 +1215,6 @@ void ScrollingNoteViewer::makeNoteBars()
                 prevX = x;
             }
         }
-
         //Tempo
         if (processor->sequenceObject.scaledTempoChanges.size() > 1)
         {
@@ -1551,7 +1551,7 @@ void ScrollingNoteViewer::makeNoteBars()
         //        const double x = processor->sequenceObject.theSequence.at(processor->lastPlayedSeqStep+1)->getTimeStamp()*pixelsPerTick;
         //        nextNoteRect = addRectangle(x-1.95, 0,     4, (topMargin),Colours::green);
         //    }
-        rebuidingGLBuffer = false;
+        ViewStateInfo::rebuidingGLBuffer = false;
 
     } catch (...)
     {
