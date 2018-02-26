@@ -1060,9 +1060,18 @@ void ScrollingNoteViewer::makeKeyboard()
     timeSigChanges = processor->sequenceObject.getTimeSigInfo();
     timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
     pixelsPerTick = ViewStateInfo::initialWidth/(ticksPerQuarter * numerator * initialMeasuresAcrossWindow);
-    leadTimeInTicks = ((getWidth()-wKbd+leftMargin)/pixelsPerTick)*leadTimeProportionOfWidth;
+    const int leadTimeInTicks = ((ViewStateInfo::initialWidth-wKbd+leftMargin)/pixelsPerTick)*leadTimeProportionOfWidth;
     processor->setLeadTimeInTicks(leadTimeInTicks);
     ViewStateInfo::xPositionOfBaseLine = leadTimeInTicks*pixelsPerTick;
+//    std::cout
+//    << " pixelsPerTick "<<ViewStateInfo::xPositionOfBaseLine
+//    << " ViewStateInfo::initialWidth  "<<ViewStateInfo::initialWidth
+//    << " ticksPerQuarter  "<<ticksPerQuarter
+//    << " numerator  "<<numerator
+//    << " initialMeasuresAcrossWindow  "<<numerator
+//    << " leadTimeInTicks  "<<leadTimeInTicks
+//    << " xPositionOfBaseLine "<<ViewStateInfo::xPositionOfBaseLine
+//    <<"\n";
     processor->sequenceObject.getNotesUsed(minNote,maxNote);
     nKeys = maxNote-minNote+1;
     int height = ViewStateInfo::viewHeight;
@@ -1579,14 +1588,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
     {
         double yellowLinePos = 2.8 * horizontalScale + ViewStateInfo::xPositionOfBaseLine + processor->leadLag * scaledPixPerTick;
         yellowLinePos += horizontalShiftTemporary;
-//        yellowLinePos += horizontalShiftToView;
         g.setColour (colourNoteOn);
         g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.3, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));
-//        std::cout
-//        << " yellowLinePos " << yellowLinePos
-//        << "\n";
-//        g.setColour (Colours::mediumseagreen);
-//        prevLeadLag = processor->leadLag;
     }
     else
     {
@@ -1600,6 +1603,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
     }
     
     //ZTL & relative adjusted velocity indicator
+//    std::cout << "ViewStateInfo::xPositionOfBaseLine "<<ViewStateInfo::xPositionOfBaseLine<<"\n";
     Colour ztlCol;
     if (processor->isPlaying)
     {
@@ -1614,16 +1618,7 @@ void ScrollingNoteViewer::paint (Graphics& g)
     g.setColour (ztlCol);
     g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f,0.0, 2.0, ViewStateInfo::viewHeight)); //ZTL
     
-    const float vtrIndicatorLevel = (ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale) *
-                    ( 0.5 + (1.0f-processor->variableTempoRatio));
-    const float vtrIndicatorNullPt = (ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale) * 0.5;
     const float tempoIndicatorLength = 20;
-//    g.setColour (Colours::yellow);
-//    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorLevel+0.5+
-//                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 2.0)); //Moving indicator
-    
-//    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,vtrIndicatorNullPt+
-//                                topMargin*ViewStateInfo::verticalScale, tempoIndicatorLength, 1.0)); //Zero point
     
     double fullGraphHeight = (300.0 - topMargin) - 2 * toolbarHeight;
     const double tempo = processor->sequenceObject.getTempo(processor->getZTLTime(horizontalShift),
@@ -1635,15 +1630,15 @@ void ScrollingNoteViewer::paint (Graphics& g)
 //    << "graphHeight " << graphHeight
 //    << " horizontalShift " << horizontalShift
 //    <<"\n";
+    g.setColour (Colours::orange);
+    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,
+                                (graphHeightAdj+topMargin-1+0.75)*ViewStateInfo::verticalScale,
+                                tempoIndicatorLength, 1.5*ViewStateInfo::verticalScale));
+    
     g.setColour (Colours::red);
     g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,
                                 (graphHeight+topMargin-1)*ViewStateInfo::verticalScale,
                                 tempoIndicatorLength, 3.0*ViewStateInfo::verticalScale));
-    
-    g.setColour (Colours::yellow);
-    g.fillRect(Rectangle<float>(ViewStateInfo::xPositionOfBaseLine-1.f-tempoIndicatorLength/2,
-                                (graphHeightAdj+topMargin-1+0.75)*ViewStateInfo::verticalScale,
-                                tempoIndicatorLength, 1.5*ViewStateInfo::verticalScale));
     
     const int meas = processor->getMeasure(horizontalShift);
     const int totalMeas = (int) processor->sequenceObject.measureTimes.size();

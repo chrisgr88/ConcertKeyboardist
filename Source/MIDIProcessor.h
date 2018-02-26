@@ -62,7 +62,10 @@ public:
         sendChangeMessage();
 //        accompTimeInTicks = time;
     }
-    void setLeadTimeInTicks(int ticks) {leadTimeInTicks = ticks;}
+    void setLeadTimeInTicks(int ticks)
+    {
+        leadTimeInTicks = ticks;
+    }
     
     void loadFromUserSpecifiedFile ()
     {

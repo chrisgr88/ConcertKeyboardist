@@ -442,7 +442,7 @@ private:
 
 //    int stepToReset; //Keeps track of next step to reset during render.
 //    int lastStepToReset;
-    int leadTimeInTicks;
+//    int leadTimeInTicks;
     double leadTimeProportionOfWidth;
 //    double xPositionOfBaseLine;
     int seqEndInPixels;
