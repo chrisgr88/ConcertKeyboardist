@@ -990,6 +990,8 @@ void MIDIProcessor::processBlock ()
     {
         if (exprEvents[exprEventIndex].isNoteOn())
         {
+            double prevTimeSeparation = prevExprNoteTick-prevPrevExprNoteTick;
+            double thisTimeSeparation = timeInTicks - prevExprNoteTick;
 //                std::cout
 //                << timeInTicks << " Received a note on"
 //                <<" "<<exprEvents[exprEventIndex].getNoteNumber()<<"\n";
@@ -999,6 +1001,8 @@ void MIDIProcessor::processBlock ()
                 lastStartTime = timeInTicks;
                 waitingForFirstNote = false;
             }
+            prevPrevExprNoteTick = prevExprNoteTick;
+            prevExprNoteTick = timeInTicks;
             //Process noteOns
             Array<int> availableNotes;
             double nPrimaryNotes = 0;
@@ -1008,59 +1012,48 @@ void MIDIProcessor::processBlock ()
 
 //                std::cout << "noteOn " << exprEvents[exprEventIndex].getNoteNumber() << "\n";
             //Add next "firstInChain" note to availableNotes
+            int stepPlayed;
             for (noteIndex=currentSeqStep+1;noteIndex<sequenceObject.theSequence.size();noteIndex++)
             {
                 if (sequenceObject.theSequence.at(noteIndex)->getTimeStamp()>=sequenceReadHead &&
                     sequenceObject.theSequence.at(noteIndex)->firstInChain == noteIndex)
                 {
                     earliness = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()-timeInTicks;
-                    const int stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
-                    lastUserPlayedSeqStep = stepPlayed;
-                    const double noteTimeStamp = sequenceObject.theSequence.at(stepPlayed)->getTimeStamp();
-                    changeMessageType = CHANGE_MESSAGE_REPAINT_VIEWER;
-                    sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
-                    double howEarlyIsAllowed;
-                    if (autoPlaying)
-                        howEarlyIsAllowed = 1000;//sequenceObject.notePlayWindowAutoplaying;
-                    else
-                        howEarlyIsAllowed = 9999999;
-                        
-                    if (earliness < howEarlyIsAllowed)
-                    {
-                        leadLag = noteTimeStamp - timeInTicks;
-                        noteOnLag = leadLag-prevLeadLag;
-                        prevLeadLag = leadLag;
-//                        if (scheduledNotes.size()==0)
-//                        {
-//                            std::cout << " creating scheduledNotes " << leadLag <<"\n";
-//                        }
-//                        else
-//                        {
-//                            std::cout << " extending scheduledNotes " << leadLag <<"\n";
-//                        }
-//                        std::cout
-//                        << "timeInTicks "<< timeInTicks
-//                        <<"  noteOnLag " << noteOnLag
-//                        << "  duetimeNextTargetNote " << duetimeNextTargetNote
-//                        << "\n";
-                        availableNotes.add(noteIndex); //This is the triggering note
-                        lastPlayedTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
-                        nextDueTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime;
-                        mostRecentNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
-                        const double vel = sequenceObject.theSequence.at(noteIndex)->velocity;
-//                        if (sequenceObject.isPrimaryTrack(theSequence->at(noteIndex)->track))
-//                        {
-                            nPrimaryNotes++;
-                            sumPrimaryVel += vel;
-//                        }
-                    }
-                    else
+                    stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
+                    bool possiblyOverplayed = thisTimeSeparation < prevTimeSeparation * 2.0;
+                    availableNotes.add(noteIndex); //This is the triggering note
+                    nextDueTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime;
+                    mostRecentNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
+                    double expectedSpacing = mostRecentNoteTime - lastPlayedTargetNoteTime;
+                    double earlinessRatio = expectedSpacing / thisTimeSeparation;
+                    bool tooEarly = possiblyOverplayed && earlinessRatio>3;
+//                    std::cout
+//                    << "timeInTicks "<< timeInTicks
+//                    << "  prevTimeSeparation " << prevTimeSeparation
+//                    << "  thisTimeSeparation " << thisTimeSeparation
+//                    << "  expectedSpacing " << mostRecentNoteTime - lastPlayedTargetNoteTime
+//                    << "  earlinessRatio " << earlinessRatio
+//                    <<  (tooEarly?" TOOEARLY":" OK")
+//                    << "\n";
+                    lastPlayedTargetNoteTime = mostRecentNoteTime;
+                    const double vel = sequenceObject.theSequence.at(noteIndex)->velocity;
+                    nPrimaryNotes++;
+                    sumPrimaryVel += vel;
+                    if (tooEarly)
                         skipProcessingTheseEvents = true;//std::cout << "Ignore noteOn" << "\n";
                     break;
                 }
             }
             if (skipProcessingTheseEvents)
                 break;
+            const double noteTimeStamp = sequenceObject.theSequence.at(stepPlayed)->getTimeStamp();
+            leadLag = noteTimeStamp - timeInTicks;
+            lastUserPlayedSeqStep = stepPlayed;
+//            std::cout
+//            << "lastUserPlayedSeqStep "<< lastUserPlayedSeqStep
+//            << "\n";
+            changeMessageType = CHANGE_MESSAGE_REPAINT_VIEWER;
+            sendChangeMessage(); //For some reason the Viewer receives this message twice! But seems to cause no problem.
             
             //Add the chain of notes that are autoTriggered by this note to availableNotes
             if (availableNotes.size()>0) //We added a note so there may be more
@@ -1302,6 +1295,10 @@ double MIDIProcessor::getLastUserPlayedStepTime()
     else
     {
         time = sequenceObject.theSequence.at(lastUserPlayedSeqStep)->getTimeStamp();
+//        std::cout << "in getLastUserPlayedStepTime "
+//        <<" step " << lastUserPlayedSeqStep
+//        <<" time " << time
+//        <<"\n";
     }
     return time;
 }
@@ -1762,18 +1759,24 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
       {
           for (int i=0;i<sequenceObject.sustainPedalChanges.size();i+=2)
           {
-              if (sequenceObject.sustainPedalChanges.at(i).timeStamp < currentZtlTime &&
-                      currentZtlTime <= sequenceObject.sustainPedalChanges.at(i+1).timeStamp)
-                  return true;
+              if (i < sequenceObject.sustainPedalChanges.size())
+              {
+                  if (sequenceObject.sustainPedalChanges.at(i).timeStamp < currentZtlTime &&
+                          currentZtlTime <= sequenceObject.sustainPedalChanges.at(i+1).timeStamp)
+                      return true;
+              }
           }
       }
       else
       {
           for (int i=0;i<sequenceObject.softPedalChanges.size();i+=2)
           {
-              if (sequenceObject.softPedalChanges.at(i).timeStamp < currentZtlTime &&
-                  currentZtlTime <= sequenceObject.softPedalChanges.at(i+1).timeStamp)
-                  return true;
+              if (i < sequenceObject.softPedalChanges.size())
+              {
+                  if (sequenceObject.softPedalChanges.at(i).timeStamp < currentZtlTime &&
+                      currentZtlTime <= sequenceObject.softPedalChanges.at(i+1).timeStamp)
+                      return true;
+              }
           }
       }
       return false;

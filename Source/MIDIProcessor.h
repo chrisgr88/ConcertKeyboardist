@@ -362,6 +362,10 @@ private:
     double autoPlayStartTime;
     bool panic; //If set true, sends all notes off in next call of processBlock
     double prevNoteOnLag;
+    
+    double prevExprNoteTick;
+    double prevPrevExprNoteTick;
+    
     double prevTimeInTicks;
     int currentNote, lastNoteValue;
     unsigned timeInSamples;
