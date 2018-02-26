@@ -1059,16 +1059,16 @@ void ScrollingNoteViewer::makeKeyboard()
     ticksPerQuarter = processor->sequenceObject.getPPQ();
     timeSigChanges = processor->sequenceObject.getTimeSigInfo();
     timeSigChanges[0].getTimeSignatureInfo(numerator, denominator);
-    pixelsPerTick = ViewStateInfo::initialWidth/(ticksPerQuarter * numerator * initialMeasuresAcrossWindow);
-    const int leadTimeInTicks = ((ViewStateInfo::initialWidth-wKbd+leftMargin)/pixelsPerTick)*leadTimeProportionOfWidth;
+    pixelsPerTick = ViewStateInfo::viewWidth/(ticksPerQuarter * numerator * initialMeasuresAcrossWindow);
+    const int leadTimeInTicks = ((ViewStateInfo::viewWidth-wKbd+leftMargin)/pixelsPerTick)*leadTimeProportionOfWidth;
     processor->setLeadTimeInTicks(leadTimeInTicks);
     ViewStateInfo::xPositionOfBaseLine = leadTimeInTicks*pixelsPerTick;
 //    std::cout
-//    << " pixelsPerTick "<<ViewStateInfo::xPositionOfBaseLine
-//    << " ViewStateInfo::initialWidth  "<<ViewStateInfo::initialWidth
+//    << " pixelsPerTick "<<pixelsPerTick
+//    << " ViewStateInfo::viewWidth  "<<ViewStateInfo::viewWidth
 //    << " ticksPerQuarter  "<<ticksPerQuarter
 //    << " numerator  "<<numerator
-//    << " initialMeasuresAcrossWindow  "<<numerator
+//    << " initialMeasuresAcrossWindow  "<<initialMeasuresAcrossWindow
 //    << " leadTimeInTicks  "<<leadTimeInTicks
 //    << " xPositionOfBaseLine "<<ViewStateInfo::xPositionOfBaseLine
 //    <<"\n";
@@ -1891,7 +1891,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_TEMPO_CHANGE)
         {
-            std::cout << "CHANGE_MESSAGE_TEMPO_CHANGE " <<  "\n";
+//            std::cout << "CHANGE_MESSAGE_TEMPO_CHANGE " <<  "\n";
             repaint();
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_RETURN_BASELINE)
@@ -2624,6 +2624,11 @@ void ScrollingNoteViewer::resized()
         ViewStateInfo::viewHeight = getHeight ();
         ViewStateInfo::verticalScale = (float)ViewStateInfo::viewHeight/ViewStateInfo::initialHeight;
     }
+//    std::cout
+//    << " grabbedInitialWindowSize "<<grabbedInitialWindowSize
+//    << " ViewStateInfo::initialWidth "<<ViewStateInfo::initialWidth
+//    << " ViewStateInfo::viewWidth  "<<ViewStateInfo::viewWidth
+//    <<"\n";
 
 //    std::cout << "resized - ViewStateInfo::trackVerticalSize, verticalScale: before " << trackVerticalSize <<" "<<verticalScale;
 
