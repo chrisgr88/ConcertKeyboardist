@@ -1371,7 +1371,7 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
     else
     {
         sequenceObject.setChangedFlag(true);
-        catchUp();
+        catchUp(true);
     }
     //        inUndoRedo = true;
     changeMessageType = CHANGE_MESSAGE_UNDO;
@@ -1944,7 +1944,7 @@ Array<Sequence::StepActivity> MIDIProcessor::chainCommand (Array<int> selection,
     else
     {
         sequenceObject.setChangedFlag(true);
-        catchUp();
+        catchUp(true);
     }
     changeMessageType = CHANGE_MESSAGE_UNDO;
     //sequenceObject.selectionToRestoreForUndoRedo = selection;

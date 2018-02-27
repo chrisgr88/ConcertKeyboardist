@@ -56,7 +56,7 @@ ScrollingNoteViewer::ScrollingNoteViewer(MIDIProcessor *p) :
         noteBarWidthRatio(1.f) //As fraction of note track width
 {
     processor->initialWindowHeight = 88;
-    glBufferUpdateCountdown = 0; //Countdown of number of renders to pass before another buffer update is allowed.
+//    glBufferUpdateCountdown = 0; //Countdown of number of renders to pass before another buffer update is allowed.
     ViewStateInfo::rebuidingGLBuffer = false;
     rendering = false;
     sequenceChanged = false;
@@ -854,11 +854,11 @@ void ScrollingNoteViewer::renderOpenGL()
       
         desktopScale = (float) openGLContext.getRenderingScale();
         OpenGLHelpers::clear (Colour::greyLevel (0.1f));
-        if (glBufferUpdateCountdown > 0)
-            glBufferUpdateCountdown--;
-        if  (processor->changeMessageType != CHANGE_MESSAGE_REWIND && sequenceChanged && glBufferUpdateCountdown == 0)// && ViewStateInfo::vertices.size()>0)
+//        if (glBufferUpdateCountdown > 0)
+//            glBufferUpdateCountdown--;
+        if  (sequenceChanged)
         {
-            glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
+//            glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
 //            resized();
             openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
             openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
@@ -1566,6 +1566,7 @@ void ScrollingNoteViewer::makeNoteBars()
     {
         std::cout << "Error in make note bars" << "\n";
     }
+    ViewStateInfo::rebuidingGLBuffer = false;
 //    std::cout << "Leaving  makeNoteBars: Indices, Vertices " <<  ViewStateInfo::indices.size()<<" "<<ViewStateInfo::vertices.size() << "\n";
 //    std::cout << "Exit MNB: theSequence.size " << "\n";
 }
@@ -1813,7 +1814,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
   try {
     if ((MIDIProcessor*)broadcaster == processor) //Triggered at the end of rewind() in MIDIProcessor
     {
-//        std::cout << " ViewerCallback:  " <<  processor->changeMessageType <<" animationStep "<<animationStep<<"\n";
+        std::cout << " ViewerCallback:  " <<  processor->changeMessageType<<"\n";
         if (processor->changeMessageType == CHANGE_MESSAGE_REWIND)
         {
             if (isVisible())

@@ -238,7 +238,7 @@ public:
     String getHoverInfo() {return hoverInfo;}
     void makeNoteBars();
     void updatePlayedNotes(); //Just updates the note bar heads in the exising vertex and index buffers
-    int glBufferUpdateCountdown;
+//    int glBufferUpdateCountdown;
     bool sequenceChanged; //Set true to regen note bar GL index and vertex buffers
     File prevFileLoaded;
     //==============================================================================
