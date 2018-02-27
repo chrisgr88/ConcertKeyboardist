@@ -12,6 +12,20 @@ Available for Macintosh and Windows.  It's free: [Downloads](https://github.com/
 
 Where to get midi files?  There are tens of thousands available around the Internet for download or you can create your own.  Before Concert Keyboardist, midi files always replayed exactly the same.  With Concert Keyboardist music comes alive under your fingers.
 
+<iframe id="forum_embed"
+  src="javascript:void(0)"
+  scrolling="no"
+  frameborder="0"
+  width="900"
+  height="700">
+</iframe>
+<script type="text/javascript">
+  document.getElementById('forum_embed').src =
+     'https://groups.google.com/forum/embed/?place=forum/concertkeyboardist'
+     + '&showsearch=true&showpopout=true&showtabs=false'
+     + '&parenturl=' + encodeURIComponent(window.location.href);
+</script>
+
 ## Contact Information
 
 For questions or comments contact: chrisgr99 gmail
