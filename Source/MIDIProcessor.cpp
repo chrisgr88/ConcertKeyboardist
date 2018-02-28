@@ -228,6 +228,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         return;
     }
     try {
+        resetPrevNoteTimes();
         pauseProcessing = true;
         listenStep = 0;
         lastPlayedSeqStep = -1;
@@ -984,7 +985,7 @@ void MIDIProcessor::processBlock ()
     
     //------------------------------------------------------------------
     //------------------------------------------------------------------
-    //###Process next group of expr events.  Skip if none. <#Process next group of expr events#>
+    //###Process next group of expr events.  Skip if none.
     bool skipProcessingTheseEvents = false;
     for (int exprEventIndex=0;exprEventIndex<exprEvents.size();exprEventIndex++)
     {
@@ -992,9 +993,6 @@ void MIDIProcessor::processBlock ()
         {
             double prevTimeSeparation = prevExprNoteTick-prevPrevExprNoteTick;
             double thisTimeSeparation = timeInTicks - prevExprNoteTick;
-//                std::cout
-//                << timeInTicks << " Received a note on"
-//                <<" "<<exprEvents[exprEventIndex].getNoteNumber()<<"\n";
             if (waitingForFirstNote)
             {
 //                std::cout << " Set lastStartTime " << timeInTicks <<"\n";
@@ -1021,12 +1019,17 @@ void MIDIProcessor::processBlock ()
                     earliness = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()-timeInTicks;
                     stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
                     bool possiblyOverplayed = thisTimeSeparation < prevTimeSeparation * 2.0;
+//                    std::cout
+//                    << " prevTimeSeparation "<< prevTimeSeparation
+//                    << " thisTimeSeparation "<<thisTimeSeparation
+//                    << " possiblyOverplayed "<<possiblyOverplayed
+//                    << "\n";
                     availableNotes.add(noteIndex); //This is the triggering note
                     nextDueTargetNoteTime = sequenceObject.theSequence.at(noteIndex)->nxtTargetNoteTime;
                     mostRecentNoteTime = sequenceObject.theSequence.at(noteIndex)->getTimeStamp();
                     double expectedSpacing = mostRecentNoteTime - lastPlayedTargetNoteTime;
                     double earlinessRatio = expectedSpacing / thisTimeSeparation;
-                    bool tooEarly = possiblyOverplayed && earlinessRatio>3;
+                    bool tooEarly = possiblyOverplayed && earlinessRatio>2.5;
 //                    std::cout
 //                    << "timeInTicks "<< timeInTicks
 //                    << "  prevTimeSeparation " << prevTimeSeparation

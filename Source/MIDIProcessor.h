@@ -365,6 +365,11 @@ private:
     
     double prevExprNoteTick;
     double prevPrevExprNoteTick;
+    void resetPrevNoteTimes()
+    {
+        prevExprNoteTick = -1000000;
+        prevPrevExprNoteTick = -1000000;
+    }
     
     double prevTimeInTicks;
     int currentNote, lastNoteValue;
