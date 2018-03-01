@@ -1111,8 +1111,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (!midiProcessor.isPlaying)
                 {
                     pViewerFrame->noteViewer.clearSelectedNotes();
-                    midiProcessor.variableTempoRatio = 1.0;
-                    
+//                    midiProcessor.variableTempoRatio = 1.0;
                 }
                 break;
             case CommandIDs::toggleSelectedNotesActive:

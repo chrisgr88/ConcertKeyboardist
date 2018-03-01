@@ -139,7 +139,7 @@ public:
                                                        processor->sequenceObject.scaledTempoChanges);
         hoverInfo = String("\n")+
         "Realtime Tempo: "+String((int)tempo*processor->variableTempoRatio) + "\n"+
-        "Tempo Adjustment Rate: "+String(processor->sequenceObject.tempoAdjustmentRate, 2)+"\n"+
+//        "Tempo Adjustment Rate: "+String(processor->sequenceObject.tempoAdjustmentRate, 2)+"\n"+
         "Click line To edit.";
         sendChangeMessage();
     }
@@ -235,7 +235,9 @@ public:
     Image getKeysImage() { return keysImage; }
     int getKeysWidth() {return leftMargin+wKbd;}
     int getToolbarHeight() { return toolbarHeight;}
-    String getHoverInfo() {return hoverInfo;}
+    String getHoverInfo() {
+        return hoverInfo;
+    }
     void makeNoteBars();
     void updatePlayedNotes(); //Just updates the note bar heads in the exising vertex and index buffers
 //    int glBufferUpdateCountdown;

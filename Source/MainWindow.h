@@ -254,7 +254,7 @@ class MainWindow::PluginListWindow  : public DocumentWindow
 {
 public:
     PluginListWindow (MainWindow& owner_, AudioPluginFormatManager& pluginFormatManager)
-    : DocumentWindow ("Available Plugins",
+    : DocumentWindow ("Plugin Management Window",
                       LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
                       DocumentWindow::minimiseButton | DocumentWindow::closeButton),
     owner (owner_)

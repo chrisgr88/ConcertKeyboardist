@@ -77,6 +77,7 @@ void MIDIProcessor::changeListenerCallback (ChangeBroadcaster* broadcaster)
 //            pluginEnabled = false;
             midiOutEnabled = true;
             buildSequenceAsOf(Sequence::loadFile, Sequence::doNotRetainEdits, 0.0);
+             variableTempoRatio = 1.0;
             sequenceObject.loadDoc = false;
         }
         else if (undoMgr->inUndo || undoMgr->inRedo)
@@ -279,7 +280,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         int step = 0;
         if (time==0)
         {
-            variableTempoRatio = 1.0;
+//            variableTempoRatio = 1.0;
             sequenceReadHead = 0;
             currentSeqStep = -1;
             lastPlayedNoteStep = 0;
@@ -1018,7 +1019,7 @@ void MIDIProcessor::processBlock ()
                 {
                     earliness = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()-timeInTicks;
                     stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
-                    bool possiblyOverplayed = thisTimeSeparation < prevTimeSeparation * 2.0;
+                    bool possiblyOverplayed = thisTimeSeparation < prevTimeSeparation * 3.0;
 //                    std::cout
 //                    << " prevTimeSeparation "<< prevTimeSeparation
 //                    << " thisTimeSeparation "<<thisTimeSeparation
@@ -1756,33 +1757,39 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
 
   bool MIDIProcessor::atPedalChange(PedalType pType)
   {
-      const double currentZtlTime = timeInTicks-xInTicksFromViewer;
-//      std::vector<Sequence::PedalMessage> *pedalChanges;
-      if (pType==sustPedal)
-      {
-          for (int i=0;i<sequenceObject.sustainPedalChanges.size();i+=2)
+      try {
+          const double currentZtlTime = timeInTicks-xInTicksFromViewer;
+    //      std::vector<Sequence::PedalMessage> *pedalChanges;
+          if (pType==sustPedal)
           {
-              if (i < sequenceObject.sustainPedalChanges.size())
+              for (int i=0;i<sequenceObject.sustainPedalChanges.size();i+=2)
               {
-                  if (sequenceObject.sustainPedalChanges.at(i).timeStamp < currentZtlTime &&
-                          currentZtlTime <= sequenceObject.sustainPedalChanges.at(i+1).timeStamp)
-                      return true;
+                  if (i < sequenceObject.sustainPedalChanges.size())
+                  {
+                      if (sequenceObject.sustainPedalChanges.at(i).timeStamp < currentZtlTime &&
+                              currentZtlTime <= sequenceObject.sustainPedalChanges.at(i+1).timeStamp)
+                          return true;
+                  }
               }
           }
-      }
-      else
-      {
-          for (int i=0;i<sequenceObject.softPedalChanges.size();i+=2)
+          else
           {
-              if (i < sequenceObject.softPedalChanges.size())
+              for (int i=0;i<sequenceObject.softPedalChanges.size();i+=2)
               {
-                  if (sequenceObject.softPedalChanges.at(i).timeStamp < currentZtlTime &&
-                      currentZtlTime <= sequenceObject.softPedalChanges.at(i+1).timeStamp)
-                      return true;
+                  if (i < sequenceObject.softPedalChanges.size())
+                  {
+                      if (sequenceObject.softPedalChanges.at(i).timeStamp < currentZtlTime &&
+                          currentZtlTime <= sequenceObject.softPedalChanges.at(i+1).timeStamp)
+                          return true;
+                  }
               }
           }
+          return false;
       }
-      return false;
+      catch (const std::out_of_range& ex) {
+          std::cout << " out of range error in atPedal() " << "\n";
+          return false;
+      }
   }
 
   void MIDIProcessor::createChord()

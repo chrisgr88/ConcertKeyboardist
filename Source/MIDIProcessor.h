@@ -263,7 +263,7 @@ public:
     void decreaseTempo()
     {
         variableTempoRatio *= 1.0/1.1;
-        std::cout << "decrease variableTimeIncrement  "<<variableTimeIncrement<<"\n";
+        std::cout << "decrease variableTimeIncrement  "<<variableTimeIncrement<<"\n"; 
         changeMessageType = CHANGE_MESSAGE_TEMPO_CHANGE;
         sendSynchronousChangeMessage();
     }

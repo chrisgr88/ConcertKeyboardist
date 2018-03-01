@@ -22,15 +22,15 @@ Where to get midi files to play?  There are tens of thousands available around t
 
 <img src="../Common/img/Pathetique.jpg" alt="CK" style="width:100%;margin:20px 0px 10px 0px">
 
-**How it works**:  In the above image the heads of "Target Notes" have magenta heads and "Chained" notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score.  It also schedules any notes Chained off the target and autoplays them according to the tempo.  Chained accompaniment notes can continue to play while you play overlapping target notes.  Play polyphonic music, even complex chords.  Play multi channel midi with multiple simultaneous instruments, or mute some combination of channels to concentrate on some part of the music.
+**How it works**:  In the above image "Target Notes" have magenta heads and "Chained" notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score.  It also schedules any notes Chained off the target and autoplays them according to the tempo.  Chained accompaniment notes can continue to play while you play overlapping target notes.  Play polyphonic music, even complex chords.  Play multi channel midi with multiple simultaneous instruments, or mute some combination of channels to concentrate on some part of the music.
 
 As you play, the score scrolls right-to-left based on the tempo at that point in the score's midi file.  You control when to play target notes and how long to hold them.  Concert keyboardist continually shows you the notes you've played, currently playing notes, and upcoming unplayed target notes, and it gives you a visual cue of when to play the next target note at the current tempo.  
 
-This carefully designed note triggering system and ongoing visual feedback is crucial to the ability to play a midi file live,  and more than two years of testing went into perfecting it.
+This carefully designed note triggering system and ongoing visual feedback is crucial to the ability to play a midi file live.  More more a year of testing went into perfecting it.
 
-When you play on computer keyboard Concert Keyboardist uses note velocities from the score.  When you play on a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes and velocities of chained notes are adjusted proportional to the velocity of their target note.
+When you play on computer keyboard Concert Keyboardist uses note velocities from the score.  When you play on a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes.  Velocities of chained notes are adjusted proportional to the velocity of their target note.
 
-Concert Keyboardist gradually adjusts its tempo (rate of scrolling) toward your playing tempo.  You are not locked to the tempo in the midi file, and you don't have to play target notes exactly when Concert Keyboardist suggests.  If you did play them exactly when suggested and hold them exactly as long as suggested, the result would be exactly like playing back the midi file.  But even if you tried to do this your natural human variations would bring life to the music, or you could play notes at more varied times that feel right to you for the flow of the music, or vary the rhythm.
+The tempo in many midi files is varied according to the position in the music.  Concert Keyboardist tracks the tempo adjusting its rate of scrolling and note-time visual cues so you can intuitively follow the tempo.  However you don't have to play target notes exactly when Concert Keyboardist suggests.  You can freely vary note-on times and the moment-by-moment tempo as you feel appropriate for the music.  The midi file will sound like it was played a human - you, not like a robot, and every performance will be personal and unique.  
 
 Concert Keyboardist has tools to edit which notes are target notes, note velocities, note start times, note durations, changes in the  tempo, and to "humanize" the start times and velocities of simultaenous notes in chords.  You can save your edited scores in Concert Keyboardist files which are normal midi files but with an extra invisible track for additional settings.
 
@@ -94,10 +94,10 @@ Concert Keyboardist is compatible with Windows 7 and Windows 10 (possibly Window
 
 If at any time you need help finding things or knowing what they are called, see the [Overview of The Main Window].
 
-* **Load a file:**  Use the File-Open menu, or the toolbar button, or Cmd+o (Ctrl+o on Windows).  A good example to start with is "Minuet in G[ck].mid" which is in the example files folder.  
+* **Load a file:**  Use the File-Open menu, or the toolbar button, or Cmd+o (Ctrl+o on Windows).  A good example to start with is "Minuet in G[ck].mid" which is in the "Easy To Play Examples" folder in the "Concert Keyboardist Files" folder.  
 * When loaded it should look something like the image in the [Overview of The Main Window].
-* **Prepare to play:**  Press the spacebar.  This turns the Current Time Line orange, indicating that Concert Keyboardist is ready to play.  In this mode as soon as you press a key the note at the Current Time Line is played and the note bars start scrolling to the left.  The scroll rate is based on the tempo.
-* **Triggering Notes:** On your computer keyboard press any letter key, or any of the characters "[ ] ; ' < > and /".  On an English language keyboard these are the rows from "q" to "]", from "a" to " ' " and from "z" to "/".  If you are using a real midi keyboard, playing **any** note triggers the next target note.
+* **Prepare to play:**  Press the spacebar.  This turns the Base Line orange, indicating that Concert Keyboardist is ready to play.  In this mode as soon as you press a key the note at the Base Line is played and the note bars start scrolling to the left.  The scroll rate is based on the tempo.
+* **Playing Notes:** Press keys on your computer keyboard - any of the letter keys, or any of the characters "[ ] ; ' < > /".  On an English language keyboard these are the rows from "q" to "]", from "a" to " ' " and from "z" to "/".  It doesn't matter which keys you press.  **Any** key always triggers the next target note.   Similarly if you are using a midi keyboard **any** key triggers the next target note.
 * **Note Timing:** Press a key each time a target note reaches the vertical yellow line drawn when the previous note was played.  This plays exactly at the original tempo and rhythm.  
 * You can vary note timing, rhythm and tempo by playing before or after each target note reaches the yellow line.
 *   Usually, just play what sounds good to you, but you do need to watch for and play just the target notes.  
@@ -110,7 +110,8 @@ If at any time you need help finding things or knowing what they are called, see
 * **Rewind:** Press the Return key.  The first time you press Return the transport rewinds to the place you most recently started.  A second press returns to the start.  You can also press Return while the transport is running to stop and transport and rewind in one step.
 * **Basic Editing** You can edit which notes are target notes.  Click on the head a note to toggle its target vs chained status. Setting a note to be chained causes it to be added to the chain of the preceding target note.
 * **Playing legato notes** This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions.  If you play with at least two fingers you can overlap the on and off times of successive notes to create legato as in normal piano playing.  
-* **The Relative Time Line:** This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played the note before.  In playing expressively you may be triggering notes before or after the Current Time Line.  It's helpful to have a Relative Time Line as a marker showing when the last note was actually played.  When the next note reaches the Relative Time Line, it's due to be played.  Experiment with playing notes before or after the Relative Time Line to understand this better.  The Relative Time Line also remains after you stop playing to mark the last note played before stopping.
+* **The Relative Time Line:** This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played the note before.  In playing expressively you may be triggering notes before or after the Base Line.  It's helpful to have a Relative Time Line as a marker showing when the last note was actually played.  When the next note reaches the Relative Time Line, it's due to be played.  Experiment with playing notes before or after the Relative Time Line to understand this better.  The Relative Time Line also remains after you stop playing to mark the last note played before stopping.
+* It's important that the next unplayed target notes remain visible so you know where you are in the music.  If you play for a period of time slower than the average score tempo the next-due target may scroll off the edge of the view.  If this is about to happen the view is instantly shifted to the right, recentring the next target note back to the base line.  Also, while you are playing you can recentre manually by pressing either the "1" or the F1 key.  Also you can increase the average tempo with the '2' (or F2) key and decrease it with the '3' (or F3) key.
 
 <!-- ![](../Common/img/CKMainWindow.jpg) -->
 
@@ -119,10 +120,10 @@ If at any time you need help finding things or knowing what they are called, see
 ## Overview of The Main Window
 
 * Concert Keyboardist is like a player piano.  **Notes** are horizontal bars that scroll right to left horizontally based on the current **tempo**.  A note's vertical position shows pitch and its left end shows start time. Its length shows duration.  This information is read from the midi file and guides you when to play notes and how long to hold them.
-* In real time while you play **you control note start times and durations**.  This is like playing sheet music.  The notes are there but you add expression as you play.  If you have a velocity sensitive midi keyboard you can also control note velocities.
-* The score can be **scrolled** left or right with the mouse wheel or two finger drag on a touch pad.  The end of the score is at the far right.
-* The blue vertical line is the **"Current Time Line"** which indicates the current playing time in the score.  It turns amber when ready to play and green while you are playing.
-* While you are playing, pressing any key instantly triggers the next unplayed **Target Note**, magenta-headed-notes.  The these are the notes you directly play.
+* **As you play press and release keys to begin and end notes**, much like playing sheet music except that note pitches are supplied by the score.  So it doesn't matter which keys you press - just when and how long you press them.  If you have a velocity sensitive midi keyboard you can also control note velocities.
+* The score can be manually **scrolled** left or right with the mouse wheel or two finger drag on a touch pad.  The end of the score is at the far right.
+* The blue vertical line is the **"Base Line"** which indicates the nominal playing time in the score.  It turns amber when ready to play and green while you are playing.
+* While you are playing, pressing any key instantly triggers the next unplayed **Target Note**, the magenta-headed-notes.  The these are the notes you directly play.
 * When a Target Note is played it also schedules for playing all notes **chained** from it up to just before the next target note.  Chained notes are those without magenta heads.  
 * Chained notes are triggered at appropriate times in the future based on the current tempo.
 * After all scheduled chained notes have been played no further notes will sound until you trigger the next target note.
@@ -133,19 +134,18 @@ If at any time you need help finding things or knowing what they are called, see
 ## Navigating the Score and Adjusting the View
 
 * **Scroll** left or right with the touchpad or mouse wheel.  
-* Press the **Return Key** one time to return where you last started playing.  
-* Press the **Return Key** a second time to return to the start of the score.
+* Press the **Return Key** once to return where you last started playing.  
+* Press the **Return Key** twice to return to the start of the score.
 * **The Right and Left arrow keys** step one target note at a time forward or backward in the score.
 * **The Shift+Right Arrow and Shift+Left Arrow keys** step one measure at a time forward or backward in the score.
 * **Bookmarks:** Cmd+Right Arrow and Cmd+Left Arrow (Ctrl on Windows) step one bookmark at a time forward or backward in the score.
-*  Press Cmd+b to create a bookmark at the Current Time Line.  To delete a bookmark press Cmd+b with the bookmark already at the 
-Current Time Line.
-* Unlike most software piano rolls, Concert Keyboardist compresses the score vertically to fit the complete range of note pitches in the current midi file.  All notes pitches need to be visible because you will definitely need to see each note when it scrolls by, so you know when to play it.  The size of each "note track" is expanded or contracted so they all fit in the vertical size of the window.  
+*  Click the bookmark tool or press Cmd+b (Ctrl+b on Windows) to create a bookmark at the Base Line.  To delete a bookmark move it to the Base Line to cause the Add Bookmark Tool to become a Remove Bookmark Tool.
+* Concert Keyboardist compresses the score vertically to always show the full range of note pitches in the midi file.  This is because, for playability, all notes need to be visible as they scroll through the display.  The size of every "note track" is adjusted so they all fit in the vertical size of the window.  This means that a score with a wide range of pitches will have narrower tracks than a score with fewer pitches.  
 * Because all note pitches are always visible, it's never necessary to scroll vertically.
-* Changing the height of the entire window is the way to change the height of the note tracks.  
+* Changing the height of the entire window is the way to change the height of the note tracks.   
 * Making the window wider opens more space on the right to see approaching notes.
-* You can expand or contract the view horizontally by dragging up or down on the Navigation Bar.  You can find Navigation Bar labeled near the top in the [Overview of The Main Window].  You can simultaneously drag horizontally on the navigation bar to move left or right while you zoom.
-* Tip: It's actually easier to play on a window that's not too tall because it helps to place all the target notes in your field of view.  However it can be easier to edit on a tall window.  So you may choose to resize make the window taller if you are doing a lot of editing.
+* You can expand or contract the view horizontally by pressing the left mouse button over the Navigation Bar and dragging up or down.  You can find Navigation Bar labeled near the top in the [Overview of The Main Window].  You can also simultaneously drag horizontally on the navigation bar to move left or right while you zoom.
+* Tip: You may actually find it easier to play music with a window that's not too tall.  This ensures that all notes scroll by in the vertical range of your eyes sharp field of view.  However editing can be easier on a taller window with wider note bars.  Try resizing the window to make it window taller when you are doing a lot of editing.
 
 ## The Selection
 
@@ -153,27 +153,25 @@ Many commands act on a group of notes called the "selection":
 
 Select a range of notes:
 
-* Move the mouse pointer to anywhere not on a note bar.
-* Press the left mouse button and drag the yellow rectangle to surround heads of all notes to be selected.
+* Press the left mouse button with the mouse pointer over the score background, not on a note bar.
+* Drag to cause the yellow rectangle to surround the heads of all notes to be selected.
 * Release the mouse button. 
 * The head of each selected note will be surrounded by a white box. 
 
 Add notes to the selection:
 
-* Hold down the shift key, starting with some notes selected.
-* Drag the yellow rectangle around other notes.
-* They will be added to the selection.  
+* Starting with some notes selected, drag as above holding down the Shift key.
+* Drag the yellow rectangle around other notes and they will be added to the selection.  
 
 Remove notes from the selection:
 
-* Hold down the Option key and drag, starting with some notes selected.
+* Starting with some notes selected, drag as above holding down the Option key (Alt on Windows).
 * Any selected notes you drag the yellow rectangle around over will be deselected.
 
 Extend the selection past the left or right of the currently visible notes:
 
 * Drag as above but move the mouse pointer a slightly past the left or right end of the window.
-* The score will autoscroll in that direcction.
-* It will stop if it reaches that end of the score.
+* The score will autoscroll in that direction and stop if it reaches that end of the score.
 
 Select all notes in the score:
 
@@ -181,13 +179,12 @@ Select all notes in the score:
 
 Clear the selection:
 
-* Click anywhere not on a note bar, or
-* Press the Escape.
+* Click anywhere on the score backbground not on a note bar, or press the Escape key.
 
 Select a single note:
 
-* Start on the background near it and drag a yellow rectangle around it.
-* You can't select a single note by clicking directly on its head as this toggles it between being a target or non target note.  
+* You might expect that you would select a single note by clicking directly on its head.  However it's more useful to define this action as toggling a note between target and non-target status, which is something that's done frequently.
+* Therefore to select a single note, which is rarely necessary, drag the yellow rectangle around it as described above.
 
 ## Note Information Viewer
 
@@ -201,30 +198,28 @@ The Note Information Viewer is in the lower left corner of the window.
 
 ## Main Toolbar
 
-### File Management Tools
+### File Management
 
-<img src="../Common/img/FileManagementTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 10px">
-
-These tools are "File Open", "File Save", and "File Save As" , and are the same as the commands in the File menu. They are similar to commands you have probably used in many other applications.
-
-* General File Managememt
+* File Types
 	* Concert Keyboardist can read any type 0 or type 1 midi file as long as it has the extension ".mid" or ".MID".
 	* Concert Keyboardist files are normal midi files but with an extra invisible track added at the end to hold Concert Keyboardist settings for that score.
 	* When Concert Keyboardist saves a newly imported midi file, "[CK]" is added in front of the extension. For example "Mozart Symphony Number 40[CK].mid".
 	* The reason Concert Keyboardist marks its files by adding [CK] in **front** of the extension, and retains the ".mid" extension at the end is so its files can be recognized and opened as midi files by other applications. 
 
+* The file management tools are "File Open", "File Save", and "File Save As":
+
+<img src="../Common/img/FileManagementTools.jpg" alt="CK" style="float:left;width:9%;margin:0px 20px 0px 60px">
+They are the same as in the file menu, and are similar to commands you have probably used in other applications.
 
 * **"File Open"** asks you to choose and file and displays its score in the main window.  If it's not a Concert keyboardist file it is imported.
-
 	* When a just-imported file is saved, Concert Keyboardist will ask for a name.  The default name is the original name with [CK] added in front of the ".mid" extension.  It's best to retain the [CK] to allow Concert Keyboardist files to be easily identified and searched for.
 	* Importing a midi file converts it to a Concert Keyboardist score.
-* If "File Save" does one of two things:
-	* If "File Save" a newly imported file it will be saves as a Concert keyboardist file.  The default name is the original name [CK] added in front of the .mid extension. 
-	* If this scosaves the current score replacing the file it was loaded from.  
-  
-* "File Save As" creates a new file that you can give a different name.
-* You can also open a file by dragging and dropping it on the Concert Keyboardist window.
-* If you try to open a file without saving your edits to the previous file, Concert Keyboardist warns you and gives you a chance to saave your work.
+* **"File Save"** 
+	* If the current file was just loaded as a normal midi file, the save is treated as a Save As with the proposed name being the original name with [CK] added in front of the .mid extension.  It will be saved in Concert Keyboardist format.
+	* If the current file was already a Concert keyboardist file, it is saved without prompting, replacing the previous file.  
+* **"File Save As"** saves the current score in a new file, asking you to provide a new name.
+* **Drag and drop**: You can open a file by dragging and dropping a ".mid" or "[CK].mid" type file from a Mac or Windows folder onto the Concert Keyboardist window.
+* If you try to open a file without saving your edits to the previous file, Concert Keyboardist warns you and gives you a chance to save your work.
 
 ### Plugin Management Tools
 
@@ -232,28 +227,30 @@ These tools are "File Open", "File Save", and "File Save As" , and are the same 
 
 Before loading a plugin, scan your system making a list of plugins to choose from:
 
-* Click on the Plugin Management Tool  on the left and choose that looks like a puzzle piece and choose "Manage Available Plugins...". 
-* Click the Options button on the lower left and choose from the options to scan for VST and VST3 plusins.  
-* On a Mac also scan for Audio Unit plugins.
-* You should see plugins being added to the plugin management window.
+* Click on the Plugin Management Tool (it looks like a puzzle piece).  From the popup menu choose "Manage Available Plugins...". 
+* This is the Plugin Managment Window:
+
+<img src="../Common/img/Plugin Management Window.jpg" alt="CK" style="width:50%;margin:0px 0px 0px 25px">
+
+* Click the Options button on the lower left and scan for VST and VST3 plugins.  Also scan for Audio Unit plugins if you are on a Mac.  
+* This should result in plugins being added to the plugin management window.
 
 To load a plugin:
 
-* Click on the same button as above and choose any audio synthesizer in the menu.
-* The plugin should be loaded and its window should open.
-* Choose a patch (sound) in the window in whatever manner required by that plugin.
-* You can leave the plugin window open and click on the main Concert keyboardist window to the front by clicking on it.
-* Or close the plugin window.  You can reopen is as below.
+* Click on the Plugin Management Tool (it looks like a puzzle piece).  From the popup menu choose an "Instrument" or "Synth" plugin as described in the Category column.  Do not choose any other type of plugin such as "Effect", "Fx" or "MIDI" as these will not produce sound. 
+* When you choose a plugin from the menu it should be loaded and its window should open.
+* Choose a patch (sound) in the window using the user interface of that plugin window.
+* You can close the plugin window or leave it open.  The plugin will remain active even with its window closed.  If you want to leave its window open, click on the main Concert keyboardist window to bring it to the front.  
 
-To edit settings of a loaded plugin:
+To open the window of an already loaded plugin:
 
 * Click on the tool that looks like a puzzle piece with an orange arrow over it.
 
-To unload a plugin (possibly to use an external synthesizer):
+To unload a plugin (For example, if you want to switch to sending midi to an external synthesizer):
 
-* Click on the tool that looks like a puzzle piece and choose "No Plugin".
+* Click on the Plugin Management Tool and choose "No Plugin" from the popup menu.
 
-To ennable or disable the midi out port (that routes midi to external synthesizers):
+To enable or disable sending midi to the output port:
 
 * Click on the Plugins menu at the top of the screen (on Mac) or the top of the window (on Windows).
 * Choose "Enable Midi Out" to check or uncheck that menu item.
@@ -296,8 +293,8 @@ the file's creator, copyrights, and other information.
 
 * Adds or removes bookmarks that allow you to quickly return to a place in the score:
 * Use the keyboard shortcuts Cmd+Right/Left Arrow (Mac) or Ctrl+Right/eft Arrow (Windows) to step between bookmarks.
-* Click the Bookmark Tool to add a bookmark at the position of the Current Time Line. 
-* The Bookmark Tool turns into a Remove Bookmark Tool when any bookmark is directly above the Current Time Line.
+* Click the Bookmark Tool to add a bookmark at the position of the Base Line. 
+* The Bookmark Tool turns into a Remove Bookmark Tool when any bookmark is directly above the Base Line.
 Click the button to remove the bookmark.
 * The keyboard shortcut for add/remove bookmark is Cmd+b (Mac) and Ctrl+b (Windows).
 
@@ -305,15 +302,15 @@ Click the button to remove the bookmark.
 
 <img src="../Common/img/TransportTools.jpg" alt="CK" style="width:12%;margin:0px 0px 0px 25px">
 
-* **Listen**:  The Listen button lets you hear the music starting at the Current Time Line.  Press the Spacebar to stop listening and return to where listening started.  While listening the display scrolls and you can hear the notes, but in this version sounding notes are not marked in yellow as they would be while actually playing.
+* **Listen**:  The Listen button lets you hear the music starting at the Base Line.  Press the Spacebar to stop listening and return to where listening started.  While listening the display scrolls and you can hear the notes, but in this version sounding notes are not marked in yellow as they would be while actually playing.
 * **Rewind**: 
     * Pressing Rewind once moves the display back to the first note you played the last time you started playing.  
     * Pressing Rewind again moves the display to the start of the score.  
     * Pressing it again returns again to the to the first note you played the last time you started playing.  
     * Press the Return key as a keyboard shortcut for Rewind.
 * **Play**
-    * Pressing the Play button turns the Current Time Line orange but does not start the score scrolling.  
-    * The next playable key you press will trigger the Target Note that is at at the Current Time Line.
+    * Pressing the Play button turns the Base Line orange but does not start the score scrolling.  
+    * The next playable key you press will trigger the Target Note that is at at the Base Line.
     * The display will start scrolling.
     * Press the Spacebar when not playing is is a keyboard shortcut for Play.
 * **Stop**
@@ -328,8 +325,8 @@ Click the button to remove the bookmark.
 position in the score. The tempo in midi file may have been configured to with position in the score as dicated by the music.
 * Note that Midi files that were originally recorded live, such by recording from a midi keyboard, usually don't include tempo
 variations.... TBD 
-* The first number in the toolbar tempo tools is the tempo in beats per minute at the Current Time Line.
-* To see the tempo at a given position in the score, scroll the score so that position is at the Current Time Line.
+* The first number in the toolbar tempo tools is the tempo in beats per minute at the Base Line.
+* To see the tempo at a given position in the score, scroll the score so that position is at the Base Line.
 * You adjust how fast the entire score will play by by dragging up or down on the tempo number.  You will see the red line
 move up or down.  
 * Next to the tempo number is a **percentage** showing the ratio of the actual playing tempo as compared to the original score tempo.  
@@ -447,7 +444,7 @@ these subtle variations in chord times but you can simulate them with one of the
 
     **Play/Pause** : Ready the score for playing, or stop it playing.  The keyboard shortcut for Play and Pause is the spacebar.
 
-    **Listen** : Listen to the score starting at the note after the Current Time Line.  Press the spacebar to stop.  When listening is stopped the transport is returned to the place where listening started.  You can use this to listen to a passage to get a feel for it before playing it yourself.  Same as the Listen toolbar button.  Keyboard shortcut is "=" (no modifier key).
+    **Listen** : Listen to the score starting at the note after the Base Line.  Press the spacebar to stop.  When listening is stopped the transport is returned to the place where listening started.  You can use this to listen to a passage to get a feel for it before playing it yourself.  Same as the Listen toolbar button.  Keyboard shortcut is "=" (no modifier key).
 
     Show Edit Toolbar : Toggles the hiding and showing of the edit toolbar.  This is the same as the equivalent toolbar button.
 

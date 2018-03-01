@@ -189,9 +189,8 @@ void ScrollingNoteViewer::mouseUp(const MouseEvent &event)
     try
     {
         stopTimer(TIMER_MOUSE_DRAG);
-        if (HOVER_ZEROTIMELINE && !draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable())
-            startTimer(TIMER_CLICK_ZTL, 1);
-        
+//        if (HOVER_ZEROTIMELINE && !draggingVelocity && !draggingTime && !draggingOffTime && processor->getNotesEditable())
+//            startTimer(TIMER_CLICK_ZTL, 1);
         const int xDist = abs(selectionAnchor.getX() - event.getPosition().getX());
         const int yDist = abs(selectionAnchor.getY() - event.getPosition().getY());
         distanceMouseMovedSinceMouseDown = xDist>yDist ? xDist :yDist;
@@ -526,9 +525,10 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
                                                              processor->sequenceObject.scaledTempoChanges);
             
             hoverInfo = String("\n")+
-            "Realtime Tempo: "+String((int)tempo*processor->variableTempoRatio) + "\n"+
-            "Tempo Adjustment Rate: "+String(processor->sequenceObject.tempoAdjustmentRate, 2)+"\n"+
-            "Click line To edit.";
+            "Realtime Tempo: "+String((int)tempo*processor->variableTempoRatio);
+            // + "\n"+
+//            "Tempo Adjustment Rate: "+String(processor->sequenceObject.tempoAdjustmentRate, 2)+"\n"+
+//            "Click line To edit.";
             sendChangeMessage();
         }
         else if (vert > 0.0) //Test if we are on a note bar
@@ -1892,7 +1892,10 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_TEMPO_CHANGE)
         {
-//            std::cout << "CHANGE_MESSAGE_TEMPO_CHANGE " <<  "\n";
+            std::cout << "CHANGE_MESSAGE_TEMPO_CHANGE " <<  "\n";
+            int tempo = processor->sequenceObject.getTempo(processor->getZTLTime(horizontalShift),
+                                                           processor->sequenceObject.scaledTempoChanges);
+            hoverInfo = String("\n")+ "Realtime Tempo: "+String((int)tempo*processor->variableTempoRatio);
             repaint();
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_RETURN_BASELINE)
