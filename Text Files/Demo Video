@@ -1,0 +1,76 @@
+Demo Video
+==========
+Playing (minuet in G)
+- Enter play mode (spacebar)
+- Play some notes
+- Stop (spacebar)
+- Play some more notes
+- Rewind once
+- Play some more notes
+- Rewind once, and again to go to start
+- Play some notes with varied timing
+- Rewind to start
+- Listen
+- Scroll to new postion
+- Start playing and trigger a note
+- Decrease/Increase tempo with '2' and '3'
+- Restore to base line with '1' 
+
+Main Toolbar
+- Scan for plugins
+- Load plugin
+- Open/Close Audio/Midi settings
+- Show tracks window / toggle track activity
+- Toggle edit tools
+- Play
+- Stop
+- Rewind
+- Adjust tempo
+- Add tempo bookmark
+- Add second tempo bookmark
+- Change tempo between bookmarks
+
+Basic Editing (minuet in G) Start with non humanized chord note times
+- Show edit toolbar
+- Select a range of notes
+- Clear selection with click on background
+- Select all notes with Cmd+a
+- Toggle one target note
+- Select a range of notes
+- Toggle a range of target notes
+	- With the 't' key
+	- With the toolbar button
+- Undo back to original state
+- Redo a few steps
+- Undo back to to original state
+- Scroll to area with varying note spacings
+- Chain notes at a given interval
+- Chain notes at a different interval
+- Humanize chord note times
+- Humanize with different amplitude
+
+More Advanced Editing
+- Select a range of notes (start of minuet in G)
+- Play first run of notes
+- Select first run of notes
+- Show velocity graph
+- Drag up down single note
+- Play
+- Undo
+- Click the "drag up/down velocity" tool
+- Drag centre note up/down
+- Play
+- Drag first note up/down
+- Play
+- Drag last note up down
+- Play
+- Click the "Sketch Velocity Graph" tool
+- Sketch some velocities
+- Play
+- Show chords
+- Hide chords
+- Adjust chord note velocities
+- Add sustain bar
+- Remove sustain bar
+- Add soft bar
+- Remove soft bar

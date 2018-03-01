@@ -372,22 +372,24 @@ set to the resulting state of the first note.  Click the tool again to switch al
 * Another quick way to toggle target/non-target notes is simply to click on a note head.  That note is toggled between target and non-target status.  All other selected notes also change to be the same as the resulting status of the clicked on note.  Click again to switch them to
 the opposite state.
 
-### Note Chaining Tools
+### Note Chaining Tool
 
 <img src="../Common/img/NoteChainingTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px">
 
-Editing to set target and non-target notes for a long midi file would be a lot of work!  Fortunately the chain command is an easier way 
-do most of the work automatically.  We usually want each target note to follow a break in the flow of notes.  Notes that are closer 
-together we would want to be chained from the preceding target note.
+The chaining tool is a fast way to set reasonable target notes for the range of notes in the [The Selection].  It scans for gaps in 
+the flow of notes where there are no notes and sets the first note following the gap to be a target note.  It sets all other 
+notes up to the next gap  to be chained from  the target note.  Click the up/down arrow button next to the number to change the 
+size of the gap that will be used and run the scan.  Click the chain button to run scan with the currently set gap size.
 
 The chain command acts on a selected range of notes, or the entire midi file.  The numeric field next to the chain button gives the size of 
 the break in sixteenth notes that should trigger a target note to be marked.  What works best for a given midi file make take some 
-experimentation, but an amount of 1.0 sixteenths works well for a lot of files.  
+experimentation.  Amount of 1.0 sixteenths works well for a lot of files.  You may also run the chain command with different gaps on 
+different ranges in the score depending on the note pattern.
 
 The chain command is automaticaly run with an interval of one sixteenth when a midi file is first imported.  This usually results in a 
-quite playable file depending on its complexity.  To try other intervals select a range or all notes in the score.  Then click on 
-the "chain amount" number in the toolbar, and choose some other amount from the popup list.  The selected range of notes will 
-instantly be rechained based on that interval.  
+reasonably playable file depending on its complexity.  Experiment with other intervals: Set [the Selection] to be a range, or all notes,
+in the score.  Then click on the "chain amount" number in the toolbar, and choose some other amount from the popup list.  The selected 
+range of notes will instantly be rechained based on that interval.
 
 If you don't like the result you can undo it.  If it's close to what you want you can adjust some notes using the [Toggle Target Notes Tool].
 

@@ -2273,10 +2273,10 @@ void ScrollingNoteViewer::timerCallback (int timerID)
                 bool suppressAutoscroll = false;
                 if (xInTicksLeft < 0)
                 {
-                    int xReversed = ((0-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+ViewStateInfo::xPositionOfBaseLine);
-                    selectionRect.setX(xReversed);
-                    selectionRect.setWidth(wid);
-                    suppressAutoscroll = true;
+//                    int xReversed = ((0-processor->getTimeInTicks())*horizontalScale)*pixelsPerTick+(horizontalShift+ViewStateInfo::xPositionOfBaseLine);
+//                    selectionRect.setX(xReversed);
+//                    selectionRect.setWidth(wid);
+//                    suppressAutoscroll = true;
 //                    std::cout << "set selectionRect " <<selectionRect.getX()<<" "<<selectionRect.getWidth()  << std::endl;
                 }
 
