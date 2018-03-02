@@ -854,12 +854,9 @@ void ScrollingNoteViewer::renderOpenGL()
       
         desktopScale = (float) openGLContext.getRenderingScale();
         OpenGLHelpers::clear (Colour::greyLevel (0.1f));
-//        if (glBufferUpdateCountdown > 0)
-//            glBufferUpdateCountdown--;
+      
         if  (sequenceChanged)
         {
-//            glBufferUpdateCountdown = 2; //Number of renders that must pass before we are allowed in here again
-//            resized();
             openGLContext.extensions.glGenBuffers (1, &vertexBuffer);
             openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
             openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER,
@@ -1814,7 +1811,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
   try {
     if ((MIDIProcessor*)broadcaster == processor) //Triggered at the end of rewind() in MIDIProcessor
     {
-        std::cout << " ViewerCallback:  " <<  processor->changeMessageType<<"\n";
+//        std::cout << " ViewerCallback:  " <<  processor->changeMessageType<<"\n";
         if (processor->changeMessageType == CHANGE_MESSAGE_REWIND)
         {
             if (isVisible())
@@ -1892,7 +1889,7 @@ void ScrollingNoteViewer::changeListenerCallback (ChangeBroadcaster*
         }
         else if (processor->changeMessageType == CHANGE_MESSAGE_TEMPO_CHANGE)
         {
-            std::cout << "CHANGE_MESSAGE_TEMPO_CHANGE " <<  "\n";
+//            std::cout << "CHANGE_MESSAGE_TEMPO_CHANGE " <<  "\n";
             int tempo = processor->sequenceObject.getTempo(processor->getZTLTime(horizontalShift),
                                                            processor->sequenceObject.scaledTempoChanges);
             hoverInfo = String("\n")+ "Realtime Tempo: "+String((int)tempo*processor->variableTempoRatio);

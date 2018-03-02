@@ -701,20 +701,48 @@ void MIDIProcessor::processBlock ()
         return;
     }
     
-    if (isListening && listenSequence.size()>0)
+    if (isListening && listenSequence.size()>0) 
     {
+        Array<int> highlightSteps;
+        Array<int> deHighlightSteps;
         while (timeInTicks > listenSequence.at(listenStep).timeStamp)
         {
             MidiMessage note = MidiMessage::noteOn(listenSequence.at(listenStep).channel,
                                                       listenSequence.at(listenStep).noteNumber,
                                                      listenSequence.at(listenStep).velocity);
-//            std::cout << listenStep
-//            << " Autoplay note " << listenSequence[listenStep].getNoteNumber()
-//            << " Velocity " << (int) listenSequence[listenStep].getVelocity()
+//            std::cout << "step " <<listenSequence.at(listenStep).currentStep
+//            << " Autoplay note " << note.getNoteNumber()
+//            << " Velocity " << (int) note.getVelocity()
 //            << "\n";
             sendMidiMessage(note);
+            if (note.getVelocity()>0)
+                highlightSteps.add(listenSequence.at(listenStep).currentStep+1);
+            else
+                deHighlightSteps.add(-(listenSequence.at(listenStep).currentStep+1));
             listenStep++;
             lastPlayedNoteStep = listenSequence.at(listenStep).triggeredBy;
+        }
+        if (highlightSteps.size()>0)
+        {
+            int start1, size1, start2, size2; //Put in fifo for sending to note viewer
+            noteOnOffFifo.prepareToWrite (highlightSteps.size(), start1, size1, start2, size2);
+            int n = 0;
+            for (int i = 0; i < size1; ++i)
+                noteOnOffFifoBuffer [start1 + i] = highlightSteps[n++];
+            for (int i = 0; i < size2; ++i)
+                noteOnOffFifoBuffer [start2 + i] = highlightSteps[n++];
+            noteOnOffFifo.finishedWrite (size1 + size2);
+        }
+        if (deHighlightSteps.size()>0)
+        {
+            int start1, size1, start2, size2; //Put in fifo for sending to note viewer
+            noteOnOffFifo.prepareToWrite (deHighlightSteps.size(), start1, size1, start2, size2);
+            int n = 0;
+            for (int i = 0; i < size1; ++i)
+                noteOnOffFifoBuffer [start1 + i] = deHighlightSteps[n++];
+            for (int i = 0; i < size2; ++i)
+                noteOnOffFifoBuffer [start2 + i] = deHighlightSteps[n++];
+            noteOnOffFifo.finishedWrite (size1 + size2);
         }
     }
     
@@ -796,14 +824,12 @@ void MIDIProcessor::processBlock ()
             {
                 MidiMessage noteOff = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,
                                                           sequenceObject.theSequence.at(step)->noteNumber,(uint8) 0);
-//                std::cout<<"at 2 noteOff "<<step<<"\n";
                 sendMidiMessage(noteOff);
                 sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber,sequenceObject.theSequence.at(step)->channel, false);
                 onNotes.remove(onNoteIndex);
                 deHighlightSteps.add(-(step+1)); //Negative steps in queue will be dehighlighted by scrollingNoteViewer
             }
         }
-//        std::cout << "\n";
         int start1, size1, start2, size2; //Put in fifo for sending to note viewer
         noteOnOffFifo.prepareToWrite (deHighlightSteps.size(), start1, size1, start2, size2);
         int n = 0;
@@ -2191,7 +2217,7 @@ void MIDIProcessor::restoreNoteVelocities(Array<Sequence::NoteVelocities> change
 
 void MIDIProcessor::setTempoMultiplier(double value, double currentTime, bool documentReallyChanged)
 {
-    std::cout << "setTempoMultiplier "<<value<<"\r";
+//    std::cout << "setTempoMultiplier "<<value<<"\r";
     if (value<0.1)
         value = 0.1;
     int indexBeforeCurrentTime = -1;

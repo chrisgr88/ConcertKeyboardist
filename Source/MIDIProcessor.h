@@ -325,7 +325,10 @@ private:
     {
         double t = Time::getMillisecondCounterHiRes()*0.001;
         msg.setTimeStamp(t);
-
+//        std::cout
+//        << " note " << msg.getNoteNumber()
+//        << " velocity " << (int) msg.getVelocity()
+//        << "\n";
         if (midiOutEnabled)
         {
 #if JUCE_MAC || JUCE_IOS

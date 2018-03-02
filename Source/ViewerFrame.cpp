@@ -226,7 +226,7 @@ void ViewerFrame::timerCallback()
     {
         if (processor->sequenceObject.tempoChanges.size()>0)
         {
-                std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getValue() << "\n";
+//                std::cout << "pTempoMultiplier->changed " << pAdjustedTempo->numberBox.getValue() << "\n";
                 const int ztlTime = processor->getZTLTime(noteViewer.horizontalShift);
                 const double tempoMult =    pAdjustedTempo->numberBox.getValue()/
                                             processor->sequenceObject.getTempo(ztlTime,processor->sequenceObject.tempoChanges);

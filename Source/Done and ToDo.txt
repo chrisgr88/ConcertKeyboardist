@@ -1,0 +1,205 @@
+ToDo - For First Release
+------------------------
+Alpha:
+- File management
+    - DONE save as .ckf extension
+    - DONE file open shows just .ckf and .mid files
+    - DEFER add file export command to produce .mid files (maybe add later)
+    - DEFER Make .ckf files not loadable as midi?
+- DONE Create an app versioning system    
+- DONE Save build date/time in files as version info 
+- DONE Create dead man's tracker and use to offer to not reload previous score on a crash.  Offer to send bug report?
+- DONE Fix bug where tracks only one track in tracks list could be disabled.
+- DONE Better tempo change & bookmark ui
+- DONE Add "scan plugins" to plugin toolbar menu. Also add enable/disable midi
+- DONE Make window title bar dark with white text
+- DONE Hide/show editing toolbar
+- DONE Improved tooltips
+- DONE Create script to copy help to app file (CLion/Mac only for now)
+- DONE Make the addSoft and addSustain buttons alternate with removeSoft and removeSustain buttons
+- DONE Return to the [CK] method of tagging ckf files
+- DONE Change the rewind key from 'r' to Return and disable the 's' key doing sustain.  
+- DONE Prevent note-head drags that end on a note head from toggling the activity of the ended-on note
+- DONE Ability to autoscroll to the left
+- DONE Autoscroll without moving the mouse
+- DONE Ability to turn off display of measure and beat lines in viewer (and save this choice in the score file)
+- DONE Make "Show Edit Toolbar" into a command with a keyboard shortcut
+- DONE Hide Edit Toolbar when playing
+- DONE Create an About dialog box
+- CAN'T FIX? Why are files that include a VST plugin's state so big?
+- CAN'T FIX? An added tempo change marker should not pick up the tempo of next real tempo change
+- DONE Script to copy demo files to the app bundle
+- DONE Request VST license from Steinway
+- DONE Look into how resources are bundled with Windows applications (help & demo scores)
+- DONE Faster saving of big plugin patch files
+- DONE Enable restoring of plugin patches, which had been disabled
+- LATER Shortcut key commands to re-pitch, add and remove notes?
+- LATER Switch to loading plugins into an audio graph to fix need to patch the JUCE source to suppress asserts?
+- DONE Fix bug where sometimes pedal bar symbols would not be shown
+- DONE Fix bug where if a pedal bar's end was beyond end of score, an index error would occur.
+- DONE Mac Installer -> Put app and examples folder in a zip file.
+- DONE Clear undo/redo on file load
+- DONE Hover over note head should show info
+- DONE Create folder of demo files
+- DONE Ensure correct initial state for edit toolbar
+- DONE Switch to paid version of JUCE
+- DONE Set correct input and output bus config for audio processor (setPlayConfigDetails)
+
+- Windows Installer & Description of installer creation process
+- Ensure shortcut keys make sense on Windows
+
+- Remove plugins from all demo files & clean up.
+- Update documentation
+
+- Build "release" versions
+- Add github tag to repo to mark released version (and branch for future work)
+- Upload Mac and Win CK installer versions to github
+
+- Demo Video?
+- Website?
+- Announce
+- Document build & release processes
+
+Final:
+- Ability to edit meta data
+
+
+Updated ToDo as of December 22, 2017
+--------------------------------
+- FIXED Documents are marked as changed on first loading
+
+- HANDLED Audio/MIDI Setup does not contain the CK virtual port.
+- FIXED The CK virtual midi port is always the output used by MidiProcessor
+
+- FIXED Loading a sequence when a plugin is already loaded - plugin is used for new sequence unless manually unloaded
+- FIXED Command to unload plugin 
+
+- HANDLED Command to enable/disable midi port -> Always enabled for a new sequence unless it was disabled
+- FIXED Loading a sequence with no plugin assigned caused midi out to be enabled.
+
+
+ToDo - Old
+----------
+- Ability to play a track or tracks as accompaniment
+- DONE VAbility to easily listen to a section 
+- Ability to set some notes as muted
+- Metronome, Option for number of measures to count metronome in.  When playing blink ztl line handle in sync with beats.
+- By default bookmarks are unnamed but they can be named by clicking on them
+- Better keyboard shortcuts & Ability to map them to be executed by midi messages
+- User editable keyboard shortcuts & make assignable to MIDI messages mappable to MIDI notes for external control
+- Toolbar
+    - DONE VAccess to properties dialogs 
+    - DONE VTempo control/display
+    - More editing tools 
+        - DONE Vset groups of notes as target/nontarget notes
+        - DONE Vadjust note velocities/timing?
+        - adjust note pitches?
+        - mute/add/remove notes?       
+App Properties Dialog
+Score Properties Dialog
+    - Selection of which tracks to play, to mute or to play as accompaniment
+    - Setting of method of note velocity control
+    - Channel remappings
+    - Controllers to autoplay from original file (sustain, soft, other?)
+    - Tempo options: fixed, as in original file, fully dynamic (edit parameters on degree of control)
+    - Position of zero-time line in window
+Better direct editing
+    DONE - Easier to click short note bars
+    - Pinch to zoom
+More external controller features
+    - Input of controllers
+    - Others?
+DONE VST/AU host
+DONE Windows version
+iOS version - Design the iOS UI. See nanoStudio.
+Bugs:
+- DONE VProblem with openGL on Hayden variations for four hands? Goes blank? Intermittent.
+- DONE VOccasional hang on startup in audio init - timing related
+
+Ability to loop.  Partly working.
+    - Loop point specified in ticks is varying in position in score.  Need to specity it in terms of seq step.
+    - Find a way to mark looped notes as unplayed
+    - Ensure held notes beyond a loop end are handled properly.
+    - Create UI to specify loop points.
+    - Cause rewind to go to start of loop point?
+    - Save loop point in file.
+
+Done
+----
+- DONE Set chained note velocities based on their original velocity and the user-played velocity of the chain trigger. 
+- DONE Selection of which tracks to play, to mute or to play as accompaniment
+- DONE Option to not start transport until first note-on is received
+- DONE Better tempo display/control (e.g. show original BPM, scaled BPM and real-time BPM)
+- NOT FOR NOW Remove empty measures from front of a loaded score
+- DONE Ability to detect notes from computer keyboard vs external controller and choose the appropriate velocity source setting
+- DONE Save and restore zoom level in score file
+- DONE Save and load bookmarks in score file
+- DONE Pedal symbols
+- DONE Loudness graph
+- DONE Step time back/forward through target notes (forward/back arrow)
+- DONE Step time back/forward through bars (forward/back arrow)
+- DONE Add note number to note bar hover information
+- DONE Click on ZTL handle when it's not at the current playing time and not on bookmark does a catchup. If at current playing time a bookmark is added. If there is a bookmark it is removed. Down arrow does similar things. Downarrow when ZTL not at current playing time does a catchup. Downarrow when at current times toggles the presence of a bookmark. 
+- DONE Command forward/back arrow moves between bookmarks 
+- DONE Fixed bug where the tempo speed multiplier was being reset 1.0 when a file was saved, and some related bug
+- DONE Renamed PluginProcessor to MIDIProcessor
+- DONE This now instantiated as instance variable "midiProcessor" in MainComponent
+- DONE midiProcessor.loadSequence() is called in the constructor of MainComponent
+- DONE MainComponent is defined and instantiated as instance variable, "viewerFrame" in MainComponent 
+- DONE viewerFrame is passed a pointer to midiProcessor in the constructor of MainComponent using viewerFrame.setProcessor()
+- DONE ScrollingNoteViewer is defined and instantiated as instance variable noteViewer in viewerFrame.
+- DONE noteViewer is passed a pointer to midiProcessor in the procedure setProcessor(p) in ViewerFrame
+- DONE Uses of the variable "processor" in ViewerFrame and ScrollingNoteViewer have been uncommented.
+- DONE App builds and calls makeKeyboard but hangs when calling timeSigChanges.size().  Need to investigate
+- DONE Pass a pointer to midiProcessor to "viewer"
+- DONE Use this reference to re-enable creation of keyboard and note bars in viewer
+- DONE Set up MainComponent using definition of keyboard and other parameters to create non-openGL parts of view
+- DONE Re-work pulse and time management parts to midiProcessor
+- DONE Add UI to start and stop transport
+- DONE Add midi output
+- DONE Add use of computer keyboard for midi input
+- DONE Setting position by clicking on top bar does not correctly set the position.
+- DONE Find a way to have MidiProcessor send midi messages by calling sendMidiMessageToSynth(msg) in MainComponent
+- DONE Create internal synth 
+    - Look into getting sfZero to build as a plugin (in separate project)
+    - Merge sfZero into PerfectPlayer (big job?)
+    - Enable passing midi to internal synth
+        - Only need to so this when running an internal synth.  Otherwise they can be sent immediately to midi output.
+        - Put them in a MidiBuffer and pass to a method in MainComponent that adds them to a MidiInputCollector (i.e. sync with audio)
+        - audioDeviceIOCallback will remove them and pass to internal synth
+        - Be sure to reset the MidiInputCollector as appropriate.
+        - See MPETest for more details.
+        - Enable a way to choose midi output to go out midi port or to internal synth
+
+DONE Add basic ability to click on note bars to toggle them between being target or nontarget notes.
+
+DONE Add struct for a "chainingRange" descriptor. i.e. startStep, endStep, interval
+DONE Define an array of theses structs called chainDescriptors
+DONE For now cause the setting of chaining interval to create one element in the array with the 0, maxStep and interval as the values
+DONE Create a loop to save a sysex record for each element of the chain entries
+DONE Then add ability to load a file and extract the properties - in a simple way
+DONE Refactor so all score properties are kept in the Score object and fetched by other objects as needed
+DONE Midi Import
+DONE File Management
+    - Midi files can be loaded but not saved
+    - ckf files can be saved and loaded
+    - File menu
+DONE Reimplement setTempo() and getTempo() to use originalFirstTempo & tempoMultiplier. Design is in Sequence.h: 
+    - Actual tempo is the midi file multiplied by tempoMultiplier
+    - autoTempo: Tempo starts at originalFirstTempo*tempoMultiplier and then tracks user
+    - fixedTempo: Tempo is steady at originalFirstTempo*tempoMultiplier
+    - proportionalToOriginalTempo: Tempo is instantaneous tempo from file * tempoMultiplier (does not track user)
+DONE In short sequences it's too easy to see the end of the black/white highlights. Widened the bars by 10 times.
+DONE Track settings were not being cleared before loading a new sequence.
+DONE Before saving a file get values for a sequence as sysex records
+DONE On loading clear sequence property set and get values from sysex records into property set
+DONE Enable marking a file dirty if changed and prompting to save if it will be lost
+    - On exit
+    - On loading a new file
+DONE If a ppf file has been loaded changes should be automatically saved on exit and restored on reopening app
+DONE If a midi file and will be lost we should offer to save a ckf file as in file saveAs
+DONE Create ability to save app settings
+    - On app open the complete view state should be restored
+    - Most recent file (but not if it was an uncnanged midi file?)
+    - Window size, position
+

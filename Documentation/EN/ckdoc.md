@@ -376,26 +376,37 @@ the opposite state.
 
 <img src="../Common/img/NoteChainingTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px">
 
-The chaining tool is a fast way to set reasonable target notes for the range of notes in the [The Selection].  It scans for gaps in 
-the flow of notes where there are no notes and sets the first note following the gap to be a target note.  It sets all other 
-notes up to the next gap  to be chained from  the target note.  Click the up/down arrow button next to the number to change the 
-size of the gap that will be used and run the scan.  Click the chain button to run scan with the currently set gap size.
+The chaining tool is a fast way to create a reasonable set of target notes over a range of notes or the entire score.  It 
+works on the [the Selection] so it's necessary to select some notes before performing chaining.  It scans for time intervals in 
+the flow of notes where there are no notes and sets the first note following each interval to be a target note.  It sets all other 
+notes up to the next interval to be chained from the target note.  To change the size of the interval used in the scan, click the 
+up/down arrow button next to the number in the toolbar.  This also causes a scan on the currently selected notes.  To run a scan 
+with the currently set gap size just click the chain button.
 
 The chain command acts on a selected range of notes, or the entire midi file.  The numeric field next to the chain button gives the size of 
 the break in sixteenth notes that should trigger a target note to be marked.  What works best for a given midi file make take some 
-experimentation.  Amount of 1.0 sixteenths works well for a lot of files.  You may also run the chain command with different gaps on 
-different ranges in the score depending on the note pattern.
+experimentation.  An interval of 1.0 sixteenths works well in many situations.  You may also find it useful to run the chain command 
+with different intervals in different ranges in the same score, depending on the note pattern in a given range.
 
 The chain command is automaticaly run with an interval of one sixteenth when a midi file is first imported.  This usually results in a 
 reasonably playable file depending on its complexity.  Experiment with other intervals: Set [the Selection] to be a range, or all notes,
 in the score.  Then click on the "chain amount" number in the toolbar, and choose some other amount from the popup list.  The selected 
 range of notes will instantly be rechained based on that interval.
 
-If you don't like the result you can undo it.  If it's close to what you want you can adjust some notes using the [Toggle Target Notes Tool].
+Sometimes the chain command produces a nicely playable score with no further editing, but expecially in more complex score you will need
+to manually the results. i.e. Edit to change some notes between being target or chained with the [Toggle Target Notes Tool].  
 
-The chain button reapplies chain command using the visible "chain amount" number.
+There is some artistry in this process, and it's a way to personalize how a file plays to your taste.  The best way to edit is 
+to play through the file listening and feeling how each small section plays, stopping as needed and tweaking target vs non 
+target notes.  You can safely make changes to a section, try them, and undo or redo until you like the results.  
 
-After chaining, usually only one note in a chord (unless it's a long broken chord) is set as a target note.  The other notes are 
+You may even like to create and save different versions of a file that make different parts of the music into target notes.  For example
+one version might make the melody notes be target notes, and another might emphasize the accompanient.  For a midi file that is a
+piano/flute duet, for example you may make just the flute notes be target notes and the piano notes be chained, allowing you to play just the 
+flute part while the piano autoplays in sync, chained off the played target notes.  There are some tricks on how to accomplish this 
+that will be covered in a section on advanced editing, yet to be written.
+
+Other details:  After chaining, usually only one note in a chord (unless it's a long broken chord) is set as a target note.  The other notes are 
 chained from it, either simultaneous or offset slightly in time.  The note that came first is made the target note, which is not necessarily the top note or bottom note of the chord as you might expect.  This is why it may appear somewhat arbitrary which note of a chord becomes a target note.  
 
 Slight variations in chord note start times result in more natural sounding music.  If they were present in the original midi
@@ -405,11 +416,128 @@ these subtle variations in chord times but you can simulate them with one of the
 
 ### Note Velocity Tools
 
+These techniques enable the editing of midi note velocities (i.e. loudness). 
+
+The simplest way to edit note velocities does not use any tools or require a special mode.  Simply drag up or down on the head of any note.
+The numerical note velocity, ranging from 1 to 127, is shown next to the note head.  If note is a target note you will also see its 
+point on the the white target note velocity graph being adjusted.  If it's not a target note you will still see its numerical velocity 
+and a green point representing its level relative to the velocity graph.
+
+The following animation shows this technique:
+
+<img src="../Common/img/Velocity Editing Single Notes.gif" alt="CK" style="width:30%;margin:0px 0px 0px 25px">
+
+If you want to see a graph that includes non-target notes or want to adjust the velocities of ranges of notes then use the velocity
+editing tools.
+
 <img src="../Common/img/VelocityTools.jpg" alt="CK" style="width:9%;margin:0px 0px 0px 25px">
+
+These tools work on the notes in [the Selection].  They do nothing unless there are at least some notes selected.
+
+**Showing the velocity graph:** The left button toggles visibility of a green line that is the velocity graph for the selected notes.  In the
+following example just the melody notes are selected.  You can see that the line is smooth.  This is because at each time point on the 
+graph just one note is selected.  Also notice that the green line is at the same level as the white velocity graph of target notes 
+because all the selected notes are target notes.
+
+ <img src="../Common/img/Velocity Graph.jpg" alt="CK" style="width:20%;margin:0px 0px 0px 25px">
+
+ In the next example the line includes some vertical segments because at those times in the score there are multiple simultaneous 
+ notes selected (i.e. aligned vertically).  This type of display is harder to interpret, but can be useful, for example to see the range 
+ of note velocities in chords.
+
+ <img src="../Common/img/Velocity Graph Simultaneous Notes.jpg" alt="CK" style="width:20%;margin:0px 0px 0px 25px">
+
+**Adjusting velocities by dragging up or down:** The middle toolbar button with the up/down white arrows enables adjusting 
+velocities by dragging up or down on the head of any of the selected notes.  This is done as follows:
+
+	* Dragging up/down on the note at the **left end of the selection** proportinally adjusts the velocity of that note by the amount dragged.
+	The note at the right end of the selection is not changed, and all other notes in between are adjusted proportionally.
+	* Dragging up/down on the note at the **right end of the selection** proportinally adjusts the velocity of that note by the amount dragged.
+	The note at the left end of the selection is not changed, and all other notes in between are adjusted proportionally.	
+	* Dragging up/down on any selected note other than one ones at the ends proportionally adjusts up/down the velocities
+	of all selected notes.
+	* Use the first and second of the above actions to create smooth crescendos and decrescendos while maintaining their relative velocities. 
+	* Use the third action to proportionally increase or decrease the velocity of notes in a range while maintaining their relative velocities.
+
+The following animated gif shows this technique:
+
+<img src="../Common/img/Velocity Drag Editing.gif" alt="CK" style="width:30%;margin:0px 0px 0px 25px">
+
+**Adjusting velocities by sketching the velocity line:**  The left toolbar button in the velocity group enables sketching a new velocity graph with the mouse pointer, just affecting the selected notes.  You can sketch over notes repeatedly until you are satisfied with the graph.
+
+Any time you are in a velocity editing mode you can play the notes in that section normally to hear the current result.  Just press the
+Play button in the toolbar or the spacebar and start playing as usual.  Alternate between editing and playing until you like the 
+result.   Then move on to the next section.
+
+When you save the file the velocities are retained even if you load the [CK].mid file into any other application that reads normal midi 
+files.  You may find this to be an interesting way to perfect the note velocities in a midi file you are working on.
 
 ### Chord Tools
 
+The current chord tools are primarily used for "humanizing" chords loaded from a midi file that was created by step 
+sequencing or with a music notation application such as Muse Score, Sibelius or Finale or with [abc notation](http://abcnotation.com).
+
+This type of editing usually causes the notes of each chord to be assigned exactly the same start time, and sometimes  with 
+the same velocity.  Many excellent midi files downloadable from the Internet are of this type.  They sound great when played in 
+Concert Keyboardist, but the chords can sound slightly "too perfect".
+
+The chord tools can help this.  These are the chord tools:
+
 <img src="../Common/img/ChordTools.jpg" alt="CK" style="width:24%;margin:0px 0px 0px 25px">
+
+The first three tools are for showing chord symbols marking chord notes, creating chords and deleting chords.  The fourth tool and number
+field next to it are for humanizing the start times of previously-simultaneous chord notes.  The fifth tool and number next to it are
+for humanizing the velocities of chord notes.
+
+**The Show Chords Tool:** This tool simply highlights notes that are in chords with white brackets.  You can also identify likely
+chord notes (i.e. simultaneous notes) without showing the chord brackets because the heads of all simultaneous notes below the 
+highest note at that instant are a darker grey than normal chained notes.  The animation below shows the process of revealing 
+the chord symbols.  It also points out the darker grey heads of simultaneous notes.
+
+<img src="../Common/img/Showing Chords.gif" alt="CK" style="width:30%;margin:0px 0px 0px 25px">
+
+**The Create Chord Tool:** Before using this, show the chord symbols as above.  Then select a few nearby notes.  When you click the create chord 
+tool a chord marker will appear for those notes.  However at present you will probably never need to do this.  It's for use 
+in chord features planned for the future.
+
+**The Delete Chord Tool:** Before using this, show the chord symbols as above. Then select a range of notes that includes one or more
+chords and click the remove chord tool.  The white chord-making brackets will disappear.  When notes that are simultaneous are not
+marked with the brackets, they aren't really chords, and will not be affected by the chord humanizing tools.  However as with the Create 
+Chord Tool you will probably rarely to do this.  It's mainly for use in chord features planned for the future.
+
+The status of which notes are in which chords is saved as part of the state information in a [CK] file and is retained when the file is
+reloaded.  This is important because once chord note start times have been humanized they will probably not be simultaneous, but we still
+need to know that they were originally grouped as chords, so that we can perform other chord commands on them, such as changing the 
+humanization amount.
+
+**The Humanize Chord Note Times Tool:**  If you load a midi file with many simultaneous notes with dark gray heads, you should suspect that 
+the midi file was created using a midi editor.  It could probably benefit from humanization of chord note times. Usually you will want 
+to simply run the command on the entire file.  Select all notes in the file using Cmd+a keyboard shortcut on Mac 
+or Ctrl+a on Windows.  Then click the Humanize Chord Note Times Tool.  Most of the notes that had dark grey note heads will be shifted
+slighly in time.  The heads become light grey like normal chained notes.
+
+The numeric field next to the Humanize Note Times Tool is the maximum amplitude of the randomly applied time adjustment.  This is 
+the largest possible time shift of any given note of a chord.  However the amount for each note is random and thus usually
+somewhere between the maximum and zero.   The default value is 40 milliseconds, which seems to work well in most 
+situations.  The amount that notes are shifted is limited based on the distance to upcoming notes so that humanization 
+can never cause chord notes to overlap any following note that is not part of the chord.
+
+You can change the amplitude by editing the number next to the tool and reapply the command.  Experiment to find what sounds right 
+for a given midi file and tempo.  The command supports undo and redo so you can experiment freely and still get back to some 
+previous preferred state.  
+
+The results of the changes are saved in the [CK file] including the midi note-on events with actual assigned note times.  If you 
+load the [CK].mid file into some other midi application the humanization will be retained, which you may find useful as a way of 
+adding life to files created in some midi editor.
+
+Midi files will probably not benefit from humanization if they were recorded live by a human performer.  You can recognize these
+because they don't have chords with many dark grey heads.  Probably also the notes will not align with the beat and measure lines. 
+These files can sound great played in Concert Keyboardist with no need for "humanization".
+
+**The Humanize Chord Note Velocities Tool:**  This tool adds some velocity variation to chords that were created with notes 
+of all the same velocity, or chords where the "chord voicing" doesn't sound right to you.  Truely correct chord voicing is a 
+complicated topic, but chords with notes of all the same pitch usually don't sound natual.  The Humanize Chord Note Velocities 
+Tool, although based on simple rules,can make a significant difference.
 
 ### Pedal Tools
 
@@ -417,8 +545,6 @@ these subtle variations in chord times but you can simulate them with one of the
 
 
 ### Editing Note Start Times and Durations
-
-### Editing Note Velocities
 
 ## Menu Commands
 
