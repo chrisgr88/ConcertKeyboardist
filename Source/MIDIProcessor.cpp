@@ -707,9 +707,13 @@ void MIDIProcessor::processBlock ()
         Array<int> deHighlightSteps;
         while (timeInTicks > listenSequence.at(listenStep).timeStamp)
         {
+            float vel = listenSequence.at(listenStep).velocity;
+            if (vel>1.0) //This should not happen but some midi files seem to trigger it.
+                vel = 1.0; //Prevents an assert in juce
+
             MidiMessage note = MidiMessage::noteOn(listenSequence.at(listenStep).channel,
                                                       listenSequence.at(listenStep).noteNumber,
-                                                     listenSequence.at(listenStep).velocity);
+                                                     vel);
 //            std::cout << "step " <<listenSequence.at(listenStep).currentStep
 //            << " Autoplay note " << note.getNoteNumber()
 //            << " Velocity " << (int) note.getVelocity()
@@ -971,9 +975,12 @@ void MIDIProcessor::processBlock ()
 //            << " firstInChain "<<theSequence->at(step).firstInChain
 //            << " firstInChain TS "<<theSequence->at(theSequence->at(step).firstInChain).timeStamp
 //            << "\n";
+            float vel = sequenceObject.theSequence.at(step)->adjustedVelocity;
+            if (vel>1.0) //This should not happen but some midi files seem to trigger it.
+                vel = 1.0; //Prevents an assert in juce
             MidiMessage noteOn = MidiMessage::noteOn(sequenceObject.theSequence.at(step)->channel,
                                                     sequenceObject.theSequence.at(step)->noteNumber,
-                                                    sequenceObject.theSequence.at(step)->adjustedVelocity);
+                                                    vel);
 //            std::cout << timeInTicks << " noteOn vel " << step <<" "<< noteOn.getFloatVelocity() <<"\n";
             noteOn.setTimeStamp(samplePosition);
             sendMidiMessage(noteOn);
@@ -1513,10 +1520,10 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
                     chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
                 else
                     chordNotes.at(i)->setOfftime(sequenceObject.seqDurationInTicks);
-                    std::cout <<  chordNotes.at(i)->currentStep
-                      << " randomAdd " << randomAdd
-                      << " timeStamp " << chordNotes.at(i)->getTimeStamp()
-                      << std::endl;
+//                    std::cout <<  chordNotes.at(i)->currentStep
+//                      << " randomAdd " << randomAdd
+//                      << " timeStamp " << chordNotes.at(i)->getTimeStamp()
+//                      << std::endl;
                 const int offset = chordNotes[i]->getTimeStamp() - thisChordTimeStamp;
                 sequenceObject.chords[chIndex].offsets.push_back(offset);
             }
