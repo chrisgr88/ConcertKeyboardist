@@ -727,7 +727,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                             if (!msg.isSustainPedalOn() && !msg.isSostenutoPedalOn() && !msg.isSoftPedalOn())
                                 nOtherContr++;
                         }
-                        if (msg.isNoteOn())
+                        if (msg.isNoteOn() && msg.getVelocity()<=127)
                         {
                             if (theTrack->getTimeOfMatchingKeyUp(i) > seqDurationInTicks)
                                 seqDurationInTicks = theTrack->getTimeOfMatchingKeyUp(i);
@@ -838,6 +838,7 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                             {
                                 trkDetail = trackDetails[trk];
                                 trkDetail.endMeasure = m+1;
+//                                std::cout << "trk "<<trk<< " endMeasure "<< trkDetail.endMeasure <<"\n";
                                 trackDetails.set(trk, trkDetail);
                                 break;
                             }
@@ -1069,6 +1070,10 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                             msg->channel = theTrack->getEventPointer(i)->message.getChannel();
                             msg->noteNumber = theTrack->getEventPointer(i)->message.getNoteNumber();
                             msg->velocity = theTrack->getEventPointer(i)->message.getFloatVelocity();
+                            if (msg->velocity>1.0)
+                            {
+                                msg->velocity = 1.0;
+                            }
                             msg->setOfftime(theTrack->getTimeOfMatchingKeyUp(i));
 
                             if (msg->getOffTime() <= msg->getTimeStamp()) //In a correct sequence this should not happen

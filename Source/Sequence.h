@@ -163,7 +163,7 @@ public:
 
 //        std::cout << "setLastDocumentOpened "<<recentFiles.toString()<<"\n";
         getAppProperties().getUserSettings()
-        ->setValue ("recentConcertKeyboardistFiles", recentFiles.toString());
+        ->setValue("recentConcertKeyboardistFiles", recentFiles.toString());
     }
     File lastDocOpened;
     PropertySet sequenceProps;

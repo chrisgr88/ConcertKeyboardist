@@ -155,6 +155,7 @@ ApplicationProperties& getAppProperties();
         {
             getAppProperties().getUserSettings()->setValue ("deadMansPedal", "hungLoadingPreviousFile");
             midiProcessor.loadSpecifiedFile(fileToOpen);
+            menuItemsChanged();
         }
 #if TARGET_OS_IPHONE
         
@@ -758,13 +759,16 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             {
                 RecentlyOpenedFilesList recentFiles;
                 recentFiles.restoreFromString (getAppProperties().getUserSettings()->getValue ("recentConcertKeyboardistFiles"));
+//                for (int i=0;i<recentFiles.getNumFiles();i++)
+//                    std::cout << i << " "<<recentFiles.getFile (i).getFileName() << "\n";
                 File recent = recentFiles.getFile (menuItemID - 100);
                 String files = recentFiles.toString();
                 String path = recent.getFullPathName();
     //            std::cout << "Load recent file " << recentFiles.getNumFiles() << " " <<  path << " " << recentFiles.toString() << "\n";
                 
 //                if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
-                    midiProcessor.loadSpecifiedFile(recent);
+                midiProcessor.loadSpecifiedFile(recent);
+                menuItemsChanged();
                 Component::toFront(true);
                 if (tracksWindow)
                     tracksWindow->setVisible(false);
@@ -973,6 +977,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                         tracksWindow->setVisible(false);
                     if (midiProcessor.sequenceObject.saveIfNeededAndUserAgrees() == FileBasedDocument::savedOk)
                         midiProcessor.loadFromUserSpecifiedFile();
+                    menuItemsChanged();
                     Component::toFront(true);
                     ckBlockClosing = false;
                 }
@@ -994,6 +999,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                         recentFiles.removeFile(file);
                         getAppProperties().getUserSettings()->setValue("recentConcertKeyboardistFiles", recentFiles.toString());
                     }
+                    menuItemsChanged();
                     Component::toFront(true);
                 }
                 break;

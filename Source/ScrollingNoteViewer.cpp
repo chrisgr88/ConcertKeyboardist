@@ -1976,8 +1976,8 @@ void ScrollingNoteViewer::timerCallback (int timerID)
 	//return;
     int wid = selectionRect.getWidth();
   try {
-      if (timerID!=TIMER_PERIODIC)
-          std::cout << " timer callback " << timerID <<" "<<hoveringOver<<"\n";
+//      if (timerID!=TIMER_PERIODIC)
+//          std::cout << " timer callback " << timerID <<" "<<hoveringOver<<"\n";
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     if (timerID == TIMER_PERIODIC)
     {
