@@ -362,6 +362,7 @@ private:
     int currentBeat; //Used in processBlock track beats for flashing beat indicator & metronome
 //    double beatTickCounter; //Used to count ticks when transport is running even when notes are not being played
     bool autoPlaying;
+    bool playingAhead; //True if we are in a state where one target note (& chain) have already been added to scheduleNotes while autoplaying
     double autoPlayStartTime;
     bool panic; //If set true, sends all notes off in next call of processBlock
     double prevNoteOnLag;
