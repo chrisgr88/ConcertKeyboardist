@@ -58,7 +58,7 @@ bool MIDIProcessor::getCurrentPosition (CurrentPositionInfo& result)
     result.editOriginTime = 0.0;
     result.ppqPosition = variableTimeIncrement*timeInTicks;
     result.ppqPositionOfLastBarStart = 0;
-//    result.frameRate = 0.0f;
+    result.frameRate = fpsUnknown;
     result.isPlaying = isPlaying;
     result.isRecording = false;
     result.ppqLoopStart = 0;

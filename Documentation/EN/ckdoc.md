@@ -104,7 +104,7 @@ Concert Keyboardist is compatible with Windows 7 and Windows 10 (possibly Window
 
 ## Quick Start to Playing
 
-If at any time you need help finding things or knowing what they are called, see the [Overview of The Main Window].
+If you need help finding things, see the [Overview of The Main Window].
 
 * **Load a file:**  Use the File-Open menu, or the toolbar button, or Cmd+o (Ctrl+o on Windows).  A good example to start with is "Minuet in G[ck].mid" which is in the "Easy To Play Examples" folder in the "Concert Keyboardist Files" folder.  
 * When loaded it should look something like the image in the [Overview of The Main Window].
