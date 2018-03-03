@@ -253,7 +253,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         panic = true;
         isPlaying = false;
         autoPlaying = false;
-        playingAhead = false;
+        playingAhead = 0;
         waitingForFirstNote = false;
         meas = 0; //Current measure, updated when timeInTicks passes next measure division
         currentBeat = 0;
@@ -1018,7 +1018,7 @@ void MIDIProcessor::processBlock ()
         if (autoPlaying)
         {
             autoPlaying = false;
-            playingAhead = false;
+            playingAhead = 0;
 //            std::cout << "autoplay OFF " << "\n";
         }
     }
@@ -1047,10 +1047,11 @@ void MIDIProcessor::processBlock ()
             double sumPrimaryVel = 0;
             int noteIndex;
             double mostRecentNoteTime;
-            if (playingAhead)
+//            std::cout << "playingAhead " << playingAhead <<"\n";
+            if (playingAhead>=2)
                 skipProcessingTheseEvents = true;
-            if (skipProcessingTheseEvents == false && autoPlaying && !playingAhead)
-                playingAhead = true;
+            if (skipProcessingTheseEvents == false && autoPlaying && playingAhead<=1)
+                playingAhead++;
 
 //                std::cout << "noteOn " << exprEvents[exprEventIndex].getNoteNumber() << "\n";
             //Add next "firstInChain" note to availableNotes
@@ -1062,7 +1063,8 @@ void MIDIProcessor::processBlock ()
                 {
                     earliness = sequenceObject.theSequence.at(noteIndex)->getTimeStamp()-timeInTicks;
                     stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
-                    bool possiblyOverplayed = thisTimeSeparation < prevTimeSeparation * 3.0;
+                    //Only for short  notes
+                    bool possiblyOverplayed = thisTimeSeparation < prevTimeSeparation * 3.0 && prevTimeSeparation<250.0;
 //                    std::cout
 //                    << " prevTimeSeparation "<< prevTimeSeparation
 //                    << " thisTimeSeparation "<<thisTimeSeparation
@@ -1246,7 +1248,7 @@ void MIDIProcessor::processBlock ()
 //                if (!playingAhead)
                     scheduledNotes.push_back(step);
 //                if (autoPlaying && !playingAhead)
-//                    playingAhead = true;
+//                    playingAhead = 0;
             }
             
         }

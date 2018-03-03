@@ -1,11 +1,13 @@
+<doctype HTML>
+<body style = "margin-left:auto;margin-right:auto;width:960;">
 <h1 id="concert-keyboardist-users-manual">Concert Keyboardist User's Manual</h1>
 <h3 id="version-and-licensing">Version and Licensing</h3>
 <ul>
-<li>Version: February 11, 2018 for Concert Keyboardist Alpha</li>
+<li>Version: March 2, 2018 for Concert Keyboardist Alpha</li>
 <li>Licensing: <a href="#licenses-and-copyrights">Licenses and Copyrights</a></li>
 </ul>
 <h2 id="contact-information">Contact Information</h2>
-<p>For questions or comments contact: chrisgr99 at gmail</p>
+<p>For questions or comments contact: chrisgr99 at gmail dot com</p>
 <h2 id="quick-introduction-to-concert-keyboardist">Quick Introduction to Concert Keyboardist</h2>
 <p>Concert Keyboardist is like a musical instrument that never lets you play a wrong note. Load a midi file and Concert Keyboardist becomes an instrument to perform that music expressively, not just to listen passively. You control when and how notes are played, in real time. Play like a &quot;Concert Keyboardist&quot; with just your computer keyboard, or use a midi keyboard for even more control.</p>
 <p>Where to get midi files to play? There are tens of thousands available around the Internet for download or you can create your own. Before Concert Keyboardist, midi files always replayed exactly the same. With Concert Keyboardist music comes alive under your fingers.</p>
@@ -13,12 +15,13 @@
 <iframe width="560" height="315" src="https://www.youtube.com/embed/xb66fzwdDS4?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
 </iframe>
 <p><img src="../Common/img/Pathetique.jpg" alt="CK" style="width:100%;margin:20px 0px 10px 0px"></p>
-<p><strong>How it works</strong>: In the above image &quot;Target Notes&quot; have magenta heads and &quot;Chained&quot; notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score. It also schedules any notes Chained off the target and autoplays them according to the tempo. Chained accompaniment notes can continue to play while you play overlapping target notes. Play polyphonic music, even complex chords. Play multi channel midi with multiple simultaneous instruments, or mute some combination of channels to concentrate on some part of the music.</p>
-<p>As you play, the score scrolls right-to-left based on the tempo at that point in the score's midi file. You control when to play target notes and how long to hold them. Concert keyboardist continually shows you the notes you've played, currently playing notes, and upcoming unplayed target notes, and it gives you a visual cue of when to play the next target note at the current tempo.</p>
+<p><strong>How it works</strong>: In the above image &quot;Target Notes&quot; have magenta heads and &quot;Chained&quot; notes have white or grey heads. Each successive key (any key) you press, Concert Keyboardist triggers the next successive Target Note in the score. It also schedules any notes Chained off the target and autoplays them according to the tempo. Chained notes can continue to play while you play overlapping target notes. You can play polyphonic music, even complex chords. You can play multi channel midi with multiple simultaneous instruments, or mute some combination of channels to concentrate on some part of the music.</p>
+<p>As you play, the score scrolls right-to-left based on the tempo at that point in the score's midi file. You control when to play target notes and how long to hold them. Concert keyboardist continually shows you the notes you've played, currently playing notes, and upcoming unplayed target notes. Each time you play a target note Concert Keyboardist gives you visual a cue of when to play the next target note at the current tempo, although you are free to play earlier or later if you choose.</p>
 <p>This carefully designed note triggering system and ongoing visual feedback is crucial to the ability to play a midi file live. More more a year of testing went into perfecting it.</p>
 <p>When you play on computer keyboard Concert Keyboardist uses note velocities from the score. When you play on a velocity sensitive midi keyboard Concert Keyboardist uses velocities from the keyboard for the target notes. Velocities of chained notes are adjusted proportional to the velocity of their target note.</p>
-<p>The tempo in many midi files is varied according to the position in the music. Concert Keyboardist tracks the tempo adjusting its rate of scrolling and note-time visual cues so you can intuitively follow the tempo. However you don't have to play target notes exactly when Concert Keyboardist suggests. You can freely vary note-on times and the moment-by-moment tempo as you feel appropriate for the music. The midi file will sound like it was played a human - you, not like a robot, and every performance will be personal and unique.</p>
-<p>Concert Keyboardist has tools to edit which notes are target notes, note velocities, note start times, note durations, changes in the tempo, and to &quot;humanize&quot; the start times and velocities of simultaenous notes in chords. You can save your edited scores in Concert Keyboardist files which are normal midi files but with an extra invisible track for additional settings.</p>
+<p>The tempo in many midi files is varied according to the position in the music. Concert Keyboardist tracks the tempo adjusting its rate of scrolling and note-time visual cues so you can intuitively follow the tempo. However you don't have to play target notes exactly when Concert Keyboardist suggests. You can freely vary note-on times and the moment-by-moment tempo as you feel appropriate for the music. The midi file will sound like it was played by you - a human - not like a robot, and every performance will be personal and unique.</p>
+<p>Concert Keyboardist has tools to edit which notes are target notes, and note velocities, start times, durations, tempo changes. It also has tools to &quot;humanize&quot; the start times and velocities of simultaenous notes in chords, which can happen in midi files created by step sequence or score editing software.</p>
+<p>Concert Keyboardist files are midi files but with an extra non-playing track for additional settings. Because Concert Keyboardist files are normal midi files you can load them into other midi software and retain the edits you made in Concert Keyboardist.</p>
 <p>However, it's important to understand that in this version of Concert keyboardist it's not possible to create scores or add and remove notes. There are many powerful applications for creating and manipulating midi files, but Concert Keyboardist is unique in its ability to allow you to &quot;perform&quot; them under real time control.</p>
 <h2 id="installation-and-setup-on-a-macintosh">Installation and Setup on a Macintosh</h2>
 <p>Concert Keyboardist is compatible with Mac OS 10.6 or higher. To install:</p>
@@ -33,7 +36,7 @@
 <li>Load a plugin as described in <a href="#plugin-management-tools">Plugin Management Tools</a>.</li>
 <li>Configure the Concert Keyboardist audio output using &quot;Audio and Midi Settings&quot; in <a href="#settings-tools">Settings Tools</a>.</li>
 </ul></li>
-<li>The other option for sound is to send midi messages to a software synthesizer or &quot;Digital Audio Workstation&quot; (DAW) on your computer, or an attached hardware synthesizer.
+<li>The other way to produce sound is to send midi messages to a software synthesizer or &quot;Digital Audio Workstation&quot; (DAW) on your computer, or an attached hardware synthesizer.
 <ul>
 <li>The easiest option on a Mac is GarageBand which is free and has a wide range of sounds to choose from. GarageBand automatically receives midi messages from all midi output on your system so it automatically receives from the Concert Keyboardist default output.</li>
 <li>To set up with GarageBand:
@@ -54,6 +57,7 @@
 <li>Configure it as the Concert Keyboardist midi input as shown in Audio and Midi Settings in <a href="#settings-tools">Settings Tools</a>.</li>
 <li>Be sure your controller is active when Concert Keyboardist is started.</li>
 <li>Remember that even on a midi ketboard, Concert keyboardist will only trigger the notes in the midi file no matter what keys you press. The advantages are that you may prefer the touch of your own keyboard, and if your controller is velocity sensitive you will be able to control note loudness.</li>
+<li>If you set your keyboard to send on midi channel 13 or less, note velocities from the keyboard control the velocities of target notes and their chained notes. If you set your keyboard to send on midi channel 16, note velocities are taken from the midi score.</li>
 </ul></li>
 <li>Preferably choose a piano-like sound on your synthesizer.</li>
 <li>After setting up, go to the <a href="#quick-start-to-playing">Quick Start to Playing</a>.</li>
@@ -64,7 +68,7 @@
 <li>Download the Windows installer.</li>
 <li>Double click on the installer and follow the prompts.<br />
 </li>
-<li>It will install Concert Keyboardist to your Programs folder and create a folder example files called &quot;Concert Keyboardist Files&quot; in your Documents directory.</li>
+<li>It will install Concert Keyboardist to your Programs folder and create a folder of example files called &quot;Concert Keyboardist Files&quot; in your Documents directory.</li>
 <li>Run Concert Keyboardist. You should find shortcuts to Concert Keyboardist on the Desktop and in the Start menu.</li>
 <li>You may want to pin Concert Keyboardist to the Taskbar.</li>
 <li>Concert keyboardist can produce sound in two ways:</li>
@@ -73,7 +77,7 @@
 <li>Load a plugin as described in <a href="#plugin-management-tools">Plugin Management Tools</a>. Preferably choose a piano-like sound.</li>
 <li>Configure the Concert Keyboardist audio output using &quot;Audio and Midi Settings&quot; in <a href="#settings-tools">Settings Tools</a>.</li>
 </ul></li>
-<li>The other option to generate sound is to route midi messages to an external sound generator such as a software synthesizer or &quot;Digital Audio Workstation&quot; (DAW) running on your computer, or an attached hardware synthesizer.
+<li>The other way to generate sound is to route midi messages to an external sound generator such as a software synthesizer or &quot;Digital Audio Workstation&quot; (DAW) running on your computer, or an attached hardware synthesizer.
 <ul>
 <li>To route midi to a software synthesizer will need a virtual midi routing driver such as <a href="http://www.nerds.de/en/loopbe1.html">LoopBee</a>, which is free for the basic version, which is sufficient.<br />
 </li>
@@ -86,7 +90,8 @@
 <ul>
 <li>Configure it as the Concert Keyboardist midi input as shown in Audio and Midi Settings in <a href="#settings-tools">Settings Tools</a>.</li>
 <li>Be sure your controller is active when Concert Keyboardist is started.</li>
-<li>Remember that even on a midi ketboard, Concert keyboardist will only trigger the notes in the midi file no matter what keys you press. The advantages are that you may prefer the touch of your own keyboard, and if your controller is velocity sensitive you will be able to control note loudness.</li>
+<li>Remember that even on a midi keyboard, Concert keyboardist will only trigger the notes in the midi file no matter what keys you press. The advantages are that you may prefer the touch of your own keyboard, and if your controller is velocity sensitive you will be able to control note loudness.</li>
+<li>If you set your keyboard to send on midi channel 13 or less, note velocities from the keyboard control the velocities of target notes and their chained notes. If you set your keyboard to send on midi channel 16, note velocities are taken from the midi score.</li>
 </ul></li>
 <li>Preferably choose a piano-like sound on your synthesizer.</li>
 <li>After setting up, go to the <a href="#quick-start-to-playing">Quick Start to Playing</a>.</li>
@@ -99,19 +104,20 @@
 <li>When loaded it should look something like the image in the <a href="#overview-of-the-main-window">Overview of The Main Window</a>.</li>
 <li><strong>Prepare to play:</strong> Press the spacebar. This turns the Base Line orange, indicating that Concert Keyboardist is ready to play. In this mode as soon as you press a key the note at the Base Line is played and the note bars start scrolling to the left. The scroll rate is based on the tempo.</li>
 <li><strong>Playing Notes:</strong> Press keys on your computer keyboard - any of the letter keys, or any of the characters &quot;[ ] ; ' &lt; &gt; /&quot;. On an English language keyboard these are the rows from &quot;q&quot; to &quot;]&quot;, from &quot;a&quot; to &quot; ' &quot; and from &quot;z&quot; to &quot;/&quot;. It doesn't matter which keys you press. <strong>Any</strong> key always triggers the next target note. Similarly if you are using a midi keyboard <strong>any</strong> key triggers the next target note.</li>
-<li><strong>Note Timing:</strong> Press a key each time a target note reaches the vertical yellow line drawn when the previous note was played. This plays exactly at the original tempo and rhythm.<br />
+<li><strong>Note Timing:</strong> Press a key each time a target note reaches the vertical yellow line drawn when the previous note was played. If you do this you will play exactly at the original tempo and rhythm.<br />
 </li>
 <li>You can vary note timing, rhythm and tempo by playing before or after each target note reaches the yellow line.</li>
 <li>Usually, just play what sounds good to you, but you do need to watch for and play just the target notes.<br />
 </li>
 <li>It takes a little practise but its fun, and easier than learning a &quot;real instrument&quot;!</li>
 <li>You can play with one finger, or two or more fingers to play faster or smoother. It's easiest to start with one.</li>
-<li><strong>Stopping:</strong> Press the spacebar again, or press the Return key for rewind, or roll the mouse wheel to scroll left or right.</li>
+<li><strong>Stopping:</strong> Click the &quot;Stop Playing&quot; toolbar button, or preferably press the spacebar again, or press the Return key for instant rewind.</li>
 <li><strong>Yellow note heads</strong> are those that are currently sounding. As you play, notice that long notes continue sounding even as you trigger shorter simultaneous notes.</li>
 <li><strong>Chords:</strong> In the &quot;Minuet in G&quot; example the top notes of chords are target notes. Simultaneous or nearby chord notes are chained from them, like any other chained notes. This allows chords to be triggered by one note.</li>
 <li><strong>Trills</strong> are like any other chained notes. For example in bar 8 of Minuet in G the notes are chained making them easier to play. It you prefer to play the notes of the trill you can convert those notes into target notes by clicking on their heads.</li>
 <li><strong>Rewind:</strong> Press the Return key. The first time you press Return the transport rewinds to the place you most recently started. A second press returns to the start. You can also press Return while the transport is running to stop and transport and rewind in one step.</li>
-<li><strong>Basic Editing</strong> You can edit which notes are target notes. Click on the head a note to toggle its target vs chained status. Setting a note to be chained causes it to be added to the chain of the preceding target note.</li>
+<li><strong>The Listen Tool</strong> When you are learning a new piece, you may want to hear what a section of the music sounds like as originally written in the midi file. Scroll to just before that section and click the &quot;Listen&quot; toolbar button, the one that looks like musical notes, or press the '=' key. The music will play until you press the spacebar to stop listing. The score will be scrolled back to where you started so you can play the section.</li>
+<li><strong>Basic Editing</strong> You can edit which notes are target notes. Click on the head a note to toggle its target vs chained status. Setting a note to be chained (i.e. non-target) causes it to be added to the chain of the preceding target note.</li>
 <li><strong>Playing legato notes</strong> This is a technique where the on and off times of successive notes are overlapped resulting in smooth sounding transitions. If you play with at least two fingers you can overlap the on and off times of successive notes to create legato as in normal piano playing.<br />
 </li>
 <li><strong>The Relative Time Line:</strong> This is the yellow vertical line that appears at the start of the most recently played target note. The Relative Time Line is a guide to when to play the next target note relative to when you played the note before. In playing expressively you may be triggering notes before or after the Base Line. It's helpful to have a Relative Time Line as a marker showing when the last note was actually played. When the next note reaches the Relative Time Line, it's due to be played. Experiment with playing notes before or after the Relative Time Line to understand this better. The Relative Time Line also remains after you stop playing to mark the last note played before stopping.</li>
@@ -122,7 +128,7 @@
 <h2 id="overview-of-the-main-window">Overview of The Main Window</h2>
 <ul>
 <li>Concert Keyboardist is like a player piano. <strong>Notes</strong> are horizontal bars that scroll right to left horizontally based on the current <strong>tempo</strong>. A note's vertical position shows pitch and its left end shows start time. Its length shows duration. This information is read from the midi file and guides you when to play notes and how long to hold them.</li>
-<li><strong>As you play press and release keys to begin and end notes</strong>, much like playing sheet music except that note pitches are supplied by the score. So it doesn't matter which keys you press - just when and how long you press them. If you have a velocity sensitive midi keyboard you can also control note velocities.</li>
+<li><strong>As you play, press and release keys to begin and end notes</strong>, much like playing sheet music except that note pitches are supplied by the score. So it doesn't matter which keys you press - just when and how long you press them. If you have a velocity sensitive midi keyboard you can also control note velocities.</li>
 <li>The score can be manually <strong>scrolled</strong> left or right with the mouse wheel or two finger drag on a touch pad. The end of the score is at the far right.</li>
 <li>The blue vertical line is the <strong>&quot;Base Line&quot;</strong> which indicates the nominal playing time in the score. It turns amber when ready to play and green while you are playing.</li>
 <li>While you are playing, pressing any key instantly triggers the next unplayed <strong>Target Note</strong>, the magenta-headed-notes. The these are the notes you directly play.</li>
@@ -130,29 +136,29 @@
 </li>
 <li>Chained notes are triggered at appropriate times in the future based on the current tempo.</li>
 <li>After all scheduled chained notes have been played no further notes will sound until you trigger the next target note.</li>
-<li>Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the <strong>flow and rhythm</strong> of the music. The <strong>tempo</strong> gradually adjusts itself to your playing speed. If you continually play notes before their scheduled time the tempo speeds up and if you play notes behind the tempo slows.</li>
-<li>If you try to play the next target note while previously chained notes are still playing, that target note and its chained notes are added to the previous chain.</li>
-<li>Each time you trigger a target note a vertical yellow <strong>&quot;Relative Time Line&quot;</strong> is drawn at that exact position as a guide to when to play the next target note. To play the upcoming target note at the current tempo, play it when it reaches the Relative Time Line. You are free to play it earlier or later which alters the timing of that note and its chained notes. i.e. The feel or rhythm of the music. If you continue playing early or late the tempo gradually slows or speeds up.</li>
+<li>Although a target note's position suggests its start time, you can play it before or after that time, giving you control over the <strong>flow and rhythm</strong> of the music.</li>
+<li>If you try to play the next target note while previously chained notes are still playing, that target note and its chained notes are added to the previous chain. This play-ahead capability helps with smooth playing, but is limited to a maximum of two target notes during a given chaining interval to avoid getting too far out of sync with the apparent playing position.</li>
+<li>Each time you trigger a target note a vertical yellow <strong>&quot;Relative Time Line&quot;</strong> is drawn at that exact position as a guide to when to play the next target note. To play the upcoming target note at the current tempo, play it when it reaches the Relative Time Line. You are free to play it earlier or later which alters the timing of that note and its chained notes. i.e. The feel or rhythm of the music.</li>
 </ul>
 <h2 id="navigating-the-score-and-adjusting-the-view">Navigating the Score and Adjusting the View</h2>
 <ul>
 <li><strong>Scroll</strong> left or right with the touchpad or mouse wheel.<br />
 </li>
-<li>Press the <strong>Return Key</strong> once to return where you last started playing.<br />
+<li>Click the &quot;Rewind&quot; toolbar button, or preferably press the <strong>Return Key</strong> once to return where you last started playing.<br />
 </li>
-<li>Press the <strong>Return Key</strong> twice to return to the start of the score.</li>
-<li><strong>The Right and Left arrow keys</strong> step one target note at a time forward or backward in the score.</li>
-<li><strong>The Shift+Right Arrow and Shift+Left Arrow keys</strong> step one measure at a time forward or backward in the score.</li>
-<li><strong>Bookmarks:</strong> Cmd+Right Arrow and Cmd+Left Arrow (Ctrl on Windows) step one bookmark at a time forward or backward in the score.</li>
-<li>Click the bookmark tool or press Cmd+b (Ctrl+b on Windows) to create a bookmark at the Base Line. To delete a bookmark move it to the Base Line to cause the Add Bookmark Tool to become a Remove Bookmark Tool.</li>
-<li>Concert Keyboardist compresses the score vertically to always show the full range of note pitches in the midi file. This is because, for playability, all notes need to be visible as they scroll through the display. The size of every &quot;note track&quot; is adjusted so they all fit in the vertical size of the window. This means that a score with a wide range of pitches will have narrower tracks than a score with fewer pitches.<br />
+<li>Click the &quot;Rewind&quot; toolbar button twice, or preferably press the <strong>Return Key</strong> twice to return to the start of the score.</li>
+<li>The Right and Left arrow keys step one target note at a time forward or backward in the score.</li>
+<li>The Shift+Right Arrow and Shift+Left arrow keys step one measure at a time forward or backward in the score.</li>
+<li>Cmd+Right Arrow and Cmd+Left Arrow (Ctrl on Windows) step one bookmark at a time forward or backward in the score.</li>
+<li>To create a bookmark at the position of the base line, click the bookmark tool or press Cmd+b (Ctrl+b on Windows). To delete a bookmark move it to the Base Line to cause the Add Bookmark Tool to become a Remove Bookmark Tool.</li>
+<li>Concert Keyboardist compresses the score vertically to always show the full range of note pitches in the midi file. This is because, for playability, all notes must be guaranteed be visible as they scroll through the display. The size of all &quot;note tracks&quot; are adjusted so all that will be needed will fit in the vertical space in the window. This means that a score with a wide range of pitches will have narrower tracks than a score with fewer pitches.<br />
 </li>
 <li>Because all note pitches are always visible, it's never necessary to scroll vertically.</li>
 <li>Changing the height of the entire window is the way to change the height of the note tracks.<br />
 </li>
-<li>Making the window wider opens more space on the right to see approaching notes.</li>
-<li>You can expand or contract the view horizontally by pressing the left mouse button over the Navigation Bar and dragging up or down. You can find Navigation Bar labeled near the top in the <a href="#overview-of-the-main-window">Overview of The Main Window</a>. You can also simultaneously drag horizontally on the navigation bar to move left or right while you zoom.</li>
-<li>Tip: You may actually find it easier to play music with a window that's not too tall. This ensures that all notes scroll by in the vertical range of your eyes sharp field of view. However editing can be easier on a taller window with wider note bars. Try resizing the window to make it window taller when you are doing a lot of editing.</li>
+<li>Making the window wider opens more space on the right to see the notes. Usually wider is better. The base line is always centred in the available width.</li>
+<li>You can zoom the display horizontally to see more or fewer notes by pressing the left mouse button over the Navigation Bar and dragging up or down. The Navigation Bar is labeled in the <a href="#overview-of-the-main-window">Overview of The Main Window</a>. You can also simultaneously drag horizontally on the navigation bar to move left or right while you zoom. Experiment with different amount of zoom for a given piece of music. Zooming out causes the display to scroll slower at a given tempo, which can be easier to play, while zooming in causes it to scroll faster, but improves visibility of note timing and duration.</li>
+<li>Tip: You may actually find it easier to play music with a window that's not too tall. This ensures that all notes will appear in the vertical range of your eyes' sharp field of view. However editing can be easier on a taller window with wider note bars. Try resizing the window to make it window taller when you are doing a lot of editing.</li>
 </ul>
 <h2 id="the-selection">The Selection</h2>
 <p>Many commands act on a group of notes called the &quot;selection&quot;:</p>
@@ -216,13 +222,12 @@
 <li><strong>&quot;File Open&quot;</strong> asks you to choose and file and displays its score in the main window. If it's not a Concert keyboardist file it is imported.
 <ul>
 <li>When a just-imported file is saved, Concert Keyboardist will ask for a name. The default name is the original name with [CK] added in front of the &quot;.mid&quot; extension. It's best to retain the [CK] to allow Concert Keyboardist files to be easily identified and searched for.</li>
-<li>Importing a midi file converts it to a Concert Keyboardist score.</li>
+<li>Importing a midi file converts it to a Concert Keyboardist score when is is saved.</li>
 </ul></li>
 <li><strong>&quot;File Save&quot;</strong>
 <ul>
-<li>If the current file was just loaded as a normal midi file, the save is treated as a Save As with the proposed name being the original name with [CK] added in front of the .mid extension. It will be saved in Concert Keyboardist format.</li>
-<li>If the current file was already a Concert keyboardist file, it is saved without prompting, replacing the previous file.<br />
-</li>
+<li>If the current file was loaded from Concert keyboardist file, it is saved without prompting, replacing the previous file.</li>
+<li>If the current file has just been loaded as a normal midi file, the Save command will be treated as Save As, with the proposed name being the original name with [CK] added in front of the .mid extension. It will be saved in Concert Keyboardist format.</li>
 </ul></li>
 <li><strong>&quot;File Save As&quot;</strong> saves the current score in a new file, asking you to provide a new name.</li>
 <li><strong>Drag and drop</strong>: You can open a file by dragging and dropping a &quot;.mid&quot; or &quot;[CK].mid&quot; type file from a Mac or Windows folder onto the Concert Keyboardist window.</li>
@@ -335,7 +340,7 @@ At least one track must be enabled.<br />
 <li>Note that Midi files that were originally recorded live, such by recording from a midi keyboard, usually don't include tempo variations.... TBD</li>
 <li>The first number in the toolbar tempo tools is the tempo in beats per minute at the Base Line.</li>
 <li>To see the tempo at a given position in the score, scroll the score so that position is at the Base Line.</li>
-<li>You adjust how fast the entire score will play by by dragging up or down on the tempo number. You will see the red line move up or down.<br />
+<li>You can adjust how fast the entire score will play by by dragging up or down on the tempo number. The red line will move up or down.<br />
 </li>
 <li>Next to the tempo number is a <strong>percentage</strong> showing the ratio of the actual playing tempo as compared to the original score tempo.<br />
 As you drag up/down on the temp number the percentage number will be updated to show how the currently selected tempo is of the original score tempo.</li>
@@ -348,14 +353,14 @@ As you drag up/down on the temp number the percentage number will be updated to 
 </ul>
 <h3 id="help-tool">Help Tool</h3>
 <p><img src="../Common/img/HelpTool.jpg" alt="CK" style="width:4%;margin:0px 0px 0px 25px"></p>
-<p>Opens the Concert keyboardist documentation in your default web browser.</p>
+<p>Opens the Concert keyboardist documentation file from the concertkeyboardist.com website into your default web browser.</p>
 <h2 id="editing-toolbar">Editing Toolbar</h2>
 <h3 id="undo-and-redo-tools">Undo and Redo Tools</h3>
 <p><img src="../Common/img/UndoRedoTools.jpg" alt="CK" style="width:6%;margin:0px 0px 0px 25px"></p>
 <p>These buttons perform undo and redo, for any of the following commands:</p>
 <ul>
 <li>The <a href="#toggle-target-notes-tool">Toggle Target Notes Tool</a>.</li>
-<li>The [Note Chaining Tools].</li>
+<li>The <a href="#note-chaining-tool">Note Chaining Tool</a>.</li>
 <li>Dragging notes to change their start times.</li>
 <li>Dragging notes to change their durations.</li>
 <li>All <a href="#note-velocity-tools">Note Velocity Tools</a>.</li>
@@ -446,7 +451,7 @@ of all selected notes.
 </ul>
 <h2 id="licenses-and-copyrights">Licenses and Copyrights</h2>
 <h3 id="concert-keyboardist-license">Concert Keyboardist License</h3>
-<p>Copyright (C) 2018 Christopher Graham (chrisgr99 at gmail)</p>
+<p>Copyright (C) 2018 Christopher Graham (chrisgr99 at gmail dot com)</p>
 <pre><code>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
