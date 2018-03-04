@@ -237,7 +237,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         lastPlayedTargetNoteTime = -1;
         nextDueTargetNoteTime = -1;
         lastPlayedNoteStep = -1;
-        if (listenSequence.size()>0)
+        if (listenSequence.size()>0 && listenStep < listenSequence.size())
         {
             while (time > listenSequence.at(listenStep).timeStamp)
                 listenStep++;
