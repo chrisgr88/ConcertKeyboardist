@@ -15,3 +15,22 @@ Mac Installer Creation
 - Build and upload most recent version of help
 - Build and upload most recent version of index.htm
 - Download on different system and test
+
+
+Asserts to disable in juce_AudioProcessor.cpp:
+=============================================
+    // failed to find a compatible input configuration
+    jassert (success);
+
+    if (getTotalNumOutputChannels() != newNumOuts)
+        success &= setChannelLayoutOfBus (false, 0, AudioChannelSet::canonicalChannelSet (newNumOuts));
+
+    // failed to find a compatible output configuration
+    jassert (success);
+
+    // if the user is using this method then they do not want any side-buses or aux outputs
+    success &= disableNonMainBuses();
+    jassert (success);
+
+    // the processor may not support this arrangement at all
+    jassert (success && newNumIns == getTotalNumInputChannels() && newNumOuts == getTotalNumOutputChannels());
