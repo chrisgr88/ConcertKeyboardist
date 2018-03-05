@@ -3,13 +3,15 @@ Mac Build Process (do before Windows build)
 Mac Installer Creation
 - Ensure up to date with repo
 - Insert the version information versionLabel.setText in AboutWindow.h.  In the format below.
+- Export from Projucer
+- Patch juce_AudioProcessor.cpp in JUCE Modules, as below
 - Do a "release" build
 - Ensure the About window shows the correct information
 - Duplicate the Template Folder in the Installers/Mac directory
-- Rename it as follows, appending the version number e.g. "Version: 1.0.0 alpha"
+- Rename it "Concert Keyboardist Installer - ", appending the version number e.g. "Version 1.0 alpha"
 - Copy the latest ConcertKeyboardist.app release build into it
 - Copy the latest "Concert Keyboardist Files" folder into it
-- Compress it
+- Compress it (note that the folder background is not retained so we just use a readme file for now.)
 - Create a tag on github
 - Upload to release server
 - Build and upload most recent version of help

@@ -1,0 +1,8 @@
+To Install:
+
+1) Drag ConcertKeyboardist.app to your Applications folder.
+2) Drag the Concert keyboardist Files folder to your Documents folder.
+3) Run ConcertKeyboardist.app .
+4) Open the documentation:  Click on the blue question mark '?' button in 
+the lower right of the ConcertKeyboardist window.
+5) Follow the instructions on getting started.
