@@ -167,6 +167,7 @@ ApplicationProperties& getAppProperties();
         extra_menu.addItem (0x999, "Preferences...");
         MainWindow::setMacMainMenu (this, &extra_menu);
 #else
+		
         setMenuBar (this);
 #endif
 #endif
@@ -701,6 +702,12 @@ ApplicationProperties& getAppProperties();
             menu.addSeparator();
             menu.addCommandItem (&getCommandManager(), CommandIDs::showPluginListEditor);
         }
+		else if (topLevelMenuIndex == 3) // "Help" menu
+		{
+#if JUCE_WINDOWS
+			menu.addCommandItem(&getCommandManager(), CommandIDs::appAboutBox);
+#endif
+		}
         return menu;
     }
 void MainWindow::addPluginsToMenu (PopupMenu& m) const
