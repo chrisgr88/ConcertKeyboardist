@@ -25,7 +25,11 @@ MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
         processor->reset(44.1);
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
-        audioDeviceManager.initialise (0, 2, savedAudioState, true);
+        if (savedAudioState!= nullptr)
+            audioDeviceManager.initialise (0, 2, savedAudioState, true);
+        else
+            audioDeviceManager.initialise (0, 2, nullptr, true);
+        
 //        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
 //        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
         std::cout << "Audio Device Initialized " << audioDeviceManager.getCurrentAudioDevice()->getName() << "\n";

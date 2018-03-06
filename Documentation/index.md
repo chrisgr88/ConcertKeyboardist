@@ -36,7 +36,7 @@ Concert Keyboardist Alpha is available for download at no cost.  Available for M
 
 [Concert Keyboardist for Mac Installer - Version 1.0 alpha](http://www.concertkeyboardist.com/Downloads/Concert Keyboardist for Mac Installer - Version 1.0 alpha.zip)
 
-[Concert Keyboardist for Windows Installer - Version 1.0 alpha](http://www.concertkeyboardist.com/Downloads/Concert Keyboardist for Mac Installer - Version 1.0 alpha.zip)
+[Concert Keyboardist for Windows Installer - Version 1.0 alpha](http://www.concertkeyboardist.com/Downloads/Concert Keyboardist for Windows Installer - Version 1.0 alpha.msi)
 
 ## Contact Information
 

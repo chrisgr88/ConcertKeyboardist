@@ -1579,6 +1579,9 @@ void ScrollingNoteViewer::paint (Graphics& g)
 {
     if (rendering)
         return;
+    int seqSize = (int) processor->sequenceObject.theSequence.size();
+    if (seqSize==0)
+        return;
     const double scaledPixPerTick = pixelsPerTick * horizontalScale;
     std::vector<std::shared_ptr<NoteWithOffTime>> *pSequence = &(processor->sequenceObject.theSequence);
     //Start of most recently played note
