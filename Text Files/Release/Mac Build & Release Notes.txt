@@ -3,12 +3,13 @@ Mac Build Process (do before Windows build)
 Mac Installer Creation
 - Ensure up to date with repo
 - Insert the version information versionLabel.setText in AboutWindow.h.  In the format below.
+- Ensure AU are enabled in projucer audioprocessors module
 - Export from Projucer
 - Patch juce_AudioProcessor.cpp in JUCE Modules, as below
 - Do a "release" build
 - Ensure the About window shows the correct information
 - Duplicate the Template Folder in the Installers/Mac directory
-- Rename it "Concert Keyboardist Installer - ", appending the version number e.g. "Version 1.0 alpha"
+- Rename it e.g. "Concert Keyboardist for Windows Installer - Version 1.0 alpha"
 - Copy the latest ConcertKeyboardist.app release build into it
 - Copy the latest "Concert Keyboardist Files" folder into it
 - Compress it (note that the folder background is not retained so we just use a readme file for now.)
@@ -17,7 +18,9 @@ Mac Installer Creation
 - Build and upload most recent version of help
 - Build and upload most recent version of index.htm
 - Download on different system and test
-
+- Upload to website
+- Rename link to this installer.  Link is in index.htm on website 
+- Upload this installer to the dropbox installer backup folder.
 
 Asserts to disable in juce_AudioProcessor.cpp:
 =============================================

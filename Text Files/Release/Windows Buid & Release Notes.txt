@@ -1,7 +1,9 @@
 Windows Buid & Release Notes
 
 - Ensure up to date with repo
-- Load into Projucer and export
+- Load into Projucer and export.  
+	- Be sure to choose "Use Static Runtime" in the exporter settings.
+	- Ensure "Audio Unit" are disabled
 - Ensure Mac version was built just previously to update date header
 - Enable plugin types in projucer (VST & Vst3) and disable AU
 - Ensure VST SDK is correct
@@ -9,16 +11,20 @@ Windows Buid & Release Notes
 
 - Windows Release
 	- Build a "release" version, as above
-	- Open "Setup2.sln" in the Win release directory 
+	- Open "Setup2.sln" in the ./Installers/Win folder
+	- Delete exe in the installer project and replace it with the newly built exe.  Verify build time.
+	- Create new shortcuts in the installer desktop and start menu folders of the installer project
 	- Ensure midi files in installer are up to date
 	- Build the installer
+	- Rename it to, e.g. "Concert Keyboardist for Windows Installer - Version 1.0 alpha"
 	- Test on this computer
 	- Test on a different computer
-	- Create a tag on github
-	- Upload the installer to github
 	- Download on a different system
 		- Test install
 		- Test run
+	- Upload to website with Cyber Duck
+	- Rename link to the download of this version
+	- Upload to dropbox folder for released installers
 
 To set the Appicon.ico in the installer
 	- Drag the .ico file into the "virtual"Application Folder (on the "Target Machine")
