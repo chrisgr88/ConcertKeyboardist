@@ -23,9 +23,12 @@ MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
         processor->sequenceObject.addActionListener(this);
         setLookAndFeel (&lookAndFeel);
         processor->reset(44.1);
+        
+//        std::cout << "audioDeviceState " << getAppProperties().getUserSettings()->getXmlValue ("audioDeviceState") <<"\n";
         ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
                                                    ->getXmlValue ("audioDeviceState"));
-        if (savedAudioState!= nullptr)
+        
+        if (savedAudioState != nullptr)
             audioDeviceManager.initialise (0, 2, savedAudioState, true);
         else
             audioDeviceManager.initialise (0, 2, nullptr, true);

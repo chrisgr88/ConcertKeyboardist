@@ -93,12 +93,10 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
-                       linkTimeOptimisation="0" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"
-                       useRuntimeLibDLL="0"/>
+                       linkTimeOptimisation="0" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
-                       linkTimeOptimisation="1" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"
-                       useRuntimeLibDLL="0"/>
+                       linkTimeOptimisation="1" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../JUCE/modules"/>
@@ -152,7 +150,7 @@
     <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
     <MODULES id="juce_video" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="0"/>
+  <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"/>
   <LIVE_SETTINGS>
     <OSX enableCxx11="1"/>
   </LIVE_SETTINGS>

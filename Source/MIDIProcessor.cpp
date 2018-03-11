@@ -1031,6 +1031,8 @@ void MIDIProcessor::processBlock ()
     {
         if (exprEvents[exprEventIndex].isNoteOn())
         {
+//            if (exprEvents[exprEventIndex].getNoteNumber()==68 ||  (exprEvents[exprEventIndex].getNoteNumber()==71))
+//                continue;  //Wind controller experiment
             double prevTimeSeparation = prevExprNoteTick-prevPrevExprNoteTick;
             double thisTimeSeparation = timeInTicks - prevExprNoteTick;
             if (waitingForFirstNote)
