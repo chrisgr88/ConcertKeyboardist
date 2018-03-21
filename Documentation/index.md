@@ -34,9 +34,17 @@ Where to get midi files?  There are tens of thousands available around the Inter
 
 Concert Keyboardist Alpha is available for download at no cost.  Available for Macintosh and Windows.
 
-[Concert Keyboardist for Mac Installer - Version 1.0 alpha](http://www.concertkeyboardist.com/Downloads/Concert Keyboardist for Mac Installer - Version 1.0 alpha.zip)
+[Concert Keyboardist for Mac Installer - Version 1.0.1 alpha](http://www.concertkeyboardist.com/Downloads/Concert Keyboardist for Mac Installer - Version 1.0.1 alpha.zip)
 
-[Concert Keyboardist for Windows Installer - Version 1.0 alpha](http://www.concertkeyboardist.com/Downloads/Concert Keyboardist for Windows Installer - Version 1.0 alpha.msi)
+[Concert Keyboardist for Windows Installer - Version 1.0.1 alpha](http://www.concertkeyboardist.com/Downloads/Concert Keyboardist for Windows Installer - Version 1.0.1 alpha.msi)
+
+Change Notes
+
+* Version 1.0 alpha
+	* First public release
+
+* Version 1.0.1 alpha
+	* Fixed problem where audio/midi settings were not always being updated on exiting the audio/midi dialog box
 
 ## Contact Information
 
