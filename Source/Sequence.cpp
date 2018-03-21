@@ -242,12 +242,13 @@ void Sequence::saveSequence(File fileToSave)// String  name = "")
         //Property "trackDetails"
         String propertyStr = String("trackDetails:")+String(track)
                                             +" "+String(trackDetails[track].playability)
-                                            +" "+String(trackDetails[track].assignedChannel);
+                                            +" "+String(trackDetails[track].assignedChannel)
+                                            +" "+String(trackDetails[track].performable);
         int len = propertyStr.length();
         char buffer[128];
         propertyStr.copyToUTF8(buffer,128);
         MidiMessage sysex = MidiMessage::createSysExMessage(buffer, len+1);
-//        std::cout << " Write sysex trackDetails - "<< propertyStr <<" "<<propertyStr.length() << "\n";
+        std::cout << " Write sysex trackDetails - "<< track<<" "<<propertyStr <<" " << "\n";
         sysexSeq.addEvent(sysex);
     }
 
@@ -759,9 +760,14 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
         //                trkDetail.showInList = true;
         //            else
         //                trkDetail.showInList = false;
-
+                    trkDetail.performable = 0;
+                    trkDetail.assignedChannel = 99;
                     if (trkDetail.nNotes>0)
+                    {
                         trkDetail.playability = TrackTypes::Track_Play;
+                        trkDetail.performable = 1;
+                        trkDetail.assignedChannel = trkDetail.originalChannel;
+                    }
                     else if (trkDetail.nSustains>0 || trkDetail.nSofts>0)
                         trkDetail.playability = TrackTypes::Track_Controllers;
                     else
@@ -930,13 +936,26 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                         values.addTokens(value, " ", "\"");
                         const int track = values[0].getIntValue();
                         int playability = values[1].getIntValue();
-        //                    std::cout << "track " << track <<" playability " << playability <<" "<<trackDetails[track].nNotes<<"\n";
+                        int performable = 0;
+                        if (values.size() > 3)
+                            performable = values[3].getIntValue();
+                        else
+                            performable = 1;
+                        std::cout
+                        << "track " << track
+                        <<" values string " << value
+                        <<" playability " << playability
+                        <<" performable "<<performable
+                        <<"\n";
                         if (playability==TrackTypes::Track_Autoplay)
                             playability = TrackTypes::Track_Play;
-                        const int assignedChannel = values[2].getIntValue();
+                        int assignedChannel = values[2].getIntValue();
+                        if (assignedChannel>99)
+                            assignedChannel=99; //Indicates N/A
                         TrackDetail trkDet = trackDetails[track];
                         trkDet.playability = playability;
                         trkDet.assignedChannel = assignedChannel;
+                        trkDet.performable = performable;
                         trackDetails.set(track, trkDet);
         //                    std::cout << "loadedTrack " <<track <<" playability "<<playability <<" assignedChannel "<<assignedChannel <<"\n";
                     }

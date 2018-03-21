@@ -594,6 +594,7 @@ public:
         int startMeasure;
         int endMeasure;
         int playability;
+        int performable;
         int originalChannel;
         int assignedChannel;
     } trackDetail;

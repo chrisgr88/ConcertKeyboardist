@@ -306,7 +306,7 @@ public:
         proc = pMidiProc;
         setContentOwned (new TracksComponent (pMidiProc), false);        PropertiesFile* userSettings = getAppProperties().getUserSettings();
         setResizable(true, false);
-        setResizeLimits(900, 150, 3000, 3000);
+        setResizeLimits(991, 150, 3000, 3000);
         setTopLeftPosition(60, 60);
         restoreWindowStateFromString(userSettings->getValue("listWindowPos"));
         setVisible (true);

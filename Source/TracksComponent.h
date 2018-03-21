@@ -45,7 +45,8 @@ public:
         table.getHeader().addColumn ("Sustains", 7,  57,50,70,   TableHeaderComponent::defaultFlags);
         table.getHeader().addColumn ("Softs", 8,   35,35,40,   TableHeaderComponent::defaultFlags);
         table.getHeader().addColumn ("Channel", 9,   57,50,70,   TableHeaderComponent::defaultFlags);
-        table.getHeader().addColumn ("Active", 10,   60,60,65,   TableHeaderComponent::defaultFlags);
+        table.getHeader().addColumn ("Active", 10,   40,40,40,   TableHeaderComponent::defaultFlags);
+        table.getHeader().addColumn ("Allow Target Notes", 11,   108,108,108,   TableHeaderComponent::defaultFlags);
         table.setMultipleSelectionEnabled (false);
     }
     ~TracksComponent()
@@ -112,32 +113,55 @@ public:
                                         Component* existingComponentToUpdate) override
     {
 //        std::cout << rowNum<< "refreshComponentForCell Track row: nEvents " << sequence->trackDetails[rowNum].nNotes <<"\n";
-        if (columnId != 10)
+        if ( columnId == 10)
         {
-            jassert (existingComponentToUpdate == nullptr);
-            return nullptr;
-        }
+            PlayabilityColumnCustomComponent* playabilityBox = static_cast<PlayabilityColumnCustomComponent*> (existingComponentToUpdate);
+            if (playabilityBox == nullptr)
+            {
+                playabilityBox = new PlayabilityColumnCustomComponent (*this,false);
+            }
+            else
+            {
+                delete playabilityBox;
+                playabilityBox = new PlayabilityColumnCustomComponent (*this, false);
+            }
         
-        PlayabilityColumnCustomComponent* playabilityBox = static_cast<PlayabilityColumnCustomComponent*> (existingComponentToUpdate);
-        if (playabilityBox == nullptr)
-        {
-            playabilityBox = new PlayabilityColumnCustomComponent (*this,false);
+            if (sequence->trackDetails[rowNum].nNotes>0)
+            {
+                playabilityBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].playability);
+                setbuf(stdout, 0);
+            }
+            else
+                playabilityBox->setEnabled(false);
+            
+            return playabilityBox;
         }
-        else
+        else if (columnId == 11)
         {
-            delete playabilityBox;
-            playabilityBox = new PlayabilityColumnCustomComponent (*this, false);
+            PerformColumnCustomComponent* performBox = static_cast<PerformColumnCustomComponent*> (existingComponentToUpdate);
+            if (performBox == nullptr)
+            {
+                performBox = new PerformColumnCustomComponent (*this,false);
+            }
+            else
+            {
+                delete performBox;
+                performBox = new PerformColumnCustomComponent (*this, false);
+            }
+            
+            if (sequence->trackDetails[rowNum].nNotes>0)
+            {
+                performBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].performable);
+                setbuf(stdout, 0);
+            }
+            else
+                performBox->setEnabled(false);
+            
+            return performBox;
         }
-    
-        if (sequence->trackDetails[rowNum].nNotes>0)
-        {
-            playabilityBox->setRowAndColumn (rowNum, columnId, sequence->trackDetails[rowNum].playability);
-            setbuf(stdout, 0);
-        }
-        else
-            playabilityBox->setEnabled(false);
-        
-        return playabilityBox;
+
+        jassert (existingComponentToUpdate == nullptr);
+        return nullptr;
     }
     
     int getColumnAutoSizeWidth (int columnId) override
@@ -176,9 +200,31 @@ public:
              std::cout << " error in setPlayability " << "\n";
          }
     }
+    void setPerformability (const int rowNum, const int newPerformability)
+    {
+        try {
+            Sequence::TrackDetail trkDetail = sequence->trackDetails[rowNum];
+            if (trkDetail.performable != newPerformability)
+            {
+                trkDetail.performable = newPerformability;
+                sequence->trackDetails.set(rowNum, trkDetail);
+                processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
+            }
+        } catch (const std::out_of_range& ex) {
+            std::cout << " error in setPerformability " << "\n";
+        }
+    }
     int getNPlayableTracks()
     {
         return sequence->nPlayableTracks();
+    }
+    int getNPerformableTracks()
+    {
+        return sequence->nPlayableTracks();
+    }
+    int getTrackPlability(int track)
+    {
+        return sequence->trackDetails[track].playability;
     }
     
     //==============================================================================
@@ -211,7 +257,6 @@ private:
 //            Label::mouseDown (event);
         }
         
-        // Our demo code will call this when we may need to update our contents
         void setRowAndColumn (const int newRow, const int newColumn)
         {
             row = newRow;
@@ -262,6 +307,54 @@ private:
             else
                 activeButton.setToggleState(true, NotificationType::dontSendNotification);
         };
+        
+    private:
+        TracksComponent& owner;
+        ToggleButton activeButton;
+        int row, columnId;
+    };
+    
+    //==============================================================================
+    class PerformColumnCustomComponent    :
+    public Component,
+    public Button::Listener
+    {
+    public:
+        PerformColumnCustomComponent (TracksComponent& td, int perform)  : owner (td), activeButton("")
+        {
+            activeButton.setButtonText ("");
+            activeButton.changeWidthToFitText();
+            activeButton.addListener (this);
+            activeButton.setWantsKeyboardFocus (false);
+            addAndMakeVisible (activeButton);
+        }
+        
+        void resized() override
+        {
+            BorderSize<int> bs =  BorderSize<int> (0,14,0,0);
+            activeButton.setBoundsInset (bs);
+        }
+        
+        void setRowAndColumn (int newRow, int newColumn, int setting)
+        {
+            row = newRow;
+            columnId = newColumn;
+            if (setting==1)
+                activeButton.setToggleState(true, dontSendNotification);
+            else
+                activeButton.setToggleState(false, dontSendNotification);
+        }
+        
+        void buttonClicked (Button*) override
+        {
+//            std::cout <<"row, playability"<<row<<" "<<owner.getTrackPlability(row)<<" "<<Sequence::Track_Play<<"\n";
+//            if (owner.getTrackPlability(row)==Sequence::Track_Play)
+//            {
+                owner.setPerformability (row, activeButton.getToggleState());
+//            }
+//            else
+//                activeButton.setToggleState(false, NotificationType::dontSendNotification);
+        }
         
     private:
         TracksComponent& owner;
