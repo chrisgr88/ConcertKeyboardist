@@ -495,7 +495,7 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
         {
             if (!selection.contains(step))
                 continue;
-                if (theSequence.at(step)->targetNote)
+                if (theSequence.at(step)->targetNote &&  trackDetails[theSequence.at(step)->track].performable)
                 {
 //                    theSequence.at(step)->targetNote = false;
                     const Sequence::StepActivity act = {step, true};
@@ -513,8 +513,16 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
     theSequence.at(0)->triggeredBy = -1;
     int firstInThisChain = 0;
     int firstStep = -1;
+    int prevPerformableStep = 0;
     for (int step=0;step<theSequence.size();step++)
     {
+        int f00;
+        if (step>8)
+            f00=0;
+        std::cout << step << " chain "
+        << " track " << theSequence.at(step)->track
+        << " performable " << trackDetails[theSequence.at(step)->track].performable << "\n";
+        
         if (!selection.contains(step))
             continue;
         if ((startTime<=theSequence.at(step)->getTimeStamp() && theSequence.at(step)->getTimeStamp()<=endTime))
@@ -523,11 +531,21 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
             if (firstStep==-1)
                 firstStep = step;
             if (step==0)
+            {
                 startTimeDifference = DBL_MAX;
+                prevPerformableStep = 0;
+            }
+            else if (trackDetails[theSequence.at(step)->track].performable)
+            {
+                startTimeDifference = theSequence.at(step)->getTimeStamp()-theSequence.at(prevPerformableStep)->getTimeStamp();
+                prevPerformableStep = step;
+            }
             else
-                startTimeDifference = theSequence.at(step)->getTimeStamp()-theSequence.at(step-1)->getTimeStamp();
+            {
+                startTimeDifference = -1;
+            }
             //We need to have recomputed chord top steps here!!!
-            if (/*theSequence.at(step)->chordTopStep!=-1 || */startTimeDifference<=interval)
+            if (startTimeDifference<=interval || !trackDetails[theSequence.at(step)->track].performable )
             {
                 if (step>0)
                     theSequence.at(step-1)->triggers = step;

@@ -207,6 +207,7 @@ public:
             if (trkDetail.performable != newPerformability)
             {
                 trkDetail.performable = newPerformability;
+                std::cout << " setPerformability " << rowNum << " " << newPerformability << "\n";
                 sequence->trackDetails.set(rowNum, trkDetail);
                 processor->buildSequenceAsOf(Sequence::reAnalyzeOnly, Sequence::doRetainEdits, processor->getTimeInTicks());
             }

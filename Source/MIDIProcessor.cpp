@@ -1333,7 +1333,8 @@ Array<Sequence::StepActivity> MIDIProcessor::setNoteListActivity(bool setNotesAc
                 const Sequence::StepActivity act = {steps[i], false};
                 stepActivityList.add(act);
             }
-            sequenceObject.theSequence.at(steps[i])->targetNote = true;
+            if (sequenceObject.trackDetails[sequenceObject.theSequence.at(steps[i])->track].performable)
+                sequenceObject.theSequence.at(steps[i])->targetNote = true;
         }
         //Remove any duplicate target notes at the same time stamp
         int prevTargetNoteTime = sequenceObject.theSequence.at(0)->getTimeStamp();
