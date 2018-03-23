@@ -516,12 +516,12 @@ Array<Sequence::StepActivity> Sequence::chain (Array<int> selection, double inte
     int prevPerformableStep = 0;
     for (int step=0;step<theSequence.size();step++)
     {
-        int f00;
-        if (step>8)
-            f00=0;
-        std::cout << step << " chain "
-        << " track " << theSequence.at(step)->track
-        << " performable " << trackDetails[theSequence.at(step)->track].performable << "\n";
+//        int f00;
+//        if (step>8)
+//            f00=0;
+//        std::cout << step << " chain "
+//        << " track " << theSequence.at(step)->track
+//        << " performable " << trackDetails[theSequence.at(step)->track].performable << "\n";
         
         if (!selection.contains(step))
             continue;

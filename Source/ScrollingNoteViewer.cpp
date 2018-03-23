@@ -440,6 +440,7 @@ void ScrollingNoteViewer::mouseDrag(const MouseEvent &event)
 void ScrollingNoteViewer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel)
 {
     processor->leadLag = 0;
+    processor->leadLagForPlayedTargetNote = 0;
     processor->fullPowerMode = true;
     //TODO - Should move the stopping of the timer out of the mouseWheelMove thread
     if (processor->isPlaying && processor->getZTLTime(0)>0.1 && wheel.deltaX>0.0f)
@@ -1587,7 +1588,8 @@ void ScrollingNoteViewer::paint (Graphics& g)
     //Start of most recently played note
     if (processor->isPlaying && !processor->waitingForFirstNote)
     {
-        double yellowLinePos = 2.8 * horizontalScale + ViewStateInfo::xPositionOfBaseLine + processor->leadLag * scaledPixPerTick;
+        double yellowLinePos = 2.8 * horizontalScale + ViewStateInfo::xPositionOfBaseLine +
+                                processor->leadLagForPlayedTargetNote * scaledPixPerTick;
         yellowLinePos += horizontalShiftTemporary;
         g.setColour (colourNoteOn);
         g.fillRect(Rectangle<float>(yellowLinePos,topMargin*ViewStateInfo::verticalScale, 1.3, ViewStateInfo::viewHeight-topMargin*ViewStateInfo::verticalScale));

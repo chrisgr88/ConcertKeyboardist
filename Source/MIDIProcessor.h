@@ -232,6 +232,7 @@ public:
     double mostRecentNoteTime;
     double earliness;
     double leadLag;
+    double leadLagForPlayedTargetNote;
     double prevLeadLag;
     double noteOnLag;
     int initialWindowHeight;
@@ -362,7 +363,6 @@ private:
     int currentBeat; //Used in processBlock track beats for flashing beat indicator & metronome
 //    double beatTickCounter; //Used to count ticks when transport is running even when notes are not being played
     bool autoPlaying;
-    int playingAhead; //Counts how many target notes (& chains) have already been added to scheduleNotes while autoplaying
     double autoPlayStartTime;
     bool panic; //If set true, sends all notes off in next call of processBlock
     double prevNoteOnLag;

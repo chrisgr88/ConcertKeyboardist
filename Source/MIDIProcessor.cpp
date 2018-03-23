@@ -172,6 +172,7 @@ void MIDIProcessor::play (bool ply, String fromWhere)
             }
         }
         leadLag = 0;
+        leadLagForPlayedTargetNote = 0;
         prevLeadLag = 0;
     }
     isPlaying = ply;
@@ -245,6 +246,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         timeIncrement =  960.0*sequenceObject.getTempo(time, sequenceObject.scaledTempoChanges)/60000.0;
         variableTimeIncrement = timeIncrement;
         leadLag = 0;
+        leadLagForPlayedTargetNote = 0;
         prevLeadLag = 0;
         changeMessageType = CHANGE_MESSAGE_REPAINT_VIEWER;
         if (sendChangeMessages)
@@ -253,7 +255,6 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
         panic = true;
         isPlaying = false;
         autoPlaying = false;
-        playingAhead = 0;
         waitingForFirstNote = false;
         meas = 0; //Current measure, updated when timeInTicks passes next measure division
         currentBeat = 0;
@@ -1018,7 +1019,6 @@ void MIDIProcessor::processBlock ()
         if (autoPlaying)
         {
             autoPlaying = false;
-            playingAhead = 0;
 //            std::cout << "autoplay OFF " << "\n";
         }
     }
@@ -1031,8 +1031,6 @@ void MIDIProcessor::processBlock ()
     {
         if (exprEvents[exprEventIndex].isNoteOn())
         {
-//            if (exprEvents[exprEventIndex].getNoteNumber()==68 ||  (exprEvents[exprEventIndex].getNoteNumber()==71))
-//                continue;  //Wind controller experiment
             double prevTimeSeparation = prevExprNoteTick-prevPrevExprNoteTick;
             double thisTimeSeparation = timeInTicks - prevExprNoteTick;
             if (waitingForFirstNote)
@@ -1049,11 +1047,6 @@ void MIDIProcessor::processBlock ()
             double sumPrimaryVel = 0;
             int noteIndex;
             double mostRecentNoteTime;
-//            std::cout << "playingAhead " << playingAhead <<"\n";
-            if (playingAhead>=2)
-                skipProcessingTheseEvents = true;
-            if (skipProcessingTheseEvents == false && autoPlaying && playingAhead<=1)
-                playingAhead++;
 
 //                std::cout << "noteOn " << exprEvents[exprEventIndex].getNoteNumber() << "\n";
             //Add next "firstInChain" note to availableNotes
@@ -1067,6 +1060,7 @@ void MIDIProcessor::processBlock ()
                     stepPlayed = sequenceObject.theSequence.at(currentSeqStep+1)->firstInChain;
                     //Only for short  notes
                     bool possiblyOverplayed = thisTimeSeparation < prevTimeSeparation * 3.0 && prevTimeSeparation<250.0;
+                    possiblyOverplayed = false;
 //                    std::cout
 //                    << " prevTimeSeparation "<< prevTimeSeparation
 //                    << " thisTimeSeparation "<<thisTimeSeparation
@@ -1096,7 +1090,12 @@ void MIDIProcessor::processBlock ()
 //                    << "\n";
                     
                     if (tooEarly)
+                    {
                         skipProcessingTheseEvents = true;
+                        std::cout
+                        << " tooEarly  "
+                        << "\n";
+                    }
                     break;
                 }
             }
@@ -1104,6 +1103,8 @@ void MIDIProcessor::processBlock ()
                 break;
             const double noteTimeStamp = sequenceObject.theSequence.at(stepPlayed)->getTimeStamp();
             leadLag = noteTimeStamp - timeInTicks;
+            if (scheduledNotes.size()==0)
+                leadLagForPlayedTargetNote = leadLag;
             lastUserPlayedSeqStep = stepPlayed;
 //            std::cout
 //            << "lastUserPlayedSeqStep "<< lastUserPlayedSeqStep
@@ -1242,15 +1243,8 @@ void MIDIProcessor::processBlock ()
                 if (sequenceObject.theSequence.at(step)->autoplayedNote)
                 {
                     autoPlaying = true;
-//                    std::cout << "autoplay on at " << step << "\n";
                 }
-//                if (scheduledNotes.size()>0)
-//                    std::cout << "extend scheduled notes " << step << "\n";
-//                std::cout << "scheduledNotes.push_back " << step << " playingAhead "<<playingAhead<< "\n";
-//                if (!playingAhead)
-                    scheduledNotes.push_back(step);
-//                if (autoPlaying && !playingAhead)
-//                    playingAhead = 0;
+                scheduledNotes.push_back(step);
             }
             
         }
