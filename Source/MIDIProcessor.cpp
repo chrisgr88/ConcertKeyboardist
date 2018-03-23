@@ -1771,7 +1771,8 @@ void MIDIProcessor::deletePedalChange(PedalType pType)
                   if (i < sequenceObject.sustainPedalChanges.size())
                   {
                       if (sequenceObject.sustainPedalChanges.at(i).timeStamp < currentZtlTime &&
-                              currentZtlTime <= sequenceObject.sustainPedalChanges.at(i+1).timeStamp)
+                              (sequenceObject.sustainPedalChanges.size() == i+1 ||
+                               currentZtlTime <= sequenceObject.sustainPedalChanges.at(i+1).timeStamp) )
                           return true;
                   }
               }
