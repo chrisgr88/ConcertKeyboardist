@@ -312,6 +312,7 @@ public:
     std::atomic_bool pauseProcessing;
     bool pluginEnabled;
     bool midiOutEnabled;
+    int velocityFromBreath;
 private:
     //==============================================================================
 
