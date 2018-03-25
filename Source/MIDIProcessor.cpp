@@ -224,6 +224,7 @@ void MIDIProcessor::rewind (double time, bool sendChangeMessages) //Rewind to gi
 //    << " lastPlayedSeqStep " << lastPlayedSeqStep
 //    << "\n";
 //    std::cout << "Rewind " << "\n";
+    velocityFromBreath = 0;
     if (sequenceObject.theSequence.size()==0)
     {
         std::cout << "Failed rewind " << "\n";
@@ -1031,6 +1032,10 @@ void MIDIProcessor::processBlock ()
     {
         if (exprEvents[exprEventIndex].isNoteOn())
         {
+//            std::cout
+//            << " noteOn: NoteNumber " << exprEvents[exprEventIndex].getNoteNumber()
+//            << " Velocity " << (int) exprEvents[exprEventIndex].getVelocity()
+//            <<"\n";
             double prevTimeSeparation = prevExprNoteTick-prevPrevExprNoteTick;
             double thisTimeSeparation = timeInTicks - prevExprNoteTick;
             if (waitingForFirstNote)
@@ -1197,7 +1202,13 @@ void MIDIProcessor::processBlock ()
                 if (exprEvents[exprEventIndex].getChannel() == 16) //Computer keyboard sends on channel 16
                 {
                     //All velocities from the original sequence
-                    velocity = sequenceObject.theSequence.at(availableNotes[noteToStart])->velocity;
+                    if (velocityFromBreath>0)
+                    {
+                        std::cout << "velocityFromBreath " << velocityFromBreath<<"\n";
+                        velocity = velocityFromBreath/127.0;
+                    }
+                    else
+                        velocity = sequenceObject.theSequence.at(availableNotes[noteToStart])->velocity;
                 }
                 else if (exprEvents[exprEventIndex].getChannel() <= 13)
                 {
@@ -1205,7 +1216,14 @@ void MIDIProcessor::processBlock ()
                     //Lower vel notes in chain vel are proportioned from highest note's output vel
                     //The exprVelToScoreVelRatio is set by the "vr" command
                     double highVelInChain = sequenceObject.theSequence.at(availableNotes[noteToStart])->highestVelocityInChain;
-                    float exprVel = exprEvents[exprEventIndex].getVelocity();
+                    float exprVel;
+                    if (velocityFromBreath>0)
+                    {
+                        std::cout << "velocityFromBreath " << velocityFromBreath<<"\n";
+                        exprVel = velocityFromBreath/127.0;
+                    }
+                    else
+                        exprVel = exprEvents[exprEventIndex].getVelocity();
                     if (exprVel>=1.0f)
                         exprVel = exprVel/127.0;
                     double thisNoteOriginalVelocity = sequenceObject.theSequence.at(availableNotes[noteToStart])->velocity;
@@ -1264,7 +1282,12 @@ void MIDIProcessor::processBlock ()
                 if (exprNoteThatStartedThisOnNote == exprEvents[exprEventIndex].getNoteNumber())
                 {
                     if (sequenceObject.theSequence.at(seqStep)->triggeredOffNote)
-                        sequenceObject.theSequence.at(seqStep)->noteOffNow = true;
+                    {
+                        if (sequenceObject.theSequence.at(seqStep)->targetNote)
+                            sequenceObject.theSequence.at(seqStep)->noteOffNow = true;
+                        else
+                           sequenceObject.theSequence.at(seqStep)->sustaining = true;
+                    }
                     else
                         sequenceObject.theSequence.at(seqStep)->sustaining = true;
                 }
@@ -1276,7 +1299,11 @@ void MIDIProcessor::processBlock ()
         {
             MidiMessage msg = exprEvents[exprEventIndex];
             if (msg.isController())
-                std::cout << "Controller " << msg.getControllerNumber() << " " << msg.getControllerValue()<<"\n";
+            {
+                if (msg.isControllerOfType(2))
+                    velocityFromBreath = msg.getControllerValue();
+//                std::cout << "velocityFromBreath " << velocityFromBreath<<"\n";
+            }
             sendMidiMessage(exprEvents[exprEventIndex]);
         }
     }
@@ -1471,6 +1498,8 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
             std::default_random_engine generator(seed);
             std::normal_distribution<double> distribution(0.0,standardDeviation);
             sequenceObject.chords[chIndex].timeRandSeed = seed;
+            Array<int> assignedTimes; //Used to ensure no time stamps are identical
+            assignedTimes.add(chordNotes.at(0)->timeStamp);
             for (int i=1; i<chordNotes.size(); i++) //Don't change top chord note so start at 1
             {
                 double proposedNoteTime = thisChordTimeStamp;// + i*increment;
@@ -1483,18 +1512,29 @@ Array<Sequence::PrevNoteTimes> MIDIProcessor::timeHumanizeChords (Array<int> ste
                     randomAdd=maxVariation-1.0;
                 randomAdd = randomAdd*timeIncrement; //This allows variation to be stated in milliseconds in the UI
                 proposedNoteTime += randomAdd;
-                const double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
+                if (assignedTimes.contains(proposedNoteTime))
+                    proposedNoteTime += 1;
+                assignedTimes.add(proposedNoteTime);
+                double noteDuration = chordNotes.at(i)->getOffTime()-chordNotes.at(i)->getTimeStamp();
                 if (proposedNoteTime<sequenceObject.seqDurationInTicks)
+                {
                     chordNotes.at(i)->setTimeStamp(proposedNoteTime);
+                }
                 chordNotes.at(i)->setOfftime(chordNotes.at(i)->getOffTime()+randomAdd);
                 if (chordNotes.at(i)->getTimeStamp()+noteDuration <= sequenceObject.seqDurationInTicks)
+                {
+                    const double noteShift = proposedNoteTime - chordNotes.at(i)->getTimeStamp();
+                    noteDuration -= noteShift;
                     chordNotes.at(i)->setOfftime(chordNotes.at(i)->getTimeStamp()+noteDuration);
+                }
                 else
                     chordNotes.at(i)->setOfftime(sequenceObject.seqDurationInTicks);
-//                    std::cout <<  chordNotes.at(i)->currentStep
-//                      << " randomAdd " << randomAdd
-//                      << " timeStamp " << chordNotes.at(i)->getTimeStamp()
-//                      << std::endl;
+//                std::cout <<  chordNotes.at(i)->currentStep
+//                << " channel " << chordNotes.at(i)->channel
+//                << " noteNumber " << chordNotes.at(i)->noteNumber
+//                  << " randomAdd " << randomAdd
+//                  << " timeStamp " << chordNotes.at(i)->getTimeStamp()
+//                  << std::endl;
                 const int offset = chordNotes[i]->getTimeStamp() - thisChordTimeStamp;
                 sequenceObject.chords[chIndex].offsets.push_back(offset);
             }
