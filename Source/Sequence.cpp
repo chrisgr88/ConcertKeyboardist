@@ -959,12 +959,12 @@ bool Sequence::loadSequence (LoadType loadFile, Retain retainEdits)
                             performable = values[3].getIntValue();
                         else
                             performable = 1;
-                        std::cout
-                        << "track " << track
-                        <<" values string " << value
-                        <<" playability " << playability
-                        <<" performable "<<performable
-                        <<"\n";
+//                        std::cout
+//                        << "track " << track
+//                        <<" values string " << value
+//                        <<" playability " << playability
+//                        <<" performable "<<performable
+//                        <<"\n";
                         if (playability==TrackTypes::Track_Autoplay)
                             playability = TrackTypes::Track_Play;
                         int assignedChannel = values[2].getIntValue();

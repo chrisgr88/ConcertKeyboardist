@@ -1348,7 +1348,12 @@ void ScrollingNoteViewer::makeNoteBars()
                     nbd.headWidth = headWidth;
                     nbd.headHeight = headHeight + 1.0;
                     if (index > 0 && (pSequence->at(index)->getTimeStamp() == pSequence->at(index - 1)->getTimeStamp()))
-                        nbd.colHead = colourActiveNoteHead.darker().darker();
+                    {
+                        if (processor->sequenceObject.trackDetails[pSequence->at(index - 1)->track].performable)
+                            nbd.colHead = colourActiveNoteHead.darker().darker();
+                        else
+                            nbd.colHead = colourActiveNoteHead;
+                    }
                     else
                         nbd.colHead = colourActiveNoteHead;
                     nbd.colBar = vBasedNoteBar;
