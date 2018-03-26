@@ -126,6 +126,14 @@ ApplicationProperties& getAppProperties();
         pViewerFrame->addActionListener(this);
         midiProcessor.sequenceObject.addActionListener(this);
         setContentOwned (mainComponent, true);
+        //Example for future addition of abcmidi
+//        std::cout << "before" << std::endl;
+//        int pid = fork();
+//        std::cout << pid << std::endl;
+//        if (pid==0) {
+//            execl("/bin/ls", "ls", "-r", "-t", "-l", (char *) 0);
+//        }
+//        std::cout << "done" << std::endl;
 #if JUCE_IOS
         std::cout << "iOS Simulator  or iOS device \n";
         setResizable(false, false);
