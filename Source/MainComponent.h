@@ -30,7 +30,7 @@
 
 class MainComponent :
     public Component,
-//    private AudioIODeviceCallback,
+    public AudioIODeviceCallback,
 //    private MidiInputCallback,
     public ChangeListener,
     public ActionListener,
@@ -53,12 +53,21 @@ public:
     //==============================================================================
     void resized() override;
     
+    void audioDeviceIOCallback (const float** /*inputChannelData*/, int /*numInputChannels*/,
+                                float** outputChannelData, int numOutputChannels,
+                                int numSamples) override;
+    
+    void audioDeviceAboutToStart (AudioIODevice* device) override;
+    
+    void audioDeviceStopped() override;
+    
     void setMidiInput (int index);
     
     void loadPlugin (String  pluginId);
     void loadPlugin (const PluginDescription* pluginDescription);
+    bool loadSFZero ();
     void unLoadPlugin ();
-
+    
     AudioPluginFormatManager formatManager;
     KnownPluginList knownPluginList;
     KnownPluginList::SortMethod pluginSortMethod;
@@ -100,7 +109,7 @@ private:
     MIDIProcessor *processor; //This was previously "PluginProcessor"
     double sampleRate;
     int blockSize;
-//    sfzero::Synth synth;
+    sfzero::Synth sfZeroSynth;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

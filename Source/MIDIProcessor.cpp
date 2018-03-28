@@ -13,7 +13,7 @@ MIDIProcessor::MIDIProcessor() :
     pauseProcessing = false;
     sequenceObject.addChangeListener(this);
     undoMgr = new MyUndoManager(100000,50);
-    pluginMessageCollectorIsReset = false;
+    messageCollectorsAreReset = false;
     pluginMessageCollector = nullptr;
     reset(44.1);
     isPlaying = false;
@@ -949,8 +949,10 @@ void MIDIProcessor::processBlock ()
 //                    midiOutput->sendMessageNow(noteOff);
                     double t = Time::getMillisecondCounterHiRes()*0.001;
                     noteOff.setTimeStamp(t);
-                    if (pluginMessageCollectorIsReset)
+                    if (messageCollectorsAreReset)
+                    {
                         sendMidiMessage(noteOff);
+                    }
                     sendMidiMessage(noteOff);
                     sequenceObject.setNoteActive(sequenceObject.theSequence.at(step)->noteNumber,
                                                  sequenceObject.theSequence.at(step)->channel, false);

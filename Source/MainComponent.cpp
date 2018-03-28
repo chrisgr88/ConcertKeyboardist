@@ -55,7 +55,6 @@ MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
         processor->midiOutEnabled = true; //For virtual midi port
 #endif
         audioDeviceManager.addMidiInputCallback (String(), processor);
-        //processor->synthMessageCollectorReset(sampRate);
         addAndMakeVisible(viewerFrame);
         setSize (1100, 300);
 #if JUCE_IOS
@@ -106,7 +105,7 @@ void MainComponent::actionListenerCallback (const String& message)
 ////        }
 //    }
 //    else
-        if (message.upToFirstOccurrenceOf(":",false,true) == "pluginStateChange")
+    if (message.upToFirstOccurrenceOf(":",false,true) == "pluginStateChange")
     {
         String pluginStateB64 = String(message.fromFirstOccurrenceOf(":", false, true));
         MemoryBlock m;
@@ -119,7 +118,56 @@ void MainComponent::actionListenerCallback (const String& message)
     }
 };
 
- void MainComponent::loadPlugin (String  pluginId )
+bool MainComponent::loadSFZero ()
+{
+    std::cout << "Loading SFZero " <<"\n";
+    juce::AudioIODevice *curDevice =  audioDeviceManager.getCurrentAudioDevice();
+    if (curDevice==nullptr)
+    {
+        std::cout <<"No audio device so restart audioDeviceManager\n";
+        audioDeviceManager.restartLastAudioDevice();
+    }
+    curDevice =  audioDeviceManager.getCurrentAudioDevice();
+    if (curDevice==nullptr)
+    {
+        std::cout <<"Still No audio device \n";
+        return false;
+    }
+    bool result;
+    AudioFormatManager formatManager;
+    formatManager.registerBasicFormats    ();
+//    auto sfzFile = File ("/Users/chrisgr/Downloads/PatchArena_Marimba/PatchArena_marimba.sfz");
+    auto sfzFile = File ("/Users/chrisgr/Downloads/City Piano-SFZ/City Piano.sfz");
+    bool exists = sfzFile.exists();
+    if (exists)
+    {
+        auto sound = new sfzero::Sound(sfzFile);
+        sound->loadRegions();
+        sound->loadSamples(&formatManager);
+        sfZeroSynth.clearSounds();
+        for (int i = 0; i < 128; ++i)
+        {
+            sfZeroSynth.addVoice(new sfzero::Voice());
+        }
+        sfZeroSynth.addSound(sound);
+        if (sfZeroSynth.getNumSounds()==0)
+            result = false;
+        else
+            result = true;
+        juce::AudioIODevice *curDevice =  audioDeviceManager.getCurrentAudioDevice();
+        const double sampleRate = curDevice->getCurrentSampleRate();
+        processor->sampleRate = sampleRate;
+        processor->synthMessageCollector.reset(sampleRate);
+        sfZeroSynth.setCurrentPlaybackSampleRate (sampleRate);
+        audioDeviceManager.addAudioCallback(this);
+    }
+    else
+        result = false;
+    std::cout <<"Loaded loadSFZero "<< result<<"\n";
+    return result;
+}
+
+void MainComponent::loadPlugin (String  pluginId )
 {
     if (pluginId.length() > 0)
     {
@@ -128,6 +176,7 @@ void MainComponent::actionListenerCallback (const String& message)
             loadPlugin(desc);
     }
 }
+
 void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
 {
     std::cout << "Loading plugin "<<pluginDescription->descriptiveName <<"\n";
@@ -143,7 +192,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
         std::cout <<"Still No audio device \n";
         return;
     }
-        
+    
     const double sampRate = curDevice->getCurrentSampleRate();
     const int bufSz = audioDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples();
     String errorMsg;
@@ -152,26 +201,24 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     {
         thePlugin->suspendProcessing(true);
         audioDeviceManager.removeAudioCallback(&thePlayer);
-//        thePlayer.setProcessor(nullptr);
-//        thePlugin = nullptr;
+        //        thePlayer.setProcessor(nullptr);
+        //        thePlugin = nullptr;
     }
     
     AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
-//<<<<<<< HEAD
-//=======
-//    AudioProcessor::BusesLayout bl = pPlugin->getBusesLayout();
-//    int nInputs = bl.getMainInputChannels();
-//    int nOutputs = bl.getMainOutputChannels();
-////    pPlugin->disableNonMainBuses();
-//    pPlugin->setPlayConfigDetails(nInputs,nOutputs,sampRate,bufSz);
-//>>>>>>> 1be6f6cd44ea296389e2a93b53ac58f35a624112
+    //=======
+    //    AudioProcessor::BusesLayout bl = pPlugin->getBusesLayout();
+    //    int nInputs = bl.getMainInputChannels();
+    //    int nOutputs = bl.getMainOutputChannels();
+    ////    pPlugin->disableNonMainBuses();
+    //    pPlugin->setPlayConfigDetails(nInputs,nOutputs,sampRate,bufSz);
     thePlugin = pPlugin;
     processor->sequenceObject.pThePlugin = pPlugin;
     if (thePlugin)
     {
         std::cout << "Loaded plugin \n";
         processor->pluginEnabled = true;
-//        processor->midiOutEnabled = false;
+        //        processor->midiOutEnabled = false;
     }
     else
         std::cout << "Plugin error "<<errorMsg<<"\n";
@@ -183,14 +230,14 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
     //        graph.addNode(&audioOutNode,4);
     //        graph.addConnection(0, 0, 2, 0);
     //        graph.addConnection(0, 2, 4, 0);
-//    thePlayer.setProcessor(&graph);
+    //    thePlayer.setProcessor(&graph);
     thePlayer.setProcessor(thePlugin);
     audioDeviceManager.addAudioCallback (&thePlayer);
     thePlugin->suspendProcessing(false);
     MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
     processor->pluginMessageCollector = &mmc;
     thePlugin->setPlayHead(processor);
-    processor->pluginMessageCollectorReset(sampRate);
+    processor->messageCollectorReset(sampRate);
     thePlayer.getMidiMessageCollector().reset(sampRate);
 }
 
@@ -241,7 +288,7 @@ void MainComponent::unLoadPlugin ()
 //    MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
 //    processor->pluginMessageCollector = &mmc;
 //    thePlugin->setPlayHead(processor);
-//    processor->pluginMessageCollectorReset(sampRate);
+//    processor->messageCollectorReset(sampRate);
 //    thePlayer.getMidiMessageCollector().reset(sampRate);
 }
 
@@ -269,4 +316,29 @@ void MainComponent::changeListenerCallback (ChangeBroadcaster* changed)
         viewerFrame.setBounds(r);
         viewerFrame.resized();
     }
+
+void MainComponent::audioDeviceIOCallback (const float** /*inputChannelData*/, int /*numInputChannels*/,
+                                           float** outputChannelData, int numOutputChannels,
+                                           int numSamples)
+{
+    noteCounter++;
+    AudioBuffer<float> buffer (outputChannelData, numOutputChannels, numSamples);
+    buffer.clear();
+    
+    MidiBuffer incomingMidi;
+    processor->synthMessageCollector.removeNextBlockOfMessages(incomingMidi, numSamples);
+    sfZeroSynth.renderNextBlock (buffer, incomingMidi, 0, numSamples);
+}
+
+void MainComponent::audioDeviceAboutToStart (AudioIODevice* device)
+{
+    const double sampleRate = device->getCurrentSampleRate();
+    processor->sampleRate = sampleRate;
+//    processor->messageCollectorReset(sampleRate);
+    sfZeroSynth.setCurrentPlaybackSampleRate (sampleRate);
+}
+
+void MainComponent::audioDeviceStopped()
+{
+}
     

@@ -412,7 +412,7 @@ ApplicationProperties& getAppProperties();
         getAppProperties().getUserSettings()->saveIfNeeded();
         const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();
 //        std::cout << "synthMessageCollector "<<(int) midiProcessor.synthMessageCollector<<"\n";
-//        midiProcessor.synthMessageCollectorReset(sampRate);
+        midiProcessor.synthMessageCollector.reset(sampRate);
         if (midiProcessor.pluginMessageCollector)
             midiProcessor.pluginMessageCollector->reset(sampRate);
         const StringArray midiInputs (MidiInput::getDevices());
@@ -699,6 +699,7 @@ ApplicationProperties& getAppProperties();
             PopupMenu pluginsMenu;
             addPluginsToMenu (pluginsMenu);
             menu.addSubMenu ("Load plugin", pluginsMenu);
+            menu.addItem (249, "Internal Synthesizer");
             menu.addItem (250, "No Plugin");
             menu.addSeparator();
 //            menu.addItem (251, "Show plugin window");
@@ -792,7 +793,12 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
         else if (topLevelMenuIndex==2)
         {
             PluginWindow::WindowFormatType type;
-            if (menuItemID == 250)
+            if (menuItemID == 249)
+            {
+                std::cout << "Internal Synthesizer" <<"\n";
+                mainComponent->loadSFZero();
+            }
+            else if (menuItemID == 250)
             {
                 std::cout << "Unload Plugin" <<"\n";
                 mainComponent->unLoadPlugin();
@@ -829,8 +835,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
                 if (desc != NULL)
                 {
                     PluginWindow::closeAllCurrentlyOpenWindows();
-                    mainComponent->loadPlugin(desc);
-                }
+                    mainComponent->loadPlugin(desc);                }
             }
         }
     }

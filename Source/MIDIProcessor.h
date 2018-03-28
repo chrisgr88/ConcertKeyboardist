@@ -211,17 +211,17 @@ public:
      @see addListener
      */
     void removeListener (Listener* listener);
-    void pluginMessageCollectorReset(const double rate)
+    void messageCollectorReset(const double rate)
     {
-//        synthMessageCollector.reset(rate);
-        pluginMessageCollectorIsReset = true;
+        synthMessageCollector.reset(rate);
+        messageCollectorsAreReset = true;
         pluginMessageCollector->reset(rate);
     }
     
 #define FIFO_SIZE 50
     int noteOnOffFifoBuffer [FIFO_SIZE];
     AbstractFifo noteOnOffFifo;
-    bool pluginMessageCollectorIsReset;
+    bool messageCollectorsAreReset;
     MidiMessageCollector *pluginMessageCollector;
     MidiOutput *defaultMidiOutput;   //The midi output  chosen, if any,  in the midi setup dialog
     
@@ -312,6 +312,7 @@ public:
     std::atomic_bool pauseProcessing;
     bool pluginEnabled;
     bool midiOutEnabled;
+    MidiMessageCollector synthMessageCollector;
     int velocityFromBreath;
 private:
     //==============================================================================
@@ -341,11 +342,13 @@ private:
                 defaultMidiOutput->sendMessageNow(msg);
             }
         }
-        if (pluginEnabled && pluginMessageCollectorIsReset)
+        if (pluginEnabled && messageCollectorsAreReset)
         {
             if (pluginMessageCollector)
                 pluginMessageCollector->addMessageToQueue (msg);
         }
+        if (messageCollectorsAreReset)
+            synthMessageCollector.addMessageToQueue(msg);
     }
     double timeInTicks = -1;
     int leadTimeInTicks; //How much space in ticks to allow to left of the ztl in viewer window
