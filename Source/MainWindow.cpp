@@ -545,19 +545,19 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::toggleSelectedNotesActive:
                 result.setInfo ("toggleSelectedNotesActive", "toggleSelectedNotesActive", category, 0);
-                result.addDefaultKeypress ('t', ModifierKeys::noModifiers);
+//                result.addDefaultKeypress ('t', ModifierKeys::noModifiers); //Add modifier
                 break;
             case CommandIDs::setSelectedNotesActive:
                 result.setInfo ("setSelectedNotesActive", "setSelectedNotesActive", category, 0);
-                result.addDefaultKeypress ('a', ModifierKeys::noModifiers);
+//                result.addDefaultKeypress ('a', ModifierKeys::noModifiers); //Add modifier
                 break;
             case CommandIDs::setSelectedNotesInactive:
                 result.setInfo ("setSelectedNotesInactive", "setSelectedNotesInactive", category, 0);
-                result.addDefaultKeypress ('i', ModifierKeys::noModifiers);
+//                result.addDefaultKeypress ('i', ModifierKeys::noModifiers); //Add modifier
                 break;
             case CommandIDs::chainSelectedNotes:
                 result.setInfo ("chainSelectedNotes", "chainSelectedNotes", category, 0);
-                result.addDefaultKeypress ('c', ModifierKeys::noModifiers);
+//                result.addDefaultKeypress ('c', ModifierKeys::noModifiers); //Add modifier
                 break;
             case CommandIDs::velHumanizeSelection:
                 result.setInfo ("velHumanizeSelection", "velHumanizeSelection", category, 0);
@@ -576,11 +576,11 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::addSoft:
                 result.setInfo ("addSoft", "addSoft", category, 0);
-                result.addDefaultKeypress ('f', ModifierKeys::noModifiers);
+//                result.addDefaultKeypress ('f', ModifierKeys::noModifiers); //Add modifier
                 break;
             case CommandIDs::deleteSoft:
                 result.setInfo ("deleteSoft", "deleteSoft", category, 0);
-                result.addDefaultKeypress ('f', ModifierKeys::shiftModifier);
+                result.addDefaultKeypress ('f', ModifierKeys::shiftModifier); //Add modifier
                 break;
             case CommandIDs::showChords:
                 result.setInfo ("showChords", "showChords", category, 0);
@@ -600,15 +600,16 @@ ApplicationProperties& getAppProperties();
                 break;
             case CommandIDs::create_chord:
                 result.setInfo ("create_chord", "create_chord", category, 0);
-                result.addDefaultKeypress ('d', ModifierKeys::noModifiers);
+//                result.addDefaultKeypress ('d', ModifierKeys::noModifiers); //Add modifier
                 break;
             case CommandIDs::delete_chord:
                 result.setInfo ("delete_chord", "delete_chord", category, 0);
-                result.addDefaultKeypress ('d', ModifierKeys::shiftModifier);
+//                result.addDefaultKeypress ('d', ModifierKeys::shiftModifier); //Add modifier
                 break;
             case CommandIDs::previousTargetNote:
                 result.setInfo ("PreviousTargetNote", "Go to Previous Target Note", category, 0);
                 result.addDefaultKeypress (KeyPress::leftKey, ModifierKeys::noModifiers);
+                result.addDefaultKeypress (KeyPress::backspaceKey, ModifierKeys::noModifiers);
                 break;
             case CommandIDs::previousMeasure:
                 result.setInfo ("PreviousMeasure", "Go to Previous Measure", category, 0);
@@ -796,7 +797,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
             if (menuItemID == 249)
             {
                 std::cout << "Internal Synthesizer" <<"\n";
-                mainComponent->loadSFZero();
+//                mainComponent->loadSFZero();
             }
             else if (menuItemID == 250)
             {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="IilE7R" name="ConcertKeyboardist" projectType="guiapp" version="1.0.0"
-              bundleIdentifier="com.newCK" includeBinaryInAppConfig="1" jucerVersion="5.3.0"
+              bundleIdentifier="com.newCK" includeBinaryInAppConfig="1" jucerVersion="5.4.2"
               displaySplashScreen="0" reportAppUsage="0" splashScreenColour="Dark"
               cppLanguageStandard="14" companyCopyright="">
   <MAINGROUP id="VCQQcn" name="ConcertKeyboardist">
@@ -73,21 +73,20 @@
                        targetName="ConcertKeyboardist" enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_video" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE/modules"/>
-        <MODULEPATH id="SFZero" path="."/>
+        <MODULEPATH id="juce_core" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_video" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2017 targetFolder="Builds/VisualStudio2017" vst3Folder="C:\Users\Chris\VST_SDK\VST3_SDK">
@@ -114,7 +113,6 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
-        <MODULEPATH id="SFZero" path="."/>
       </MODULEPATHS>
     </VS2017>
     <CLION targetFolder="Builds/CLion" clionXcodeEnabled="1">
@@ -133,7 +131,6 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
-        <MODULEPATH id="SFZero" path="."/>
       </MODULEPATHS>
     </CLION>
   </EXPORTFORMATS>
@@ -152,7 +149,6 @@
     <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
     <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
     <MODULES id="juce_video" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
-    <MODULE id="SFZero" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"/>
   <LIVE_SETTINGS>

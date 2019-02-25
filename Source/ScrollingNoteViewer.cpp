@@ -584,16 +584,16 @@ void ScrollingNoteViewer::mouseMove(const MouseEvent &event)
                 if (!processor->playing())
                 {
                     hoverInfo = MidiMessage::getMidiNoteName(nn, true, true, 3)
-                                + ": note number " + String::String(nn) +
-                                + "\ntrack " + String::String(pSequence->at(hoverStep)->track)+ "; "
-                                + "channel " + String::String(pSequence->at(hoverStep)->channel)
+                                + ": note number " + String(nn) +
+                                + "\ntrack " + String(pSequence->at(hoverStep)->track)+ "; "
+                                + "channel " + String(pSequence->at(hoverStep)->channel)
                                 + "\nvelocity " + String(127.0 * pSequence->at(hoverStep)->velocity)+ "; "
                                 + "duration " +
                                 String((pSequence->at(hoverStep)->getOffTime() -
                                         pSequence->at(hoverStep)->getTimeStamp()) /
                                        10.0, 1) +
                                 +"\ntick " + String(pSequence->at(hoverStep)->getTimeStamp() / 10.0, 1)+ "; "
-                                + "step " + String::String(hoverStep);
+                                + "step " + String(hoverStep);
                 }
             }
 //        std::cout << "mouseMove HOVER = " << hoveringOver << "\n";
@@ -760,7 +760,7 @@ Matrix3D<float> ScrollingNoteViewer::getProjectionMatrix(float horizScale, float
 Matrix3D<float> ScrollingNoteViewer::getViewMatrix(float x) const
 {
     Matrix3D<float> viewMatrix (Vector3D<float> (x, 0.0f, -4.0f));
-    Matrix3D<float> rotationMatrix = viewMatrix.rotation (Vector3D<float> (0.0f, 0.0f, 0.0f));
+    Matrix3D<float> rotationMatrix = viewMatrix.rotated (Vector3D<float> (0.0f, 0.0f, 0.0f));
     return rotationMatrix * viewMatrix;
 }
 

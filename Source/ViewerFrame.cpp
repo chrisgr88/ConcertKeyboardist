@@ -100,7 +100,7 @@ altToolbarFactory(this)
 //    adjustedTempoLabel.setColour (Label::textColourId, Colours::darkgrey);
 //    addAndMakeVisible (adjustedTempoLabel);
     
-    playableKeys = "qwertyuiopasdfghjklzxcvbnm;',./[]";
+    playableKeys = "qwertyuiopasdfghjklzxcvbnm;',./[]$%"; //The "$%" represent escape and tab
 
     for (int i=0;i<playableKeys.length();i++)
         keysThatAreDown.add(false);

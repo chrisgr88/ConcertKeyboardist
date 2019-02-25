@@ -65,7 +65,7 @@ public:
     
     void loadPlugin (String  pluginId);
     void loadPlugin (const PluginDescription* pluginDescription);
-    bool loadSFZero ();
+//    bool loadSFZero ();
     void unLoadPlugin ();
     
     AudioPluginFormatManager formatManager;
@@ -109,7 +109,7 @@ private:
     MIDIProcessor *processor; //This was previously "PluginProcessor"
     double sampleRate;
     int blockSize;
-    sfzero::Synth sfZeroSynth;
+//    sfzero::Synth sfZeroSynth;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

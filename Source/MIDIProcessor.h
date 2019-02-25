@@ -405,7 +405,7 @@ private:
         explicit MyUndoManager (int maxNumberOfUnitsToKeep = 30000,
                         int minimumTransactionsToKeep = 30)
         {
-            UndoManager::UndoManager(maxNumberOfUnitsToKeep, minimumTransactionsToKeep);
+            UndoManager(maxNumberOfUnitsToKeep, minimumTransactionsToKeep);
         }
         ~MyUndoManager ()
         {

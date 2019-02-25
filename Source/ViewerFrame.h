@@ -60,15 +60,37 @@ public:
     }
     bool keyStateChanged(bool isKeyDown, Component* originatingComponent) override
     {
-        if (!processor->isPlaying)
-            return true;
+//        if (!processor->isPlaying)
+//            return true;
         bool handledKey = false;
+
         for (int i=0;i<playableKeys.length();i++)
         {
-            KeyPress kp = KeyPress(playableKeys[i],ModifierKeys::noModifiers, playableKeys[i]);
+
+            KeyPress kp;
+            int keyCode;
+            if (playableKeys[i]=='$')
+            {
+                kp = KeyPress(KeyPress::escapeKey,ModifierKeys::noModifiers, playableKeys[i]);
+                keyCode = KeyPress::escapeKey;
+//                processor->play(true,"ZTL");
+            }
+            else if (playableKeys[i]=='%')
+            {
+                kp = KeyPress(KeyPress::tabKey,ModifierKeys::noModifiers, playableKeys[i]);
+                keyCode = KeyPress::tabKey;
+//                processor->play(true,"ZTL");
+            }
+            else
+            {
+                kp = KeyPress(playableKeys[i],ModifierKeys::noModifiers, playableKeys[i]);
+                keyCode = playableKeys[i];
+//                processor-> play(true,"ZTL");
+            }
 
             if (kp.isCurrentlyDown() && !keysThatAreDown[i])
             {
+                processor-> play(true,"ZTL");
                 MidiMessage msg;
                 msg = MidiMessage::noteOn(1, 60+i, (uint8)127);
                 msg.setTimeStamp(99); //Value doesn't matter.
@@ -77,7 +99,7 @@ public:
                 keysThatAreDown.set(i,true);
                 handledKey = true;
             }
-            else if (!KeyPress::isKeyCurrentlyDown(playableKeys[i]) && keysThatAreDown[i])
+            else if (!KeyPress::isKeyCurrentlyDown(keyCode) && keysThatAreDown[i])   //***HERE***
             {
                 MidiMessage msg;
                 if (playableKeys[i] == 'r')
