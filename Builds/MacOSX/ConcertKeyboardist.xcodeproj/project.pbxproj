@@ -951,6 +951,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					"\"/Users/chrisgr/SDKs/VST3 SDK\"",
+					"\"/Users/chrisgr/Downloads/VST_SDK 2/VST2_SDK\"",
 					"../../JuceLibraryCode",
 					"../../JuceLibraryCode/modules",
 					"$(inherited)",
@@ -998,6 +999,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					"\"/Users/chrisgr/SDKs/VST3 SDK\"",
+					"\"/Users/chrisgr/Downloads/VST_SDK 2/VST2_SDK\"",
 					"../../JuceLibraryCode",
 					"../../JuceLibraryCode/modules",
 					"$(inherited)",

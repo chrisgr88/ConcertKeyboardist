@@ -760,7 +760,7 @@ Matrix3D<float> ScrollingNoteViewer::getProjectionMatrix(float horizScale, float
 Matrix3D<float> ScrollingNoteViewer::getViewMatrix(float x) const
 {
     Matrix3D<float> viewMatrix (Vector3D<float> (x, 0.0f, -4.0f));
-    Matrix3D<float> rotationMatrix = viewMatrix.rotated (Vector3D<float> (0.0f, 0.0f, 0.0f));
+    Matrix3D<float> rotationMatrix = viewMatrix.rotation (Vector3D<float> (0.0f, 0.0f, 0.0f));
     return rotationMatrix * viewMatrix;
 }
 
