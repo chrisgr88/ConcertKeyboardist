@@ -8,6 +8,7 @@
 </ul>
 <h2 id="contact-information">Contact Information</h2>
 <p>For questions or comments contact: chrisgr99 at gmail dot com</p>
+<h2 id="assistive-version-addendum"><a href="#assistive-version-addendum-1">Assistive Version Addendum</a></h2>
 <h2 id="quick-introduction-to-concert-keyboardist">Quick Introduction to Concert Keyboardist</h2>
 <p>Concert Keyboardist is like a musical instrument that never lets you play a wrong note. Load a MIDI file and Concert Keyboardist becomes an instrument to perform that music expressively, not just to listen passively. You control when and how notes are played, in real time. Play like a &quot;Concert Keyboardist&quot; with just your computer keyboard, or use a MIDI keyboard for even more control.</p>
 <p>Where to get MIDI files to play? There are tens of thousands available around the Internet for download or you can create your own. Before Concert Keyboardist, MIDI files always replayed exactly the same. With Concert Keyboardist music comes alive under your fingers.</p>
@@ -107,16 +108,15 @@
 <li><strong>Loading a file:</strong> Use the File-Open menu, or the toolbar button, or Cmd+o (Ctrl+o on Windows). A good example to start with is &quot;Minuet in G[ck].mid&quot; which is in the &quot;Easy To Play Examples&quot; folder in the &quot;Concert Keyboardist Files&quot; folder.<br />
 </li>
 <li>When loaded it should look something like the image in the <a href="#overview-of-the-main-window">Overview of The Main Window</a>.</li>
-<li><strong>Prepare to play:</strong> Press the spacebar. This turns the Base Line orange, indicating that Concert Keyboardist is ready to play. In this mode as soon as you press a key the note at the Base Line is played and the note bars start scrolling to the left. The scroll rate is based on the tempo.</li>
-<li><strong>Playing Notes:</strong> Press keys on your computer keyboard - any of the letter keys, or any of the characters &quot;[ ] ; ' &lt; &gt; /&quot;. On an English language keyboard these are the rows from &quot;q&quot; to &quot;]&quot;, from &quot;a&quot; to &quot; ' &quot; and from &quot;z&quot; to &quot;/&quot;. It doesn't matter which keys you press. <strong>Any</strong> key always triggers the next target note. Similarly if you are using a MIDI keyboard <strong>any</strong> key triggers the next target note.</li>
+<li><strong>Playing Notes:</strong> You can play notes by pressing keys on your computer keyboard. Any letter keys 'a' though 'z' and any of the characters &quot;[ ] ; ' &lt; &gt; /&quot; will trigger notes. On an English language keyboard these are the rows from &quot;q&quot; to &quot;]&quot;, from &quot;a&quot; to &quot; ' &quot; and from &quot;z&quot; to &quot;/&quot;. It doesn't matter which keys you press. <strong>Any</strong> key always triggers the next target note. Similarly if you are using a MIDI keyboard <strong>any</strong> key triggers the next target note.</li>
 <li><strong>Note Timing:</strong> Press a key each time a target note reaches the vertical yellow line drawn when the previous note was played. If you do this you will play exactly at the original tempo and rhythm.<br />
 </li>
+<li><strong>Starting Playing: </strong> When not playing (i.e. when note bars not scrolling to the left) press any note-playing key to play the first note and start the note bars scrolling. Then press note-triggering keys to play successive target notes. The scroll rate is based on the tempo.</li>
 <li>You can vary note timing, rhythm and tempo by playing before or after each target note reaches the yellow line.</li>
-<li>Usually, just play what sounds good to you, but you do need to watch for and play just the target notes.<br />
-</li>
+<li>Usually, just play what sounds good to you, but you do need to watch for and play just the target notes.</li>
 <li>It takes a little practise but its fun, and easier than learning a &quot;real instrument&quot;!</li>
 <li>You can play with one finger, or two or more fingers to play faster or smoother. It's easiest to start with one.</li>
-<li><strong>Stopping:</strong> Click the &quot;Stop Playing&quot; toolbar button, or preferably press the spacebar again, or press the Return key for instant rewind.</li>
+<li><strong>Stopping:</strong> Pressing the spacebar stops the music scrolling. Playing will resume at the next unplayed target unless the music has been rewound or scrolled.</li>
 <li><strong>Yellow note heads</strong> are those that are currently sounding. As you play, notice that long notes continue sounding even as you trigger shorter simultaneous notes.</li>
 <li><strong>Chords:</strong> In the &quot;Minuet in G&quot; example the top notes of chords are target notes. Simultaneous or nearby chord notes are chained from them like any other chained notes. This allows chords to be triggered by one note.</li>
 <li><strong>Trills</strong> are like any other chained notes. For example in bar 8 of Minuet in G the notes are chained making them easier to play. It you prefer to play the notes of the trill you can convert those notes into target notes by clicking on their heads.</li>
@@ -324,8 +324,7 @@ At least one track must be enabled.<br />
 </ul></li>
 <li><strong>Play</strong>
 <ul>
-<li>Clicking the Play button enables play mode turning the Base Line orange, but does the score does not start scrolling.<br />
-</li>
+<li>Clicking the Play button moves the next target note to the Base Line orange.</li>
 <li>In play mode press any key to trigger the first target note. The display starts scrolling.</li>
 <li>Continue pressing keys to play upcoming target notes.</li>
 <li>The Spacebar is a convenient shortcut for the Play button.</li>
@@ -463,10 +462,38 @@ of all selected notes.
 <li><p>Edit Menu</p>
 <p><strong>Undo</strong> : Undo most recent command. Can be performed repeatedely to undo more than one command. Keyboard shorcut: Cmd+z.</p>
 <p><strong>Redo</strong> : Redo the most recent undone command. Can be performed repeatedely to redo more than one undone command. Keyboard shortcut: Shift+Cmd+z.</p>
-<p><strong>Play/Pause</strong> : Ready the score for playing or stop it playing. The keyboard shortcut for Play and Pause is the spacebar.</p>
+<p><strong>Play/Pause</strong> : Move the next scheduled target note to the baseline. The keyboard shortcut for Play and Pause is the spacebar.</p>
 <p><strong>Listen</strong> : Listen to the score starting at the note after the Base Line. Press the spacebar to stop. When listening is stopped the transport is returned to the place where listening started. You can use this to listen to a passage to get a feel for it before playing it yourself. Same as the Listen toolbar button. Keyboard shortcut is &quot;=&quot; (no modifier key).</p>
 <p>Show Edit Toolbar : Toggles the hiding and showing of the edit toolbar. This is the same as the equivalent toolbar button.</p>
 <p>Hide Measure Lines : Toggles the hiding and showing of the measure and beat lines on the score. The reason you may want to do this is that most MIDI files that were recorded by a live performer do not have their notes aligned to the beat or measure lines. They were simply recorded at some constant tempo with the played note occuring in no particular relatinship to the measures of the nominal tempo. You can identify a MIDI file like this when the notes seem to bear no relationship to the beats and measure. The numerical tempo is also almost always constant at some value like 120 beats per minute. For files like this it's usually better to hide the beat and measure lines to remove clutter and avoid confusion at you play, where you might be expecting the lines to be relevant. If you turn off beat and measure lines this property is saved with the [CK].mid file and retained next time it is opened.</p></li>
+</ul>
+<h2 id="assistive-version-addendum-1">Assistive Version Addendum</h2>
+<p>Concert Keyboardist has been made compatible with the adaptive switch interface produced by Assistive Technology Engineering and Consultation Inc. <a href="http://www.atengineering.us/index.php?main_page=product_info&amp;cPath=4&amp;products_id=277">Atec</a>.</p>
+<p>With the Atec interface it is possible for the user to play music in Concert Keyboardist with as little as a single switch. A total of five switches are supported giving the user switch access to the most important music-playing features of Concert Keyboardist, in many cases without the need for continual supervision.</p>
+<p>Any switches with 1/8 inch or 3.5 mm diameter plugs and designed to work with a standard adaptive switch interface will work. Switches with low force, quick action and a quiet click will work best for playing music. For example <a href="http://www.atengineering.us/index.php?main_page=product_info&amp;cPath=5&amp;products_id=154">these</a> work well.</p>
+<ul>
+<li>If you have not already done so install Concert Keyboardist: <a href="#installation-and-setup-on-windows">Installation and Setup on Windows</a> and <a href="#installation-and-setup-on-a-macintosh">Installation and Setup on a Macintosh</a>.</li>
+<li>All the main Concert Keyboardist instructions also apply to the assistive version. Assistive features are built into in the main version of Concert Keyboardist.</li>
+<li>Before using the assistive features familiarize yourself with the general operation of Concert Keyboardist as described in these sections <a href="#this-is-concert-keyboardist">This is Concert Keyboardist</a>, <a href="#quick-start-to-playing">Quick Start to Playing</a> and <a href="#overview-of-the-main-window">Overview of The Main Window</a>. Refer to other sections of the documentation as required.</li>
+</ul>
+<h3 id="atec-switch-interface-setup">Atec Switch Interface Setup</h3>
+<ul>
+<li>Connect the Atec Switch interface to a USB port on your computer.</li>
+<li>Select the &quot;blue&quot; mode of the Atec Switch interface. Press the button on the back of the interface to step through the modes until the blue mode is illuminated.</li>
+<li><p>The Atec interface supports up to five switches. In the blue mode they have the following uses in Concert keyboardist:</p>
+<ul>
+<li>Switch 1: start/stop playing</li>
+<li>Switch 2: rewind</li>
+<li>Switch 3: play notes</li>
+<li>Switch 4: play notes</li>
+<li>Switch 5: step back through the music</li>
+</ul></li>
+<li>Plug at least one switch into port 3 on the Atec interface. Optionally for smoother and/or faster playing plug a second switch into port 4.</li>
+<li>Play music with the switches exactly the same as with the computer keyboard keys. For information on playing with the computer keyboard see<a href="#quick-start-to-playing">Quick Start to Playing</a>. Especially watch the &quot;Getting Started&quot; video.</li>
+<li>When you press either of the &quot;play notes&quot; buttons the music starts scrolling and the first note is played. Pressing of either switches triggers successive &quot;target notes&quot; as the music scrolls. For more information on Target Notes see the main Concert keyboardist documentation. For example here</li>
+<li><p>To allow even more control through switches you can plug a switch into each of the five ports of the Atec interface: ** Switch 1 is equivalent to pressing the spacebar on the computer keyboard. The main use of the spacebar is to stop the music playing ** Switch 2 is equivalent to pressing the return or enter key on the computer keyboard, which rewinds the music. The first press of the switch rewinds to where playing most recently started. A second press immediately following the first rewinds the music back to the start. ** Switch 3 and Switch 4 are both equivalent to pressing any of the letter keys on the keyboard, any of which triggers the next target note.<br />
+* As with the letter keys the user has complete control of the timing of when target notes are triggered which allows considerable individual expressivness in varying the note durations, timing and rhythm. It feels much like playing a real musical instrument.<br />
+* The reason two note playing switches are provided is to enable faster or smoother playing and to enable the playing of &quot;legato&quot; style note transitions. ** Switch 5 is equivalent to the back-arrow key on the computer keyboard. This steps back through the music one target note at a time.</p></li>
 </ul>
 <h2 id="licenses-and-copyrights">Licenses and Copyrights</h2>
 <h3 id="concert-keyboardist-license">Concert Keyboardist License</h3>

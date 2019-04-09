@@ -86,8 +86,12 @@ public:
 private:
     Label titleLabel { "title", "Concert Keyboardist" },
             versionLabel { "version" },
-            copyrightLabel { "copyright", String (CharPointer_UTF8 ("\xc2\xa9")) + String (" 2018 Christopher Graham")
-                            +String ("\nVST PlugIn Technology by Steinberg Media Technologies")};
+            copyrightLabel { "copyright",
+                String (CharPointer_UTF8 ("\xc2\xa9")) + String (" 2018 Christopher Graham")
+                +String (String (" (concertkeyboardist.com)"))
+                +String ("\nVST PlugIn Technology by Steinberg Media Technologies")
+                +String ("\nAssistive features developed with advice from 'My Breath My Music' (mybreathmymusic.com)")
+            };
 
 //    HyperlinkButton aboutButton { "About Us", URL ("https://github.com/chrisgr88/ConcertKeyboardist/wiki") };
 //    HyperlinkButton aboutButton { "About Us", URL ("https://juce.com") };
