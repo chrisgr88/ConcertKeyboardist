@@ -18,7 +18,7 @@ public:
 
         auto buildDate = Time::getCompilationDate();
         addAndMakeVisible (versionLabel);
-        versionLabel.setText (String("Version: 1.0.1 alpha\n") +
+        versionLabel.setText (String("Version: 1.0.2 beta\n") +
                               String("Build: ") + String(__CK_SHORT_HASH) + String("\n")
                               + String("Date: ") + String (__CK_BUILD_DATE),
                               dontSendNotification);
@@ -87,7 +87,7 @@ private:
     Label titleLabel { "title", "Concert Keyboardist" },
             versionLabel { "version" },
             copyrightLabel { "copyright",
-                String (CharPointer_UTF8 ("\xc2\xa9")) + String (" 2018 Christopher Graham")
+                String (CharPointer_UTF8 ("\xc2\xa9")) + String (" 2018, 2019 Christopher Graham")
                 +String (String (" (concertkeyboardist.com)"))
                 +String ("\nVST PlugIn Technology by Steinberg Media Technologies")
                 +String ("\nAssistive features developed with advice from 'My Breath My Music' (mybreathmymusic.com)")

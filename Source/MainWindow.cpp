@@ -265,18 +265,24 @@ ApplicationProperties& getAppProperties();
         }
         else if (message == "loadPluginMenu")
         {
-            Point<int> pos = getMouseXYRelative() + getPosition();
-            auto desc = pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
-            if (desc!=nullptr && mainComponent->thePlugin)
-            {
-                PluginWindow::WindowFormatType type;
-                type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
-                if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
-                    w->toFront (true);
-            }
+#if JUCE_MAC
+                Point<int> pos = getMouseXYRelative() + getPosition();
+                auto desc = pluginContextMenu(Rectangle<int>(pos.getX(),pos.getY(),5,5));
+                if (desc!=nullptr && mainComponent->thePlugin)
+                {
+                    PluginWindow::WindowFormatType type;
+                    type = mainComponent->thePlugin->hasEditor() ? PluginWindow::Normal: PluginWindow::Generic;
+                    if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
+                        w->toFront (true);
+                }
+#endif
+#if JUCE_WINDOWS
+            AlertWindow::showNativeDialogBox("Notice", "Sorry, plugins are not currently supported on Windows.  Please route midi output to an external appliction using a free driver such as LoopBe1 by nerds.de.", false);
+#endif
         }
         else if (message == "editPlugin")
         {
+#if JUCE_MAC
             if (mainComponent->thePlugin)
             {
                 PluginWindow::WindowFormatType type;
@@ -284,6 +290,10 @@ ApplicationProperties& getAppProperties();
                 if (auto* w = PluginWindow::getWindowFor (mainComponent->thePlugin, type))
                     w->toFront (true);
             }
+#endif
+#if JUCE_WINDOWS
+            AlertWindow::showNativeDialogBox("Notice", "Sorry, plugins are not currently supported on Windows.  Please route midi output to an external appliction using a free driver such as LoopBe1 by nerds.de.", false);
+#endif
         }
         else if (message == "audioSettings")
         {
@@ -436,7 +446,12 @@ ApplicationProperties& getAppProperties();
     
     StringArray MainWindow::getMenuBarNames()
     {
+#if JUCE_MAC
         const char* const names[] = {"File", "Edit", "Plugins", "Help", nullptr };
+#endif
+#if JUCE_WINDOWS
+        const char* const names[] = {"File", "Edit", "Help", nullptr };
+#endif
         
         return StringArray (names);
     }
