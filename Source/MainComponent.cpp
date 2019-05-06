@@ -35,7 +35,7 @@ MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
         
 //        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
 //        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
-        std::cout << "Audio Device Initialized " << audioDeviceManager.getCurrentAudioDevice()->getName() << "\n";
+//        std::cout << "Audio Device Initialized " << audioDeviceManager.getCurrentAudioDevice()->getName() << "\n";
 //        graph.addNode(&midiInNode,0);
 //        graph.addNode(&audioOutNode,4);
 //        graph.call

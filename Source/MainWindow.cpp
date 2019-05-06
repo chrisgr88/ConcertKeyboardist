@@ -715,6 +715,7 @@ ApplicationProperties& getAppProperties();
             menu.addCommandItem (&getCommandManager(), CommandIDs::showEditToolbar);
             menu.addCommandItem (&getCommandManager(), CommandIDs::hide_measure_lines);
         }
+#ifdef JUCE_MAC
         else if (topLevelMenuIndex == 2) // "Plugins" menu
         {
             PopupMenu pluginsMenu;
@@ -734,10 +735,17 @@ ApplicationProperties& getAppProperties();
         }
 		else if (topLevelMenuIndex == 3) // "Help" menu
 		{
-#if JUCE_WINDOWS
 			menu.addCommandItem(&getCommandManager(), CommandIDs::appAboutBox);
-#endif
+
 		}
+#endif
+#if JUCE_WINDOWS
+		else if (topLevelMenuIndex == 2) // "Help" menu
+		{
+			menu.addCommandItem(&getCommandManager(), CommandIDs::appAboutBox);
+
+		}
+#endif
         return menu;
     }
 void MainWindow::addPluginsToMenu (PopupMenu& m) const
