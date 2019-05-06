@@ -721,7 +721,7 @@ ApplicationProperties& getAppProperties();
             PopupMenu pluginsMenu;
             addPluginsToMenu (pluginsMenu);
             menu.addSubMenu ("Load plugin", pluginsMenu);
-            menu.addItem (249, "Internal Synthesizer");
+//            menu.addItem (249, "Internal Synthesizer");
             menu.addItem (250, "No Plugin");
             menu.addSeparator();
 //            menu.addItem (251, "Show plugin window");
