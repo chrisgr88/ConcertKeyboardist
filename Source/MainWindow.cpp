@@ -403,7 +403,12 @@ ApplicationProperties& getAppProperties();
     
     void MainWindow::showAudioSettings()
     {
+#ifdef JUCE_MAC
         AudioDeviceSelectorComponent audioSettingsComp (mainComponent->audioDeviceManager, 0, 0, 0, 256, true, true, true, false);
+#endif
+#ifdef JUCE_WINDOWS
+        AudioDeviceSelectorComponent audioSettingsComp (mainComponent->audioDeviceManager, 0, 0, 0, 0, true, true, true, false);
+#endif
         audioSettingsComp.setSize (500, 450);
         DialogWindow::LaunchOptions o;
         o.content.setNonOwned (&audioSettingsComp);
