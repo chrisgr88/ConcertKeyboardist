@@ -96,7 +96,8 @@
                        linkTimeOptimisation="0" isDebug="1" optimisation="1" targetName="ConcertKeyboardist"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
-                       linkTimeOptimisation="1" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"/>
+                       linkTimeOptimisation="1" isDebug="0" optimisation="3" targetName="ConcertKeyboardist"
+                       useRuntimeLibDLL="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../JUCE/modules"/>

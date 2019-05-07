@@ -533,16 +533,16 @@ ApplicationProperties& getAppProperties();
                 result.defaultKeypresses.add (KeyPress ('3', ModifierKeys::noModifiers, 0));
                 result.defaultKeypresses.add (KeyPress (KeyPress::F3Key, ModifierKeys::noModifiers, 0));
                 break;
-            case CommandIDs::decreaseTempo:
-                result.setInfo ("DecreaseTempo", "Decrease Tempo", category, 0);
-                result.defaultKeypresses.add (KeyPress ('2', ModifierKeys::noModifiers, 0));
-                result.defaultKeypresses.add (KeyPress (KeyPress::F2Key, ModifierKeys::noModifiers, 0));
-                break;
-            case CommandIDs::returnToBaseline:
-                result.setInfo ("ReturnToBaseline", "Return To Baseline", category, 0);
-                result.defaultKeypresses.add (KeyPress ('1', ModifierKeys::noModifiers, 0));
-                result.defaultKeypresses.add (KeyPress (KeyPress::F1Key, ModifierKeys::noModifiers, 0));
-                break;
+//            case CommandIDs::decreaseTempo:
+//                result.setInfo ("DecreaseTempo", "Decrease Tempo", category, 0);
+//                result.defaultKeypresses.add (KeyPress ('2', ModifierKeys::noModifiers, 0));
+//                result.defaultKeypresses.add (KeyPress (KeyPress::F2Key, ModifierKeys::noModifiers, 0));
+//                break;
+//            case CommandIDs::returnToBaseline:
+//                result.setInfo ("ReturnToBaseline", "Return To Baseline", category, 0);
+//                result.defaultKeypresses.add (KeyPress ('1', ModifierKeys::noModifiers, 0));
+//                result.defaultKeypresses.add (KeyPress (KeyPress::F1Key, ModifierKeys::noModifiers, 0));
+//                break;
             case CommandIDs::scoreSettings:
                 result.setInfo ("Tracks...", "Tracks in this score", category, 0);
                 result.addDefaultKeypress ('t', ModifierKeys::commandModifier);

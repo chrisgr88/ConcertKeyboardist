@@ -183,7 +183,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_78DEC1EA0AEA4FB6A3688B2D7CEFD3B4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_86548AB8E0014A69A5BCDD85456A97CB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_86621BF9CB1A43D48F977B9C283E4833"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -339,6 +351,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D03BB9E0416442CAA0FC47CE158035BB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D2F0E60904C94FE7A38B42A2A7D0465A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -376,12 +394,6 @@
         "Entry"
         {
         "MsmKey" = "8:_F731627CB7AE44D3A2A61588C9C0AD30"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FB3AB1F474614E699D0C4163D0694D82"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1038,12 +1050,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_78DEC1EA0AEA4FB6A3688B2D7CEFD3B4"
+            {
+            "SourcePath" = "8:..\\..\\..\\Builds\\VisualStudio2017\\x64\\Release\\App\\ConcertKeyboardist.exe"
+            "TargetName" = "8:ConcertKeyboardist.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_F998F232C88A4C4E8D5863F462FAF8BF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86548AB8E0014A69A5BCDD85456A97CB"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\Information Area.jpg"
             "TargetName" = "8:Information Area.jpg"
             "Tag" = "8:"
             "Folder" = "8:_3933DA6F338A4E57A4073D1A908E78AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86621BF9CB1A43D48F977B9C283E4833"
+            {
+            "SourcePath" = "8:..\\..\\..\\Builds\\VisualStudio2017\\x64\\Release\\App\\ConcertKeyboardist.exe"
+            "TargetName" = "8:ConcertKeyboardist.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_610EB01A2B9A48C5A86CDE5BD0168130"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1558,6 +1610,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D03BB9E0416442CAA0FC47CE158035BB"
+            {
+            "SourcePath" = "8:..\\..\\..\\Builds\\VisualStudio2017\\x64\\Release\\App\\ConcertKeyboardist.exe"
+            "TargetName" = "8:ConcertKeyboardist.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_F96124D56F9F493D8C48C68CA4D12382"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D2F0E60904C94FE7A38B42A2A7D0465A"
             {
             "SourcePath" = "8:..\\..\\..\\Documentation\\Common\\img\\HelpTool.jpg"
@@ -1684,26 +1756,6 @@
             "TargetName" = "8:Debussy Suite Bergamasque 1mov[ck].mid"
             "Tag" = "8:"
             "Folder" = "8:_0DE9B8F7806C47FB9039FB4DF52B1393"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FB3AB1F474614E699D0C4163D0694D82"
-            {
-            "SourcePath" = "8:..\\..\\..\\Builds\\VisualStudio2017\\x64\\Release\\App\\ConcertKeyboardist.exe"
-            "TargetName" = "8:ConcertKeyboardist.exe"
-            "Tag" = "8:"
-            "Folder" = "8:_F998F232C88A4C4E8D5863F462FAF8BF"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1992,34 +2044,6 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_262DFE3937404486A29F54EC9D2CBD3A"
-            {
-            "Name" = "8:Shortcut to ConcertKeyboardist.exe"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_FB3AB1F474614E699D0C4163D0694D82"
-            "Folder" = "8:_F96124D56F9F493D8C48C68CA4D12382"
-            "WorkingFolder" = "8:_F998F232C88A4C4E8D5863F462FAF8BF"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8FEEE01B5D574672B34F545492C6A87E"
-            {
-            "Name" = "8:Shortcut to ConcertKeyboardist.exe"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_FB3AB1F474614E699D0C4163D0694D82"
-            "Folder" = "8:_610EB01A2B9A48C5A86CDE5BD0168130"
-            "WorkingFolder" = "8:_F998F232C88A4C4E8D5863F462FAF8BF"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
         }
         "UserInterface"
         {
