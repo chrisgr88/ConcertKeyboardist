@@ -1389,7 +1389,7 @@ void MainWindow::menuItemSelected (int menuItemID, int topLevelMenuIndex)
 //#endif
 //                    docPath = "file://" + docPath;
 //                    std::cout << "doc path " << docPath << "\n";
-                    URL docURL = URL("http://www.concertkeyboardist.com/Documentation/EN/ckdoc.htm");
+                    URL docURL = URL("https://www.concertkeyboardist.com/Documentation/EN/ckdoc.htm");
                     docURL.launchInDefaultBrowser();
                 }
                 break;
