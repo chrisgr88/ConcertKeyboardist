@@ -18,7 +18,7 @@ public:
 
         auto buildDate = Time::getCompilationDate();
         addAndMakeVisible (versionLabel);
-        versionLabel.setText (String("Version: 1.0.2 beta\n") +
+        versionLabel.setText (String("Version: 1.0.3 beta\n") +
                               String("Build: ") + String(__CK_SHORT_HASH) + String("\n")
                               + String("Date: ") + String (__CK_BUILD_DATE),
                               dontSendNotification);
