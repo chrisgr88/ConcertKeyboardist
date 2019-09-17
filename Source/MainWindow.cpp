@@ -410,7 +410,7 @@ ApplicationProperties& getAppProperties();
         ckBlockClosing = true;
         o.runModal();
         ckBlockClosing = false;
-        ScopedPointer<XmlElement> audioState (mainComponent->audioDeviceManager.createStateXml());
+        auto audioState = mainComponent->audioDeviceManager.createStateXml();
 //        getAppProperties().getUserSettings()->setValue ("audioDeviceState", audioState);
         getAppProperties().getUserSettings()->saveIfNeeded();
         const double sampRate = mainComponent->audioDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate();

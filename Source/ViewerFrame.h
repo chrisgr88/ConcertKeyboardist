@@ -389,11 +389,11 @@ private:
                     }
                 }
             }
-            Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
-            Drawable* imagePressed = NULL;
+            auto image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
+            std::unique_ptr <Drawable> imagePressed;
             if (filenamePressed.length()>0)
                 imagePressed = iconsFromZipFile [iconNames.indexOf (filenamePressed)]->createCopy();
-            ToolbarButton * tb = new ToolbarButton (itemId, text, image, imagePressed);
+            ToolbarButton * tb = new ToolbarButton (itemId, text, std::move (image), std::move (imagePressed));
             tb->setTooltip(text);
             return tb;
         }
@@ -727,8 +727,8 @@ private:
                 }
             }
             
-            Drawable* image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
-            ToolbarButton * tb = new ToolbarButton (itemId, text, image, 0);
+            auto image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
+            ToolbarButton * tb = new ToolbarButton (itemId, text, std::move (image), nullptr);
 
             tb->setTooltip(text);
             return tb;//new ToolbarButton (itemId, text, image, 0);

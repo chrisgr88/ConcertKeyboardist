@@ -26,7 +26,7 @@ MIDIProcessor::MIDIProcessor() :
     timerIntervalInMS = 1;
     panic = false;
 #if JUCE_MAC || JUCE_IOS
-    ckMidiOutput = MidiOutput::createNewDevice("ConcertKeyboardist");
+    ckMidiOutput = MidiOutput::createNewDevice("ConcertKeyboardist").release();
 #endif
     notesEditable=true;
     MultiTimer::startTimer(TIMER_APP_ACTIVE, 1000);

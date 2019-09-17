@@ -134,7 +134,7 @@ public:
                 }
             }
         }
-        ScopedPointer<Drawable> image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
+        auto image = iconsFromZipFile [iconNames.indexOf (filename)]->createCopy();
         juce::Image img =  juce::Image(juce::Image::ARGB, 32, 32, true);
         Graphics g(img);
         image->draw(g, 1.0f);

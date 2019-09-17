@@ -23,9 +23,9 @@ MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
         processor->sequenceObject.addActionListener(this);
         setLookAndFeel (&lookAndFeel);
         processor->reset(44.1);
-        ScopedPointer<XmlElement> savedAudioState (getAppProperties().getUserSettings()
-                                                   ->getXmlValue ("audioDeviceState"));
-        audioDeviceManager.initialise (0, 2, savedAudioState, true);
+        auto savedAudioState = getAppProperties().getUserSettings()
+                                                   ->getXmlValue ("audioDeviceState");
+        audioDeviceManager.initialise (0, 2, savedAudioState.get(), true);
 //        AudioProcessorGraph::AudioGraphIOProcessor midiInNode(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode);
 //        AudioProcessorGraph::AudioGraphIOProcessor audioOutNode(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
         std::cout << "Audio Device Initialized " << audioDeviceManager.getCurrentAudioDevice()->getName() << "\n";
@@ -56,7 +56,7 @@ MainComponent::MainComponent(MIDIProcessor *p) : thePlayer(false),
 #else
         formatManager.addDefaultFormats();
 #endif
-        ScopedPointer<XmlElement> savedPluginList (getAppProperties().getUserSettings()->getXmlValue ("pluginList"));
+        auto savedPluginList = getAppProperties().getUserSettings()->getXmlValue ("pluginList");
         
         if (savedPluginList != nullptr)
             knownPluginList.recreateFromXml (*savedPluginList);
@@ -116,9 +116,9 @@ void MainComponent::actionListenerCallback (const String& message)
 {
     if (pluginId.length() > 0)
     {
-        const PluginDescription* desc = knownPluginList.getTypeForIdentifierString(pluginId);
+        auto desc = knownPluginList.getTypeForIdentifierString(pluginId);
         if (desc != NULL)
-            loadPlugin(desc);
+            loadPlugin(desc.get());
     }
 }
 void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
@@ -149,7 +149,7 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
 //        thePlugin = nullptr;
     }
     
-    AudioPluginInstance *pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
+    auto pPlugin = formatManager.createPluginInstance(*pluginDescription, sampRate,bufSz,errorMsg);
 //<<<<<<< HEAD
 //=======
 //    AudioProcessor::BusesLayout bl = pPlugin->getBusesLayout();
@@ -158,8 +158,8 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
 ////    pPlugin->disableNonMainBuses();
 //    pPlugin->setPlayConfigDetails(nInputs,nOutputs,sampRate,bufSz);
 //>>>>>>> 1be6f6cd44ea296389e2a93b53ac58f35a624112
-    thePlugin = pPlugin;
-    processor->sequenceObject.pThePlugin = pPlugin;
+    thePlugin = pPlugin.release();
+    processor->sequenceObject.pThePlugin = thePlugin.get();
     if (thePlugin)
     {
         std::cout << "Loaded plugin \n";
@@ -179,10 +179,12 @@ void MainComponent::loadPlugin (const PluginDescription* pluginDescription)
 //    thePlayer.setProcessor(&graph);
     thePlayer.setProcessor(thePlugin);
     audioDeviceManager.addAudioCallback (&thePlayer);
-    thePlugin->suspendProcessing(false);
+    if (thePlugin != nullptr)
+        thePlugin->suspendProcessing(false);
     MidiMessageCollector &mmc = thePlayer.getMidiMessageCollector();
     processor->pluginMessageCollector = &mmc;
-    thePlugin->setPlayHead(processor);
+    if (thePlugin != nullptr)
+        thePlugin->setPlayHead(processor);
     processor->pluginMessageCollectorReset(sampRate);
     thePlayer.getMidiMessageCollector().reset(sampRate);
 }
@@ -246,11 +248,11 @@ void MainComponent::changeListenerCallback (ChangeBroadcaster* changed)
             //TODO - notify Mainwindow that menuItemsChanged();
             // save the plugin list every time it gets chnaged, so that if we're scanning
             // and it crashes, we've still saved the previous ones
-            ScopedPointer<XmlElement> savedPluginList (knownPluginList.createXml());
+            auto savedPluginList (knownPluginList.createXml());
 
             if (savedPluginList != nullptr)
             {
-                getAppProperties().getUserSettings()->setValue ("pluginList", savedPluginList);
+                getAppProperties().getUserSettings()->setValue ("pluginList", savedPluginList.get());
                 getAppProperties().saveIfNeeded();
             }
         }
